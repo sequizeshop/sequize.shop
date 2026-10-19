@@ -1,16 +1,39 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
-  <title>Shoppy — Discover Products</title>
-  <meta name="description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
 
+  <title>Shoppy — Discover Products</title>
+
+  <meta
+    name="description"
+    content="Discover products, explore categories and find your next favorite item at Shoppy."
+  >
+
+  <!-- Shoppy Favicon -->
+  <link
+    rel="icon"
+    type="image/png"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+  >
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
@@ -21,23 +44,53 @@
       --border: #e9e9e9;
       --light: #f6f6f6;
       --radius: 16px;
+      --success: #16803c;
+      --danger: #c62828;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       font-family: "Inter", sans-serif;
       color: var(--black);
       background: #fff;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
-    a { text-decoration: none; color: inherit; }
-    button, input { font: inherit; }
-    button { cursor: pointer; }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible {
+      outline: 2px solid #555;
+      outline-offset: 3px;
+    }
+
+    /* NAVBAR */
 
     .navbar {
-      height: 76px;
+      min-height: 76px;
       padding: 0 7%;
       display: flex;
       align-items: center;
@@ -48,6 +101,12 @@
       position: sticky;
       top: 0;
       z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
     }
 
     .brand img {
@@ -69,7 +128,11 @@
       gap: 10px;
     }
 
-    .search i { font-size: 19px; color: #777; }
+    .search i {
+      font-size: 19px;
+      color: #777;
+      flex-shrink: 0;
+    }
 
     .search input {
       width: 100%;
@@ -81,6 +144,10 @@
       font-size: 13px;
     }
 
+    .search input:focus-visible {
+      outline: none;
+    }
+
     .nav-actions {
       display: flex;
       align-items: center;
@@ -88,11 +155,20 @@
     }
 
     .nav-icon {
+      width: 32px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 23px;
+      transition: opacity .2s;
     }
+
+    .nav-icon:hover {
+      opacity: .6;
+    }
+
+    /* HERO */
 
     .hero-wrap {
       padding: 32px 7% 0;
@@ -110,7 +186,9 @@
       overflow: hidden;
     }
 
-    .hero-copy { max-width: 540px; }
+    .hero-copy {
+      max-width: 540px;
+    }
 
     .eyebrow {
       display: inline-flex;
@@ -123,7 +201,9 @@
       margin-bottom: 18px;
     }
 
-    .eyebrow i { font-size: 17px; }
+    .eyebrow i {
+      font-size: 17px;
+    }
 
     .hero h1 {
       font-size: clamp(32px, 4vw, 49px);
@@ -153,6 +233,12 @@
       color: #fff;
       font-size: 12px;
       font-weight: 700;
+      transition: background .2s, transform .2s;
+    }
+
+    .hero-button:hover {
+      background: #333;
+      transform: translateY(-1px);
     }
 
     .hero-art {
@@ -172,6 +258,8 @@
       object-fit: contain;
     }
 
+    /* MAIN CONTAINER */
+
     .container {
       width: 86%;
       max-width: 1320px;
@@ -189,7 +277,7 @@
     .section-head h2 {
       font-size: 23px;
       font-weight: 800;
-      letter-spacing: -0.8px;
+      letter-spacing: -.8px;
     }
 
     .section-head p {
@@ -197,6 +285,8 @@
       font-size: 12px;
       margin-top: 7px;
     }
+
+    /* CATEGORIES */
 
     .categories {
       display: flex;
@@ -224,11 +314,18 @@
       color: #fff;
     }
 
+    .category-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
     .product-count {
       color: var(--gray);
       font-size: 12px;
       white-space: nowrap;
     }
+
+    /* PRODUCT GRID */
 
     .product-grid {
       display: grid;
@@ -247,7 +344,7 @@
 
     .product-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 10px 28px rgba(0,0,0,.06);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .06);
     }
 
     .product-image {
@@ -276,9 +373,12 @@
       border-radius: 6px;
       font-size: 10px;
       font-weight: 700;
+      z-index: 1;
     }
 
-    .product-info { padding: 16px; }
+    .product-info {
+      padding: 16px;
+    }
 
     .product-category {
       color: #888;
@@ -318,7 +418,10 @@
       font-size: 11px;
     }
 
-    .product-rating i { color: #e7a500; font-size: 14px; }
+    .product-rating i {
+      color: #e7a500;
+      font-size: 14px;
+    }
 
     .product-bottom {
       display: flex;
@@ -346,7 +449,18 @@
       border: 0;
       border-radius: 10px;
       font-size: 19px;
+      transition: background .2s;
     }
+
+    .add-button:hover {
+      background: #333;
+    }
+
+    .add-button.added {
+      background: var(--success);
+    }
+
+    /* STATUS */
 
     .status {
       grid-column: 1 / -1;
@@ -370,6 +484,38 @@
       font-weight: 700;
     }
 
+    .status button:hover {
+      background: #333;
+    }
+
+    /* TOAST */
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translate(-50%, 20px);
+      background: #111;
+      color: #fff;
+      padding: 13px 18px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s, transform .2s;
+      max-width: calc(100% - 32px);
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* FOOTER */
+
     .footer {
       margin-top: 60px;
       border-top: 1px solid var(--border);
@@ -381,83 +527,267 @@
       font-size: 11px;
     }
 
+    /* TABLET */
+
     @media (max-width: 1050px) {
-      .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .product-image { height: 200px; }
-      .navbar { padding: 0 5%; }
-      .hero-wrap { padding-left: 5%; padding-right: 5%; }
+      .product-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .product-image {
+        height: 200px;
+      }
+
+      .navbar {
+        padding: 0 5%;
+      }
+
+      .hero-wrap {
+        padding-left: 5%;
+        padding-right: 5%;
+      }
     }
 
+    /* MOBILE */
+
     @media (max-width: 700px) {
-      .navbar { height: 66px; gap: 12px; }
-      .brand img { width: 40px; height: 40px; }
-      .search { width: auto; flex: 1; height: 39px; }
-      .nav-actions { gap: 13px; }
-      .nav-icon { font-size: 21px; }
-      .hero-wrap { padding-top: 20px; }
-      .hero { min-height: 250px; padding: 30px 24px; border-radius: 17px; }
-      .hero h1 { font-size: 34px; letter-spacing: -1.4px; }
-      .hero p { font-size: 12px; }
-      .hero-art { width: 115px; height: 115px; }
-      .hero-art img { width: 84%; height: 84%; }
-      .container { width: 90%; margin: 34px auto; }
-      .section-head h2 { font-size: 20px; }
-      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
-      .product-image { height: 165px; padding: 12px; }
-      .product-info { padding: 12px; }
-      .product-title { font-size: 12px; min-height: 36px; }
-      .product-description { font-size: 10px; min-height: 48px; }
-      .product-price { font-size: 15px; }
-      .add-button { width: 32px; height: 32px; }
-      .footer { padding: 22px 5%; }
+      .navbar {
+        min-height: 66px;
+        gap: 12px;
+      }
+
+      .brand img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .search {
+        width: auto;
+        flex: 1;
+        height: 39px;
+        padding: 0 10px;
+      }
+
+      .search input {
+        font-size: 12px;
+      }
+
+      .nav-actions {
+        gap: 10px;
+      }
+
+      .nav-icon {
+        width: 25px;
+        font-size: 21px;
+      }
+
+      .hero-wrap {
+        padding-top: 20px;
+      }
+
+      .hero {
+        min-height: 250px;
+        padding: 30px 24px;
+        border-radius: 17px;
+      }
+
+      .hero h1 {
+        font-size: 34px;
+        letter-spacing: -1.4px;
+      }
+
+      .hero p {
+        font-size: 12px;
+      }
+
+      .hero-art {
+        width: 115px;
+        height: 115px;
+      }
+
+      .hero-art img {
+        width: 84%;
+        height: 84%;
+      }
+
+      .container {
+        width: 90%;
+        margin: 34px auto;
+      }
+
+      .section-head h2 {
+        font-size: 20px;
+      }
+
+      .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .product-image {
+        height: 165px;
+        padding: 12px;
+      }
+
+      .product-info {
+        padding: 12px;
+      }
+
+      .product-title {
+        font-size: 12px;
+        min-height: 36px;
+      }
+
+      .product-description {
+        font-size: 10px;
+        min-height: 48px;
+      }
+
+      .product-price {
+        font-size: 15px;
+      }
+
+      .add-button {
+        width: 32px;
+        height: 32px;
+      }
+
+      .footer {
+        padding: 22px 5%;
+      }
     }
 
     @media (max-width: 390px) {
-      .nav-actions { gap: 9px; }
-      .hero-art { display: none; }
-      .hero h1 { font-size: 32px; }
-      .product-grid { gap: 10px; }
-      .product-image { height: 145px; }
+      .navbar {
+        gap: 8px;
+      }
+
+      .nav-actions {
+        gap: 7px;
+      }
+
+      .search {
+        gap: 6px;
+      }
+
+      .hero-art {
+        display: none;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .product-grid {
+        gap: 10px;
+      }
+
+      .product-image {
+        height: 145px;
+      }
+
+      .product-info {
+        padding: 10px;
+      }
     }
   </style>
 </head>
 
 <body>
+
+  <!-- NAVBAR -->
+
   <header class="navbar">
     <a href="/home.html" class="brand" aria-label="Shoppy home">
-      <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo">
+      <img
+        src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+        alt="Shoppy logo"
+      >
     </a>
 
     <form class="search" id="searchForm" role="search">
-      <i class="ph ph-magnifying-glass"></i>
-      <input id="searchInput" type="search" placeholder="Search products..." aria-label="Search products">
+      <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search products..."
+        aria-label="Search products"
+        autocomplete="off"
+        maxlength="100"
+      >
     </form>
 
     <nav class="nav-actions" aria-label="Main navigation">
-      <a class="nav-icon" href="/home.html" aria-label="Home"><i class="ph ph-house"></i></a>
-      <a class="nav-icon" href="/cart.html" aria-label="Cart"><i class="ph ph-shopping-cart"></i></a>
-      <a class="nav-icon" href="/profile.html" aria-label="My profile"><i class="ph ph-user-circle"></i></a>
+      <a
+        class="nav-icon"
+        href="/home.html"
+        aria-label="Home"
+        title="Home"
+      >
+        <i class="ph ph-house" aria-hidden="true"></i>
+      </a>
+
+      <a
+        class="nav-icon"
+        href="/cart.html"
+        aria-label="Cart"
+        title="Shopping cart"
+      >
+        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+      </a>
+
+      <a
+        class="nav-icon"
+        href="/profile.html"
+        aria-label="My profile"
+        title="My profile"
+      >
+        <i class="ph ph-user-circle" aria-hidden="true"></i>
+      </a>
     </nav>
   </header>
+
+  <!-- HERO -->
 
   <section class="hero-wrap">
     <div class="hero">
       <div class="hero-copy">
-        <div class="eyebrow"><i class="ph ph-sparkle"></i> Welcome to Shoppy</div>
+        <div class="eyebrow">
+          <i class="ph ph-sparkle" aria-hidden="true"></i>
+          Welcome to Shoppy
+        </div>
+
         <h1>Find your next favorite thing.</h1>
-        <p>Explore everyday essentials, discover new arrivals and find products you'll love.</p>
-        <button class="hero-button" id="shopNow" type="button">
-          Explore Products <i class="ph ph-arrow-right"></i>
+
+        <p>
+          Explore everyday essentials, discover new arrivals
+          and find products you'll love.
+        </p>
+
+        <button
+          class="hero-button"
+          id="shopNow"
+          type="button"
+        >
+          Explore Products
+          <i class="ph ph-arrow-right" aria-hidden="true"></i>
         </button>
       </div>
 
       <div class="hero-art" aria-hidden="true">
-        <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="">
+        <img
+          src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+          alt=""
+        >
       </div>
     </div>
   </section>
 
+  <!-- PRODUCTS -->
+
   <main class="container" id="productsSection">
+
     <div class="section-head">
       <div>
         <h2>Shop by Category</h2>
@@ -466,7 +796,13 @@
     </div>
 
     <div id="categories" class="categories">
-      <button class="category-btn active" data-category="">All Products</button>
+      <button
+        class="category-btn active"
+        data-category=""
+        type="button"
+      >
+        All Products
+      </button>
     </div>
 
     <div class="section-head">
@@ -474,31 +810,57 @@
         <h2 id="productsHeading">Popular Products</h2>
         <p>Discover something you'll love.</p>
       </div>
+
       <span id="productCount" class="product-count"></span>
     </div>
 
-    <div id="productGrid" class="product-grid" aria-live="polite">
+    <div
+      id="productGrid"
+      class="product-grid"
+      aria-live="polite"
+      aria-busy="true"
+    >
       <div class="status">Loading products...</div>
     </div>
+
   </main>
+
+  <!-- FOOTER -->
 
   <footer class="footer">
     <span>© <span id="year"></span> Shoppy</span>
     <span>Your shopping, all in one place.</span>
   </footer>
 
+  <!-- NOTIFICATION -->
+
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+  ></div>
+
   <script>
+    "use strict";
+
     const productGrid = document.getElementById("productGrid");
     const categoriesEl = document.getElementById("categories");
     const productCount = document.getElementById("productCount");
     const productsHeading = document.getElementById("productsHeading");
     const searchInput = document.getElementById("searchInput");
+    const toast = document.getElementById("toast");
 
     let currentCategory = "";
     let currentSearch = "";
     let allProducts = [];
+    let toastTimer = null;
+    let requestController = null;
 
-    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    /* HTML ESCAPING */
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -510,6 +872,8 @@
       })[char]);
     }
 
+    /* PRICE FORMAT */
+
     function formatPrice(price) {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -517,226 +881,426 @@
       }).format(Number(price) || 0);
     }
 
+    /* NOTIFICATION */
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      clearTimeout(toastTimer);
+
+      toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2200);
+    }
+
+    /* ERROR DISPLAY */
+
     function showError(message) {
+      productGrid.setAttribute("aria-busy", "false");
+
       productGrid.innerHTML = `
         <div class="status">
           ${escapeHTML(message)}
-          <button type="button" id="retryButton">Try Again</button>
-        </div>`;
-      document.getElementById("retryButton").addEventListener("click", loadProducts);
+
+          <button type="button" id="retryButton">
+            Try Again
+          </button>
+        </div>
+      `;
+
+      document
+        .getElementById("retryButton")
+        .addEventListener("click", loadProducts);
     }
 
+    /* CART STORAGE */
+
+    function readCart() {
+      try {
+        const stored = JSON.parse(
+          localStorage.getItem("shoppy_cart") || "[]"
+        );
+
+        return Array.isArray(stored) ? stored : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function addToCart(product) {
+      try {
+        const cart = readCart();
+
+        const existing = cart.find(
+          item => Number(item.id) === Number(product.id)
+        );
+
+        if (existing) {
+          existing.quantity =
+            Math.max(1, Number(existing.quantity) || 1) + 1;
+        } else {
+          cart.push({
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            thumbnail: product.thumbnail || product.images?.[0] || "",
+            quantity: 1
+          });
+        }
+
+        localStorage.setItem(
+          "shoppy_cart",
+          JSON.stringify(cart)
+        );
+
+        showToast(`${product.title} added to cart`);
+
+        return true;
+      } catch (error) {
+        console.error("Cart storage error:", error);
+
+        showToast("Cart save nahi ho paya. Browser storage check karein.");
+
+        return false;
+      }
+    }
+
+    /* RENDER PRODUCTS */
+
     function renderProducts(products) {
-      productCount.textContent = `${products.length} product${products.length === 1 ? "" : "s"}`;
+      productCount.textContent =
+        `${products.length} product${products.length === 1 ? "" : "s"}`;
+
+      productGrid.setAttribute("aria-busy", "false");
 
       if (!products.length) {
-        productGrid.innerHTML = '<div class="status">No products found. Try another search or category.</div>';
+        productGrid.innerHTML = `
+          <div class="status">
+            No products found. Try another search or category.
+          </div>
+        `;
+
         return;
       }
 
       productGrid.innerHTML = products.map(product => {
         const image = product.thumbnail || product.images?.[0] || "";
+
         const title = escapeHTML(product.title);
         const description = escapeHTML(product.description);
         const category = escapeHTML(product.category || "Other");
-        const discount = Number(product.discountPercentage) || 0;
+
+        const discount =
+          Number(product.discountPercentage) || 0;
+
         const rating = Number(product.rating) || 0;
+        const id = Number(product.id);
 
         return `
           <article class="product-card">
+
             <div class="product-image">
-              ${discount > 0 ? `<span class="discount">-${Math.round(discount)}%</span>` : ""}
+
+              ${
+                discount > 0
+                  ? `<span class="discount">-${Math.round(discount)}%</span>`
+                  : ""
+              }
+
               <img
                 src="${escapeHTML(image)}"
                 alt="${title}"
                 loading="lazy"
-                onerror="this.onerror=null;this.src='https://placehold.co/400x400/f6f6f6/777?text=Product';"
+                onerror="
+                  this.onerror=null;
+                  this.src='https://placehold.co/400x400/f6f6f6/777?text=Product';
+                "
               >
+
             </div>
+
             <div class="product-info">
-              <div class="product-category">${category}</div>
-              <h3 class="product-title">${title}</h3>
-              <p class="product-description">${description}</p>
+
+              <div class="product-category">
+                ${category.replace(/-/g, " ")}
+              </div>
+
+              <h3 class="product-title">
+                ${title}
+              </h3>
+
+              <p class="product-description">
+                ${description}
+              </p>
+
               <div class="product-rating">
-                <i class="ph-fill ph-star"></i>
-                <span>${rating ? rating.toFixed(1) : "No rating"}</span>
+                <i class="ph-fill ph-star" aria-hidden="true"></i>
+                <span>
+                  ${rating ? rating.toFixed(1) : "No rating"}
+                </span>
               </div>
+
               <div class="product-bottom">
-                <span class="product-price">${formatPrice(product.price)}</span>
-                <button class="add-button" type="button" aria-label="Add ${title} to cart" data-product-id="${Number(product.id)}" title="Add to cart">
-                  <i class="ph ph-plus"></i>
+
+                <span class="product-price">
+                  ${formatPrice(product.price)}
+                </span>
+
+                <button
+                  class="add-button"
+                  type="button"
+                  aria-label="Add ${title} to cart"
+                  data-product-id="${id}"
+                  title="Add to cart"
+                >
+                  <i class="ph ph-plus" aria-hidden="true"></i>
                 </button>
+
               </div>
+
             </div>
-          </article>`;
+
+          </article>
+        `;
       }).join("");
 
       productGrid.querySelectorAll(".add-button").forEach(button => {
         button.addEventListener("click", () => {
-          const product = products.find(item => item.id === Number(button.dataset.productId));
+          const product = products.find(
+            item => Number(item.id) ===
+              Number(button.dataset.productId)
+          );
+
           if (!product) return;
 
-          try {
-            const existing = JSON.parse(localStorage.getItem("shoppy_cart") || "[]");
-            const cart = Array.isArray(existing) ? existing : [];
-            const item = cart.find(entry => entry.id === product.id);
+          if (addToCart(product)) {
+            button.classList.add("added");
+            button.innerHTML =
+              '<i class="ph ph-check" aria-hidden="true"></i>';
 
-            if (item) {
-              item.quantity = (Number(item.quantity) || 1) + 1;
-            } else {
-              cart.push({
-                id: product.id,
-                title: product.title,
-                price: product.price,
-                thumbnail: product.thumbnail || product.images?.[0] || "",
-                quantity: 1
-              });
-            }
-
-            localStorage.setItem("shoppy_cart", JSON.stringify(cart));
-            button.innerHTML = '<i class="ph ph-check"></i>';
             button.setAttribute("aria-label", "Added to cart");
+
             setTimeout(() => {
-              button.innerHTML = '<i class="ph ph-plus"></i>';
-              button.setAttribute("aria-label", `Add ${product.title} to cart`);
+              if (!button.isConnected) return;
+
+              button.classList.remove("added");
+              button.innerHTML =
+                '<i class="ph ph-plus" aria-hidden="true"></i>';
+
+              button.setAttribute(
+                "aria-label",
+                `Add ${product.title} to cart`
+              );
             }, 1000);
-          } catch {
-            alert("Cart save nahi ho paya. Browser storage check karein.");
           }
         });
       });
     }
 
+    /* RENDER CATEGORIES */
+
     function renderCategories(products) {
-      const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
+      const categories = [
+        ...new Set(
+          products
+            .map(product => product.category)
+            .filter(Boolean)
+        )
+      ].sort();
 
       categoriesEl.innerHTML = `
-        <button class="category-btn ${currentCategory ? "" : "active"}" data-category="">All Products</button>
+        <button
+          class="category-btn ${currentCategory ? "" : "active"}"
+          data-category=""
+          type="button"
+        >
+          All Products
+        </button>
+
         ${categories.map(category => `
-          <button class="category-btn ${currentCategory === category ? "active" : ""}"
-            data-category="${escapeHTML(category)}">${escapeHTML(category.replace(/-/g, " "))}</button>
+          <button
+            class="category-btn ${
+              currentCategory === category ? "active" : ""
+            }"
+            data-category="${escapeHTML(category)}"
+            type="button"
+          >
+            ${escapeHTML(category.replace(/-/g, " "))}
+          </button>
         `).join("")}
       `;
 
-      categoriesEl.querySelectorAll(".category-btn").forEach(button => {
-        button.addEventListener("click", () => {
-          currentCategory = button.dataset.category || "";
-          loadProducts();
+      categoriesEl
+        .querySelectorAll(".category-btn")
+        .forEach(button => {
+          button.addEventListener("click", () => {
+            currentCategory = button.dataset.category || "";
+            currentSearch = "";
+            searchInput.value = "";
+
+            loadProducts();
+          });
         });
-      });
     }
 
-async function loadProducts() {
-  productGrid.innerHTML =
-    '<div class="status">Loading products...</div>';
+    /* LOAD PRODUCTS FROM BACKEND API */
 
-  productCount.textContent = "";
-
-  productsHeading.textContent = currentSearch
-    ? "Search Results"
-    : currentCategory
-      ? currentCategory
-          .replace(/-/g, " ")
-          .replace(/\b\w/g, c => c.toUpperCase())
-      : "Popular Products";
-
-  const params = new URLSearchParams({ limit: "24" });
-
-  if (currentSearch) {
-    params.set("search", currentSearch);
-  } else if (currentCategory) {
-    params.set("category", currentCategory);
-  }
-
-  try {
-    const response = await fetch(
-      `/api/products?${params.toString()}`,
-      {
-        method: "GET",
-        headers: { Accept: "application/json" },
-        credentials: "same-origin",
-        cache: "no-store"
+    async function loadProducts() {
+      if (requestController) {
+        requestController.abort();
       }
-    );
 
-    // Read response as text first, so HTML errors don't
-    // cause "Unexpected token" JSON parsing errors.
-    const responseText = await response.text();
-    const contentType =
-      response.headers.get("content-type") || "";
+      requestController = new AbortController();
 
-    if (!contentType.includes("application/json")) {
-      console.error(
-        "Non-JSON API response:",
-        response.status,
-        responseText.slice(0, 500)
-      );
+      const signal = requestController.signal;
 
-      throw new Error(
-        `API JSON nahi de rahi (HTTP ${response.status}). ` +
-        "Vercel par api/products.js ka path aur deployment check karein."
-      );
+      productGrid.setAttribute("aria-busy", "true");
+
+      productGrid.innerHTML = `
+        <div class="status">
+          Loading products...
+        </div>
+      `;
+
+      productCount.textContent = "";
+
+      productsHeading.textContent = currentSearch
+        ? "Search Results"
+        : currentCategory
+          ? currentCategory
+              .replace(/-/g, " ")
+              .replace(/\b\w/g, char => char.toUpperCase())
+          : "Popular Products";
+
+      const params = new URLSearchParams({
+        limit: "24"
+      });
+
+      if (currentSearch) {
+        params.set("search", currentSearch);
+      } else if (currentCategory) {
+        params.set("category", currentCategory);
+      }
+
+      try {
+        const response = await fetch(
+          `/api/products?${params.toString()}`,
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json"
+            },
+            credentials: "same-origin",
+            cache: "no-store",
+            signal
+          }
+        );
+
+        const responseText = await response.text();
+
+        if (signal.aborted) return;
+
+        const contentType =
+          response.headers.get("content-type") || "";
+
+        if (!contentType.includes("application/json")) {
+          console.error(
+            "API returned non-JSON response:",
+            response.status,
+            responseText.slice(0, 500)
+          );
+
+          throw new Error(
+            `API JSON nahi de rahi (HTTP ${response.status}). ` +
+            "Vercel par api/products.js ka path aur deployment check karein."
+          );
+        }
+
+        let data;
+
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          throw new Error(
+            "Products API ka response valid JSON nahi hai."
+          );
+        }
+
+        if (
+          !response.ok ||
+          data.success !== true ||
+          !Array.isArray(data.products)
+        ) {
+          throw new Error(
+            data.message ||
+            `Products load nahi hue (HTTP ${response.status}).`
+          );
+        }
+
+        allProducts = data.products;
+
+        /*
+          Categories are generated from the full catalog
+          when loading the default product list.
+        */
+
+        if (!currentSearch && !currentCategory) {
+          renderCategories(allProducts);
+        }
+
+        renderProducts(allProducts);
+
+      } catch (error) {
+        if (error.name === "AbortError") return;
+
+        console.error("Products loading error:", error);
+
+        showError(
+          error.message ||
+          "Products load nahi ho paaye. Dobara try karein."
+        );
+      }
     }
 
-    let data;
+    /* SEARCH */
 
-    try {
-      data = JSON.parse(responseText);
-    } catch {
-      throw new Error("Products API ka JSON response invalid hai.");
-    }
+    document
+      .getElementById("searchForm")
+      .addEventListener("submit", event => {
+        event.preventDefault();
 
-    if (
-      !response.ok ||
-      !data.success ||
-      !Array.isArray(data.products)
-    ) {
-      throw new Error(
-        data.message || `Products load nahi hue (HTTP ${response.status}).`
-      );
-    }
+        currentSearch = searchInput.value.trim();
+        currentCategory = "";
 
-    allProducts = data.products;
-
-    // Categories should come from the full catalog,
-    // not only from the currently filtered products.
-    if (!currentSearch && !currentCategory) {
-      renderCategories(allProducts);
-    }
-
-    renderProducts(allProducts);
-  } catch (error) {
-    console.error("Load products error:", error);
-
-    showError(
-      error.message || "Products load nahi ho paaye. Dobara try karein."
-    );
-  }
-}
-
-
-    document.getElementById("searchForm").addEventListener("submit", event => {
-      event.preventDefault();
-      currentSearch = searchInput.value.trim();
-      currentCategory = "";
-      loadProducts();
-    });
+        loadProducts();
+      });
 
     searchInput.addEventListener("search", () => {
       if (!searchInput.value.trim()) {
         currentSearch = "";
         currentCategory = "";
+
         loadProducts();
       }
     });
 
-    document.getElementById("shopNow").addEventListener("click", () => {
-      document.getElementById("productsSection").scrollIntoView({
-        behavior: "smooth"
+    /* EXPLORE PRODUCTS BUTTON */
+
+    document
+      .getElementById("shopNow")
+      .addEventListener("click", () => {
+        document
+          .getElementById("productsSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
       });
-    });
+
+    /* INITIAL LOAD */
 
     loadProducts();
   </script>
+
 </body>
 </html>
