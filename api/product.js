@@ -2,13 +2,19 @@
 const ALLOWED_LIMITS = new Set([12, 24, 36, 48]);
 
 module.exports = async function handler(req, res) {
-  res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=600");
+  res.setHeader(
+    "Cache-Control",
+    "s-maxage=300, stale-while-revalidate=600"
+  );
+
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
 
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
+
     return res.status(405).json({
       success: false,
-      message: "Method not allowed."
+      message: "Only GET requests are allowed."
     });
   }
 
@@ -24,33 +30,45 @@ module.exports = async function handler(req, res) {
       ? req.query.category.trim().toLowerCase().slice(0, 80)
       : "";
 
-    const endpoint = search
-      ? `https://dummyjson.com/products/search?q=${encodeURIComponent(search)}&limit=${limit}`
-      : category
-        ? `https://dummyjson.com/products/category/${encodeURIComponent(category)}?limit=${limit}`
-        : `https://dummyjson.com/products?limit=${limit}`;
+    let endpoint = "https://dummyjson.com/products";
+
+    if (search) {
+      endpoint += `/search?q=${encodeURIComponent(search)}&limit=${limit}`;
+    } else if (category) {
+      endpoint += `/category/${encodeURIComponent(category)}?limit=${limit}`;
+    } else {
+      endpoint += `?limit=${limit}`;
+    }
 
     const upstream = await fetch(endpoint, {
-      headers: { Accept: "application/json" }
+      headers: {
+        Accept: "application/json"
+      },
+      signal: AbortSignal.timeout(12000)
     });
 
     if (!upstream.ok) {
-      throw new Error(`Products provider returned ${upstream.status}`);
+      return res.status(502).json({
+        success: false,
+        message: "Product provider se data nahi mila. Dobara try karein."
+      });
     }
 
     const result = await upstream.json();
 
     const products = Array.isArray(result.products)
       ? result.products.map(product => ({
-          id: product.id,
-          title: product.title || "Untitled product",
-          description: product.description || "",
+          id: Number(product.id),
+          title: String(product.title || "Untitled product"),
+          description: String(product.description || ""),
           price: Number(product.price) || 0,
           discountPercentage: Number(product.discountPercentage) || 0,
           rating: Number(product.rating) || 0,
-          category: product.category || "other",
-          thumbnail: product.thumbnail || "",
-          images: Array.isArray(product.images) ? product.images : []
+          category: String(product.category || "other"),
+          thumbnail: String(product.thumbnail || ""),
+          images: Array.isArray(product.images)
+            ? product.images.map(String)
+            : []
         }))
       : [];
 
@@ -64,7 +82,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(502).json({
       success: false,
-      message: "Products abhi load nahi ho pa rahe. Thodi der baad try karein."
+      message: "Products abhi load nahi ho rahe. Thodi der baad try karein."
     });
   }
 };
