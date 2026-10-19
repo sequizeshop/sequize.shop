@@ -1,18 +1,22 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
+
   <title>Add Delivery Address — Shoppy</title>
 
-  <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-  <link rel="apple-touch-icon" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+  <link rel="icon" type="image/png"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+  <link rel="apple-touch-icon"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
@@ -25,7 +29,11 @@
       --success: #15803d;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       font-family: "Inter", sans-serif;
@@ -35,16 +43,32 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    a { color: inherit; text-decoration: none; }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; }
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
 
-    button:focus-visible, a:focus-visible, input:focus-visible,
-    select:focus-visible, textarea:focus-visible {
+    button {
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
       outline: 2px solid #555;
       outline-offset: 3px;
     }
+
+    /* NAVBAR */
 
     .navbar {
       min-height: 76px;
@@ -67,7 +91,11 @@
       display: block;
     }
 
-    .nav-actions { display: flex; align-items: center; gap: 22px; }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
 
     .nav-icon {
       width: 32px;
@@ -78,15 +106,21 @@
       font-size: 23px;
     }
 
-    .nav-icon:hover { opacity: .6; }
+    .nav-icon:hover {
+      opacity: .6;
+    }
+
+    /* MAIN */
 
     .container {
       width: 86%;
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 45px auto 70px;
     }
 
-    .page-heading { margin-bottom: 30px; }
+    .page-heading {
+      margin-bottom: 30px;
+    }
 
     .page-heading h1 {
       font-size: clamp(28px, 4vw, 38px);
@@ -102,7 +136,12 @@
       line-height: 1.7;
     }
 
-    .address-form { width: 100%; max-width: 850px; }
+    /* FORM */
+
+    .address-form {
+      width: 100%;
+      max-width: 1250px;
+    }
 
     .form-section + .form-section {
       margin-top: 30px;
@@ -110,7 +149,9 @@
       border-top: 1px solid var(--border);
     }
 
-    .section-title { margin-bottom: 22px; }
+    .section-title {
+      margin-bottom: 22px;
+    }
 
     .section-title h2 {
       font-size: 17px;
@@ -125,14 +166,26 @@
       line-height: 1.7;
     }
 
+    /* THREE COLUMNS ON LAPTOP/DESKTOP */
+
     .fields-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 21px 18px;
+      align-items: start;
     }
 
-    .field { min-width: 0; }
-    .field.full { grid-column: 1 / -1; }
+    .field {
+      min-width: 0;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field.span-two {
+      grid-column: span 2;
+    }
 
     .field label {
       display: block;
@@ -142,7 +195,10 @@
       font-weight: 600;
     }
 
-    .required { color: var(--danger); margin-left: 2px; }
+    .required {
+      color: var(--danger);
+      margin-left: 2px;
+    }
 
     .optional {
       color: #999;
@@ -151,10 +207,14 @@
       margin-left: 4px;
     }
 
+    /* INPUTS */
+
     .field input:not([type="checkbox"]):not([type="radio"]),
-    .field select, .field textarea {
+    .field select,
+    .field textarea {
       display: block;
       width: 100%;
+      min-width: 0;
       min-height: 47px;
       padding: 13px 14px;
       border: 1px solid #dcdcdc;
@@ -172,20 +232,27 @@
       line-height: 1.7;
     }
 
-    .field input::placeholder, .field textarea::placeholder { color: #999; }
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: #999;
+    }
 
-    .field input:focus, .field select:focus, .field textarea:focus {
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
       border-color: #777;
       box-shadow: 0 0 0 2px rgba(17, 17, 17, .04);
     }
 
-    .field input[readonly] { background: var(--light); }
+    .field input[readonly] {
+      background: var(--light);
+    }
 
-    .field-help, .location-note {
+    .field-help {
       margin-top: 7px;
       color: var(--gray);
       font-size: 11px;
-      line-height: 1.7;
+      line-height: 1.6;
     }
 
     .field-error {
@@ -195,23 +262,31 @@
       font-size: 11px;
     }
 
-    .field.invalid input, .field.invalid select, .field.invalid textarea {
+    .field.invalid input,
+    .field.invalid select,
+    .field.invalid textarea {
       border-color: var(--danger);
     }
 
-    .field.invalid .field-error { display: block; }
+    .field.invalid .field-error {
+      display: block;
+    }
+
+    /* PIN CODE */
 
     .pincode-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .pincode-row input { min-width: 0; }
+    .pincode-row input {
+      min-width: 0;
+    }
 
-    .lookup-button, .location-button {
-      min-height: 45px;
-      padding: 12px 16px;
+    .lookup-button {
+      min-height: 47px;
+      padding: 12px 15px;
       border: 1px solid var(--black);
       border-radius: 8px;
       background: #fff;
@@ -221,9 +296,11 @@
       white-space: nowrap;
     }
 
-    .lookup-button:hover, .location-button:hover { background: var(--light); }
+    .lookup-button:hover {
+      background: var(--light);
+    }
 
-    .lookup-button:disabled, .location-button:disabled {
+    .lookup-button:disabled {
       opacity: .6;
       cursor: wait;
     }
@@ -235,13 +312,70 @@
       line-height: 1.6;
     }
 
-    .pincode-status.show { display: block; }
-    .pincode-status.loading { color: var(--gray); }
-    .pincode-status.success { color: var(--success); }
-    .pincode-status.error { color: var(--danger); }
+    .pincode-status.show {
+      display: block;
+    }
 
-    .address-types { display: flex; flex-wrap: wrap; gap: 10px; }
-    .address-type { position: relative; }
+    .pincode-status.loading {
+      color: var(--gray);
+    }
+
+    .pincode-status.success {
+      color: var(--success);
+    }
+
+    .pincode-status.error {
+      color: var(--danger);
+    }
+
+    /* CURRENT LOCATION */
+
+    .location-button {
+      min-height: 45px;
+      padding: 12px 16px;
+      border: 1px solid var(--black);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--black);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .location-button:hover {
+      background: var(--light);
+    }
+
+    .location-button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .location-note {
+      margin-top: 9px;
+      color: var(--gray);
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .location-note.error {
+      color: var(--danger);
+    }
+
+    .location-note.success {
+      color: var(--success);
+    }
+
+    /* ADDRESS TYPE */
+
+    .address-types {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .address-type {
+      position: relative;
+    }
 
     .address-type input {
       position: absolute;
@@ -277,6 +411,8 @@
       outline-offset: 3px;
     }
 
+    /* DEFAULT ADDRESS */
+
     .default-option {
       display: flex;
       align-items: flex-start;
@@ -293,7 +429,11 @@
       accent-color: var(--black);
     }
 
-    .default-option strong { display: block; font-size: 12px; font-weight: 700; }
+    .default-option strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+    }
 
     .default-option small {
       display: block;
@@ -303,7 +443,14 @@
       line-height: 1.7;
     }
 
-    .form-actions { display: flex; align-items: center; gap: 12px; margin-top: 30px; }
+    /* ACTION BUTTONS */
+
+    .form-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 30px;
+    }
 
     .btn {
       min-height: 46px;
@@ -325,7 +472,9 @@
       color: #fff;
     }
 
-    .btn-primary:hover { background: #333; }
+    .btn-primary:hover {
+      background: #333;
+    }
 
     .btn-secondary {
       border: 1px solid var(--border);
@@ -333,9 +482,14 @@
       color: var(--black);
     }
 
-    .btn-secondary:hover { background: var(--light); }
+    .btn-secondary:hover {
+      background: var(--light);
+    }
 
-    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
 
     .form-message {
       display: none;
@@ -346,9 +500,21 @@
       line-height: 1.7;
     }
 
-    .form-message.show { display: block; }
-    .form-message.error { background: #fef2f2; color: var(--danger); }
-    .form-message.success { background: #f0fdf4; color: var(--success); }
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      background: #fef2f2;
+      color: var(--danger);
+    }
+
+    .form-message.success {
+      background: #f0fdf4;
+      color: var(--success);
+    }
+
+    /* FOOTER */
 
     .footer {
       border-top: 1px solid var(--border);
@@ -359,6 +525,8 @@
       color: #888;
       font-size: 11px;
     }
+
+    /* LOADING DIALOG */
 
     .dialog-overlay {
       display: none;
@@ -371,7 +539,9 @@
       background: rgba(0, 0, 0, .45);
     }
 
-    .dialog-overlay.show { display: flex; }
+    .dialog-overlay.show {
+      display: flex;
+    }
 
     .dialog {
       width: 100%;
@@ -393,31 +563,114 @@
       animation: spin .8s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
-    .dialog h3 { font-size: 15px; margin-bottom: 8px; }
+    .dialog h3 {
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
 
-    .dialog p { color: var(--gray); font-size: 12px; line-height: 1.7; }
+    .dialog p {
+      color: var(--gray);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    @media (min-width: 1500px) {
+      .fields-grid {
+        gap: 23px 22px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        width: 90%;
+      }
+
+      .fields-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .field.span-two {
+        grid-column: 1 / -1;
+      }
+    }
 
     @media (max-width: 600px) {
-      .navbar { min-height: 66px; padding: 0 5%; }
-      .brand img { width: 40px; height: 40px; }
-      .nav-actions { gap: 12px; }
-      .container { width: 90%; margin-top: 30px; margin-bottom: 45px; }
-      .page-heading { margin-bottom: 25px; }
-      .fields-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; }
-      .field.full { grid-column: auto; }
-      .form-section + .form-section { margin-top: 25px; padding-top: 23px; }
-      .section-title { margin-bottom: 18px; }
-      .pincode-row { grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
-      .lookup-button { padding: 12px; }
-      .form-actions { flex-direction: column-reverse; align-items: stretch; }
-      .btn-primary, .btn-secondary { width: 100%; }
-      .footer { padding: 22px 5%; flex-wrap: wrap; }
+      .navbar {
+        min-height: 66px;
+        padding: 0 5%;
+      }
+
+      .brand img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .nav-actions {
+        gap: 12px;
+      }
+
+      .container {
+        width: 90%;
+        margin-top: 30px;
+        margin-bottom: 45px;
+      }
+
+      .page-heading {
+        margin-bottom: 25px;
+      }
+
+      .fields-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .field.full,
+      .field.span-two {
+        grid-column: auto;
+      }
+
+      .form-section + .form-section {
+        margin-top: 25px;
+        padding-top: 23px;
+      }
+
+      .section-title {
+        margin-bottom: 18px;
+      }
+
+      .pincode-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 7px;
+      }
+
+      .lookup-button {
+        padding: 12px;
+      }
+
+      .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+      }
+
+      .footer {
+        padding: 22px 5%;
+        flex-wrap: wrap;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
+      *,
+      *::before,
+      *::after {
         animation-duration: .01ms !important;
         transition-duration: .01ms !important;
       }
@@ -426,18 +679,24 @@
 </head>
 
 <body>
+
   <header class="navbar">
     <a href="/home.html" class="brand" aria-label="Shoppy home">
-      <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo">
+      <img
+        src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+        alt="Shoppy logo"
+      >
     </a>
 
     <nav class="nav-actions" aria-label="Main navigation">
       <a class="nav-icon" href="/home.html" aria-label="Home" title="Home">
         <i class="ph ph-house" aria-hidden="true"></i>
       </a>
+
       <a class="nav-icon" href="/cart.html" aria-label="Cart" title="Cart">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
       </a>
+
       <a class="nav-icon" href="/profile.html" aria-label="My profile" title="My profile">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </a>
@@ -445,12 +704,16 @@
   </header>
 
   <main class="container">
+
     <div class="page-heading">
       <h1>Add delivery address</h1>
       <p>Enter your details to help us deliver your order to the right place.</p>
     </div>
 
     <form id="addressForm" class="address-form" novalidate>
+
+      <!-- CONTACT INFORMATION -->
+
       <section class="form-section">
         <div class="section-title">
           <h2>Contact information</h2>
@@ -458,25 +721,55 @@
         </div>
 
         <div class="fields-grid">
-          <div class="field full" id="fullNameField">
+
+          <div class="field" id="fullNameField">
             <label for="fullName">Full name <span class="required">*</span></label>
-            <input type="text" id="fullName" name="fullName" placeholder="Enter recipient's full name" autocomplete="name" maxlength="100" required>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              placeholder="Enter recipient's full name"
+              autocomplete="name"
+              maxlength="100"
+              required
+            >
             <div class="field-error">Please enter your full name.</div>
           </div>
 
           <div class="field" id="phoneField">
             <label for="phone">Mobile number <span class="required">*</span></label>
-            <input type="tel" id="phone" name="phone" placeholder="10-digit mobile number" inputmode="numeric" autocomplete="tel-national" maxlength="10" required>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="10-digit mobile number"
+              inputmode="numeric"
+              autocomplete="tel-national"
+              maxlength="10"
+              required
+            >
             <div class="field-error">Enter a valid 10-digit mobile number.</div>
           </div>
 
           <div class="field" id="alternatePhoneField">
-            <label for="alternatePhone">Alternate number <span class="optional">Optional</span></label>
-            <input type="tel" id="alternatePhone" name="alternatePhone" placeholder="Alternate mobile number" inputmode="numeric" maxlength="10">
+            <label for="alternatePhone">
+              Alternate number <span class="optional">Optional</span>
+            </label>
+            <input
+              type="tel"
+              id="alternatePhone"
+              name="alternatePhone"
+              placeholder="Alternate mobile number"
+              inputmode="numeric"
+              maxlength="10"
+            >
             <div class="field-error">Enter a valid 10-digit alternate number.</div>
           </div>
+
         </div>
       </section>
+
+      <!-- ADDRESS DETAILS -->
 
       <section class="form-section">
         <div class="section-title">
@@ -485,17 +778,38 @@
         </div>
 
         <div class="fields-grid">
+
           <div class="field full">
-            <button type="button" class="location-button" id="currentLocationBtn">Use My Current Location</button>
-            <p class="location-note" id="locationNote">Allow location access when prompted. Available address details will be filled automatically.</p>
+            <button
+              type="button"
+              class="location-button"
+              id="currentLocationBtn"
+            >Use My Current Location</button>
+
+            <p class="location-note" id="locationNote">
+              Allow precise location access when prompted. Available address details will be filled automatically.
+            </p>
           </div>
 
           <div class="field" id="pincodeField">
             <label for="pincode">PIN code <span class="required">*</span></label>
+
             <div class="pincode-row">
-              <input type="text" id="pincode" name="pincode" placeholder="6-digit PIN code" inputmode="numeric" autocomplete="postal-code" maxlength="6" required>
-              <button type="button" id="lookupPincodeBtn" class="lookup-button">Check</button>
+              <input
+                type="text"
+                id="pincode"
+                name="pincode"
+                placeholder="6-digit PIN code"
+                inputmode="numeric"
+                autocomplete="postal-code"
+                maxlength="6"
+                required
+              >
+              <button type="button" id="lookupPincodeBtn" class="lookup-button">
+                Check
+              </button>
             </div>
+
             <div class="pincode-status" id="pincodeStatus" role="status" aria-live="polite"></div>
             <div class="field-error">Enter a valid 6-digit Indian PIN code.</div>
           </div>
@@ -508,42 +822,92 @@
             <div class="field-help">Available options appear after PIN code lookup.</div>
           </div>
 
-          <div class="field full" id="houseNumberField">
+          <div class="field">
             <label for="houseNumber">House / Flat / Building number <span class="required">*</span></label>
-            <input type="text" id="houseNumber" name="houseNumber" placeholder="e.g. Flat 101, House No. 24" autocomplete="address-line1" maxlength="150" required>
+            <input
+              type="text"
+              id="houseNumber"
+              name="houseNumber"
+              placeholder="e.g. Flat 101, House No. 24"
+              autocomplete="address-line1"
+              maxlength="150"
+              required
+            >
             <div class="field-error">Please enter your house or flat number.</div>
           </div>
 
-          <div class="field full">
+          <div class="field">
             <label for="building">Building / Apartment name <span class="optional">Optional</span></label>
-            <input type="text" id="building" name="building" placeholder="e.g. Sunshine Apartments" maxlength="150">
+            <input
+              type="text"
+              id="building"
+              name="building"
+              placeholder="e.g. Sunshine Apartments"
+              maxlength="150"
+            >
           </div>
 
-          <div class="field full" id="areaField">
+          <div class="field">
             <label for="area">Street / Area / Colony <span class="required">*</span></label>
-            <input type="text" id="area" name="area" placeholder="Enter street, area or colony" autocomplete="address-line2" maxlength="200" required>
+            <input
+              type="text"
+              id="area"
+              name="area"
+              placeholder="Enter street, area or colony"
+              autocomplete="address-line2"
+              maxlength="200"
+              required
+            >
             <div class="field-error">Please enter your street, area or colony.</div>
           </div>
 
-          <div class="field full">
+          <div class="field">
             <label for="landmark">Landmark <span class="optional">Optional</span></label>
-            <input type="text" id="landmark" name="landmark" placeholder="e.g. Near City Mall" maxlength="150">
+            <input
+              type="text"
+              id="landmark"
+              name="landmark"
+              placeholder="e.g. Near City Mall"
+              maxlength="150"
+            >
           </div>
 
           <div class="field" id="cityField">
             <label for="city">City / Town / Village <span class="required">*</span></label>
-            <input type="text" id="city" name="city" placeholder="Enter city or village" autocomplete="address-level2" maxlength="100" required>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              placeholder="Enter city or village"
+              autocomplete="address-level2"
+              maxlength="100"
+              required
+            >
             <div class="field-error">Please enter your city or village.</div>
           </div>
 
           <div class="field">
             <label for="district">District <span class="optional">Optional</span></label>
-            <input type="text" id="district" name="district" placeholder="Enter district" maxlength="100">
+            <input
+              type="text"
+              id="district"
+              name="district"
+              placeholder="Enter district"
+              maxlength="100"
+            >
           </div>
 
           <div class="field" id="stateField">
             <label for="state">State / Union Territory <span class="required">*</span></label>
-            <input type="text" id="state" name="state" placeholder="Enter state" autocomplete="address-level1" maxlength="100" required>
+            <input
+              type="text"
+              id="state"
+              name="state"
+              placeholder="Enter state"
+              autocomplete="address-level1"
+              maxlength="100"
+              required
+            >
             <div class="field-error">Please enter your state.</div>
           </div>
 
@@ -555,11 +919,21 @@
           </div>
 
           <div class="field full">
-            <label for="deliveryInstructions">Delivery instructions <span class="optional">Optional</span></label>
-            <textarea id="deliveryInstructions" name="deliveryInstructions" placeholder="e.g. Call before delivery, ring the doorbell..." maxlength="500"></textarea>
+            <label for="deliveryInstructions">
+              Delivery instructions <span class="optional">Optional</span>
+            </label>
+            <textarea
+              id="deliveryInstructions"
+              name="deliveryInstructions"
+              placeholder="e.g. Call before delivery, ring the doorbell..."
+              maxlength="500"
+            ></textarea>
           </div>
+
         </div>
       </section>
+
+      <!-- ADDRESS TYPE -->
 
       <section class="form-section">
         <div class="section-title">
@@ -572,10 +946,12 @@
             <input type="radio" id="typeHome" name="addressType" value="Home" checked>
             <label for="typeHome">Home</label>
           </div>
+
           <div class="address-type">
             <input type="radio" id="typeWork" name="addressType" value="Work">
             <label for="typeWork">Work</label>
           </div>
+
           <div class="address-type">
             <input type="radio" id="typeOther" name="addressType" value="Other">
             <label for="typeOther">Other</label>
@@ -597,6 +973,7 @@
         <a href="/addresses.html" class="btn btn-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary" id="saveAddressBtn">Save Address</button>
       </div>
+
     </form>
   </main>
 
@@ -605,7 +982,16 @@
     <span>Your shopping, all in one place.</span>
   </footer>
 
-  <div class="dialog-overlay" id="loadingDialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+  <!-- LOADING DIALOG -->
+
+  <div
+    class="dialog-overlay"
+    id="loadingDialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="dialogTitle"
+    aria-hidden="true"
+  >
     <div class="dialog">
       <div class="spinner"></div>
       <h3 id="dialogTitle">Saving your address</h3>
@@ -634,8 +1020,49 @@
     let pincodeRequestTimer = null;
     let currentPincodeRequest = 0;
     let saving = false;
+    let redirectTimer = null;
 
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    /*
+      Hide dialog on browser Back/Forward and when the page
+      is restored from the browser's back-forward cache.
+    */
+
+    function hideLoadingDialog() {
+      loadingDialog.classList.remove("show");
+      loadingDialog.setAttribute("aria-hidden", "true");
+    }
+
+    function showLoadingDialog(title, description) {
+      document.getElementById("dialogTitle").textContent = title;
+      document.getElementById("dialogDescription").textContent = description;
+
+      loadingDialog.classList.add("show");
+      loadingDialog.setAttribute("aria-hidden", "false");
+    }
+
+    window.addEventListener("pageshow", function () {
+      hideLoadingDialog();
+
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+        redirectTimer = null;
+      }
+
+      saving = false;
+      saveAddressBtn.disabled = false;
+      saveAddressBtn.textContent = "Save Address";
+    });
+
+    window.addEventListener("pagehide", function () {
+      hideLoadingDialog();
+
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+        redirectTimer = null;
+      }
+    });
 
     function getValue(id) {
       return document.getElementById(id).value.trim();
@@ -649,6 +1076,7 @@
 
       const cleanValue = String(value).trim();
       if (!cleanValue) return;
+
       if (!overwrite && input.value.trim()) return;
 
       input.value = cleanValue;
@@ -700,7 +1128,9 @@
       clearFormMessage();
     });
 
-    /* PIN CODE LOOKUP */
+    /*
+      PIN CODE LOOKUP
+    */
 
     async function lookupPincode(pincode) {
       const requestId = ++currentPincodeRequest;
@@ -713,16 +1143,20 @@
       if (!/^\d{6}$/.test(pincode)) {
         clearPincodeStatus();
         setFieldError("pincodeField", pincode.length > 0);
+
         if (pincode.length > 0) {
           showPincodeStatus("Enter a valid 6-digit Indian PIN code.", "error");
         }
+
         return;
       }
 
       setFieldError("pincodeField", false);
+
       pincodeRequestController = new AbortController();
       lookupPincodeBtn.disabled = true;
       lookupPincodeBtn.textContent = "Checking...";
+
       showPincodeStatus("Looking up PIN code details...", "loading");
 
       try {
@@ -736,6 +1170,7 @@
         );
 
         if (requestId !== currentPincodeRequest) return;
+
         if (!response.ok) {
           throw new Error(
             response.status === 429
@@ -782,6 +1217,7 @@
 
           option.dataset.district = office.district || "";
           option.dataset.state = office.state || "";
+
           postOfficeSelect.appendChild(option);
         });
 
@@ -797,15 +1233,18 @@
           "PIN code found. Select your post office and verify the address details.",
           "success"
         );
+
       } catch (error) {
         if (error.name === "AbortError") return;
         if (requestId !== currentPincodeRequest) return;
 
         console.error("PIN lookup error:", error);
+
         showPincodeStatus(
           error.message || "Could not retrieve PIN details. You can enter the address manually.",
           "error"
         );
+
       } finally {
         if (requestId === currentPincodeRequest) {
           pincodeRequestController = null;
@@ -817,6 +1256,7 @@
 
     pincodeInput.addEventListener("input", function () {
       this.value = this.value.replace(/\D/g, "").slice(0, 6);
+
       clearTimeout(pincodeRequestTimer);
       currentPincodeRequest++;
 
@@ -827,6 +1267,7 @@
 
       lookupPincodeBtn.disabled = false;
       lookupPincodeBtn.textContent = "Check";
+
       clearPincodeStatus();
 
       if (this.value.length === 6) {
@@ -853,17 +1294,30 @@
 
     postOfficeSelect.addEventListener("change", function () {
       const option = this.options[this.selectedIndex];
+
       if (!option || !option.value) return;
 
-      if (option.dataset.district) setValue("district", option.dataset.district);
-      if (option.dataset.state) setValue("state", option.dataset.state);
+      if (option.dataset.district) {
+        setValue("district", option.dataset.district);
+      }
+
+      if (option.dataset.state) {
+        setValue("state", option.dataset.state);
+      }
 
       if (!getValue("city") && option.dataset.district) {
         setValue("city", option.dataset.district);
       }
     });
 
-    /* CURRENT LOCATION */
+    /*
+      CURRENT LOCATION
+
+      1. Request a fresh, high-accuracy GPS position.
+      2. Retry with a less restrictive GPS request if needed.
+      3. Reverse-geocode the coordinates.
+      4. Fill as many address fields as the geocoder returns.
+    */
 
     function setLocationButtonLoading(loading) {
       currentLocationBtn.disabled = loading;
@@ -872,32 +1326,64 @@
         : "Use My Current Location";
     }
 
-    function updateLocationNote(message, isError = false) {
+    function updateLocationNote(message, type = "") {
       locationNote.textContent = message;
-      locationNote.style.color = isError ? "var(--danger)" : "var(--gray)";
+      locationNote.className = "location-note" + (type ? " " + type : "");
     }
 
-    function getBrowserPosition() {
+    function getPosition(options) {
       return new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
           reject(new Error("Your browser does not support location services."));
           return;
         }
 
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 60000
-        });
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
       });
+    }
+
+    async function getAccuratePosition() {
+      /*
+        First try: fresh high-accuracy position.
+        maximumAge: 0 avoids using an old cached GPS position.
+      */
+
+      try {
+        return await getPosition({
+          enableHighAccuracy: true,
+          timeout: 25000,
+          maximumAge: 0
+        });
+      } catch (firstError) {
+        /*
+          Retry once. This may help when high-accuracy GPS
+          is temporarily unavailable indoors.
+        */
+
+        if (firstError.code === 1) {
+          throw firstError;
+        }
+
+        updateLocationNote(
+          "Precise location is taking longer than expected. Trying again..."
+        );
+
+        return await getPosition({
+          enableHighAccuracy: false,
+          timeout: 20000,
+          maximumAge: 0
+        });
+      }
     }
 
     async function reverseGeocode(latitude, longitude) {
       const url = new URL("https://nominatim.openstreetmap.org/reverse");
+
       url.searchParams.set("format", "jsonv2");
-      url.searchParams.set("lat", latitude);
-      url.searchParams.set("lon", longitude);
+      url.searchParams.set("lat", String(latitude));
+      url.searchParams.set("lon", String(longitude));
       url.searchParams.set("addressdetails", "1");
+      url.searchParams.set("zoom", "18");
       url.searchParams.set("accept-language", "en");
 
       const response = await fetch(url.toString(), {
@@ -906,10 +1392,20 @@
       });
 
       if (!response.ok) {
-        throw new Error("We could not retrieve your address. Please enter it manually.");
+        throw new Error(
+          "GPS location was found, but the address lookup failed. Please enter your address manually."
+        );
       }
 
-      return response.json();
+      const data = await response.json();
+
+      if (!data || !data.address) {
+        throw new Error(
+          "GPS location was found, but no address details were returned."
+        );
+      }
+
+      return data;
     }
 
     function findCity(address) {
@@ -924,72 +1420,169 @@
     }
 
     function findArea(address) {
-      return address.suburb ||
-        address.neighbourhood ||
+      return address.neighbourhood ||
         address.residential ||
+        address.suburb ||
         address.quarter ||
         address.hamlet ||
         address.road ||
+        address.pedestrian ||
+        address.allotments ||
+        "";
+    }
+
+    function findDistrict(address) {
+      return address.state_district ||
+        address.district ||
+        address.county ||
+        address.city_district ||
+        "";
+    }
+
+    function findBuilding(address, data) {
+      return address.building ||
+        address.apartment ||
+        address.commercial ||
+        address.retail ||
+        address.tourism ||
+        (data && data.name) ||
+        "";
+    }
+
+    function findLandmark(address, data) {
+      return address.amenity ||
+        address.shop ||
+        address.leisure ||
+        address.historic ||
+        address.office ||
+        address.tourism ||
+        (data && data.name) ||
         "";
     }
 
     function fillLocationData(data) {
       const address = data.address || {};
 
-      setValue("houseNumber", address.house_number, false);
-      setValue("area", findArea(address), false);
-      setValue("landmark", address.amenity || "", false);
-      setValue("city", findCity(address), false);
-      setValue("district", address.county || address.state_district || "", false);
-      setValue("state", address.state || "", false);
-      setValue("pincode", address.postcode || "", false);
+      /*
+        The location lookup fills returned values.
+        Existing manually entered values are preserved
+        unless the returned data has a more specific value.
+      */
+
+      setValue("houseNumber", address.house_number || address.house_name || "", true);
+      setValue("building", findBuilding(address, data), true);
+      setValue("area", findArea(address), true);
+      setValue("landmark", findLandmark(address, data), true);
+      setValue("city", findCity(address), true);
+      setValue("district", findDistrict(address), true);
+      setValue("state", address.state || "", true);
+      setValue("pincode", (address.postcode || "").replace(/\D/g, "").slice(0, 6), true);
 
       if (address.country && address.country.toLowerCase() === "india") {
         document.getElementById("country").value = "India";
       }
 
+      /*
+        If the reverse-geocoded result has a postcode,
+        automatically look up post offices for that PIN code.
+      */
+
       const pincode = getValue("pincode");
-      if (/^\d{6}$/.test(pincode)) lookupPincode(pincode);
+
+      if (/^\d{6}$/.test(pincode)) {
+        clearTimeout(pincodeRequestTimer);
+        lookupPincode(pincode);
+      }
+
+      /*
+        The location provider may return a road, suburb or
+        neighbourhood, but may not return a house number.
+        Do not fabricate address information.
+      */
+
+      const filledFields = [
+        "houseNumber",
+        "building",
+        "area",
+        "city",
+        "district",
+        "state",
+        "pincode"
+      ].filter(id => getValue(id)).length;
 
       updateLocationNote(
-        data.display_name
-          ? "Location found. Check the filled address and add your house or flat number if missing."
-          : "Available location details filled. Please check your address."
+        "Location detected. " + filledFields +
+        " address fields have information. Please verify them and fill any missing house/flat details.",
+        "success"
       );
     }
 
     currentLocationBtn.addEventListener("click", async function () {
       clearFormMessage();
       setLocationButtonLoading(true);
-      updateLocationNote("Requesting location permission from your browser...");
+
+      updateLocationNote(
+        "Requesting a fresh location from your device. Please allow precise location access."
+      );
 
       try {
-        const position = await getBrowserPosition();
+        /*
+          Geolocation works on HTTPS or localhost.
+          If the user has denied permission, the browser
+          must be allowed to access location in its settings.
+        */
+
+        const position = await getAccuratePosition();
+
+        const accuracy = Number(position.coords.accuracy);
+
+        if (Number.isFinite(accuracy) && accuracy > 1000) {
+          updateLocationNote(
+            "Your device returned an approximate location (accuracy about " +
+            Math.round(accuracy) +
+            " metres). Trying to retrieve the available address details..."
+          );
+        } else {
+          updateLocationNote(
+            "GPS coordinates received. Retrieving address details..."
+          );
+        }
+
         const data = await reverseGeocode(
           position.coords.latitude,
           position.coords.longitude
         );
-        fillLocationData(data);
-      } catch (error) {
-        console.error("Location error:", error);
 
-        let message = error.message || "Could not retrieve your current location.";
+        fillLocationData(data);
+
+      } catch (error) {
+        console.error("Current location error:", error);
+
+        let message =
+          error.message ||
+          "Could not retrieve your current location. Please enter the address manually.";
 
         if (error.code === 1) {
-          message = "Location permission was denied. Allow location access in your browser settings or enter the address manually.";
+          message =
+            "Location permission denied. Enable location permission for this website and allow precise location, then try again.";
         } else if (error.code === 2) {
-          message = "Your location could not be determined. Please try again or enter the address manually.";
+          message =
+            "Your device could not determine its location. Turn on device Location/GPS and try again.";
         } else if (error.code === 3) {
-          message = "Location request timed out. Please try again.";
+          message =
+            "Location request timed out. Turn on GPS, move near a window or outdoors, and try again.";
         }
 
-        updateLocationNote(message, true);
+        updateLocationNote(message, "error");
+
       } finally {
         setLocationButtonLoading(false);
       }
     });
 
-    /* VALIDATION */
+    /*
+      VALIDATION
+    */
 
     function validateForm() {
       let valid = true;
@@ -1008,18 +1601,23 @@
       requiredFields.forEach(([inputId, fieldId]) => {
         const input = document.getElementById(inputId);
         const empty = !input.value.trim();
+
         setFieldError(fieldId, empty);
+
         if (empty) valid = false;
       });
 
-      const phone = getValue("phone");
-      if (!/^[6-9]\d{9}$/.test(phone)) {
+      if (!/^[6-9]\d{9}$/.test(getValue("phone"))) {
         setFieldError("phoneField", true);
         valid = false;
       }
 
       const alternatePhone = getValue("alternatePhone");
-      if (alternatePhone && !/^[6-9]\d{9}$/.test(alternatePhone)) {
+
+      if (
+        alternatePhone &&
+        !/^[6-9]\d{9}$/.test(alternatePhone)
+      ) {
         setFieldError("alternatePhoneField", true);
         valid = false;
       } else {
@@ -1041,7 +1639,9 @@
       return valid;
     }
 
-    /* API PAYLOAD */
+    /*
+      ADDRESS PAYLOAD
+    */
 
     function buildAddressPayload() {
       const selectedType = document.querySelector(
@@ -1068,7 +1668,9 @@
       };
     }
 
-    /* SAVE THROUGH /api/addresses */
+    /*
+      SAVE ADDRESS USING BACKEND API
+    */
 
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
@@ -1077,17 +1679,27 @@
 
       if (!validateForm()) {
         const firstInvalid = form.querySelector(".field.invalid input");
-        if (firstInvalid) firstInvalid.focus();
+
+        if (firstInvalid) {
+          firstInvalid.focus();
+          firstInvalid.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }
+
         return;
       }
 
       saving = true;
+
       saveAddressBtn.disabled = true;
       saveAddressBtn.textContent = "Saving...";
-      loadingDialog.classList.add("show");
-      document.getElementById("dialogTitle").textContent = "Saving your address";
-      document.getElementById("dialogDescription").textContent =
-        "Please wait while your address is saved securely.";
+
+      showLoadingDialog(
+        "Saving your address",
+        "Please wait while your address is saved securely."
+      );
 
       try {
         const response = await fetch(API_URL, {
@@ -1109,20 +1721,33 @@
         }
 
         if (response.status === 401) {
-          loadingDialog.classList.remove("show");
-          showFormMessage("Please log in before saving your address.", "error");
+          hideLoadingDialog();
 
-          setTimeout(() => {
+          showFormMessage(
+            "Please log in before saving your address.",
+            "error"
+          );
+
+          saving = false;
+          saveAddressBtn.disabled = false;
+          saveAddressBtn.textContent = "Save Address";
+
+          redirectTimer = setTimeout(function () {
+            redirectTimer = null;
+
             window.location.href =
               "/login.html?redirect=" +
               encodeURIComponent("/address.html");
           }, 900);
+
           return;
         }
 
         if (!response.ok || result.success !== true) {
           if (response.status === 404) {
-            throw new Error("Address API nahi mila. Check karein ki api/addresses.js deploy ho chuki hai.");
+            throw new Error(
+              "Address API nahi mila. Check karein ki api/addresses.js deploy ho chuki hai."
+            );
           }
 
           throw new Error(
@@ -1131,34 +1756,58 @@
           );
         }
 
+        /*
+          The API has confirmed success.
+          Show success briefly, then HIDE the dialog before
+          navigating to addresses.html.
+        */
+
         document.getElementById("dialogTitle").textContent =
           "Address saved successfully";
+
         document.getElementById("dialogDescription").textContent =
           "Your delivery address has been saved. Redirecting...";
 
-        showFormMessage("Your address was saved successfully.", "success");
+        showFormMessage(
+          "Your address was saved successfully.",
+          "success"
+        );
 
-        setTimeout(() => {
-          window.location.href = ADDRESSES_PAGE;
+        redirectTimer = setTimeout(function () {
+          redirectTimer = null;
+
+          /*
+            Important fix:
+            Close the dialog before changing the page.
+            This prevents it from remaining visible if the
+            browser restores this page using its back cache.
+          */
+
+          hideLoadingDialog();
+
+          window.location.replace(ADDRESSES_PAGE);
         }, 900);
 
       } catch (error) {
         console.error("Save address error:", error);
-        loadingDialog.classList.remove("show");
+
+        hideLoadingDialog();
 
         showFormMessage(
           error.message ||
           "Could not save your address. Please check your connection and try again.",
           "error"
         );
-      } finally {
+
         saving = false;
         saveAddressBtn.disabled = false;
         saveAddressBtn.textContent = "Save Address";
       }
     });
 
-    /* CLEAR ERRORS WHILE EDITING */
+    /*
+      CLEAR VALIDATION ERRORS WHEN EDITING
+    */
 
     [
       ["fullName", "fullNameField"],
@@ -1170,7 +1819,10 @@
       ["phone", "phoneField"]
     ].forEach(([inputId, fieldId]) => {
       document.getElementById(inputId).addEventListener("input", function () {
-        if (this.value.trim()) clearFieldError(fieldId);
+        if (this.value.trim()) {
+          clearFieldError(fieldId);
+        }
+
         clearFormMessage();
       });
     });
@@ -1182,8 +1834,12 @@
       "state",
       "alternatePhone"
     ].forEach(id => {
-      document.getElementById(id).addEventListener("input", clearFormMessage);
+      document.getElementById(id).addEventListener(
+        "input",
+        clearFormMessage
+      );
     });
   </script>
+
 </body>
 </html>
