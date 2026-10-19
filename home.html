@@ -10,7 +10,6 @@
 
   <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
   <link rel="apple-touch-icon" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,26 +17,19 @@
 
   <style>
     :root {
-      --black: #111111;
-      --white: #ffffff;
+      --black: #111;
+      --white: #fff;
       --gray: #737373;
       --border: #e9e9e9;
       --light: #f6f6f6;
       --radius: 16px;
       --success: #16803c;
-      --danger: #c62828;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-
     body {
-      font-family: "Inter", sans-serif;
+      font-family: Inter, sans-serif;
       color: var(--black);
       background: #fff;
       min-height: 100vh;
@@ -45,18 +37,13 @@
     }
 
     a { text-decoration: none; color: inherit; }
-
     button, input { font: inherit; }
     button { cursor: pointer; }
 
-    button:focus-visible,
-    a:focus-visible,
-    input:focus-visible {
+    button:focus-visible, a:focus-visible, input:focus-visible {
       outline: 2px solid #555;
       outline-offset: 3px;
     }
-
-    /* NAVBAR */
 
     .navbar {
       min-height: 76px;
@@ -72,18 +59,8 @@
       z-index: 20;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-    }
-
-    .brand img {
-      width: 46px;
-      height: 46px;
-      object-fit: contain;
-      display: block;
-    }
+    .brand { display: flex; align-items: center; flex-shrink: 0; }
+    .brand img { width: 46px; height: 46px; object-fit: contain; }
 
     .search {
       display: flex;
@@ -97,12 +74,7 @@
       gap: 10px;
     }
 
-    .search i {
-      font-size: 19px;
-      color: #777;
-      flex-shrink: 0;
-    }
-
+    .search i { font-size: 19px; color: #777; }
     .search input {
       width: 100%;
       min-width: 0;
@@ -113,14 +85,7 @@
       font-size: 13px;
     }
 
-    .search input:focus-visible { outline: none; }
-    .search input::-webkit-search-cancel-button { cursor: pointer; }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-    }
+    .nav-actions { display: flex; align-items: center; gap: 22px; }
 
     .nav-icon {
       width: 32px;
@@ -129,7 +94,6 @@
       align-items: center;
       justify-content: center;
       font-size: 23px;
-      transition: opacity .2s;
       position: relative;
     }
 
@@ -152,14 +116,9 @@
       justify-content: center;
     }
 
-    .cart-count[hidden] { display: none; }
+    .cart-count[hidden], [hidden] { display: none !important; }
 
-    /* HERO */
-
-    .hero-wrap {
-      padding: 32px 7% 0;
-    }
-
+    .hero-wrap { padding: 32px 7% 0; }
     .hero-wrap.search-hidden { display: none; }
 
     .hero {
@@ -217,13 +176,9 @@
       color: #fff;
       font-size: 12px;
       font-weight: 700;
-      transition: background .2s, transform .2s;
     }
 
-    .hero-button:hover {
-      background: #333;
-      transform: translateY(-1px);
-    }
+    .hero-button:hover { background: #333; }
 
     .hero-art {
       width: 220px;
@@ -236,13 +191,7 @@
       justify-content: center;
     }
 
-    .hero-art img {
-      width: 78%;
-      height: 78%;
-      object-fit: contain;
-    }
-
-    /* MAIN */
+    .hero-art img { width: 78%; height: 78%; object-fit: contain; }
 
     .container {
       width: 86%;
@@ -264,20 +213,9 @@
       letter-spacing: -.8px;
     }
 
-    .section-head p {
-      color: var(--gray);
-      font-size: 12px;
-      margin-top: 7px;
-    }
+    .section-head p { color: var(--gray); font-size: 12px; margin-top: 7px; }
 
-    /* CATEGORIES */
-
-    .categories {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin-bottom: 32px;
-    }
+    .categories { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 32px; }
 
     .category-btn {
       border: 1px solid var(--border);
@@ -291,25 +229,13 @@
       transition: .2s;
     }
 
-    .category-btn:hover,
-    .category-btn.active {
+    .category-btn:hover, .category-btn.active {
       background: #111;
       border-color: #111;
       color: #fff;
     }
 
-    .category-btn:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    .product-count {
-      color: var(--gray);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    /* PRODUCT GRID */
+    .product-count { color: var(--gray); font-size: 12px; white-space: nowrap; }
 
     .product-grid {
       display: grid;
@@ -328,7 +254,7 @@
 
     .product-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 10px 28px rgba(0, 0, 0, .06);
+      box-shadow: 0 10px 28px rgba(0,0,0,.06);
     }
 
     .product-image {
@@ -341,11 +267,7 @@
       justify-content: center;
     }
 
-    .product-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
+    .product-image img { width: 100%; height: 100%; object-fit: contain; }
 
     .discount {
       position: absolute;
@@ -361,7 +283,6 @@
     }
 
     .product-info { padding: 16px; }
-
     .product-category {
       color: #888;
       font-size: 10px;
@@ -400,10 +321,7 @@
       font-size: 11px;
     }
 
-    .product-rating i {
-      color: #e7a500;
-      font-size: 14px;
-    }
+    .product-rating i { color: #e7a500; font-size: 14px; }
 
     .product-bottom {
       display: flex;
@@ -413,11 +331,7 @@
       margin-top: 13px;
     }
 
-    .product-price {
-      font-size: 17px;
-      font-weight: 800;
-      letter-spacing: -.5px;
-    }
+    .product-price { font-size: 17px; font-weight: 800; letter-spacing: -.5px; }
 
     .add-button {
       width: 36px;
@@ -431,42 +345,25 @@
       border: 0;
       border-radius: 10px;
       font-size: 19px;
-      transition: background .2s, transform .2s;
     }
 
     .add-button:hover { background: #333; }
-
-    .add-button.added {
-      background: var(--success);
-      color: #fff;
-    }
-
+    .add-button.added { background: var(--success); color: #fff; }
     .add-button.added:hover { background: #116b31; }
+    .add-button:disabled { opacity: .65; cursor: wait; }
 
-    .add-button:disabled {
-      opacity: .65;
-      cursor: wait;
-    }
-
-    /* SEARCH LIST */
-
-    .product-grid.list-view {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+    .product-grid.list-view { display: flex; flex-direction: column; gap: 14px; }
 
     .product-grid.list-view .product-card {
       display: flex;
       flex-direction: row;
       align-items: stretch;
       width: 100%;
-      min-width: 0;
     }
 
     .product-grid.list-view .product-card:hover {
       transform: none;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, .05);
+      box-shadow: 0 5px 20px rgba(0,0,0,.05);
     }
 
     .product-grid.list-view .product-image {
@@ -485,19 +382,9 @@
     }
 
     .product-grid.list-view .product-title,
-    .product-grid.list-view .product-description {
-      min-height: 0;
-    }
+    .product-grid.list-view .product-description { min-height: 0; }
 
-    .product-grid.list-view .product-bottom { margin-top: 14px; }
-
-    /* LOAD MORE */
-
-    .load-more-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 30px;
-    }
+    .load-more-wrap { display: flex; justify-content: center; margin-top: 30px; }
 
     .load-more-button {
       min-width: 170px;
@@ -508,19 +395,10 @@
       color: #fff;
       font-size: 12px;
       font-weight: 700;
-      transition: background .2s, color .2s;
     }
 
     .load-more-button:hover { background: #333; }
-
-    .load-more-button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
-
-    .load-more-button[hidden] { display: none; }
-
-    /* STATUS */
+    .load-more-button:disabled { opacity: .6; cursor: wait; }
 
     .status {
       grid-column: 1 / -1;
@@ -545,10 +423,6 @@
       font-weight: 700;
     }
 
-    .status button:hover { background: #333; }
-
-    /* TOAST */
-
     .toast {
       position: fixed;
       bottom: 24px;
@@ -568,12 +442,7 @@
       text-align: center;
     }
 
-    .toast.show {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
-
-    /* FOOTER */
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
     .footer {
       margin-top: 60px;
@@ -586,55 +455,29 @@
       font-size: 11px;
     }
 
-    /* TABLET */
-
     @media (max-width: 1050px) {
-      .product-grid:not(.list-view) {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
+      .product-grid:not(.list-view) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .product-image { height: 200px; }
       .navbar { padding: 0 5%; }
       .hero-wrap { padding-left: 5%; padding-right: 5%; }
     }
 
-    /* MOBILE */
-
     @media (max-width: 700px) {
       .navbar { min-height: 66px; gap: 12px; }
       .brand img { width: 40px; height: 40px; }
-
-      .search {
-        width: auto;
-        flex: 1;
-        height: 39px;
-        padding: 0 10px;
-      }
-
+      .search { width: auto; flex: 1; height: 39px; padding: 0 10px; }
       .search input { font-size: 12px; }
       .nav-actions { gap: 10px; }
       .nav-icon { width: 25px; font-size: 21px; }
       .hero-wrap { padding-top: 20px; }
-
-      .hero {
-        min-height: 250px;
-        padding: 30px 24px;
-        border-radius: 17px;
-      }
-
+      .hero { min-height: 250px; padding: 30px 24px; border-radius: 17px; }
       .hero h1 { font-size: 34px; letter-spacing: -1.4px; }
       .hero p { font-size: 12px; }
       .hero-art { width: 115px; height: 115px; }
       .hero-art img { width: 84%; height: 84%; }
-
       .container { width: 90%; margin: 34px auto; }
       .section-head h2 { font-size: 20px; }
-
-      .product-grid:not(.list-view) {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 13px;
-      }
-
+      .product-grid:not(.list-view) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
       .product-image { height: 165px; padding: 12px; }
       .product-info { padding: 12px; }
       .product-title { font-size: 12px; min-height: 36px; }
@@ -642,22 +485,10 @@
       .product-price { font-size: 15px; }
       .add-button { width: 32px; height: 32px; }
       .footer { padding: 22px 5%; }
-
-      .product-grid.list-view .product-image {
-        width: 120px;
-        min-width: 120px;
-        height: 145px;
-        padding: 8px;
-      }
-
+      .product-grid.list-view .product-image { width: 120px; min-width: 120px; height: 145px; padding: 8px; }
       .product-grid.list-view .product-info { padding: 10px; }
       .product-grid.list-view .product-title { font-size: 12px; }
-
-      .product-grid.list-view .product-description {
-        font-size: 10px;
-        -webkit-line-clamp: 2;
-      }
-
+      .product-grid.list-view .product-description { font-size: 10px; -webkit-line-clamp: 2; }
       .product-grid.list-view .product-price { font-size: 14px; }
     }
 
@@ -667,18 +498,10 @@
       .search { gap: 6px; }
       .hero-art { display: none; }
       .hero h1 { font-size: 32px; }
-
       .product-grid:not(.list-view) { gap: 10px; }
-
       .product-grid:not(.list-view) .product-image { height: 145px; }
       .product-grid:not(.list-view) .product-info { padding: 10px; }
-
-      .product-grid.list-view .product-image {
-        width: 100px;
-        min-width: 100px;
-        height: 130px;
-      }
-
+      .product-grid.list-view .product-image { width: 100px; min-width: 100px; height: 130px; }
       .product-grid.list-view .product-info { padding: 8px; }
       .product-grid.list-view .product-category { font-size: 9px; }
       .product-grid.list-view .product-title { font-size: 11px; }
@@ -688,18 +511,12 @@
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-
-      *,
-      *::before,
-      *::after {
-        transition-duration: .01ms !important;
-      }
+      *, *::before, *::after { transition-duration: .01ms !important; }
     }
   </style>
 </head>
 
 <body>
-  <!-- NAVBAR -->
   <header class="navbar">
     <a href="/home.html" class="brand" aria-label="Shoppy home">
       <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo">
@@ -707,33 +524,24 @@
 
     <form class="search" id="searchForm" role="search">
       <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-      <input
-        id="searchInput"
-        type="search"
-        placeholder="Search products..."
-        aria-label="Search products"
-        autocomplete="off"
-        maxlength="100"
-      >
+      <input id="searchInput" type="search" placeholder="Search products..."
+        aria-label="Search products" autocomplete="off" maxlength="100">
     </form>
 
     <nav class="nav-actions" aria-label="Main navigation">
       <a class="nav-icon" href="/home.html" aria-label="Home" title="Home">
         <i class="ph ph-house" aria-hidden="true"></i>
       </a>
-
       <a class="nav-icon" href="/cart.html" aria-label="Cart" title="Shopping cart">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
         <span class="cart-count" id="cartCount" hidden>0</span>
       </a>
-
       <a class="nav-icon" href="/profile.html" aria-label="My profile" title="My profile">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </a>
     </nav>
   </header>
 
-  <!-- HERO -->
   <section class="hero-wrap" id="heroWrap">
     <div class="hero">
       <div class="hero-copy">
@@ -741,27 +549,18 @@
           <i class="ph ph-sparkle" aria-hidden="true"></i>
           Welcome to Shoppy
         </div>
-
         <h1>Find your next favorite thing.</h1>
-
-        <p>
-          Explore everyday essentials, discover new arrivals
-          and find products you'll love.
-        </p>
-
+        <p>Explore everyday essentials, discover new arrivals and find products you'll love.</p>
         <button class="hero-button" id="shopNow" type="button">
-          Explore Products
-          <i class="ph ph-arrow-right" aria-hidden="true"></i>
+          Explore Products <i class="ph ph-arrow-right" aria-hidden="true"></i>
         </button>
       </div>
-
       <div class="hero-art" aria-hidden="true">
         <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="">
       </div>
     </div>
   </section>
 
-  <!-- PRODUCTS -->
   <main class="container" id="productsSection">
     <div class="section-head" id="categoriesHeading">
       <div>
@@ -771,9 +570,7 @@
     </div>
 
     <div id="categories" class="categories">
-      <button class="category-btn active" data-category="" type="button">
-        All Products
-      </button>
+      <button class="category-btn active" data-category="" type="button">All Products</button>
     </div>
 
     <div class="section-head">
@@ -795,7 +592,6 @@
     </div>
   </main>
 
-  <!-- FOOTER -->
   <footer class="footer">
     <span>© <span id="year"></span> Shoppy</span>
     <span>Your shopping, all in one place.</span>
@@ -831,12 +627,8 @@
     let requestNumber = 0;
     let cartProductIds = new Set();
     let cartIsLoaded = false;
-    let cartQuantityTotal = 0;
 
-    document.getElementById("year").textContent =
-      new Date().getFullYear();
-
-    /* HTML ESCAPING */
+    document.getElementById("year").textContent = new Date().getFullYear();
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -848,36 +640,28 @@
       })[char]);
     }
 
-    /* PRICE FORMAT */
-
+    /*
+      API price should already be INR.
+      Do not multiply by 85 here, otherwise price will be converted twice.
+    */
     function formatPrice(price) {
-      return new Intl.NumberFormat("en-US", {
+      return new Intl.NumberFormat("en-IN", {
         style: "currency",
-        currency: "USD"
+        currency: "INR",
+        maximumFractionDigits: 2
       }).format(Number(price) || 0);
     }
-
-    /* TOAST */
 
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("show");
-
       clearTimeout(toastTimer);
-
-      toastTimer = setTimeout(() => {
-        toast.classList.remove("show");
-      }, 2400);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
     }
-
-    /* LOCAL CART CACHE */
 
     function readCart() {
       try {
-        const stored = JSON.parse(
-          localStorage.getItem(CART_STORAGE_KEY) || "[]"
-        );
-
+        const stored = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "[]");
         return Array.isArray(stored) ? stored : [];
       } catch {
         return [];
@@ -886,10 +670,7 @@
 
     function writeCart(items) {
       try {
-        localStorage.setItem(
-          CART_STORAGE_KEY,
-          JSON.stringify(items)
-        );
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
       } catch (error) {
         console.warn("Could not update local cart cache:", error);
       }
@@ -897,33 +678,23 @@
 
     function updateLocalCartItem(item) {
       const cart = readCart();
-      const index = cart.findIndex(
-        entry => Number(entry.id) === Number(item.id)
-      );
+      const index = cart.findIndex(entry => Number(entry.id) === Number(item.id));
 
-      if (index >= 0) {
-        cart[index] = { ...cart[index], ...item };
-      } else {
-        cart.push(item);
-      }
+      if (index >= 0) cart[index] = { ...cart[index], ...item };
+      else cart.push(item);
 
       writeCart(cart);
     }
 
     function updateCartBadge(items) {
-      cartQuantityTotal = items.reduce(
+      const total = items.reduce(
         (sum, item) => sum + Math.max(1, Number(item.quantity) || 1),
         0
       );
 
-      cartCount.textContent = cartQuantityTotal > 99
-        ? "99+"
-        : String(cartQuantityTotal);
-
-      cartCount.hidden = cartQuantityTotal <= 0;
+      cartCount.textContent = total > 99 ? "99+" : String(total);
+      cartCount.hidden = total <= 0;
     }
-
-    /* PRODUCT BUTTON VISUAL STATE */
 
     function updateCartButton(button, product) {
       const isAdded = cartProductIds.has(Number(product.id));
@@ -933,12 +704,9 @@
         ? '<i class="ph ph-check" aria-hidden="true"></i>'
         : '<i class="ph ph-plus" aria-hidden="true"></i>';
 
-      button.setAttribute(
-        "aria-label",
-        isAdded
-          ? `${product.title} is in your cart`
-          : `Add ${product.title} to cart`
-      );
+      button.setAttribute("aria-label", isAdded
+        ? `${product.title} is in your cart`
+        : `Add ${product.title} to cart`);
 
       button.title = isAdded ? "Already in cart" : "Add to cart";
     }
@@ -948,12 +716,9 @@
         const product = allProducts.find(
           item => Number(item.id) === Number(button.dataset.productId)
         );
-
         if (product) updateCartButton(button, product);
       });
     }
-
-    /* LOAD CART FROM FIREBASE */
 
     async function loadCart() {
       try {
@@ -969,7 +734,6 @@
         if (response.status === 401) {
           cartIsLoaded = false;
           cartProductIds = new Set();
-          cartQuantityTotal = 0;
           cartCount.hidden = true;
           refreshVisibleCartButtons();
           return false;
@@ -989,15 +753,12 @@
         updateCartBadge(items);
         cartIsLoaded = true;
         refreshVisibleCartButtons();
-
         return true;
       } catch (error) {
         console.error("Cart loading error:", error);
         return false;
       }
     }
-
-    /* ADD PRODUCT TO FIREBASE CART */
 
     async function addToCart(product, button) {
       if (button.disabled) return;
@@ -1007,16 +768,15 @@
         const loaded = await loadCart();
         button.disabled = false;
 
-        // Do not silently save locally if Firebase is unavailable.
         if (!loaded) {
-          showToast("Cart connect nahi ho paya. Dobara try karein.");
+          showToast("Cart connect nahi ho paya. Login karein ya dobara try karein.");
           return;
         }
       }
 
       if (cartProductIds.has(Number(product.id))) {
-        showToast("This product is already in your cart.");
         updateCartButton(button, product);
+        showToast("This product is already in your cart.");
         return;
       }
 
@@ -1062,27 +822,16 @@
 
         cartProductIds.add(Number(product.id));
         updateLocalCartItem(savedItem);
-
-        const currentItems = readCart();
-        updateCartBadge(currentItems);
+        updateCartBadge(readCart());
         updateCartButton(button, product);
-
-        showToast(
-          data.alreadyAdded
-            ? "This product is already in your cart."
-            : "Product added to cart!"
-        );
+        showToast("Product added to cart!");
       } catch (error) {
         console.error("Add to cart error:", error);
-        showToast(
-          error.message || "Cart save nahi hua. Dobara try karein."
-        );
+        showToast(error.message || "Cart save nahi hua. Dobara try karein.");
       } finally {
         button.disabled = false;
       }
     }
-
-    /* ERROR DISPLAY */
 
     function showError(message) {
       productGrid.setAttribute("aria-busy", "false");
@@ -1096,12 +845,8 @@
         </div>
       `;
 
-      document
-        .getElementById("retryButton")
-        .addEventListener("click", loadProducts);
+      document.getElementById("retryButton").addEventListener("click", loadProducts);
     }
-
-    /* PRODUCT CARD */
 
     function createProductCard(product) {
       const image = product.thumbnail || product.images?.[0] || "";
@@ -1116,30 +861,21 @@
       return `
         <article class="product-card">
           <div class="product-image">
-            ${
-              discount > 0
-                ? `<span class="discount">-${Math.round(discount)}%</span>`
-                : ""
-            }
+            ${discount > 0
+              ? `<span class="discount">-${Math.round(discount)}%</span>`
+              : ""}
 
             <img
               src="${escapeHTML(image)}"
               alt="${title}"
               loading="lazy"
-              onerror="
-                this.onerror=null;
-                this.src='https://placehold.co/400x400/f6f6f6/777?text=Product';
-              "
+              onerror="this.onerror=null;this.src='https://placehold.co/400x400/f6f6f6/777?text=Product';"
             >
           </div>
 
           <div class="product-info">
-            <div class="product-category">
-              ${category.replace(/-/g, " ")}
-            </div>
-
+            <div class="product-category">${category.replace(/-/g, " ")}</div>
             <h3 class="product-title">${title}</h3>
-
             <p class="product-description">${description}</p>
 
             <div class="product-rating">
@@ -1153,14 +889,11 @@
               <button
                 class="add-button ${isAdded ? "added" : ""}"
                 type="button"
-                aria-label="${isAdded
-                  ? `${title} is in your cart`
-                  : `Add ${title} to cart`}"
+                aria-label="${isAdded ? `${title} is in your cart` : `Add ${title} to cart`}"
                 data-product-id="${id}"
                 title="${isAdded ? "Already in cart" : "Add to cart"}"
               >
-                <i class="ph ${isAdded ? "ph-check" : "ph-plus"}"
-                   aria-hidden="true"></i>
+                <i class="ph ${isAdded ? "ph-check" : "ph-plus"}" aria-hidden="true"></i>
               </button>
             </div>
           </div>
@@ -1168,27 +901,19 @@
       `;
     }
 
-    /* CART BUTTON HANDLERS */
-
     function attachCartHandlers(container) {
       container.querySelectorAll(".add-button").forEach(button => {
         if (button.dataset.cartHandlerAttached === "true") return;
-
         button.dataset.cartHandlerAttached = "true";
 
         button.addEventListener("click", async () => {
           const product = allProducts.find(
             item => Number(item.id) === Number(button.dataset.productId)
           );
-
-          if (!product) return;
-
-          await addToCart(product, button);
+          if (product) await addToCart(product, button);
         });
       });
     }
-
-    /* PRODUCT COUNT */
 
     function updateProductCount() {
       const total = allProducts.length;
@@ -1203,81 +928,54 @@
       loadMoreButton.textContent = "Load More Products";
     }
 
-    /* RENDER NEXT BATCH */
-
     function renderNextBatch() {
       const start = displayedCount;
       const end = Math.min(start + PAGE_SIZE, allProducts.length);
-
       if (start >= end) {
         updateProductCount();
         return;
       }
 
-      const batch = allProducts.slice(start, end);
-
       productGrid.insertAdjacentHTML(
         "beforeend",
-        batch.map(createProductCard).join("")
+        allProducts.slice(start, end).map(createProductCard).join("")
       );
 
       displayedCount = end;
-
       attachCartHandlers(productGrid);
       updateProductCount();
     }
 
-    /* RENDER PRODUCTS */
-
     function renderProducts(products) {
       allProducts = products;
       displayedCount = 0;
-
       productGrid.setAttribute("aria-busy", "false");
       productGrid.innerHTML = "";
 
       if (!products.length) {
         productCount.textContent = "";
         loadMoreButton.hidden = true;
-
         productGrid.innerHTML = `
-          <div class="status">
-            No products found. Try another search or category.
-          </div>
+          <div class="status">No products found. Try another search or category.</div>
         `;
-
         return;
       }
 
       renderNextBatch();
     }
 
-    /* RENDER CATEGORIES */
-
     function renderCategories(products) {
       const categories = [
-        ...new Set(
-          products.map(product => product.category).filter(Boolean)
-        )
+        ...new Set(products.map(product => product.category).filter(Boolean))
       ].sort();
 
       categoriesEl.innerHTML = `
-        <button
-          class="category-btn ${currentCategory ? "" : "active"}"
-          data-category=""
-          type="button"
-        >
-          All Products
-        </button>
+        <button class="category-btn ${currentCategory ? "" : "active"}"
+          data-category="" type="button">All Products</button>
 
         ${categories.map(category => `
-          <button
-            class="category-btn ${
-              currentCategory === category ? "active" : ""
-            }"
-            data-category="${escapeHTML(category)}"
-            type="button"
-          >
+          <button class="category-btn ${currentCategory === category ? "active" : ""}"
+            data-category="${escapeHTML(category)}" type="button">
             ${escapeHTML(category.replace(/-/g, " "))}
           </button>
         `).join("")}
@@ -1293,136 +991,81 @@
       });
     }
 
-    /* SEARCH LAYOUT */
-
     function updatePageLayout() {
       const searching = Boolean(currentSearch);
 
       heroWrap.classList.toggle("search-hidden", searching);
       productGrid.classList.toggle("list-view", searching);
-
       categoriesHeading.hidden = searching;
       categoriesEl.hidden = searching;
 
       if (searching) {
         productsHeading.textContent = "Search Results";
-        productsSubtitle.textContent =
-          `Products matching "${currentSearch}"`;
+        productsSubtitle.textContent = `Products matching "${currentSearch}"`;
       } else if (currentCategory) {
         productsHeading.textContent = currentCategory
           .replace(/-/g, " ")
           .replace(/\b\w/g, char => char.toUpperCase());
-
-        productsSubtitle.textContent =
-          "Explore products in this category.";
+        productsSubtitle.textContent = "Explore products in this category.";
       } else {
         productsHeading.textContent = "Popular Products";
-        productsSubtitle.textContent =
-          "Discover something you'll love.";
+        productsSubtitle.textContent = "Discover something you'll love.";
       }
     }
 
-    /* LOAD PRODUCTS FROM API */
-
     async function loadProducts() {
       if (requestController) requestController.abort();
-
       requestController = new AbortController();
 
       const signal = requestController.signal;
       const thisRequest = ++requestNumber;
 
       updatePageLayout();
-
       productGrid.setAttribute("aria-busy", "true");
-      productGrid.innerHTML = `
-        <div class="status">Loading products...</div>
-      `;
-
+      productGrid.innerHTML = '<div class="status">Loading products...</div>';
       productCount.textContent = "";
       loadMoreButton.hidden = true;
 
       const params = new URLSearchParams({ limit: "24" });
-
-      if (currentSearch) {
-        params.set("search", currentSearch);
-      } else if (currentCategory) {
-        params.set("category", currentCategory);
-      }
+      if (currentSearch) params.set("search", currentSearch);
+      else if (currentCategory) params.set("category", currentCategory);
 
       try {
-        const response = await fetch(
-          `/api/products?${params.toString()}`,
-          {
-            method: "GET",
-            headers: { Accept: "application/json" },
-            credentials: "same-origin",
-            cache: "no-store",
-            signal
-          }
-        );
+        const response = await fetch(`/api/products?${params.toString()}`, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          credentials: "same-origin",
+          cache: "no-store",
+          signal
+        });
 
         const responseText = await response.text();
-
         if (signal.aborted || thisRequest !== requestNumber) return;
 
-        const contentType =
-          response.headers.get("content-type") || "";
-
+        const contentType = response.headers.get("content-type") || "";
         if (!contentType.includes("application/json")) {
-          console.error(
-            "Products API returned non-JSON:",
-            response.status,
-            responseText.slice(0, 300)
-          );
-
-          throw new Error(
-            `Products API ka response invalid hai (HTTP ${response.status}).`
-          );
+          throw new Error(`Products API response invalid hai (HTTP ${response.status}).`);
         }
 
         let data;
-
         try {
           data = JSON.parse(responseText);
         } catch {
-          throw new Error(
-            "Products API ka response valid JSON nahi hai."
-          );
+          throw new Error("Products API ka response valid JSON nahi hai.");
         }
 
-        if (
-          !response.ok ||
-          data.success !== true ||
-          !Array.isArray(data.products)
-        ) {
-          throw new Error(
-            data.message ||
-            `Products load nahi hue (HTTP ${response.status}).`
-          );
+        if (!response.ok || data.success !== true || !Array.isArray(data.products)) {
+          throw new Error(data.message || `Products load nahi hue (HTTP ${response.status}).`);
         }
 
-        if (!currentSearch && !currentCategory) {
-          renderCategories(data.products);
-        }
-
+        if (!currentSearch && !currentCategory) renderCategories(data.products);
         renderProducts(data.products);
       } catch (error) {
-        if (
-          error.name === "AbortError" ||
-          thisRequest !== requestNumber
-        ) return;
-
+        if (error.name === "AbortError" || thisRequest !== requestNumber) return;
         console.error("Products loading error:", error);
-
-        showError(
-          error.message ||
-          "Products load nahi ho paaye. Dobara try karein."
-        );
+        showError(error.message || "Products load nahi ho paaye. Dobara try karein.");
       }
     }
-
-    /* LOAD MORE */
 
     loadMoreButton.addEventListener("click", () => {
       if (displayedCount >= allProducts.length) {
@@ -1432,22 +1075,15 @@
 
       loadMoreButton.disabled = true;
       loadMoreButton.textContent = "Loading...";
-
       requestAnimationFrame(renderNextBatch);
     });
 
-    /* SEARCH SUBMIT */
-
     searchForm.addEventListener("submit", event => {
       event.preventDefault();
-
       currentSearch = searchInput.value.trim();
       currentCategory = "";
-
       loadProducts();
     });
-
-    /* CLEAR SEARCH */
 
     function clearSearchIfEmpty() {
       if (!searchInput.value.trim() && (currentSearch || currentCategory)) {
@@ -1460,15 +1096,9 @@
     searchInput.addEventListener("search", clearSearchIfEmpty);
     searchInput.addEventListener("input", clearSearchIfEmpty);
 
-    /* EXPLORE PRODUCTS */
-
     document.getElementById("shopNow").addEventListener("click", () => {
-      document.getElementById("productsSection").scrollIntoView({
-        behavior: "smooth"
-      });
+      document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
     });
-
-    /* REFRESH CART WHEN RETURNING TO THIS TAB */
 
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) loadCart();
@@ -1477,8 +1107,6 @@
     window.addEventListener("pageshow", () => {
       loadCart();
     });
-
-    /* INITIAL LOAD */
 
     async function initializeHomePage() {
       await loadCart();
