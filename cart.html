@@ -7,12 +7,16 @@
 
   <title>My Cart — Shoppy</title>
 
-  <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-  <link rel="apple-touch-icon" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+  <link rel="icon" type="image/png"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+  <link rel="apple-touch-icon"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -22,9 +26,9 @@
       --gray: #737373;
       --border: #e9e9e9;
       --light: #f7f7f7;
-      --success: #16803c;
       --danger: #c62828;
       --radius: 16px;
+      --skeleton: #ededed;
     }
 
     * {
@@ -56,6 +60,8 @@
       outline: 2px solid #555;
       outline-offset: 3px;
     }
+
+    /* NAVBAR */
 
     .navbar {
       min-height: 76px;
@@ -97,6 +103,8 @@
       opacity: .6;
     }
 
+    /* MAIN */
+
     .container {
       width: 86%;
       max-width: 1200px;
@@ -126,6 +134,8 @@
       align-items: start;
       gap: 25px;
     }
+
+    /* CART ITEMS */
 
     .cart-items {
       display: flex;
@@ -241,6 +251,8 @@
       white-space: nowrap;
     }
 
+    /* SUMMARY */
+
     .summary {
       padding: 23px;
       border: 1px solid var(--border);
@@ -337,6 +349,8 @@
       background: #fff5f5;
     }
 
+    /* STATUS */
+
     .status {
       padding: 55px 20px;
       border: 1px solid var(--border);
@@ -376,6 +390,91 @@
       font-weight: 700;
     }
 
+    /* SKELETON LOADING */
+
+    .skeleton {
+      position: relative;
+      overflow: hidden;
+      background: var(--skeleton);
+      border-radius: 7px;
+    }
+
+    .skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, .8),
+        transparent
+      );
+      animation: skeleton-shimmer 1.35s infinite;
+    }
+
+    @keyframes skeleton-shimmer {
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    .skeleton-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .skeleton-image {
+      width: 115px;
+      height: 115px;
+      flex-shrink: 0;
+      border-radius: 12px;
+    }
+
+    .skeleton-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .skeleton-line {
+      height: 12px;
+      margin-bottom: 12px;
+    }
+
+    .skeleton-line.title {
+      height: 15px;
+      width: 85%;
+    }
+
+    .skeleton-line.price {
+      width: 42%;
+    }
+
+    .skeleton-line.controls {
+      width: 62%;
+      height: 30px;
+      margin-bottom: 0;
+      margin-top: 15px;
+    }
+
+    .skeleton-total {
+      width: 82px;
+      height: 17px;
+      flex-shrink: 0;
+    }
+
+    .summary-skeleton {
+      height: 13px;
+      margin: 17px 0;
+    }
+
+    /* TOAST */
+
     .toast {
       position: fixed;
       bottom: 24px;
@@ -399,6 +498,8 @@
       opacity: 1;
       transform: translate(-50%, 0);
     }
+
+    /* FOOTER */
 
     .footer {
       border-top: 1px solid var(--border);
@@ -440,13 +541,15 @@
         margin-top: 30px;
       }
 
-      .cart-item {
+      .cart-item,
+      .skeleton-card {
         gap: 11px;
         padding: 11px;
         flex-wrap: wrap;
       }
 
-      .item-image {
+      .item-image,
+      .skeleton-image {
         width: 85px;
         height: 95px;
         padding: 7px;
@@ -479,10 +582,11 @@
         height: 25px;
       }
 
-      .item-total {
+      .item-total,
+      .skeleton-total {
         width: 100%;
         text-align: left;
-        padding-left: 96px;
+        margin-left: 96px;
         font-size: 13px;
       }
 
@@ -494,13 +598,27 @@
         padding: 22px 5%;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .skeleton::after {
+        animation: none;
+      }
+
+      .toast {
+        transition: none;
+      }
+    }
   </style>
 </head>
 
 <body>
+
   <header class="navbar">
     <a href="/home.html" class="brand" aria-label="Shoppy home">
-      <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo">
+      <img
+        src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+        alt="Shoppy logo"
+      >
     </a>
 
     <nav class="nav-actions" aria-label="Main navigation">
@@ -519,17 +637,25 @@
   </header>
 
   <main class="container">
+
     <div class="page-heading">
       <h1>My Shopping Cart</h1>
       <p>Your selected products, all in one place.</p>
     </div>
 
     <div class="cart-layout">
-      <section id="cartItems" class="cart-items" aria-live="polite" aria-busy="true">
-        <div class="status">Loading your cart...</div>
+
+      <section
+        id="cartItems"
+        class="cart-items"
+        aria-live="polite"
+        aria-busy="true"
+      >
+        <!-- Skeletons appear immediately while the API loads -->
       </section>
 
       <aside class="summary">
+
         <h2>Order Summary</h2>
 
         <div class="summary-line">
@@ -554,7 +680,12 @@
           <strong id="summaryTotal">₹0.00</strong>
         </div>
 
-        <button id="checkoutButton" class="checkout-button" type="button" disabled>
+        <button
+          id="checkoutButton"
+          class="checkout-button"
+          type="button"
+          disabled
+        >
           Continue to Checkout
           <i class="ph ph-arrow-right" aria-hidden="true"></i>
         </button>
@@ -564,11 +695,18 @@
           Continue Shopping
         </a>
 
-        <button id="clearCartButton" class="clear-cart-button" type="button" hidden>
+        <button
+          id="clearCartButton"
+          class="clear-cart-button"
+          type="button"
+          hidden
+        >
           <i class="ph ph-trash" aria-hidden="true"></i>
           Clear Cart
         </button>
+
       </aside>
+
     </div>
   </main>
 
@@ -590,11 +728,17 @@
     const clearCartButton = document.getElementById("clearCartButton");
     const toast = document.getElementById("toast");
 
+    // Set this to 85 only if API/cart prices are still in USD.
+    const USD_TO_INR = 85;
+
     let cart = [];
     let toastTimer = null;
     let busy = false;
 
-    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    /* HELPERS */
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -606,20 +750,23 @@
       })[char]);
     }
 
-    // INR currency formatting.
-    // This formats values as rupees; it does not convert USD prices.
+    // Convert USD prices to INR and format them.
     function formatPrice(price) {
+      const usdPrice = Number(price) || 0;
+      const inrPrice = usdPrice * USD_TO_INR;
+
       return new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
-      }).format(Number(price) || 0);
+      }).format(inrPrice);
     }
 
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("show");
+
       clearTimeout(toastTimer);
 
       toastTimer = setTimeout(() => {
@@ -627,10 +774,41 @@
       }, 2200);
     }
 
+    /* SKELETON LOADING */
+
+    function renderSkeleton() {
+      cartItemsEl.setAttribute("aria-busy", "true");
+
+      cartItemsEl.innerHTML = Array.from({ length: 3 }, () => `
+        <div class="skeleton-card" aria-hidden="true">
+          <div class="skeleton skeleton-image"></div>
+
+          <div class="skeleton-info">
+            <div class="skeleton skeleton-line title"></div>
+            <div class="skeleton skeleton-line price"></div>
+            <div class="skeleton skeleton-line controls"></div>
+          </div>
+
+          <div class="skeleton skeleton-total"></div>
+        </div>
+      `).join("");
+
+      // Skeletons for the summary numbers.
+      summaryQuantity.textContent = "—";
+      summarySubtotal.textContent = "Loading…";
+      summaryTotal.textContent = "Loading…";
+      checkoutButton.disabled = true;
+      clearCartButton.hidden = true;
+    }
+
+    /* API */
+
     async function cartRequest(method, body) {
       const options = {
         method,
-        headers: { Accept: "application/json" },
+        headers: {
+          Accept: "application/json"
+        },
         credentials: "same-origin",
         cache: "no-store"
       };
@@ -665,11 +843,14 @@
       return data;
     }
 
+    /* LOAD CART */
+
     async function loadCart() {
-      cartItemsEl.setAttribute("aria-busy", "true");
+      renderSkeleton();
 
       try {
         const data = await cartRequest("GET");
+
         cart = Array.isArray(data.items) ? data.items : [];
 
         try {
@@ -679,6 +860,7 @@
         }
 
         renderCart();
+
       } catch (error) {
         console.error("Cart loading error:", error);
 
@@ -693,11 +875,16 @@
           </div>
         `;
 
-        document.getElementById("retryCart").addEventListener("click", loadCart);
+        document
+          .getElementById("retryCart")
+          .addEventListener("click", loadCart);
+
       } finally {
         cartItemsEl.setAttribute("aria-busy", "false");
       }
     }
+
+    /* RENDER CART */
 
     function renderCart() {
       const totalQuantity = cart.reduce(
@@ -754,7 +941,10 @@
 
             <div class="item-info">
               <h3 class="item-title">${title}</h3>
-              <p class="item-unit-price">${formatPrice(price)} each</p>
+
+              <p class="item-unit-price">
+                ${formatPrice(price)} each
+              </p>
 
               <div class="item-controls">
                 <div class="quantity-control">
@@ -787,7 +977,9 @@
               </div>
             </div>
 
-            <div class="item-total">${formatPrice(price * quantity)}</div>
+            <div class="item-total">
+              ${formatPrice(price * quantity)}
+            </div>
           </article>
         `;
       }).join("");
@@ -799,10 +991,15 @@
       });
     }
 
+    /* UPDATE QUANTITY OR REMOVE ITEM */
+
     async function handleCartAction(action, id) {
       if (busy) return;
 
-      const item = cart.find(product => String(product.id) === String(id));
+      const item = cart.find(
+        product => String(product.id) === String(id)
+      );
+
       if (!item) return;
 
       busy = true;
@@ -818,10 +1015,13 @@
 
           const data = await cartRequest("PATCH", { id, quantity });
           cart = Array.isArray(data.items) ? data.items : [];
+
           showToast("Quantity updated");
+
         } else if (action === "remove") {
           const data = await cartRequest("DELETE", { id });
           cart = Array.isArray(data.items) ? data.items : [];
+
           showToast("Product removed from cart");
         }
 
@@ -830,17 +1030,21 @@
         } catch (error) {
           console.warn("Could not update local cart cache:", error);
         }
+
       } catch (error) {
         console.error("Cart update error:", error);
 
         if (error.message !== "Login required.") {
           showToast(error.message || "Cart update nahi hua");
         }
+
       } finally {
         busy = false;
         renderCart();
       }
     }
+
+    /* CLEAR CART */
 
     clearCartButton.addEventListener("click", async () => {
       if (busy || cart.length === 0) return;
@@ -865,26 +1069,33 @@
         }
 
         showToast("Cart cleared");
+
       } catch (error) {
         console.error("Clear cart error:", error);
 
         if (error.message !== "Login required.") {
           showToast(error.message || "Cart clear nahi hua");
         }
+
       } finally {
         busy = false;
         renderCart();
       }
     });
 
+    /* CHECKOUT PLACEHOLDER */
+
     checkoutButton.addEventListener("click", () => {
       if (cart.length === 0 || busy) return;
 
-      showToast("Checkout aur payment system abhi connect nahi hua hai.");
+      showToast(
+        "Checkout aur payment system abhi connect nahi hua hai."
+      );
     });
+
+    /* INITIAL LOAD */
 
     loadCart();
   </script>
 </body>
 </html>
-```
