@@ -1,13 +1,10 @@
 
-const ALLOWED_LIMITS = new Set([12, 24, 36, 48]);
-
 module.exports = async function handler(req, res) {
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader(
     "Cache-Control",
     "s-maxage=300, stale-while-revalidate=600"
   );
-
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
 
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
@@ -19,35 +16,35 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const rawLimit = Number.parseInt(req.query?.limit || "24", 10);
-    const limit = ALLOWED_LIMITS.has(rawLimit) ? rawLimit : 24;
+    const search =
+      typeof req.query?.search === "string"
+        ? req.query.search.trim().slice(0, 100)
+        : "";
 
-    const search = typeof req.query?.search === "string"
-      ? req.query.search.trim().slice(0, 100)
-      : "";
+    const category =
+      typeof req.query?.category === "string"
+        ? req.query.category.trim().toLowerCase().slice(0, 80)
+        : "";
 
-    const category = typeof req.query?.category === "string"
-      ? req.query.category.trim().toLowerCase().slice(0, 80)
-      : "";
-
-    let endpoint = "https://dummyjson.com/products";
+    // limit=0 requests all products available from DummyJSON.
+    let endpoint = "https://dummyjson.com/products?limit=0";
 
     if (search) {
-      endpoint += `/search?q=${encodeURIComponent(search)}&limit=${limit}`;
+      endpoint =
+        `https://dummyjson.com/products/search?q=${encodeURIComponent(search)}&limit=0`;
     } else if (category) {
-      endpoint += `/category/${encodeURIComponent(category)}?limit=${limit}`;
-    } else {
-      endpoint += `?limit=${limit}`;
+      endpoint =
+        `https://dummyjson.com/products/category/${encodeURIComponent(category)}?limit=0`;
     }
 
     const upstream = await fetch(endpoint, {
-      headers: {
-        Accept: "application/json"
-      },
-      signal: AbortSignal.timeout(12000)
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(15000)
     });
 
     if (!upstream.ok) {
+      console.error("Product provider status:", upstream.status);
+
       return res.status(502).json({
         success: false,
         message: "Product provider se data nahi mila. Dobara try karein."
@@ -62,7 +59,8 @@ module.exports = async function handler(req, res) {
           title: String(product.title || "Untitled product"),
           description: String(product.description || ""),
           price: Number(product.price) || 0,
-          discountPercentage: Number(product.discountPercentage) || 0,
+          discountPercentage:
+            Number(product.discountPercentage) || 0,
           rating: Number(product.rating) || 0,
           category: String(product.category || "other"),
           thumbnail: String(product.thumbnail || ""),
