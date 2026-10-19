@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,24 +8,12 @@
 
   <title>My Cart — Shoppy</title>
 
-  <link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/93kQCKxT/20261019-120246.png"
-  >
-
-  <link
-    rel="apple-touch-icon"
-    href="https://i.ibb.co/93kQCKxT/20261019-120246.png"
-  >
+  <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -69,8 +58,6 @@
       outline-offset: 3px;
     }
 
-    /* NAVBAR */
-
     .navbar {
       min-height: 76px;
       padding: 0 7%;
@@ -111,8 +98,6 @@
       opacity: .6;
     }
 
-    /* MAIN */
-
     .container {
       width: 86%;
       max-width: 1200px;
@@ -142,8 +127,6 @@
       align-items: start;
       gap: 25px;
     }
-
-    /* CART ITEMS */
 
     .cart-items {
       display: flex;
@@ -226,7 +209,8 @@
       font-size: 17px;
     }
 
-    .quantity-control button:disabled {
+    .quantity-control button:disabled,
+    .remove-button:disabled {
       opacity: .45;
       cursor: not-allowed;
     }
@@ -257,8 +241,6 @@
       font-weight: 800;
       white-space: nowrap;
     }
-
-    /* SUMMARY */
 
     .summary {
       padding: 23px;
@@ -356,8 +338,6 @@
       background: #fff5f5;
     }
 
-    /* STATUS */
-
     .status {
       padding: 55px 20px;
       border: 1px solid var(--border);
@@ -381,20 +361,12 @@
       margin-bottom: 8px;
     }
 
-    .status a {
+    .status a,
+    .status button {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      margin-top: 18px;
-      padding: 12px 18px;
-      border-radius: 9px;
-      background: var(--black);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .status button {
       margin-top: 18px;
       padding: 12px 18px;
       border: 0;
@@ -404,8 +376,6 @@
       font-size: 12px;
       font-weight: 700;
     }
-
-    /* TOAST */
 
     .toast {
       position: fixed;
@@ -431,8 +401,6 @@
       transform: translate(-50%, 0);
     }
 
-    /* FOOTER */
-
     .footer {
       border-top: 1px solid var(--border);
       padding: 25px 7%;
@@ -442,8 +410,6 @@
       color: #888;
       font-size: 11px;
     }
-
-    /* RESPONSIVE */
 
     @media (max-width: 900px) {
       .cart-layout {
@@ -533,15 +499,9 @@
 </head>
 
 <body>
-
-  <!-- NAVBAR -->
-
   <header class="navbar">
     <a href="/home.html" class="brand" aria-label="Shoppy home">
-      <img
-        src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
-        alt="Shoppy logo"
-      >
+      <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo">
     </a>
 
     <nav class="nav-actions" aria-label="Main navigation">
@@ -553,41 +513,24 @@
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
       </a>
 
-      <a
-        class="nav-icon"
-        href="/profile.html"
-        aria-label="My profile"
-        title="My profile"
-      >
+      <a class="nav-icon" href="/profile.html" aria-label="My profile" title="My profile">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </a>
     </nav>
   </header>
 
-  <!-- CART PAGE -->
-
   <main class="container">
-
     <div class="page-heading">
       <h1>My Shopping Cart</h1>
       <p>Your selected products, all in one place.</p>
     </div>
 
     <div class="cart-layout">
-
-      <section
-        id="cartItems"
-        class="cart-items"
-        aria-live="polite"
-        aria-busy="true"
-      >
-        <div class="status">
-          Loading your cart...
-        </div>
+      <section id="cartItems" class="cart-items" aria-live="polite" aria-busy="true">
+        <div class="status">Loading your cart...</div>
       </section>
 
       <aside class="summary">
-
         <h2>Order Summary</h2>
 
         <div class="summary-line">
@@ -597,7 +540,7 @@
 
         <div class="summary-line">
           <span>Subtotal</span>
-          <strong id="summarySubtotal">$0.00</strong>
+          <strong id="summarySubtotal">₹0.00</strong>
         </div>
 
         <div class="summary-line">
@@ -609,15 +552,10 @@
 
         <div class="summary-total">
           <span>Total</span>
-          <strong id="summaryTotal">$0.00</strong>
+          <strong id="summaryTotal">₹0.00</strong>
         </div>
 
-        <button
-          id="checkoutButton"
-          class="checkout-button"
-          type="button"
-          disabled
-        >
+        <button id="checkoutButton" class="checkout-button" type="button" disabled>
           Continue to Checkout
           <i class="ph ph-arrow-right" aria-hidden="true"></i>
         </button>
@@ -627,23 +565,13 @@
           Continue Shopping
         </a>
 
-        <button
-          id="clearCartButton"
-          class="clear-cart-button"
-          type="button"
-          hidden
-        >
+        <button id="clearCartButton" class="clear-cart-button" type="button" hidden>
           <i class="ph ph-trash" aria-hidden="true"></i>
           Clear Cart
         </button>
-
       </aside>
-
     </div>
-
   </main>
-
-  <!-- FOOTER -->
 
   <footer class="footer">
     <span>© <span id="year"></span> Shoppy</span>
@@ -667,10 +595,7 @@
     let toastTimer = null;
     let busy = false;
 
-    document.getElementById("year").textContent =
-      new Date().getFullYear();
-
-    /* HELPERS */
+    document.getElementById("year").textContent = new Date().getFullYear();
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -682,17 +607,20 @@
       })[char]);
     }
 
+    // INR currency formatting.
+    // This formats values as rupees; it does not convert USD prices.
     function formatPrice(price) {
-      return new Intl.NumberFormat("en-US", {
+      return new Intl.NumberFormat("en-IN", {
         style: "currency",
-        currency: "USD"
+        currency: "INR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
       }).format(Number(price) || 0);
     }
 
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("show");
-
       clearTimeout(toastTimer);
 
       toastTimer = setTimeout(() => {
@@ -700,14 +628,10 @@
       }, 2200);
     }
 
-    /* API */
-
     async function cartRequest(method, body) {
       const options = {
         method,
-        headers: {
-          Accept: "application/json"
-        },
+        headers: { Accept: "application/json" },
         credentials: "same-origin",
         cache: "no-store"
       };
@@ -742,14 +666,11 @@
       return data;
     }
 
-    /* LOAD CART */
-
     async function loadCart() {
       cartItemsEl.setAttribute("aria-busy", "true");
 
       try {
         const data = await cartRequest("GET");
-
         cart = Array.isArray(data.items) ? data.items : [];
 
         try {
@@ -759,7 +680,6 @@
         }
 
         renderCart();
-
       } catch (error) {
         console.error("Cart loading error:", error);
 
@@ -774,26 +694,21 @@
           </div>
         `;
 
-        document
-          .getElementById("retryCart")
-          .addEventListener("click", loadCart);
-
+        document.getElementById("retryCart").addEventListener("click", loadCart);
       } finally {
         cartItemsEl.setAttribute("aria-busy", "false");
       }
     }
 
-    /* RENDER CART */
-
     function renderCart() {
       const totalQuantity = cart.reduce(
-        (sum, item) => sum + Number(item.quantity || 1),
+        (sum, item) => sum + (Number(item.quantity) || 1),
         0
       );
 
       const subtotal = cart.reduce(
         (sum, item) =>
-          sum + Number(item.price || 0) * Number(item.quantity || 1),
+          sum + (Number(item.price) || 0) * (Number(item.quantity) || 1),
         0
       );
 
@@ -803,6 +718,7 @@
 
       checkoutButton.disabled = cart.length === 0 || busy;
       clearCartButton.hidden = cart.length === 0;
+      clearCartButton.disabled = busy;
 
       if (!cart.length) {
         cartItemsEl.innerHTML = `
@@ -810,60 +726,46 @@
             <i class="ph ph-shopping-cart"></i>
             <h2>Your cart is empty</h2>
             <p>Looks like you haven't added any products yet.</p>
-
             <a href="/home.html">
               Start Shopping
               <i class="ph ph-arrow-right"></i>
             </a>
           </div>
         `;
-
         return;
       }
 
       cartItemsEl.innerHTML = cart.map(item => {
         const image = escapeHTML(item.thumbnail || "");
-        const title = escapeHTML(item.title);
-        const id = Number(item.id);
-        const quantity = Number(item.quantity) || 1;
-        const price = Number(item.price) || 0;
+        const title = escapeHTML(item.title || "Product");
+        const id = escapeHTML(item.id);
+        const quantity = Math.max(1, Number(item.quantity) || 1);
+        const price = Math.max(0, Number(item.price) || 0);
 
         return `
           <article class="cart-item" data-id="${id}">
-
             <div class="item-image">
               <img
                 src="${image}"
                 alt="${title}"
                 loading="lazy"
-                onerror="
-                  this.onerror=null;
-                  this.src='https://placehold.co/300x300/f6f6f6/777?text=Product';
-                "
+                onerror="this.onerror=null;this.src='https://placehold.co/300x300/f6f6f6/777?text=Product';"
               >
             </div>
 
             <div class="item-info">
-
               <h3 class="item-title">${title}</h3>
-
-              <p class="item-unit-price">
-                ${formatPrice(price)} each
-              </p>
+              <p class="item-unit-price">${formatPrice(price)} each</p>
 
               <div class="item-controls">
-
                 <div class="quantity-control">
-
                   <button
                     type="button"
                     data-action="decrease"
                     data-id="${id}"
                     aria-label="Decrease quantity"
                     ${quantity <= 1 || busy ? "disabled" : ""}
-                  >
-                    −
-                  </button>
+                  >−</button>
 
                   <span class="quantity-value">${quantity}</span>
 
@@ -873,10 +775,7 @@
                     data-id="${id}"
                     aria-label="Increase quantity"
                     ${quantity >= 99 || busy ? "disabled" : ""}
-                  >
-                    +
-                  </button>
-
+                  >+</button>
                 </div>
 
                 <button
@@ -885,41 +784,26 @@
                   data-action="remove"
                   data-id="${id}"
                   ${busy ? "disabled" : ""}
-                >
-                  Remove
-                </button>
-
+                >Remove</button>
               </div>
-
             </div>
 
-            <div class="item-total">
-              ${formatPrice(price * quantity)}
-            </div>
-
+            <div class="item-total">${formatPrice(price * quantity)}</div>
           </article>
         `;
       }).join("");
 
       cartItemsEl.querySelectorAll("[data-action]").forEach(button => {
         button.addEventListener("click", () => {
-          handleCartAction(
-            button.dataset.action,
-            Number(button.dataset.id)
-          );
+          handleCartAction(button.dataset.action, button.dataset.id);
         });
       });
     }
 
-    /* UPDATE QUANTITY OR REMOVE ITEM */
-
     async function handleCartAction(action, id) {
       if (busy) return;
 
-      const item = cart.find(
-        product => Number(product.id) === id
-      );
-
+      const item = cart.find(product => String(product.id) === String(id));
       if (!item) return;
 
       busy = true;
@@ -929,26 +813,16 @@
         if (action === "increase" || action === "decrease") {
           let quantity = Number(item.quantity) || 1;
 
-          if (action === "increase") {
-            quantity = Math.min(99, quantity + 1);
-          } else {
-            quantity = Math.max(1, quantity - 1);
-          }
+          quantity = action === "increase"
+            ? Math.min(99, quantity + 1)
+            : Math.max(1, quantity - 1);
 
-          const data = await cartRequest("PATCH", {
-            id,
-            quantity
-          });
-
-          cart = data.items || [];
-
+          const data = await cartRequest("PATCH", { id, quantity });
+          cart = Array.isArray(data.items) ? data.items : [];
           showToast("Quantity updated");
-
         } else if (action === "remove") {
           const data = await cartRequest("DELETE", { id });
-
-          cart = data.items || [];
-
+          cart = Array.isArray(data.items) ? data.items : [];
           showToast("Product removed from cart");
         }
 
@@ -957,21 +831,17 @@
         } catch (error) {
           console.warn("Could not update local cart cache:", error);
         }
-
       } catch (error) {
         console.error("Cart update error:", error);
 
         if (error.message !== "Login required.") {
           showToast(error.message || "Cart update nahi hua");
         }
-
       } finally {
         busy = false;
         renderCart();
       }
     }
-
-    /* CLEAR CART */
 
     clearCartButton.addEventListener("click", async () => {
       if (busy || cart.length === 0) return;
@@ -986,45 +856,36 @@
       renderCart();
 
       try {
-        await cartRequest("DELETE", { clear: true });
-
-        cart = [];
+        const data = await cartRequest("DELETE", { clear: true });
+        cart = Array.isArray(data.items) ? data.items : [];
 
         try {
-          localStorage.setItem("shoppy_cart", "[]");
+          localStorage.setItem("shoppy_cart", JSON.stringify(cart));
         } catch (error) {
           console.warn("Could not clear local cart cache:", error);
         }
 
         showToast("Cart cleared");
-
       } catch (error) {
         console.error("Clear cart error:", error);
 
         if (error.message !== "Login required.") {
           showToast(error.message || "Cart clear nahi hua");
         }
-
       } finally {
         busy = false;
         renderCart();
       }
     });
 
-    /* CHECKOUT PLACEHOLDER */
-
     checkoutButton.addEventListener("click", () => {
-      if (cart.length === 0) return;
+      if (cart.length === 0 || busy) return;
 
-      showToast(
-        "Checkout aur payment system abhi connect nahi hua hai."
-      );
+      showToast("Checkout aur payment system abhi connect nahi hua hai.");
     });
-
-    /* INITIAL LOAD */
 
     loadCart();
   </script>
-
 </body>
 </html>
+```
