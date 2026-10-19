@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,10 +49,7 @@
       text-decoration: none;
     }
 
-    button,
-    input,
-    select,
-    textarea {
+    button, input, select, textarea {
       font: inherit;
     }
 
@@ -706,8 +704,8 @@
   <main class="container">
 
     <div class="page-heading">
-      <h1>Add delivery address</h1>
-      <p>Enter your details to help us deliver your order to the right place.</p>
+      <h1 id="pageTitle">Add delivery address</h1>
+      <p id="pageDescription">Enter your details to help us deliver your order to the right place.</p>
     </div>
 
     <form id="addressForm" class="address-form" novalidate>
@@ -814,15 +812,16 @@
             <div class="field-error">Enter a valid 6-digit Indian PIN code.</div>
           </div>
 
-          <div class="field">
+          <div class="field" id="postOfficeField">
             <label for="postOffice">Post office <span class="optional">Optional</span></label>
             <select id="postOffice" name="postOffice">
               <option value="">Select post office</option>
             </select>
             <div class="field-help">Available options appear after PIN code lookup.</div>
+            <div class="field-error">Please select a post office.</div>
           </div>
 
-          <div class="field">
+          <div class="field" id="houseNumberField">
             <label for="houseNumber">House / Flat / Building number <span class="required">*</span></label>
             <input
               type="text"
@@ -847,7 +846,7 @@
             >
           </div>
 
-          <div class="field">
+          <div class="field" id="areaField">
             <label for="area">Street / Area / Colony <span class="required">*</span></label>
             <input
               type="text"
@@ -1004,6 +1003,7 @@
 
     const API_URL = "/api/addresses";
     const ADDRESSES_PAGE = "/addresses.html";
+    const LOGIN_PAGE = "/login.html";
 
     const form = document.getElementById("addressForm");
     const pincodeInput = document.getElementById("pincode");
@@ -1016,18 +1016,37 @@
     const formMessage = document.getElementById("formMessage");
     const loadingDialog = document.getElementById("loadingDialog");
 
+    const params = new URLSearchParams(window.location.search);
+    const editAddressId = (params.get("edit") || "").trim();
+    const isEditMode = Boolean(editAddressId);
+
     let pincodeRequestController = null;
     let pincodeRequestTimer = null;
     let currentPincodeRequest = 0;
     let saving = false;
+    let loadingAddress = false;
     let redirectTimer = null;
 
     document.getElementById("year").textContent = new Date().getFullYear();
 
     /*
-      Hide dialog on browser Back/Forward and when the page
-      is restored from the browser's back-forward cache.
+      EDIT MODE:
+      address.html?edit=ADDRESS_ID
+
+      ADD MODE:
+      address.html
     */
+
+    if (isEditMode) {
+      document.title = "Edit Delivery Address — Shoppy";
+      document.getElementById("pageTitle").textContent = "Edit delivery address";
+      document.getElementById("pageDescription").textContent =
+        "Update your delivery details and save your changes.";
+      saveAddressBtn.textContent = "Save Changes";
+      document.getElementById("dialogTitle").textContent = "Loading address";
+      document.getElementById("dialogDescription").textContent =
+        "Please wait while we retrieve your saved address.";
+    }
 
     function hideLoadingDialog() {
       loadingDialog.classList.remove("show");
@@ -1037,7 +1056,6 @@
     function showLoadingDialog(title, description) {
       document.getElementById("dialogTitle").textContent = title;
       document.getElementById("dialogDescription").textContent = description;
-
       loadingDialog.classList.add("show");
       loadingDialog.setAttribute("aria-hidden", "false");
     }
@@ -1050,9 +1068,10 @@
         redirectTimer = null;
       }
 
-      saving = false;
-      saveAddressBtn.disabled = false;
-      saveAddressBtn.textContent = "Save Address";
+      if (!saving) {
+        saveAddressBtn.disabled = false;
+        saveAddressBtn.textContent = isEditMode ? "Save Changes" : "Save Address";
+      }
     });
 
     window.addEventListener("pagehide", function () {
@@ -1114,6 +1133,205 @@
     function clearPincodeStatus() {
       pincodeStatus.textContent = "";
       pincodeStatus.className = "pincode-status";
+    }
+
+    function setPostOfficeValue(value) {
+      const cleanValue = String(value || "").trim();
+
+      if (!cleanValue) {
+        postOfficeSelect.value = "";
+        return;
+      }
+
+      const existingOption = Array.from(postOfficeSelect.options).find(
+        option => option.value === cleanValue
+      );
+
+      if (!existingOption) {
+        const option = document.createElement("option");
+        option.value = cleanValue;
+        option.textContent = cleanValue;
+        postOfficeSelect.appendChild(option);
+      }
+
+      postOfficeSelect.value = cleanValue;
+    }
+
+    function setAddressType(value) {
+      const normalized = String(value || "Home").toLowerCase();
+
+      const radio = Array.from(
+        document.querySelectorAll('input[name="addressType"]')
+      ).find(input => input.value.toLowerCase() === normalized);
+
+      if (radio) {
+        radio.checked = true;
+      } else {
+        document.getElementById("typeHome").checked = true;
+      }
+    }
+
+    function normalizeAddressId(value) {
+      return typeof value === "string" ? value.trim() : "";
+    }
+
+    /*
+      LOAD SAVED ADDRESS FOR EDITING
+
+      GET /api/addresses returns the signed-in user's addresses.
+      The matching address is selected by its ID.
+    */
+
+    async function loadAddressForEditing() {
+      if (!isEditMode) return;
+
+      if (!/^[A-Za-z0-9_-]{1,128}$/.test(editAddressId)) {
+        showFormMessage(
+          "Invalid address ID. Please return to your saved addresses and try again.",
+          "error"
+        );
+        saveAddressBtn.disabled = true;
+        return;
+      }
+
+      loadingAddress = true;
+      saveAddressBtn.disabled = true;
+
+      showLoadingDialog(
+        "Loading address",
+        "Please wait while we retrieve your saved address."
+      );
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          credentials: "same-origin",
+          headers: {
+            "Accept": "application/json"
+          },
+          cache: "no-store"
+        });
+
+        let result = {};
+
+        try {
+          result = await response.json();
+        } catch (_) {
+          result = {};
+        }
+
+        if (response.status === 401) {
+          hideLoadingDialog();
+          window.location.replace(
+            LOGIN_PAGE + "?redirect=" +
+            encodeURIComponent("/address.html?edit=" + editAddressId)
+          );
+          return;
+        }
+
+        if (!response.ok || result.success !== true) {
+          throw new Error(
+            result.message || "Could not load your saved addresses."
+          );
+        }
+
+        const addresses = Array.isArray(result.addresses)
+          ? result.addresses
+          : [];
+
+        const address = addresses.find(item => {
+          const id = normalizeAddressId(
+            item.id || item.addressId || item.key
+          );
+
+          return id === editAddressId;
+        });
+
+        if (!address) {
+          throw new Error(
+            "This address was not found. It may have been deleted, or it may no longer be available."
+          );
+        }
+
+        populateAddressForm(address);
+
+        showFormMessage(
+          "Your saved address has been loaded. Make your changes and select Save Changes.",
+          "success"
+        );
+
+      } catch (error) {
+        console.error("Load address error:", error);
+
+        showFormMessage(
+          error.message || "Could not load the saved address. Please try again.",
+          "error"
+        );
+
+        saveAddressBtn.disabled = true;
+
+      } finally {
+        loadingAddress = false;
+        hideLoadingDialog();
+
+        if (!saveAddressBtn.disabled) {
+          saveAddressBtn.textContent = "Save Changes";
+        }
+      }
+    }
+
+    function populateAddressForm(address) {
+      const fields = [
+        "fullName",
+        "phone",
+        "alternatePhone",
+        "pincode",
+        "houseNumber",
+        "building",
+        "area",
+        "landmark",
+        "city",
+        "district",
+        "state",
+        "country",
+        "deliveryInstructions"
+      ];
+
+      fields.forEach(id => {
+        if (address[id] !== undefined && address[id] !== null) {
+          const element = document.getElementById(id);
+          if (element) {
+            element.value = String(address[id]);
+          }
+        }
+      });
+
+      setPostOfficeValue(address.postOffice || "");
+      setAddressType(address.addressType || "Home");
+
+      document.getElementById("isDefault").checked =
+        address.isDefault === true;
+
+      /*
+        Do not automatically run PIN lookup here. It could replace
+        the saved post-office selection or overwrite address fields.
+        The user can still use Check if they want refreshed PIN data.
+      */
+
+      clearPincodeStatus();
+      clearFormMessage();
+
+      [
+        "fullNameField",
+        "phoneField",
+        "alternatePhoneField",
+        "pincodeField",
+        "postOfficeField",
+        "houseNumberField",
+        "areaField",
+        "cityField",
+        "stateField"
+      ].forEach(clearFieldError);
     }
 
     document.getElementById("phone").addEventListener("input", function () {
@@ -1193,6 +1411,7 @@
         const offices = result.data.post_offices;
         const states = [...new Set(offices.map(office => office.state).filter(Boolean))];
         const districts = [...new Set(offices.map(office => office.district).filter(Boolean))];
+        const previouslySelectedOffice = postOfficeSelect.value;
 
         if (states.length === 1) setValue("state", states[0]);
         if (districts.length === 1) setValue("district", districts[0]);
@@ -1225,7 +1444,13 @@
           setValue("city", districts[0]);
         }
 
-        if (offices.length === 1 && offices[0].office_name) {
+        const previousOption = Array.from(postOfficeSelect.options).find(
+          option => option.value === previouslySelectedOffice
+        );
+
+        if (previousOption) {
+          postOfficeSelect.value = previouslySelectedOffice;
+        } else if (offices.length === 1 && offices[0].office_name) {
           postOfficeSelect.value = offices[0].office_name;
         }
 
@@ -1308,15 +1533,12 @@
       if (!getValue("city") && option.dataset.district) {
         setValue("city", option.dataset.district);
       }
+
+      clearFieldError("postOfficeField");
     });
 
     /*
       CURRENT LOCATION
-
-      1. Request a fresh, high-accuracy GPS position.
-      2. Retry with a less restrictive GPS request if needed.
-      3. Reverse-geocode the coordinates.
-      4. Fill as many address fields as the geocoder returns.
     */
 
     function setLocationButtonLoading(loading) {
@@ -1343,11 +1565,6 @@
     }
 
     async function getAccuratePosition() {
-      /*
-        First try: fresh high-accuracy position.
-        maximumAge: 0 avoids using an old cached GPS position.
-      */
-
       try {
         return await getPosition({
           enableHighAccuracy: true,
@@ -1355,11 +1572,6 @@
           maximumAge: 0
         });
       } catch (firstError) {
-        /*
-          Retry once. This may help when high-accuracy GPS
-          is temporarily unavailable indoors.
-        */
-
         if (firstError.code === 1) {
           throw firstError;
         }
@@ -1420,12 +1632,12 @@
     }
 
     function findArea(address) {
-      return address.neighbourhood ||
+      return address.road ||
         address.residential ||
+        address.neighbourhood ||
         address.suburb ||
         address.quarter ||
         address.hamlet ||
-        address.road ||
         address.pedestrian ||
         address.allotments ||
         "";
@@ -1442,9 +1654,9 @@
     function findBuilding(address, data) {
       return address.building ||
         address.apartment ||
+        address.house_name ||
         address.commercial ||
         address.retail ||
-        address.tourism ||
         (data && data.name) ||
         "";
     }
@@ -1452,22 +1664,16 @@
     function findLandmark(address, data) {
       return address.amenity ||
         address.shop ||
+        address.tourism ||
         address.leisure ||
         address.historic ||
         address.office ||
-        address.tourism ||
         (data && data.name) ||
         "";
     }
 
     function fillLocationData(data) {
       const address = data.address || {};
-
-      /*
-        The location lookup fills returned values.
-        Existing manually entered values are preserved
-        unless the returned data has a more specific value.
-      */
 
       setValue("houseNumber", address.house_number || address.house_name || "", true);
       setValue("building", findBuilding(address, data), true);
@@ -1482,11 +1688,6 @@
         document.getElementById("country").value = "India";
       }
 
-      /*
-        If the reverse-geocoded result has a postcode,
-        automatically look up post offices for that PIN code.
-      */
-
       const pincode = getValue("pincode");
 
       if (/^\d{6}$/.test(pincode)) {
@@ -1494,16 +1695,11 @@
         lookupPincode(pincode);
       }
 
-      /*
-        The location provider may return a road, suburb or
-        neighbourhood, but may not return a house number.
-        Do not fabricate address information.
-      */
-
       const filledFields = [
         "houseNumber",
         "building",
         "area",
+        "landmark",
         "city",
         "district",
         "state",
@@ -1512,7 +1708,7 @@
 
       updateLocationNote(
         "Location detected. " + filledFields +
-        " address fields have information. Please verify them and fill any missing house/flat details.",
+        " address fields have information. Verify the details and fill any missing house/flat information.",
         "success"
       );
     }
@@ -1526,21 +1722,14 @@
       );
 
       try {
-        /*
-          Geolocation works on HTTPS or localhost.
-          If the user has denied permission, the browser
-          must be allowed to access location in its settings.
-        */
-
         const position = await getAccuratePosition();
-
         const accuracy = Number(position.coords.accuracy);
 
         if (Number.isFinite(accuracy) && accuracy > 1000) {
           updateLocationNote(
             "Your device returned an approximate location (accuracy about " +
             Math.round(accuracy) +
-            " metres). Trying to retrieve the available address details..."
+            " metres). The address may need manual verification."
           );
         } else {
           updateLocationNote(
@@ -1554,6 +1743,14 @@
         );
 
         fillLocationData(data);
+
+        if (Number.isFinite(accuracy) && accuracy > 1000) {
+          updateLocationNote(
+            "Approximate location detected (about " + Math.round(accuracy) +
+            " metres accuracy). Please verify the address carefully.",
+            "error"
+          );
+        }
 
       } catch (error) {
         console.error("Current location error:", error);
@@ -1614,10 +1811,7 @@
 
       const alternatePhone = getValue("alternatePhone");
 
-      if (
-        alternatePhone &&
-        !/^[6-9]\d{9}$/.test(alternatePhone)
-      ) {
+      if (alternatePhone && !/^[6-9]\d{9}$/.test(alternatePhone)) {
         setFieldError("alternatePhoneField", true);
         valid = false;
       } else {
@@ -1629,9 +1823,21 @@
         valid = false;
       }
 
+      /*
+        The addresses API expects postOffice. Keep this validation
+        aligned with the backend's required address fields.
+      */
+
+      if (!getValue("postOffice")) {
+        setFieldError("postOfficeField", true);
+        valid = false;
+      } else {
+        setFieldError("postOfficeField", false);
+      }
+
       if (!valid) {
         showFormMessage(
-          "Please check the required fields and correct the highlighted information.",
+          "Please check the required fields and correct the highlighted information. Select a post office after checking your PIN code.",
           "error"
         );
       }
@@ -1669,16 +1875,29 @@
     }
 
     /*
-      SAVE ADDRESS USING BACKEND API
+      SAVE NEW ADDRESS OR UPDATE EXISTING ADDRESS
+
+      POST /api/addresses -> create a new address
+      PUT  /api/addresses -> update an existing address
     */
 
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
 
-      if (saving) return;
+      if (saving || loadingAddress) return;
+
+      if (isEditMode && saveAddressBtn.disabled) {
+        showFormMessage(
+          "The saved address could not be loaded. Return to your address list and try again.",
+          "error"
+        );
+        return;
+      }
 
       if (!validateForm()) {
-        const firstInvalid = form.querySelector(".field.invalid input");
+        const firstInvalid = form.querySelector(
+          ".field.invalid input, .field.invalid select, .field.invalid textarea"
+        );
 
         if (firstInvalid) {
           firstInvalid.focus();
@@ -1692,24 +1911,31 @@
       }
 
       saving = true;
-
       saveAddressBtn.disabled = true;
-      saveAddressBtn.textContent = "Saving...";
+      saveAddressBtn.textContent = isEditMode ? "Saving Changes..." : "Saving...";
 
       showLoadingDialog(
-        "Saving your address",
-        "Please wait while your address is saved securely."
+        isEditMode ? "Updating your address" : "Saving your address",
+        isEditMode
+          ? "Please wait while your changes are saved securely."
+          : "Please wait while your address is saved securely."
       );
 
       try {
+        const payload = buildAddressPayload();
+
+        if (isEditMode) {
+          payload.id = editAddressId;
+        }
+
         const response = await fetch(API_URL, {
-          method: "POST",
+          method: isEditMode ? "PUT" : "POST",
           credentials: "same-origin",
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json"
           },
-          body: JSON.stringify(buildAddressPayload())
+          body: JSON.stringify(payload)
         });
 
         let result = {};
@@ -1730,14 +1956,17 @@
 
           saving = false;
           saveAddressBtn.disabled = false;
-          saveAddressBtn.textContent = "Save Address";
+          saveAddressBtn.textContent = isEditMode ? "Save Changes" : "Save Address";
 
           redirectTimer = setTimeout(function () {
             redirectTimer = null;
 
+            const redirectPath = isEditMode
+              ? "/address.html?edit=" + encodeURIComponent(editAddressId)
+              : "/address.html";
+
             window.location.href =
-              "/login.html?redirect=" +
-              encodeURIComponent("/address.html");
+              LOGIN_PAGE + "?redirect=" + encodeURIComponent(redirectPath);
           }, 900);
 
           return;
@@ -1746,62 +1975,56 @@
         if (!response.ok || result.success !== true) {
           if (response.status === 404) {
             throw new Error(
-              "Address API nahi mila. Check karein ki api/addresses.js deploy ho chuki hai."
+              "Address API ya address nahi mila. Check karein ki api/addresses.js deploy hai aur address abhi saved hai."
             );
           }
 
           throw new Error(
             result.message ||
-            "Your address could not be saved. Please try again."
+            (isEditMode
+              ? "Your address could not be updated. Please try again."
+              : "Your address could not be saved. Please try again.")
           );
         }
 
-        /*
-          The API has confirmed success.
-          Show success briefly, then HIDE the dialog before
-          navigating to addresses.html.
-        */
-
         document.getElementById("dialogTitle").textContent =
-          "Address saved successfully";
+          isEditMode ? "Address updated successfully" : "Address saved successfully";
 
         document.getElementById("dialogDescription").textContent =
-          "Your delivery address has been saved. Redirecting...";
+          isEditMode
+            ? "Your changes have been saved. Redirecting..."
+            : "Your delivery address has been saved. Redirecting...";
 
         showFormMessage(
-          "Your address was saved successfully.",
+          isEditMode
+            ? "Your address was updated successfully."
+            : "Your address was saved successfully.",
           "success"
         );
 
         redirectTimer = setTimeout(function () {
           redirectTimer = null;
 
-          /*
-            Important fix:
-            Close the dialog before changing the page.
-            This prevents it from remaining visible if the
-            browser restores this page using its back cache.
-          */
-
           hideLoadingDialog();
-
           window.location.replace(ADDRESSES_PAGE);
-        }, 900);
+        }, 700);
 
       } catch (error) {
-        console.error("Save address error:", error);
+        console.error("Save/update address error:", error);
 
         hideLoadingDialog();
 
         showFormMessage(
           error.message ||
-          "Could not save your address. Please check your connection and try again.",
+          (isEditMode
+            ? "Could not update your address. Please check your connection and try again."
+            : "Could not save your address. Please check your connection and try again."),
           "error"
         );
 
         saving = false;
         saveAddressBtn.disabled = false;
-        saveAddressBtn.textContent = "Save Address";
+        saveAddressBtn.textContent = isEditMode ? "Save Changes" : "Save Address";
       }
     });
 
@@ -1812,6 +2035,7 @@
     [
       ["fullName", "fullNameField"],
       ["pincode", "pincodeField"],
+      ["postOffice", "postOfficeField"],
       ["houseNumber", "houseNumberField"],
       ["area", "areaField"],
       ["city", "cityField"],
@@ -1832,14 +2056,28 @@
       "area",
       "city",
       "state",
-      "alternatePhone"
+      "alternatePhone",
+      "building",
+      "landmark",
+      "district",
+      "deliveryInstructions"
     ].forEach(id => {
       document.getElementById(id).addEventListener(
         "input",
         clearFormMessage
       );
     });
+
+    /*
+      Start loading the address only when ?edit=ID is present.
+      Without that parameter, this page behaves as Add Address.
+    */
+
+    if (isEditMode) {
+      loadAddressForEditing();
+    }
   </script>
 
 </body>
 </html>
+```
