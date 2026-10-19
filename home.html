@@ -36,10 +36,9 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    a { text-decoration: none; color: inherit; }
+    a { color: inherit; text-decoration: none; }
     button, input { font: inherit; }
     button { cursor: pointer; }
-
     button:focus-visible, a:focus-visible, input:focus-visible {
       outline: 2px solid #555;
       outline-offset: 3px;
@@ -86,7 +85,6 @@
     }
 
     .nav-actions { display: flex; align-items: center; gap: 22px; }
-
     .nav-icon {
       width: 32px;
       height: 36px;
@@ -96,7 +94,6 @@
       font-size: 23px;
       position: relative;
     }
-
     .nav-icon:hover { opacity: .6; }
 
     .cart-count {
@@ -108,7 +105,7 @@
       padding: 0 4px;
       border-radius: 20px;
       background: #111;
-      color: white;
+      color: #fff;
       font-size: 9px;
       font-weight: 800;
       display: flex;
@@ -116,7 +113,7 @@
       justify-content: center;
     }
 
-    .cart-count[hidden], [hidden] { display: none !important; }
+    [hidden] { display: none !important; }
 
     .hero-wrap { padding: 32px 7% 0; }
     .hero-wrap.search-hidden { display: none; }
@@ -134,7 +131,6 @@
     }
 
     .hero-copy { max-width: 540px; }
-
     .eyebrow {
       display: inline-flex;
       align-items: center;
@@ -145,7 +141,6 @@
       text-transform: uppercase;
       margin-bottom: 18px;
     }
-
     .eyebrow i { font-size: 17px; }
 
     .hero h1 {
@@ -177,7 +172,6 @@
       font-size: 12px;
       font-weight: 700;
     }
-
     .hero-button:hover { background: #333; }
 
     .hero-art {
@@ -190,7 +184,6 @@
       align-items: center;
       justify-content: center;
     }
-
     .hero-art img { width: 78%; height: 78%; object-fit: contain; }
 
     .container {
@@ -206,17 +199,14 @@
       gap: 18px;
       margin-bottom: 20px;
     }
-
     .section-head h2 {
       font-size: 23px;
       font-weight: 800;
       letter-spacing: -.8px;
     }
-
     .section-head p { color: var(--gray); font-size: 12px; margin-top: 7px; }
 
     .categories { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 32px; }
-
     .category-btn {
       border: 1px solid var(--border);
       background: #fff;
@@ -228,13 +218,11 @@
       text-transform: capitalize;
       transition: .2s;
     }
-
     .category-btn:hover, .category-btn.active {
       background: #111;
       border-color: #111;
       color: #fff;
     }
-
     .product-count { color: var(--gray); font-size: 12px; white-space: nowrap; }
 
     .product-grid {
@@ -250,8 +238,8 @@
       overflow: hidden;
       background: #fff;
       transition: transform .2s, box-shadow .2s;
+      cursor: pointer;
     }
-
     .product-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 10px 28px rgba(0,0,0,.06);
@@ -265,9 +253,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
-
-    .product-image img { width: 100%; height: 100%; object-fit: contain; }
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 1;
+      transition: opacity .2s;
+    }
+    .product-image img.is-loading { opacity: 0; }
 
     .discount {
       position: absolute;
@@ -290,7 +285,6 @@
       font-weight: 700;
       letter-spacing: .7px;
     }
-
     .product-title {
       font-size: 14px;
       font-weight: 700;
@@ -299,7 +293,6 @@
       min-height: 42px;
       overflow-wrap: anywhere;
     }
-
     .product-description {
       color: var(--gray);
       font-size: 11px;
@@ -311,7 +304,6 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-
     .product-rating {
       display: flex;
       align-items: center;
@@ -320,9 +312,7 @@
       color: #555;
       font-size: 11px;
     }
-
     .product-rating i { color: #e7a500; font-size: 14px; }
-
     .product-bottom {
       display: flex;
       align-items: center;
@@ -330,7 +320,6 @@
       gap: 8px;
       margin-top: 13px;
     }
-
     .product-price { font-size: 17px; font-weight: 800; letter-spacing: -.5px; }
 
     .add-button {
@@ -346,33 +335,56 @@
       border-radius: 10px;
       font-size: 19px;
     }
-
     .add-button:hover { background: #333; }
     .add-button.added { background: var(--success); color: #fff; }
-    .add-button.added:hover { background: #116b31; }
     .add-button:disabled { opacity: .65; cursor: wait; }
 
-    .product-grid.list-view { display: flex; flex-direction: column; gap: 14px; }
+    /* Skeleton loading */
+    .skeleton {
+      position: relative;
+      overflow: hidden;
+      background: #eaeaea;
+      border-radius: 7px;
+    }
+    .skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.72), transparent);
+      animation: shimmer 1.35s infinite;
+    }
+    @keyframes shimmer {
+      100% { transform: translateX(100%); }
+    }
+    .skeleton-card { cursor: default; pointer-events: none; }
+    .skeleton-card:hover { transform: none; box-shadow: none; }
+    .skeleton-image { height: 220px; border-radius: 0; }
+    .skeleton-line { height: 10px; margin-top: 12px; }
+    .skeleton-line.short { width: 35%; }
+    .skeleton-line.medium { width: 65%; }
+    .skeleton-line.long { width: 95%; }
+    .skeleton-line.price { width: 38%; height: 17px; }
+    .skeleton-row { display: flex; align-items: center; justify-content: space-between; margin-top: 15px; }
+    .skeleton-circle { width: 36px; height: 36px; border-radius: 10px; }
 
+    .product-grid.list-view { display: flex; flex-direction: column; gap: 14px; }
     .product-grid.list-view .product-card {
       display: flex;
       flex-direction: row;
       align-items: stretch;
       width: 100%;
     }
-
     .product-grid.list-view .product-card:hover {
-      transform: none;
+      transform: translateY(-1px);
       box-shadow: 0 5px 20px rgba(0,0,0,.05);
     }
-
     .product-grid.list-view .product-image {
       width: 190px;
       min-width: 190px;
       height: 190px;
       flex-shrink: 0;
     }
-
     .product-grid.list-view .product-info {
       flex: 1;
       min-width: 0;
@@ -380,12 +392,10 @@
       flex-direction: column;
       justify-content: center;
     }
-
     .product-grid.list-view .product-title,
     .product-grid.list-view .product-description { min-height: 0; }
 
     .load-more-wrap { display: flex; justify-content: center; margin-top: 30px; }
-
     .load-more-button {
       min-width: 170px;
       padding: 13px 22px;
@@ -396,7 +406,6 @@
       font-size: 12px;
       font-weight: 700;
     }
-
     .load-more-button:hover { background: #333; }
     .load-more-button:disabled { opacity: .6; cursor: wait; }
 
@@ -411,7 +420,6 @@
       font-size: 13px;
       line-height: 1.7;
     }
-
     .status button {
       display: block;
       margin: 14px auto 0;
@@ -441,7 +449,6 @@
       max-width: calc(100% - 32px);
       text-align: center;
     }
-
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
     .footer {
@@ -457,7 +464,7 @@
 
     @media (max-width: 1050px) {
       .product-grid:not(.list-view) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .product-image { height: 200px; }
+      .product-image, .skeleton-image { height: 200px; }
       .navbar { padding: 0 5%; }
       .hero-wrap { padding-left: 5%; padding-right: 5%; }
     }
@@ -478,7 +485,8 @@
       .container { width: 90%; margin: 34px auto; }
       .section-head h2 { font-size: 20px; }
       .product-grid:not(.list-view) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
-      .product-image { height: 165px; padding: 12px; }
+      .product-image, .skeleton-image { height: 165px; padding: 12px; }
+      .skeleton-image { padding: 0; }
       .product-info { padding: 12px; }
       .product-title { font-size: 12px; min-height: 36px; }
       .product-description { font-size: 10px; min-height: 48px; }
@@ -499,7 +507,8 @@
       .hero-art { display: none; }
       .hero h1 { font-size: 32px; }
       .product-grid:not(.list-view) { gap: 10px; }
-      .product-grid:not(.list-view) .product-image { height: 145px; }
+      .product-grid:not(.list-view) .product-image,
+      .product-grid:not(.list-view) .skeleton-image { height: 145px; }
       .product-grid:not(.list-view) .product-info { padding: 10px; }
       .product-grid.list-view .product-image { width: 100px; min-width: 100px; height: 130px; }
       .product-grid.list-view .product-info { padding: 8px; }
@@ -512,6 +521,7 @@
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { transition-duration: .01ms !important; }
+      .skeleton::after { animation: none; }
     }
   </style>
 </head>
@@ -581,9 +591,7 @@
       <span id="productCount" class="product-count"></span>
     </div>
 
-    <div id="productGrid" class="product-grid" aria-live="polite" aria-busy="true">
-      <div class="status">Loading products...</div>
-    </div>
+    <div id="productGrid" class="product-grid" aria-live="polite" aria-busy="true"></div>
 
     <div class="load-more-wrap">
       <button id="loadMoreButton" class="load-more-button" type="button" hidden>
@@ -640,10 +648,8 @@
       })[char]);
     }
 
-    /*
-      API price should already be INR.
-      Do not multiply by 85 here, otherwise price will be converted twice.
-    */
+    // API price is already converted to INR at the backend.
+    // Do not multiply it by 85 again here.
     function formatPrice(price) {
       return new Intl.NumberFormat("en-IN", {
         style: "currency",
@@ -744,7 +750,6 @@
         }
 
         const items = Array.isArray(data.items) ? data.items : [];
-
         cartProductIds = new Set(
           items.map(item => Number(item.id)).filter(Number.isFinite)
         );
@@ -769,7 +774,8 @@
         button.disabled = false;
 
         if (!loaded) {
-          showToast("Cart connect nahi ho paya. Login karein ya dobara try karein.");
+          showToast("Please login to save your cart.");
+          window.location.href = "/login.html";
           return;
         }
       }
@@ -793,9 +799,13 @@
           body: JSON.stringify({
             id: Number(product.id),
             title: product.title,
-            price: Number(product.price) || 0,
+
+            // Store the original USD amount. INR conversion is for display only.
+            price: Number(product.originalPriceUSD ?? product.price / 85) || 0,
+
             thumbnail: product.thumbnail || product.images?.[0] || "",
-            category: product.category || "other"
+            category: product.category || "other",
+            quantity: 1
           })
         });
 
@@ -814,7 +824,7 @@
         const savedItem = data.item || {
           id: product.id,
           title: product.title,
-          price: product.price,
+          price: Number(product.originalPriceUSD ?? product.price / 85) || 0,
           thumbnail: product.thumbnail || product.images?.[0] || "",
           category: product.category || "other",
           quantity: 1
@@ -831,6 +841,26 @@
       } finally {
         button.disabled = false;
       }
+    }
+
+    function renderSkeletons(count = 8) {
+      productGrid.setAttribute("aria-busy", "true");
+      productGrid.innerHTML = Array.from({ length: count }, () => `
+        <article class="product-card skeleton-card" aria-hidden="true">
+          <div class="skeleton skeleton-image"></div>
+          <div class="product-info">
+            <div class="skeleton skeleton-line short"></div>
+            <div class="skeleton skeleton-line long"></div>
+            <div class="skeleton skeleton-line medium"></div>
+            <div class="skeleton skeleton-line long"></div>
+            <div class="skeleton skeleton-line medium"></div>
+            <div class="skeleton-row">
+              <div class="skeleton skeleton-line price"></div>
+              <div class="skeleton skeleton-circle"></div>
+            </div>
+          </div>
+        </article>
+      `).join("");
     }
 
     function showError(message) {
@@ -859,17 +889,19 @@
       const isAdded = cartProductIds.has(id);
 
       return `
-        <article class="product-card">
+        <article class="product-card" data-product-id="${id}"
+          tabindex="0" aria-label="View details for ${title}">
           <div class="product-image">
             ${discount > 0
               ? `<span class="discount">-${Math.round(discount)}%</span>`
               : ""}
 
             <img
+              class="is-loading"
               src="${escapeHTML(image)}"
               alt="${title}"
               loading="lazy"
-              onerror="this.onerror=null;this.src='https://placehold.co/400x400/f6f6f6/777?text=Product';"
+              data-product-image
             >
           </div>
 
@@ -901,15 +933,36 @@
       `;
     }
 
+    function attachImageHandlers(container) {
+      container.querySelectorAll("[data-product-image]").forEach(img => {
+        const finishLoading = () => img.classList.remove("is-loading");
+
+        img.addEventListener("load", finishLoading, { once: true });
+        img.addEventListener("error", () => {
+          img.onerror = null;
+          img.src = "https://placehold.co/400x400/f6f6f6/777?text=Product";
+          finishLoading();
+        }, { once: true });
+
+        if (img.complete) {
+          if (img.naturalWidth > 0) finishLoading();
+          else img.dispatchEvent(new Event("error"));
+        }
+      });
+    }
+
     function attachCartHandlers(container) {
       container.querySelectorAll(".add-button").forEach(button => {
         if (button.dataset.cartHandlerAttached === "true") return;
         button.dataset.cartHandlerAttached = "true";
 
-        button.addEventListener("click", async () => {
+        button.addEventListener("click", async event => {
+          event.stopPropagation();
+
           const product = allProducts.find(
             item => Number(item.id) === Number(button.dataset.productId)
           );
+
           if (product) await addToCart(product, button);
         });
       });
@@ -931,6 +984,7 @@
     function renderNextBatch() {
       const start = displayedCount;
       const end = Math.min(start + PAGE_SIZE, allProducts.length);
+
       if (start >= end) {
         updateProductCount();
         return;
@@ -943,6 +997,7 @@
 
       displayedCount = end;
       attachCartHandlers(productGrid);
+      attachImageHandlers(productGrid);
       updateProductCount();
     }
 
@@ -1021,14 +1076,13 @@
       const thisRequest = ++requestNumber;
 
       updatePageLayout();
-      productGrid.setAttribute("aria-busy", "true");
-      productGrid.innerHTML = '<div class="status">Loading products...</div>';
+      renderSkeletons(8);
       productCount.textContent = "";
       loadMoreButton.hidden = true;
 
-      const params = new URLSearchParams({ limit: "24" });
+      const params = new URLSearchParams();
       if (currentSearch) params.set("search", currentSearch);
-      else if (currentCategory) params.set("category", currentCategory);
+      if (currentCategory) params.set("category", currentCategory);
 
       try {
         const response = await fetch(`/api/products?${params.toString()}`, {
@@ -1039,26 +1093,24 @@
           signal
         });
 
-        const responseText = await response.text();
-        if (signal.aborted || thisRequest !== requestNumber) return;
-
         const contentType = response.headers.get("content-type") || "";
         if (!contentType.includes("application/json")) {
           throw new Error(`Products API response invalid hai (HTTP ${response.status}).`);
         }
 
-        let data;
-        try {
-          data = JSON.parse(responseText);
-        } catch {
-          throw new Error("Products API ka response valid JSON nahi hai.");
-        }
+        const data = await response.json();
+
+        if (signal.aborted || thisRequest !== requestNumber) return;
 
         if (!response.ok || data.success !== true || !Array.isArray(data.products)) {
           throw new Error(data.message || `Products load nahi hue (HTTP ${response.status}).`);
         }
 
-        if (!currentSearch && !currentCategory) renderCategories(data.products);
+        // Categories are created from the full product list on the initial page load.
+        if (!currentSearch && !currentCategory) {
+          renderCategories(data.products);
+        }
+
         renderProducts(data.products);
       } catch (error) {
         if (error.name === "AbortError" || thisRequest !== requestNumber) return;
@@ -1066,6 +1118,34 @@
         showError(error.message || "Products load nahi ho paaye. Dobara try karein.");
       }
     }
+
+    // Clicking a product card opens its individual detail page.
+    // The Add to Cart button is handled separately and does not navigate.
+    productGrid.addEventListener("click", event => {
+      if (event.target.closest(".add-button")) return;
+
+      const card = event.target.closest(".product-card[data-product-id]");
+      if (!card) return;
+
+      const id = Number(card.dataset.productId);
+      if (Number.isFinite(id)) {
+        window.location.href = `/product.html?id=${encodeURIComponent(id)}`;
+      }
+    });
+
+    productGrid.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (event.target.closest("button")) return;
+
+      const card = event.target.closest(".product-card[data-product-id]");
+      if (!card) return;
+
+      event.preventDefault();
+      const id = Number(card.dataset.productId);
+      if (Number.isFinite(id)) {
+        window.location.href = `/product.html?id=${encodeURIComponent(id)}`;
+      }
+    });
 
     loadMoreButton.addEventListener("click", () => {
       if (displayedCount >= allProducts.length) {
