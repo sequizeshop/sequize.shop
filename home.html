@@ -7,6 +7,21 @@
   <meta name="theme-color" content="#ffffff">
   <title>Shoppy — Discover Products</title>
   <meta name="description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
+  <meta name="robots" content="index, follow">
+
+  <link rel="canonical" href="https://YOUR-DOMAIN/home.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Shoppy">
+  <meta property="og:title" content="Shoppy — Discover Products">
+  <meta property="og:description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
+  <meta property="og:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+  <meta property="og:url" content="https://YOUR-DOMAIN/home.html">
+  <meta property="og:image:alt" content="Shoppy logo">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Shoppy — Discover Products">
+  <meta name="twitter:description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
+  <meta name="twitter:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
   <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
   <link rel="apple-touch-icon" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
@@ -625,6 +640,7 @@
 
     const PAGE_SIZE = 24;
     const CART_STORAGE_KEY = "shoppy_cart";
+    const PRODUCT_ID_PATTERN = /^[A-Za-z0-9]{40}$/;
 
     let currentCategory = "";
     let currentSearch = "";
@@ -637,6 +653,15 @@
     let cartIsLoaded = false;
 
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    function isValidProductId(id) {
+      return typeof id === "string" && PRODUCT_ID_PATTERN.test(id);
+    }
+
+    function normalizeProductId(id) {
+      const value = String(id ?? "");
+      return isValidProductId(value) ? value : "";
+    }
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -683,11 +708,15 @@
     }
 
     function updateLocalCartItem(item) {
-      const cart = readCart();
-      const index = cart.findIndex(entry => Number(entry.id) === Number(item.id));
+      const id = normalizeProductId(item.id);
+      if (!id) return;
 
-      if (index >= 0) cart[index] = { ...cart[index], ...item };
-      else cart.push(item);
+      const cart = readCart();
+      const index = cart.findIndex(entry => normalizeProductId(entry.id) === id);
+      const normalizedItem = { ...item, id };
+
+      if (index >= 0) cart[index] = { ...cart[index], ...normalizedItem };
+      else cart.push(normalizedItem);
 
       writeCart(cart);
     }
@@ -703,7 +732,8 @@
     }
 
     function updateCartButton(button, product) {
-      const isAdded = cartProductIds.has(Number(product.id));
+      const id = normalizeProductId(product.id);
+      const isAdded = Boolean(id) && cartProductIds.has(id);
 
       button.classList.toggle("added", isAdded);
       button.innerHTML = isAdded
@@ -719,9 +749,13 @@
 
     function refreshVisibleCartButtons() {
       productGrid.querySelectorAll(".add-button").forEach(button => {
+        const buttonId = normalizeProductId(button.dataset.productId);
+        if (!buttonId) return;
+
         const product = allProducts.find(
-          item => Number(item.id) === Number(button.dataset.productId)
+          item => normalizeProductId(item.id) === buttonId
         );
+
         if (product) updateCartButton(button, product);
       });
     }
@@ -750,12 +784,12 @@
         }
 
         const items = Array.isArray(data.items) ? data.items : [];
-        cartProductIds = new Set(
-          items.map(item => Number(item.id)).filter(Number.isFinite)
-        );
+        const validItems = items.filter(item => isValidProductId(String(item.id)));
 
-        writeCart(items);
-        updateCartBadge(items);
+        cartProductIds = new Set(validItems.map(item => String(item.id)));
+
+        writeCart(validItems);
+        updateCartBadge(validItems);
         cartIsLoaded = true;
         refreshVisibleCartButtons();
         return true;
@@ -767,6 +801,12 @@
 
     async function addToCart(product, button) {
       if (button.disabled) return;
+
+      const productId = normalizeProductId(product.id);
+      if (!productId) {
+        showToast("Invalid product ID. Please refresh the page.");
+        return;
+      }
 
       if (!cartIsLoaded) {
         button.disabled = true;
@@ -780,7 +820,7 @@
         }
       }
 
-      if (cartProductIds.has(Number(product.id))) {
+      if (cartProductIds.has(productId)) {
         updateCartButton(button, product);
         showToast("This product is already in your cart.");
         return;
@@ -797,7 +837,7 @@
           },
           credentials: "same-origin",
           body: JSON.stringify({
-            id: Number(product.id),
+            id: productId,
             title: product.title,
 
             // Store the original USD amount. INR conversion is for display only.
@@ -822,7 +862,7 @@
         }
 
         const savedItem = data.item || {
-          id: product.id,
+          id: productId,
           title: product.title,
           price: Number(product.originalPriceUSD ?? product.price / 85) || 0,
           thumbnail: product.thumbnail || product.images?.[0] || "",
@@ -830,8 +870,13 @@
           quantity: 1
         };
 
-        cartProductIds.add(Number(product.id));
-        updateLocalCartItem(savedItem);
+        const savedId = normalizeProductId(savedItem.id);
+        if (!savedId || savedId !== productId) {
+          throw new Error("Server returned an invalid product ID.");
+        }
+
+        cartProductIds.add(productId);
+        updateLocalCartItem({ ...savedItem, id: productId });
         updateCartBadge(readCart());
         updateCartButton(button, product);
         showToast("Product added to cart!");
@@ -879,13 +924,19 @@
     }
 
     function createProductCard(product) {
+      const id = normalizeProductId(product.id);
+
+      if (!id) {
+        console.error("Skipping product with invalid 40-character ID:", product);
+        return "";
+      }
+
       const image = product.thumbnail || product.images?.[0] || "";
       const title = escapeHTML(product.title);
       const description = escapeHTML(product.description);
       const category = escapeHTML(product.category || "Other");
       const discount = Number(product.discountPercentage) || 0;
       const rating = Number(product.rating) || 0;
-      const id = Number(product.id);
       const isAdded = cartProductIds.has(id);
 
       return `
@@ -959,8 +1010,14 @@
         button.addEventListener("click", async event => {
           event.stopPropagation();
 
+          const buttonId = normalizeProductId(button.dataset.productId);
+          if (!buttonId) {
+            showToast("Invalid product ID. Please refresh the page.");
+            return;
+          }
+
           const product = allProducts.find(
-            item => Number(item.id) === Number(button.dataset.productId)
+            item => normalizeProductId(item.id) === buttonId
           );
 
           if (product) await addToCart(product, button);
@@ -1127,8 +1184,8 @@
       const card = event.target.closest(".product-card[data-product-id]");
       if (!card) return;
 
-      const id = Number(card.dataset.productId);
-      if (Number.isFinite(id)) {
+      const id = normalizeProductId(card.dataset.productId);
+      if (id) {
         window.location.href = `/product.html?id=${encodeURIComponent(id)}`;
       }
     });
@@ -1141,8 +1198,8 @@
       if (!card) return;
 
       event.preventDefault();
-      const id = Number(card.dataset.productId);
-      if (Number.isFinite(id)) {
+      const id = normalizeProductId(card.dataset.productId);
+      if (id) {
         window.location.href = `/product.html?id=${encodeURIComponent(id)}`;
       }
     });
