@@ -148,6 +148,10 @@
       outline: none;
     }
 
+    .search input::-webkit-search-cancel-button {
+      cursor: pointer;
+    }
+
     .nav-actions {
       display: flex;
       align-items: center;
@@ -172,6 +176,10 @@
 
     .hero-wrap {
       padding: 32px 7% 0;
+    }
+
+    .hero-wrap.search-hidden {
+      display: none;
     }
 
     .hero {
@@ -460,10 +468,89 @@
       background: var(--success);
     }
 
+    /* SEARCH RESULTS LIST */
+
+    .product-grid.list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .product-grid.list-view .product-card {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .product-grid.list-view .product-card:hover {
+      transform: none;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, .05);
+    }
+
+    .product-grid.list-view .product-image {
+      width: 190px;
+      min-width: 190px;
+      height: 190px;
+      flex-shrink: 0;
+    }
+
+    .product-grid.list-view .product-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .product-grid.list-view .product-title,
+    .product-grid.list-view .product-description {
+      min-height: 0;
+    }
+
+    .product-grid.list-view .product-bottom {
+      margin-top: 14px;
+    }
+
+    /* LOAD MORE */
+
+    .load-more-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .load-more-button {
+      min-width: 170px;
+      padding: 13px 22px;
+      border: 1px solid #111;
+      border-radius: 10px;
+      background: #111;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      transition: background .2s, color .2s;
+    }
+
+    .load-more-button:hover {
+      background: #333;
+    }
+
+    .load-more-button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .load-more-button[hidden] {
+      display: none;
+    }
+
     /* STATUS */
 
     .status {
       grid-column: 1 / -1;
+      width: 100%;
       text-align: center;
       padding: 45px 20px;
       color: var(--gray);
@@ -530,7 +617,7 @@
     /* TABLET */
 
     @media (max-width: 1050px) {
-      .product-grid {
+      .product-grid:not(.list-view) {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
@@ -619,7 +706,7 @@
         font-size: 20px;
       }
 
-      .product-grid {
+      .product-grid:not(.list-view) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 13px;
       }
@@ -655,6 +742,32 @@
       .footer {
         padding: 22px 5%;
       }
+
+      /* Mobile search list */
+
+      .product-grid.list-view .product-image {
+        width: 120px;
+        min-width: 120px;
+        height: 145px;
+        padding: 8px;
+      }
+
+      .product-grid.list-view .product-info {
+        padding: 10px;
+      }
+
+      .product-grid.list-view .product-title {
+        font-size: 12px;
+      }
+
+      .product-grid.list-view .product-description {
+        font-size: 10px;
+        -webkit-line-clamp: 2;
+      }
+
+      .product-grid.list-view .product-price {
+        font-size: 14px;
+      }
     }
 
     @media (max-width: 390px) {
@@ -678,16 +791,54 @@
         font-size: 32px;
       }
 
-      .product-grid {
+      .product-grid:not(.list-view) {
         gap: 10px;
       }
 
-      .product-image {
+      .product-grid:not(.list-view) .product-image {
         height: 145px;
       }
 
-      .product-info {
+      .product-grid:not(.list-view) .product-info {
         padding: 10px;
+      }
+
+      .product-grid.list-view .product-image {
+        width: 100px;
+        min-width: 100px;
+        height: 130px;
+      }
+
+      .product-grid.list-view .product-info {
+        padding: 8px;
+      }
+
+      .product-grid.list-view .product-category {
+        font-size: 9px;
+      }
+
+      .product-grid.list-view .product-title {
+        font-size: 11px;
+      }
+
+      .product-grid.list-view .product-rating {
+        margin-top: 6px;
+      }
+
+      .product-grid.list-view .product-bottom {
+        margin-top: 8px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        transition-duration: .01ms !important;
       }
     }
   </style>
@@ -750,7 +901,7 @@
 
   <!-- HERO -->
 
-  <section class="hero-wrap">
+  <section class="hero-wrap" id="heroWrap">
     <div class="hero">
       <div class="hero-copy">
         <div class="eyebrow">
@@ -788,7 +939,7 @@
 
   <main class="container" id="productsSection">
 
-    <div class="section-head">
+    <div class="section-head" id="categoriesHeading">
       <div>
         <h2>Shop by Category</h2>
         <p>Find what you need, all in one place.</p>
@@ -808,7 +959,7 @@
     <div class="section-head">
       <div>
         <h2 id="productsHeading">Popular Products</h2>
-        <p>Discover something you'll love.</p>
+        <p id="productsSubtitle">Discover something you'll love.</p>
       </div>
 
       <span id="productCount" class="product-count"></span>
@@ -821,6 +972,17 @@
       aria-busy="true"
     >
       <div class="status">Loading products...</div>
+    </div>
+
+    <div class="load-more-wrap">
+      <button
+        id="loadMoreButton"
+        class="load-more-button"
+        type="button"
+        hidden
+      >
+        Load More Products
+      </button>
     </div>
 
   </main>
@@ -846,16 +1008,27 @@
 
     const productGrid = document.getElementById("productGrid");
     const categoriesEl = document.getElementById("categories");
+    const categoriesHeading = document.getElementById("categoriesHeading");
     const productCount = document.getElementById("productCount");
     const productsHeading = document.getElementById("productsHeading");
+    const productsSubtitle = document.getElementById("productsSubtitle");
     const searchInput = document.getElementById("searchInput");
+    const searchForm = document.getElementById("searchForm");
+    const heroWrap = document.getElementById("heroWrap");
+    const loadMoreButton = document.getElementById("loadMoreButton");
     const toast = document.getElementById("toast");
+
+    const PAGE_SIZE = 24;
 
     let currentCategory = "";
     let currentSearch = "";
+
     let allProducts = [];
+    let displayedCount = 0;
+
     let toastTimer = null;
     let requestController = null;
+    let requestNumber = 0;
 
     document.getElementById("year").textContent =
       new Date().getFullYear();
@@ -898,6 +1071,8 @@
 
     function showError(message) {
       productGrid.setAttribute("aria-busy", "false");
+      productCount.textContent = "";
+      loadMoreButton.hidden = true;
 
       productGrid.innerHTML = `
         <div class="status">
@@ -944,7 +1119,8 @@
             id: product.id,
             title: product.title,
             price: product.price,
-            thumbnail: product.thumbnail || product.images?.[0] || "",
+            thumbnail:
+              product.thumbnail || product.images?.[0] || "",
             quantity: 1
           });
         }
@@ -960,122 +1136,29 @@
       } catch (error) {
         console.error("Cart storage error:", error);
 
-        showToast("Cart save nahi ho paya. Browser storage check karein.");
+        showToast(
+          "Cart save nahi ho paya. Browser storage check karein."
+        );
 
         return false;
       }
     }
 
-    /* RENDER PRODUCTS */
+    /* ADD BUTTON HANDLERS */
 
-    function renderProducts(products) {
-      productCount.textContent =
-        `${products.length} product${products.length === 1 ? "" : "s"}`;
-
-      productGrid.setAttribute("aria-busy", "false");
-
-      if (!products.length) {
-        productGrid.innerHTML = `
-          <div class="status">
-            No products found. Try another search or category.
-          </div>
-        `;
-
-        return;
-      }
-
-      productGrid.innerHTML = products.map(product => {
-        const image = product.thumbnail || product.images?.[0] || "";
-
-        const title = escapeHTML(product.title);
-        const description = escapeHTML(product.description);
-        const category = escapeHTML(product.category || "Other");
-
-        const discount =
-          Number(product.discountPercentage) || 0;
-
-        const rating = Number(product.rating) || 0;
-        const id = Number(product.id);
-
-        return `
-          <article class="product-card">
-
-            <div class="product-image">
-
-              ${
-                discount > 0
-                  ? `<span class="discount">-${Math.round(discount)}%</span>`
-                  : ""
-              }
-
-              <img
-                src="${escapeHTML(image)}"
-                alt="${title}"
-                loading="lazy"
-                onerror="
-                  this.onerror=null;
-                  this.src='https://placehold.co/400x400/f6f6f6/777?text=Product';
-                "
-              >
-
-            </div>
-
-            <div class="product-info">
-
-              <div class="product-category">
-                ${category.replace(/-/g, " ")}
-              </div>
-
-              <h3 class="product-title">
-                ${title}
-              </h3>
-
-              <p class="product-description">
-                ${description}
-              </p>
-
-              <div class="product-rating">
-                <i class="ph-fill ph-star" aria-hidden="true"></i>
-                <span>
-                  ${rating ? rating.toFixed(1) : "No rating"}
-                </span>
-              </div>
-
-              <div class="product-bottom">
-
-                <span class="product-price">
-                  ${formatPrice(product.price)}
-                </span>
-
-                <button
-                  class="add-button"
-                  type="button"
-                  aria-label="Add ${title} to cart"
-                  data-product-id="${id}"
-                  title="Add to cart"
-                >
-                  <i class="ph ph-plus" aria-hidden="true"></i>
-                </button>
-
-              </div>
-
-            </div>
-
-          </article>
-        `;
-      }).join("");
-
-      productGrid.querySelectorAll(".add-button").forEach(button => {
+    function attachCartHandlers(container, products) {
+      container.querySelectorAll(".add-button").forEach(button => {
         button.addEventListener("click", () => {
           const product = products.find(
-            item => Number(item.id) ===
-              Number(button.dataset.productId)
+            item =>
+              Number(item.id) === Number(button.dataset.productId)
           );
 
           if (!product) return;
 
           if (addToCart(product)) {
             button.classList.add("added");
+
             button.innerHTML =
               '<i class="ph ph-check" aria-hidden="true"></i>';
 
@@ -1085,6 +1168,7 @@
               if (!button.isConnected) return;
 
               button.classList.remove("added");
+
               button.innerHTML =
                 '<i class="ph ph-plus" aria-hidden="true"></i>';
 
@@ -1096,6 +1180,155 @@
           }
         });
       });
+    }
+
+    /* PRODUCT CARD */
+
+    function createProductCard(product) {
+      const image =
+        product.thumbnail || product.images?.[0] || "";
+
+      const title = escapeHTML(product.title);
+      const description = escapeHTML(product.description);
+      const category = escapeHTML(product.category || "Other");
+
+      const discount =
+        Number(product.discountPercentage) || 0;
+
+      const rating = Number(product.rating) || 0;
+      const id = Number(product.id);
+
+      return `
+        <article class="product-card">
+
+          <div class="product-image">
+
+            ${
+              discount > 0
+                ? `<span class="discount">-${Math.round(discount)}%</span>`
+                : ""
+            }
+
+            <img
+              src="${escapeHTML(image)}"
+              alt="${title}"
+              loading="lazy"
+              onerror="
+                this.onerror=null;
+                this.src='https://placehold.co/400x400/f6f6f6/777?text=Product';
+              "
+            >
+
+          </div>
+
+          <div class="product-info">
+
+            <div class="product-category">
+              ${category.replace(/-/g, " ")}
+            </div>
+
+            <h3 class="product-title">
+              ${title}
+            </h3>
+
+            <p class="product-description">
+              ${description}
+            </p>
+
+            <div class="product-rating">
+              <i class="ph-fill ph-star" aria-hidden="true"></i>
+
+              <span>
+                ${rating ? rating.toFixed(1) : "No rating"}
+              </span>
+            </div>
+
+            <div class="product-bottom">
+
+              <span class="product-price">
+                ${formatPrice(product.price)}
+              </span>
+
+              <button
+                class="add-button"
+                type="button"
+                aria-label="Add ${title} to cart"
+                data-product-id="${id}"
+                title="Add to cart"
+              >
+                <i class="ph ph-plus" aria-hidden="true"></i>
+              </button>
+
+            </div>
+
+          </div>
+
+        </article>
+      `;
+    }
+
+    /* UPDATE PRODUCT COUNT AND LOAD MORE BUTTON */
+
+    function updateProductCount() {
+      const total = allProducts.length;
+      const shown = Math.min(displayedCount, total);
+
+      productCount.textContent =
+        `${total} product${total === 1 ? "" : "s"}` +
+        (shown < total ? ` · Showing ${shown}` : "");
+
+      loadMoreButton.hidden = shown >= total || total === 0;
+      loadMoreButton.disabled = false;
+      loadMoreButton.textContent = "Load More Products";
+    }
+
+    /* RENDER NEXT BATCH */
+
+    function renderNextBatch() {
+      const start = displayedCount;
+      const end = Math.min(start + PAGE_SIZE, allProducts.length);
+
+      if (start >= end) {
+        updateProductCount();
+        return;
+      }
+
+      const batch = allProducts.slice(start, end);
+
+      const html = batch.map(createProductCard).join("");
+
+      productGrid.insertAdjacentHTML("beforeend", html);
+
+      displayedCount = end;
+
+      attachCartHandlers(productGrid, batch);
+
+      updateProductCount();
+    }
+
+    /* INITIAL PRODUCT RENDER */
+
+    function renderProducts(products) {
+      allProducts = products;
+      displayedCount = 0;
+
+      productGrid.setAttribute("aria-busy", "false");
+      productGrid.innerHTML = "";
+
+      if (!products.length) {
+        productCount.textContent = "";
+        loadMoreButton.hidden = true;
+
+        productGrid.innerHTML = `
+          <div class="status">
+            No products found. Try another search or category.
+          </div>
+        `;
+
+        return;
+      }
+
+      renderNextBatch();
     }
 
     /* RENDER CATEGORIES */
@@ -1144,6 +1377,36 @@
         });
     }
 
+    /* SEARCH AND LAYOUT */
+
+    function updatePageLayout() {
+      const searching = Boolean(currentSearch);
+
+      heroWrap.classList.toggle("search-hidden", searching);
+
+      productGrid.classList.toggle("list-view", searching);
+
+      categoriesHeading.hidden = searching;
+      categoriesEl.hidden = searching;
+
+      if (searching) {
+        productsHeading.textContent = "Search Results";
+        productsSubtitle.textContent =
+          `Products matching "${currentSearch}"`;
+      } else if (currentCategory) {
+        productsHeading.textContent = currentCategory
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, char => char.toUpperCase());
+
+        productsSubtitle.textContent =
+          "Explore products in this category.";
+      } else {
+        productsHeading.textContent = "Popular Products";
+        productsSubtitle.textContent =
+          "Discover something you'll love.";
+      }
+    }
+
     /* LOAD PRODUCTS FROM BACKEND API */
 
     async function loadProducts() {
@@ -1154,6 +1417,9 @@
       requestController = new AbortController();
 
       const signal = requestController.signal;
+      const thisRequest = ++requestNumber;
+
+      updatePageLayout();
 
       productGrid.setAttribute("aria-busy", "true");
 
@@ -1164,17 +1430,10 @@
       `;
 
       productCount.textContent = "";
-
-      productsHeading.textContent = currentSearch
-        ? "Search Results"
-        : currentCategory
-          ? currentCategory
-              .replace(/-/g, " ")
-              .replace(/\b\w/g, char => char.toUpperCase())
-          : "Popular Products";
+      loadMoreButton.hidden = true;
 
       const params = new URLSearchParams({
-        limit: "24"
+        limit: "0"
       });
 
       if (currentSearch) {
@@ -1199,7 +1458,9 @@
 
         const responseText = await response.text();
 
-        if (signal.aborted) return;
+        if (signal.aborted || thisRequest !== requestNumber) {
+          return;
+        }
 
         const contentType =
           response.headers.get("content-type") || "";
@@ -1213,7 +1474,7 @@
 
           throw new Error(
             `API JSON nahi de rahi (HTTP ${response.status}). ` +
-            "Vercel par api/products.js ka path aur deployment check karein."
+            "Vercel par api/products.js ka path check karein."
           );
         }
 
@@ -1238,21 +1499,21 @@
           );
         }
 
-        allProducts = data.products;
-
-        /*
-          Categories are generated from the full catalog
-          when loading the default product list.
-        */
+        const products = data.products;
 
         if (!currentSearch && !currentCategory) {
-          renderCategories(allProducts);
+          renderCategories(products);
         }
 
-        renderProducts(allProducts);
+        renderProducts(products);
 
       } catch (error) {
-        if (error.name === "AbortError") return;
+        if (
+          error.name === "AbortError" ||
+          thisRequest !== requestNumber
+        ) {
+          return;
+        }
 
         console.error("Products loading error:", error);
 
@@ -1263,21 +1524,52 @@
       }
     }
 
-    /* SEARCH */
+    /* LOAD MORE BUTTON */
 
-    document
-      .getElementById("searchForm")
-      .addEventListener("submit", event => {
-        event.preventDefault();
+    loadMoreButton.addEventListener("click", () => {
+      if (displayedCount >= allProducts.length) {
+        loadMoreButton.hidden = true;
+        return;
+      }
 
-        currentSearch = searchInput.value.trim();
-        currentCategory = "";
+      loadMoreButton.disabled = true;
+      loadMoreButton.textContent = "Loading...";
 
-        loadProducts();
+      // Render the next batch without making another API request.
+      requestAnimationFrame(() => {
+        renderNextBatch();
       });
+    });
+
+    /* SEARCH SUBMIT */
+
+    searchForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      currentSearch = searchInput.value.trim();
+      currentCategory = "";
+
+      loadProducts();
+    });
+
+    /* CLEAR SEARCH */
 
     searchInput.addEventListener("search", () => {
       if (!searchInput.value.trim()) {
+        currentSearch = "";
+        currentCategory = "";
+
+        loadProducts();
+      }
+    });
+
+    /* HANDLE MANUAL CLEAR ON MOBILE AND DESKTOP */
+
+    searchInput.addEventListener("input", () => {
+      if (
+        !searchInput.value.trim() &&
+        currentSearch
+      ) {
         currentSearch = "";
         currentCategory = "";
 
