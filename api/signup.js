@@ -1,48 +1,23 @@
-const admin = require("firebase-admin");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const { db } = require("../lib/firebase");
+const {
+  setSessionCookie,
+  emailHash,
+  sendJson
+} = require("../lib/auth");
 
-function getDatabase() {
-  if (!admin.apps.length) {
-    const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
-
-    if (!raw) {
-      throw new Error("Firebase credentials are not configured");
-    }
-
-    const serviceAccount = JSON.parse(raw);
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      databaseURL:
-        "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app",
-    });
-  }
-
-  return admin.database();
-}
-
-function normalizeEmail(email) {
-  return email.trim().toLowerCase();
-}
-
-function emailKey(email) {
-  return crypto
-    .createHash("sha256")
-    .update(normalizeEmail(email))
-    .digest("hex");
-}
-
-module.exports = async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
-    return res.status(405).json({
+    return sendJson(res, 405, {
       success: false,
-      message: "Method not allowed",
+      message: "Method not allowed."
     });
   }
+
+  let reservedEmailHash = null;
+  let uid = null;
 
   try {
     const { name, email, password } = req.body || {};
@@ -52,19 +27,19 @@ module.exports = async (req, res) => {
       typeof email !== "string" ||
       typeof password !== "string"
     ) {
-      return res.status(400).json({
+      return sendJson(res, 400, {
         success: false,
-        message: "Name, email and password are required",
+        message: "Please enter your name, email and password."
       });
     }
 
     const cleanName = name.trim();
-    const cleanEmail = normalizeEmail(email);
+    const cleanEmail = email.trim().toLowerCase();
 
     if (cleanName.length < 2 || cleanName.length > 80) {
-      return res.status(400).json({
+      return sendJson(res, 400, {
         success: false,
-        message: "Name must be 2 to 80 characters",
+        message: "Name must be between 2 and 80 characters."
       });
     }
 
@@ -72,92 +47,94 @@ module.exports = async (req, res) => {
       cleanEmail.length > 254 ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)
     ) {
-      return res.status(400).json({
+      return sendJson(res, 400, {
         success: false,
-        message: "Enter a valid email address",
+        message: "Please enter a valid email address."
       });
     }
 
     if (password.length < 8 || password.length > 72) {
-      return res.status(400).json({
+      return sendJson(res, 400, {
         success: false,
-        message: "Password must be 8 to 72 characters",
+        message: "Password must be between 8 and 72 characters."
       });
     }
 
-    const db = getDatabase();
-    const key = emailKey(cleanEmail);
+    const hash = emailHash(cleanEmail);
+    reservedEmailHash = hash;
 
-    // Block check happens before account creation.
-    const blockedSnapshot = await db
-      .ref(`blockedUsers/${key}/blocked`)
-      .get();
+    const blocked = await db.ref(`blockedUsers/${hash}/blocked`).get();
 
-    if (blockedSnapshot.val() === true) {
-      return res.status(403).json({
+    if (blocked.val() === true) {
+      return sendJson(res, 403, {
         success: false,
-        message: "This account is not allowed to register",
+        message: "This account cannot be registered."
       });
     }
 
-    const existingUser = await db
-      .ref(`userEmails/${key}`)
-      .get();
+    uid = crypto.randomUUID();
 
-    if (existingUser.exists()) {
-      return res.status(409).json({
+    // Reserve the email atomically to prevent duplicate registrations.
+    const emailRef = db.ref(`userEmails/${hash}`);
+    const reservation = await emailRef.transaction(current => {
+      if (current !== null) return;
+      return { uid, status: "pending" };
+    });
+
+    if (!reservation.committed) {
+      reservedEmailHash = null;
+      return sendJson(res, 409, {
         success: false,
-        message: "An account with this email already exists",
+        message: "An account with this email may already exist."
       });
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
-    const userRef = db.ref("users").push();
-    const uid = userRef.key;
 
-    // Reserve the normalized email key atomically.
-    const emailReservation = await db
-      .ref(`userEmails/${key}`)
-      .transaction((current) => {
-        return current === null ? uid : undefined;
-      });
+    await db.ref(`users/${uid}`).set({
+      uid,
+      name: cleanName,
+      email: cleanEmail,
+      passwordHash,
+      createdAt: new Date().toISOString(),
+      status: "active"
+    });
 
-    if (!emailReservation.committed) {
-      return res.status(409).json({
-        success: false,
-        message: "An account with this email already exists",
-      });
-    }
+    await emailRef.set({ uid, status: "active" });
 
-    try {
-      await userRef.set({
-        uid,
-        name: cleanName,
-        email: cleanEmail,
-        passwordHash,
-        createdAt: Date.now(),
-        status: "active",
-      });
-    } catch (error) {
-      await db.ref(`userEmails/${key}`).remove();
-      throw error;
-    }
+    setSessionCookie(res, uid);
 
-    return res.status(201).json({
+    return sendJson(res, 201, {
       success: true,
-      message: "Account created successfully",
+      message: "Account created successfully.",
+      redirect: "/profile.html",
       user: {
         uid,
         name: cleanName,
-        email: cleanEmail,
-      },
+        email: cleanEmail
+      }
     });
   } catch (error) {
-    console.error("Signup API error:", error.message);
+    console.error("Signup API error:", error);
 
-    return res.status(500).json({
+    // Clean up an incomplete registration where possible.
+    if (reservedEmailHash && uid) {
+      try {
+        const ref = db.ref(`userEmails/${reservedEmailHash}`);
+        const snapshot = await ref.get();
+
+        if (snapshot.val()?.uid === uid) {
+          await ref.remove();
+          await db.ref(`users/${uid}`).remove();
+        }
+      } catch (cleanupError) {
+        console.error("Signup cleanup error:", cleanupError);
+      }
+    }
+
+    return sendJson(res, 500, {
       success: false,
-      message: "Unable to create account right now",
+      message: "Unable to create your account right now. Please try again."
     });
   }
 };
