@@ -1,47 +1,17 @@
-
-const admin = require("firebase-admin");
 const bcrypt = require("bcryptjs");
-const crypto = require("crypto");
+const { db } = require("../lib/firebase");
+const {
+  setSessionCookie,
+  emailHash,
+  sendJson
+} = require("../lib/auth");
 
-function getDatabase() {
-  if (!admin.apps.length) {
-    const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
-
-    if (!raw) {
-      throw new Error("Firebase credentials are not configured");
-    }
-
-    const serviceAccount = JSON.parse(raw);
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      databaseURL:
-        "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app",
-    });
-  }
-
-  return admin.database();
-}
-
-function normalizeEmail(email) {
-  return email.trim().toLowerCase();
-}
-
-function emailKey(email) {
-  return crypto
-    .createHash("sha256")
-    .update(normalizeEmail(email))
-    .digest("hex");
-}
-
-module.exports = async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
-    return res.status(405).json({
+    return sendJson(res, 405, {
       success: false,
-      message: "Method not allowed",
+      message: "Method not allowed."
     });
   }
 
@@ -51,79 +21,56 @@ module.exports = async (req, res) => {
     if (
       typeof email !== "string" ||
       typeof password !== "string" ||
-      !email.trim() ||
-      !password
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Email and password are required",
-      });
-    }
-
-    const cleanEmail = normalizeEmail(email);
-
-    if (
-      cleanEmail.length > 254 ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail) ||
+      email.length > 254 ||
       password.length > 72
     ) {
-      return res.status(400).json({
+      return sendJson(res, 400, {
         success: false,
-        message: "Invalid email or password",
+        message: "Please enter a valid email and password."
       });
     }
 
-    const db = getDatabase();
-    const key = emailKey(cleanEmail);
+    const cleanEmail = email.trim().toLowerCase();
 
-    // Check whether this account is blocked.
-    const blockedSnapshot = await db
-      .ref(`blockedUsers/${key}/blocked`)
-      .get();
-
-    if (blockedSnapshot.val() === true) {
-      return res.status(403).json({
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return sendJson(res, 400, {
         success: false,
-        message: "This account is not allowed to log in",
+        message: "Invalid email or password."
       });
     }
 
-    // Resolve email hash to UID, matching signup.js.
-    const emailSnapshot = await db
-      .ref(`userEmails/${key}`)
-      .get();
+    const hash = emailHash(cleanEmail);
 
-    if (!emailSnapshot.exists()) {
-      return res.status(401).json({
+    const blocked = await db.ref(`blockedUsers/${hash}/blocked`).get();
+
+    if (blocked.val() === true) {
+      return sendJson(res, 403, {
         success: false,
-        message: "Invalid email or password",
+        message: "This account is unavailable."
       });
     }
 
-    const uid = emailSnapshot.val();
+    const mappingSnapshot = await db.ref(`userEmails/${hash}`).get();
+    const mapping = mappingSnapshot.val();
 
-    if (typeof uid !== "string" || !uid) {
-      throw new Error("Invalid email index in database");
+    if (!mapping || mapping.status !== "active" || !mapping.uid) {
+      return sendJson(res, 401, {
+        success: false,
+        message: "Invalid email or password."
+      });
     }
 
-    const userSnapshot = await db
-      .ref(`users/${uid}`)
-      .get();
-
-    if (!userSnapshot.exists()) {
-      throw new Error("User record missing for email index");
-    }
-
+    const userSnapshot = await db.ref(`users/${mapping.uid}`).get();
     const user = userSnapshot.val();
 
     if (
-      user.email !== cleanEmail ||
+      !user ||
       user.status !== "active" ||
       typeof user.passwordHash !== "string"
     ) {
-      return res.status(401).json({
+      return sendJson(res, 401, {
         success: false,
-        message: "Invalid email or password",
+        message: "Invalid email or password."
       });
     }
 
@@ -133,29 +80,30 @@ module.exports = async (req, res) => {
     );
 
     if (!passwordMatches) {
-      return res.status(401).json({
+      return sendJson(res, 401, {
         success: false,
-        message: "Invalid email or password",
+        message: "Invalid email or password."
       });
     }
 
-    // Return only public user information.
-    return res.status(200).json({
+    setSessionCookie(res, user.uid);
+
+    return sendJson(res, 200, {
       success: true,
-      message: "Login successful",
-      redirect: "/index.html",
+      message: "Login successful.",
+      redirect: "/profile.html",
       user: {
-        uid: user.uid || uid,
+        uid: user.uid,
         name: user.name,
-        email: user.email,
-      },
+        email: user.email
+      }
     });
   } catch (error) {
-    console.error("Login API error:", error.message);
+    console.error("Login API error:", error);
 
-    return res.status(500).json({
+    return sendJson(res, 500, {
       success: false,
-      message: "Unable to log in right now",
+      message: "Unable to sign in right now. Please try again."
     });
   }
 };
