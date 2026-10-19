@@ -1,7 +1,59 @@
-// api/product.js
+
+ // api/product.js
+
+const admin = require("firebase-admin");
+
+const DATABASE_URL =
+  "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+const PRODUCT_ID_PATTERN = /^[A-Za-z0-9]{40}$/;
+const INR_RATE = 85;
+
+function initializeFirebase() {
+  if (admin.apps.length) {
+    return admin.database();
+  }
+
+  const serviceAccountValue = process.env.FIREBASE_SERVICE_ACCOUNT;
+
+  if (!serviceAccountValue) {
+    throw new Error(
+      "FIREBASE_SERVICE_ACCOUNT environment variable is missing."
+    );
+  }
+
+  let serviceAccount;
+
+  try {
+    serviceAccount = JSON.parse(serviceAccountValue);
+  } catch {
+    throw new Error(
+      "FIREBASE_SERVICE_ACCOUNT must contain valid JSON."
+    );
+  }
+
+  if (serviceAccount.private_key) {
+    serviceAccount.private_key = serviceAccount.private_key.replace(
+      /\\n/g,
+      "\n"
+    );
+  }
+
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: DATABASE_URL
+  });
+
+  return admin.database();
+}
+
+function validNumber(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
 
 module.exports = async function handler(req, res) {
-  res.setHeader("Cache-Control", "public, max-age=60, s-maxage=300");
+  res.setHeader("Cache-Control", "public, max-age=0, s-maxage=60");
 
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
@@ -13,14 +65,10 @@ module.exports = async function handler(req, res) {
   }
 
   const rawId = req.query?.id;
-  const productId = Number(rawId);
 
   if (
-    rawId === undefined ||
-    rawId === null ||
-    String(rawId).trim() === "" ||
-    !Number.isSafeInteger(productId) ||
-    productId <= 0
+    typeof rawId !== "string" ||
+    !PRODUCT_ID_PATTERN.test(rawId)
   ) {
     return res.status(400).json({
       success: false,
@@ -29,90 +77,156 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const response = await fetch(
-      `https://dummyjson.com/products/${productId}`
-    );
+    const db = initializeFirebase();
 
-    if (response.status === 404) {
+    // Only look up the exact custom ID. Never treat it as a numeric source ID.
+    const productSnapshot = await db.ref("products").child(rawId).once("value");
+
+    if (!productSnapshot.exists()) {
       return res.status(404).json({
         success: false,
         message: "Product not found."
       });
     }
 
-    if (!response.ok) {
-      return res.status(502).json({
+    const savedProduct = productSnapshot.val();
+
+    if (
+      !savedProduct ||
+      typeof savedProduct !== "object" ||
+      !savedProduct.sourceId ||
+      !/^\d+$/.test(String(savedProduct.sourceId))
+    ) {
+      return res.status(404).json({
         success: false,
-        message: "Unable to fetch product information."
+        message: "Product not found."
       });
     }
 
-    const product = await response.json();
+    // The source ID is read from the verified Firebase record, not the URL.
+    let sourceProduct = {};
 
-    if (!product || !product.id || !product.title) {
-      return res.status(502).json({
+    try {
+      const response = await fetch(
+        `https://dummyjson.com/products/${encodeURIComponent(
+          String(savedProduct.sourceId)
+        )}`
+      );
+
+      if (response.ok) {
+        const fetchedProduct = await response.json();
+
+        if (
+          fetchedProduct &&
+          String(fetchedProduct.id) === String(savedProduct.sourceId)
+        ) {
+          sourceProduct = fetchedProduct;
+        }
+      }
+    } catch (error) {
+      // Core product details remain available from Firebase if the
+      // external product provider is temporarily unavailable.
+      console.error("Product provider request failed:", error.message);
+    }
+
+    const savedPrice = Number(savedProduct.price);
+    const sourcePrice = validNumber(sourceProduct.price, 0) * INR_RATE;
+
+    const product = {
+      // Always return the persistent 40-character ID.
+      id: rawId,
+
+      title: savedProduct.title || sourceProduct.title || "",
+      description:
+        savedProduct.description || sourceProduct.description || "",
+
+      category:
+        savedProduct.category || sourceProduct.category || "",
+
+      brand:
+        savedProduct.brand || sourceProduct.brand || "Generic",
+
+      // Keep detail-page pricing consistent with the homepage API (INR).
+      price:
+        Number.isFinite(savedPrice) && savedPrice >= 0
+          ? savedPrice
+          : Number(sourcePrice.toFixed(2)),
+
+      originalPriceUSD: validNumber(
+        savedProduct.originalPriceUSD,
+        validNumber(sourceProduct.price, 0)
+      ),
+
+      discountPercentage: validNumber(
+        savedProduct.discountPercentage,
+        validNumber(sourceProduct.discountPercentage, 0)
+      ),
+
+      rating: validNumber(
+        savedProduct.rating,
+        validNumber(sourceProduct.rating, 0)
+      ),
+
+      stock: validNumber(
+        savedProduct.stock,
+        validNumber(sourceProduct.stock, 0)
+      ),
+
+      availabilityStatus:
+        savedProduct.availabilityStatus ||
+        sourceProduct.availabilityStatus ||
+        "",
+
+      thumbnail:
+        savedProduct.thumbnail || sourceProduct.thumbnail || "",
+
+      images: Array.isArray(savedProduct.images)
+        ? savedProduct.images
+        : Array.isArray(sourceProduct.images)
+          ? sourceProduct.images
+          : [],
+
+      tags: Array.isArray(savedProduct.tags)
+        ? savedProduct.tags
+        : Array.isArray(sourceProduct.tags)
+          ? sourceProduct.tags
+          : [],
+
+      sku: savedProduct.sku || sourceProduct.sku || "",
+
+      weight: sourceProduct.weight ?? null,
+      dimensions: sourceProduct.dimensions || null,
+
+      warrantyInformation: sourceProduct.warrantyInformation || "",
+      shippingInformation: sourceProduct.shippingInformation || "",
+      returnPolicy: sourceProduct.returnPolicy || "",
+
+      minimumOrderQuantity:
+        validNumber(sourceProduct.minimumOrderQuantity, 1) || 1,
+
+      reviews: Array.isArray(sourceProduct.reviews)
+        ? sourceProduct.reviews.map(review => ({
+            rating: validNumber(review.rating),
+            comment: String(review.comment || ""),
+            date: review.date || "",
+            reviewerName: String(
+              review.reviewerName || "Customer"
+            ),
+            reviewerEmail: String(review.reviewerEmail || "")
+          }))
+        : []
+    };
+
+    if (!product.title) {
+      return res.status(404).json({
         success: false,
-        message: "Invalid product information received."
+        message: "Product not found."
       });
     }
 
     return res.status(200).json({
       success: true,
-
-      product: {
-        id: product.id,
-        title: product.title,
-        description: product.description || "",
-        category: product.category || "",
-        brand: product.brand || "Generic",
-
-        price: Number(product.price) || 0,
-        discountPercentage:
-          Number(product.discountPercentage) || 0,
-
-        rating: Number(product.rating) || 0,
-        stock: Number(product.stock) || 0,
-
-        availabilityStatus:
-          product.availabilityStatus || "",
-
-        thumbnail: product.thumbnail || "",
-        images: Array.isArray(product.images)
-          ? product.images
-          : [],
-
-        tags: Array.isArray(product.tags)
-          ? product.tags
-          : [],
-
-        sku: product.sku || "",
-        weight: product.weight ?? null,
-        dimensions: product.dimensions || null,
-
-        warrantyInformation:
-          product.warrantyInformation || "",
-
-        shippingInformation:
-          product.shippingInformation || "",
-
-        returnPolicy:
-          product.returnPolicy || "",
-
-        minimumOrderQuantity:
-          Number(product.minimumOrderQuantity) || 1,
-
-        reviews: Array.isArray(product.reviews)
-          ? product.reviews.map(review => ({
-              rating: Number(review.rating) || 0,
-              comment: String(review.comment || ""),
-              date: review.date || "",
-              reviewerName:
-                String(review.reviewerName || "Customer"),
-              reviewerEmail:
-                String(review.reviewerEmail || "")
-            }))
-          : []
-      }
+      product
     });
   } catch (error) {
     console.error("Product API error:", error);
