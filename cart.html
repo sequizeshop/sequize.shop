@@ -1086,13 +1086,10 @@
     /* CHECKOUT PLACEHOLDER */
 
     checkoutButton.addEventListener("click", () => {
-      if (cart.length === 0 || busy) return;
+    if (cart.length === 0 || busy) return;
 
-      showToast(
-        "Checkout aur payment system abhi connect nahi hua hai."
-      );
-    });
-
+    window.location.href = "/address.html";
+  });
     /* INITIAL LOAD */
 
     loadCart();
