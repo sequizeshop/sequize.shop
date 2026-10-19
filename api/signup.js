@@ -102,7 +102,11 @@ module.exports = async function handler(req, res) {
 
     await emailRef.set({ uid, status: "active" });
 
-    setSessionCookie(res, uid);
+   await setSessionCookie(res, {
+  uid: uid,
+  email: cleanEmail,
+  name: cleanName
+});
 
     return sendJson(res, 201, {
       success: true,
