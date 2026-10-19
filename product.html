@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1199,6 +1198,12 @@
     let busy = false;
     let toastTimer = null;
 
+    /* FIREBASE WISHLIST STATE */
+
+    let wishlistItems = [];
+    let wishlistLoaded = false;
+    let wishlistBusy = false;
+
     document.getElementById("year").textContent =
       new Date().getFullYear();
 
@@ -1282,7 +1287,8 @@
       ).slice(0, 300);
 
       const image = safeImage(item.thumbnail) || DEFAULT_IMAGE;
-      const canonical = `${SITE_URL}/product.html?id=${encodeURIComponent(item.id)}`;
+      const canonical =
+        `${SITE_URL}/product.html?id=${encodeURIComponent(item.id)}`;
       const pageUrl = window.location.href;
 
       document.title = title;
@@ -1327,7 +1333,12 @@
       }
 
       if (!response.ok || data.success !== true) {
-        throw new Error(data.message || "Request failed.");
+        const error = new Error(
+          data.message || "Request failed."
+        );
+
+        error.status = response.status;
+        throw error;
       }
 
       return data;
@@ -1337,7 +1348,9 @@
 
     async function loadProduct() {
       if (!PRODUCT_ID_PATTERN.test(productId)) {
-        showProductError("Invalid product link. Please open a valid product.");
+        showProductError(
+          "Invalid product link. Please open a valid product."
+        );
         return;
       }
 
@@ -1355,7 +1368,7 @@
 
         product = data.product;
 
-        // Normalize API fields so missing optional values do not break rendering.
+        // Normalize optional API fields.
         product.title = String(product.title || "Product");
         product.description = String(product.description || "");
         product.category = String(product.category || "Products");
@@ -1364,12 +1377,15 @@
         product.availabilityStatus = String(
           product.availabilityStatus || ""
         );
+
         product.images = Array.isArray(product.images)
           ? product.images
           : [];
+
         product.reviews = Array.isArray(product.reviews)
           ? product.reviews
           : [];
+
         product.tags = Array.isArray(product.tags)
           ? product.tags
           : [];
@@ -1383,13 +1399,20 @@
           product.title;
 
         renderProduct();
+
+        // Wishlist is loaded from Firebase, not localStorage.
+        loadWishlistState();
+
         loadDetails();
         loadReviews();
         loadRelatedProducts();
 
       } catch (error) {
         console.error("Product loading error:", error);
-        showProductError(error.message || "Unable to load this product.");
+
+        showProductError(
+          error.message || "Unable to load this product."
+        );
       }
     }
 
@@ -1493,6 +1516,7 @@
 
     function renderProduct() {
       const discountedPrice = getDiscountedPrice(product);
+
       const discount = Math.max(
         0,
         Number(product.discountPercentage) || 0
@@ -1782,10 +1806,6 @@
         /*
           Keep the existing cart price convention:
           cart.html converts USD to INR for display.
-
-          originalPriceUSD is used when provided by the API.
-          The fallback avoids breaking if older product records
-          do not contain originalPriceUSD.
         */
 
         const cartPrice =
@@ -1808,12 +1828,18 @@
           })
         });
 
+        /*
+          Preserve the existing local cart cache.
+          Wishlist data is not stored in localStorage.
+        */
+
         try {
           const cached = JSON.parse(
             localStorage.getItem("shoppy_cart") || "[]"
           );
 
           const localCart = Array.isArray(cached) ? cached : [];
+
           const existing = localCart.find(
             item => String(item.id) === String(product.id)
           );
@@ -1821,6 +1847,7 @@
           if (existing) {
             existing.quantity =
               (Number(existing.quantity) || 1) + quantity;
+
             existing.price = cartPrice;
             existing.title = product.title;
             existing.thumbnail = product.thumbnail;
@@ -1841,7 +1868,10 @@
             JSON.stringify(localCart)
           );
         } catch (error) {
-          console.warn("Local cart cache could not be updated:", error);
+          console.warn(
+            "Local cart cache could not be updated:",
+            error
+          );
         }
 
         if (buyNow) {
@@ -1859,15 +1889,19 @@
       } catch (error) {
         console.error("Add to cart error:", error);
 
-        if (
-          error.message === "Login required." ||
-          error.message === "Please login first."
-        ) {
-          window.location.href = "/login.html";
+        if (error.status === 401) {
+          const returnTo =
+            window.location.pathname + window.location.search;
+
+          window.location.href =
+            "/login.html?returnTo=" + encodeURIComponent(returnTo);
+
           return;
         }
 
-        showToast(error.message || "Unable to add product to cart.");
+        showToast(
+          error.message || "Unable to add product to cart."
+        );
 
         addButton.innerHTML = `
           <i class="ph ph-shopping-cart"></i>
@@ -1877,8 +1911,11 @@
       } finally {
         busy = false;
 
-        const currentAddButton = document.getElementById("addCartButton");
-        const currentBuyButton = document.getElementById("buyNowButton");
+        const currentAddButton =
+          document.getElementById("addCartButton");
+
+        const currentBuyButton =
+          document.getElementById("buyNowButton");
 
         if (currentAddButton && currentBuyButton && product) {
           const unavailable = Number(product.stock) <= 0;
@@ -1895,11 +1932,13 @@
 
           const decreaseButton =
             document.getElementById("decreaseQuantity");
+
           const increaseButton =
             document.getElementById("increaseQuantity");
 
           if (decreaseButton) {
-            decreaseButton.disabled = quantity <= 1 || unavailable;
+            decreaseButton.disabled =
+              quantity <= 1 || unavailable;
           }
 
           if (increaseButton) {
@@ -1915,17 +1954,36 @@
       }
     }
 
-    /* WISHLIST */
+    /* FIREBASE WISHLIST */
 
-    function readWishlist() {
+    async function loadWishlistState() {
       try {
-        const saved = JSON.parse(
-          localStorage.getItem("shoppy_wishlist") || "[]"
-        );
+        const data = await fetchJSON("/api/wishlist");
 
-        return Array.isArray(saved) ? saved : [];
-      } catch {
-        return [];
+        wishlistItems = Array.isArray(data.items)
+          ? data.items
+          : [];
+
+        wishlistLoaded = true;
+
+      } catch (error) {
+        /*
+          A logged-out visitor can still view the product page.
+          The wishlist button will ask them to log in when clicked.
+        */
+
+        wishlistItems = [];
+        wishlistLoaded = false;
+
+        if (error.status !== 401) {
+          console.warn(
+            "Firebase wishlist could not be loaded:",
+            error
+          );
+        }
+
+      } finally {
+        syncWishlistButton();
       }
     }
 
@@ -1936,13 +1994,13 @@
 
       if (!button) return;
 
-      const wishlist = readWishlist();
-      const exists = wishlist.some(
+      const exists = wishlistItems.some(
         item => String(item.id) === String(product.id)
       );
 
       button.classList.toggle("active", exists);
       button.setAttribute("aria-pressed", String(exists));
+
       button.setAttribute(
         "aria-label",
         exists ? "Remove from wishlist" : "Add to wishlist"
@@ -1951,42 +2009,71 @@
       button.innerHTML = exists
         ? '<i class="ph-fill ph-heart"></i>'
         : '<i class="ph ph-heart"></i>';
+
+      button.disabled = wishlistBusy;
     }
 
-    function toggleWishlist() {
-      if (!product) return;
+    async function toggleWishlist() {
+      if (!product || wishlistBusy) return;
 
-      const key = "shoppy_wishlist";
-      const wishlist = readWishlist();
+      wishlistBusy = true;
+      syncWishlistButton();
 
-      const index = wishlist.findIndex(
+      const exists = wishlistItems.some(
         item => String(item.id) === String(product.id)
       );
 
-      if (index >= 0) {
-        wishlist.splice(index, 1);
-      } else {
-        wishlist.push({
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          thumbnail: product.thumbnail
-        });
-      }
-
       try {
-        localStorage.setItem(key, JSON.stringify(wishlist));
+        /*
+          POST   = add product to Firebase wishlist
+          DELETE = remove product from Firebase wishlist
+        */
+
+        const data = await fetchJSON("/api/wishlist", {
+          method: exists ? "DELETE" : "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            id: product.id
+          })
+        });
+
+        wishlistItems = Array.isArray(data.items)
+          ? data.items
+          : [];
+
+        wishlistLoaded = true;
 
         syncWishlistButton();
 
         showToast(
-          index >= 0
+          exists
             ? "Removed from wishlist"
             : "Added to wishlist"
         );
+
       } catch (error) {
-        console.warn("Wishlist could not be saved:", error);
-        showToast("Could not save wishlist on this device.");
+        console.error("Firebase wishlist error:", error);
+
+        if (error.status === 401) {
+          const returnTo =
+            window.location.pathname + window.location.search;
+
+          window.location.href =
+            "/login.html?returnTo=" + encodeURIComponent(returnTo);
+
+          return;
+        }
+
+        showToast(
+          error.message ||
+          "Could not update wishlist. Please try again."
+        );
+
+      } finally {
+        wishlistBusy = false;
+        syncWishlistButton();
       }
     }
 
@@ -2008,7 +2095,10 @@
           await navigator.clipboard.writeText(window.location.href);
           showToast("Product link copied!");
         } else {
-          window.prompt("Copy this product link:", window.location.href);
+          window.prompt(
+            "Copy this product link:",
+            window.location.href
+          );
         }
       } catch (error) {
         if (error.name !== "AbortError") {
@@ -2026,7 +2116,10 @@
         ["Brand", product.brand || "Generic"],
         ["Category", product.category || "—"],
         ["SKU", product.sku || "—"],
-        ["Availability", product.availabilityStatus || "Check availability"],
+        [
+          "Availability",
+          product.availabilityStatus || "Check availability"
+        ],
         [
           "Stock",
           `${Number(product.stock) || 0} units`
@@ -2133,11 +2226,17 @@
                       >
                         ${"★".repeat(Math.max(
                           0,
-                          Math.min(5, Math.round(Number(review.rating) || 0))
+                          Math.min(
+                            5,
+                            Math.round(Number(review.rating) || 0)
+                          )
                         ))}
                         ${"☆".repeat(5 - Math.max(
                           0,
-                          Math.min(5, Math.round(Number(review.rating) || 0))
+                          Math.min(
+                            5,
+                            Math.round(Number(review.rating) || 0)
+                          )
                         ))}
                       </div>
                     </div>
@@ -2175,7 +2274,9 @@
         const products = (
           Array.isArray(data.products) ? data.products : []
         )
-          .filter(item => String(item.id) !== String(product.id))
+          .filter(
+            item => String(item.id) !== String(product.id)
+          )
           .slice(0, 4);
 
         relatedSection.innerHTML = `
@@ -2192,7 +2293,10 @@
                     >
                       <div class="related-image">
                         <img
-                          src="${escapeHTML(safeImage(item.thumbnail) || "https://placehold.co/300x300/f6f6f6/777?text=Product")}"
+                          src="${escapeHTML(
+                            safeImage(item.thumbnail) ||
+                            "https://placehold.co/300x300/f6f6f6/777?text=Product"
+                          )}"
                           alt="${escapeHTML(item.title)}"
                           loading="lazy"
                         >
@@ -2233,6 +2337,7 @@
             Related products could not be loaded.
           </div>
         `;
+
       } finally {
         relatedSection.setAttribute("aria-busy", "false");
       }
