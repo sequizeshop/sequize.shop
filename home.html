@@ -626,39 +626,94 @@
       });
     }
 
-    async function loadProducts() {
-      productGrid.innerHTML = '<div class="status">Loading products...</div>';
-      productCount.textContent = "";
-      productsHeading.textContent = currentSearch
-        ? "Search Results"
-        : currentCategory
-          ? currentCategory.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())
-          : "Popular Products";
+async function loadProducts() {
+  productGrid.innerHTML =
+    '<div class="status">Loading products...</div>';
 
-      const params = new URLSearchParams({ limit: "24" });
-      if (currentSearch) params.set("search", currentSearch);
-      else if (currentCategory) params.set("category", currentCategory);
+  productCount.textContent = "";
 
-      try {
-        const response = await fetch(`/api/products?${params.toString()}`, {
-          method: "GET",
-          credentials: "same-origin",
-          cache: "no-store"
-        });
+  productsHeading.textContent = currentSearch
+    ? "Search Results"
+    : currentCategory
+      ? currentCategory
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, c => c.toUpperCase())
+      : "Popular Products";
 
-        const data = await response.json();
+  const params = new URLSearchParams({ limit: "24" });
 
-        if (!response.ok || !data.success || !Array.isArray(data.products)) {
-          throw new Error(data.message || "Products load nahi ho paaye.");
-        }
+  if (currentSearch) {
+    params.set("search", currentSearch);
+  } else if (currentCategory) {
+    params.set("category", currentCategory);
+  }
 
-        allProducts = data.products;
-        if (!currentSearch && !currentCategory) renderCategories(allProducts);
-        renderProducts(allProducts);
-      } catch (error) {
-        showError(error.message || "Products load nahi ho paaye.");
+  try {
+    const response = await fetch(
+      `/api/products?${params.toString()}`,
+      {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        credentials: "same-origin",
+        cache: "no-store"
       }
+    );
+
+    // Read response as text first, so HTML errors don't
+    // cause "Unexpected token" JSON parsing errors.
+    const responseText = await response.text();
+    const contentType =
+      response.headers.get("content-type") || "";
+
+    if (!contentType.includes("application/json")) {
+      console.error(
+        "Non-JSON API response:",
+        response.status,
+        responseText.slice(0, 500)
+      );
+
+      throw new Error(
+        `API JSON nahi de rahi (HTTP ${response.status}). ` +
+        "Vercel par api/products.js ka path aur deployment check karein."
+      );
     }
+
+    let data;
+
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      throw new Error("Products API ka JSON response invalid hai.");
+    }
+
+    if (
+      !response.ok ||
+      !data.success ||
+      !Array.isArray(data.products)
+    ) {
+      throw new Error(
+        data.message || `Products load nahi hue (HTTP ${response.status}).`
+      );
+    }
+
+    allProducts = data.products;
+
+    // Categories should come from the full catalog,
+    // not only from the currently filtered products.
+    if (!currentSearch && !currentCategory) {
+      renderCategories(allProducts);
+    }
+
+    renderProducts(allProducts);
+  } catch (error) {
+    console.error("Load products error:", error);
+
+    showError(
+      error.message || "Products load nahi ho paaye. Dobara try karein."
+    );
+  }
+}
+
 
     document.getElementById("searchForm").addEventListener("submit", event => {
       event.preventDefault();
