@@ -1,11 +1,29 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
+  <meta name="description" id="metaDescription" content="Explore product details, pricing, images, reviews and offers on Shoppy.">
+  <meta name="robots" content="index, follow">
 
   <title>Product Details — Shoppy</title>
+
+  <link rel="canonical" id="canonicalUrl" href="https://shopingweb-zeta.vercel.app/product.html">
+
+  <meta property="og:type" content="product">
+  <meta property="og:site_name" content="Shoppy">
+  <meta property="og:title" id="ogTitle" content="Product Details — Shoppy">
+  <meta property="og:description" id="ogDescription" content="Explore product details, pricing, images, reviews and offers on Shoppy.">
+  <meta property="og:url" id="ogUrl" content="https://shopingweb-zeta.vercel.app/product.html">
+  <meta property="og:image" id="ogImage" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+  <meta property="og:image:alt" id="ogImageAlt" content="Shoppy product">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" id="twitterTitle" content="Product Details — Shoppy">
+  <meta name="twitter:description" id="twitterDescription" content="Explore product details, pricing, images, reviews and offers on Shoppy.">
+  <meta name="twitter:image" id="twitterImage" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
   <link
     rel="icon"
@@ -1155,13 +1173,16 @@
     "use strict";
 
     /*
-      Currency:
-      API prices are assumed to be in USD.
-      This page converts USD to INR at ₹85 per USD.
-      Keep this consistent with cart.html.
+      Product API returns price in INR.
+      originalPriceUSD is retained for the existing cart API,
+      because cart.html converts USD to INR for display.
     */
 
     const USD_TO_INR = 85;
+    const PRODUCT_ID_PATTERN = /^[A-Za-z0-9]{40}$/;
+    const SITE_URL = "https://shopingweb-zeta.vercel.app";
+    const DEFAULT_IMAGE =
+      "https://i.ibb.co/93kQCKxT/20261019-120246.png";
 
     const productArea = document.getElementById("productArea");
     const detailsSection = document.getElementById("detailsSection");
@@ -1170,7 +1191,7 @@
     const toast = document.getElementById("toast");
 
     const params = new URLSearchParams(window.location.search);
-    const productId = Number(params.get("id"));
+    const productId = String(params.get("id") || "").trim();
 
     let product = null;
     let selectedImageIndex = 0;
@@ -1194,7 +1215,11 @@
     }
 
     function formatPrice(price) {
-      const inrPrice = (Number(price) || 0) * USD_TO_INR;
+      /*
+        Product API prices are already INR.
+        Do not multiply them by USD_TO_INR again.
+      */
+      const inrPrice = Number(price) || 0;
 
       return new Intl.NumberFormat("en-IN", {
         style: "currency",
@@ -1217,7 +1242,10 @@
 
     function getDiscountedPrice(item) {
       const price = Number(item.price) || 0;
-      const discount = Number(item.discountPercentage) || 0;
+      const discount = Math.max(
+        0,
+        Math.min(100, Number(item.discountPercentage) || 0)
+      );
 
       return price * (1 - discount / 100);
     }
@@ -1236,6 +1264,43 @@
         return parsed.href;
       } catch {
         return "";
+      }
+    }
+
+    function updateMeta(selector, content) {
+      const element = document.querySelector(selector);
+
+      if (element) {
+        element.setAttribute("content", String(content || ""));
+      }
+    }
+
+    function updateProductMetadata(item) {
+      const title = `${item.title} — Shoppy`;
+      const description = String(
+        item.description || `Explore ${item.title} on Shoppy.`
+      ).slice(0, 300);
+
+      const image = safeImage(item.thumbnail) || DEFAULT_IMAGE;
+      const canonical = `${SITE_URL}/product.html?id=${encodeURIComponent(item.id)}`;
+      const pageUrl = window.location.href;
+
+      document.title = title;
+
+      updateMeta('meta[name="description"]', description);
+      updateMeta("#ogTitle", title);
+      updateMeta("#ogDescription", description);
+      updateMeta("#ogUrl", pageUrl);
+      updateMeta("#ogImage", image);
+      updateMeta("#ogImageAlt", item.title);
+      updateMeta("#twitterTitle", title);
+      updateMeta("#twitterDescription", description);
+      updateMeta("#twitterImage", image);
+
+      const canonicalElement = document.getElementById("canonicalUrl");
+
+      if (canonicalElement) {
+        canonicalElement.href = canonical;
       }
     }
 
@@ -1271,11 +1336,8 @@
     /* LOAD PRODUCT */
 
     async function loadProduct() {
-      if (
-        !Number.isSafeInteger(productId) ||
-        productId <= 0
-      ) {
-        showProductError("Invalid product link.");
+      if (!PRODUCT_ID_PATTERN.test(productId)) {
+        showProductError("Invalid product link. Please open a valid product.");
         return;
       }
 
@@ -1284,9 +1346,35 @@
           `/api/product?id=${encodeURIComponent(productId)}`
         );
 
+        if (
+          !data.product ||
+          String(data.product.id) !== productId
+        ) {
+          throw new Error("Product not found.");
+        }
+
         product = data.product;
 
-        document.title = `${product.title} — Shoppy`;
+        // Normalize API fields so missing optional values do not break rendering.
+        product.title = String(product.title || "Product");
+        product.description = String(product.description || "");
+        product.category = String(product.category || "Products");
+        product.brand = String(product.brand || "");
+        product.thumbnail = String(product.thumbnail || "");
+        product.availabilityStatus = String(
+          product.availabilityStatus || ""
+        );
+        product.images = Array.isArray(product.images)
+          ? product.images
+          : [];
+        product.reviews = Array.isArray(product.reviews)
+          ? product.reviews
+          : [];
+        product.tags = Array.isArray(product.tags)
+          ? product.tags
+          : [];
+
+        updateProductMetadata(product);
 
         document.getElementById("breadcrumbCategory").textContent =
           product.category || "Products";
@@ -1301,7 +1389,7 @@
 
       } catch (error) {
         console.error("Product loading error:", error);
-        showProductError(error.message);
+        showProductError(error.message || "Unable to load this product.");
       }
     }
 
@@ -1342,6 +1430,7 @@
 
     function renderGallery() {
       const images = getProductImages(product);
+
       selectedImageIndex = Math.min(
         selectedImageIndex,
         Math.max(0, images.length - 1)
@@ -1437,7 +1526,7 @@
             <div class="rating-row">
               <span class="rating-badge">
                 <i class="ph-fill ph-star"></i>
-                ${Number(product.rating).toFixed(1)}
+                ${(Number(product.rating) || 0).toFixed(1)}
               </span>
 
               <span class="muted">
@@ -1468,8 +1557,7 @@
             </div>
 
             <p class="tax-note">
-              Display price converted at ₹85 per USD.
-              Final payable amount should be verified at checkout.
+              Price displayed in INR. Final payable amount should be verified at checkout.
             </p>
 
             <div class="stock-line ${inStock ? "" : "out-of-stock"}">
@@ -1603,6 +1691,7 @@
 
       bindGalleryEvents();
       bindProductActions();
+      syncWishlistButton();
     }
 
     function bindGalleryEvents() {
@@ -1676,6 +1765,11 @@
       const addButton = document.getElementById("addCartButton");
       const buyButton = document.getElementById("buyNowButton");
 
+      if (!addButton || !buyButton) {
+        busy = false;
+        return;
+      }
+
       addButton.disabled = true;
       buyButton.disabled = true;
 
@@ -1686,11 +1780,18 @@
 
       try {
         /*
-          IMPORTANT:
-          Send the original API price to the cart API.
+          Keep the existing cart price convention:
           cart.html converts USD to INR for display.
-          Do not send the converted INR price here.
+
+          originalPriceUSD is used when provided by the API.
+          The fallback avoids breaking if older product records
+          do not contain originalPriceUSD.
         */
+
+        const cartPrice =
+          product.originalPriceUSD != null
+            ? Number(product.originalPriceUSD) || 0
+            : (Number(product.price) || 0) / USD_TO_INR;
 
         await fetchJSON("/api/cart", {
           method: "POST",
@@ -1700,7 +1801,7 @@
           body: JSON.stringify({
             id: product.id,
             title: product.title,
-            price: Number(product.price) || 0,
+            price: cartPrice,
             thumbnail: product.thumbnail,
             category: product.category,
             quantity
@@ -1720,11 +1821,15 @@
           if (existing) {
             existing.quantity =
               (Number(existing.quantity) || 1) + quantity;
+            existing.price = cartPrice;
+            existing.title = product.title;
+            existing.thumbnail = product.thumbnail;
+            existing.category = product.category;
           } else {
             localCart.push({
               id: product.id,
               title: product.title,
-              price: Number(product.price) || 0,
+              price: cartPrice,
               thumbnail: product.thumbnail,
               category: product.category,
               quantity
@@ -1772,15 +1877,39 @@
       } finally {
         busy = false;
 
-        if (document.getElementById("addCartButton")) {
-          addButton.disabled = Number(product.stock) <= 0;
-          buyButton.disabled = Number(product.stock) <= 0;
+        const currentAddButton = document.getElementById("addCartButton");
+        const currentBuyButton = document.getElementById("buyNowButton");
 
-          if (addButton.textContent.includes("Adding")) {
-            addButton.innerHTML = `
+        if (currentAddButton && currentBuyButton && product) {
+          const unavailable = Number(product.stock) <= 0;
+
+          currentAddButton.disabled = unavailable;
+          currentBuyButton.disabled = unavailable;
+
+          if (currentAddButton.textContent.includes("Adding")) {
+            currentAddButton.innerHTML = `
               <i class="ph ph-shopping-cart"></i>
               Add to Cart
             `;
+          }
+
+          const decreaseButton =
+            document.getElementById("decreaseQuantity");
+          const increaseButton =
+            document.getElementById("increaseQuantity");
+
+          if (decreaseButton) {
+            decreaseButton.disabled = quantity <= 1 || unavailable;
+          }
+
+          if (increaseButton) {
+            const maxQuantity = Math.min(
+              99,
+              Math.max(1, Number(product.stock) || 1)
+            );
+
+            increaseButton.disabled =
+              quantity >= maxQuantity || unavailable;
           }
         }
       }
@@ -1788,32 +1917,54 @@
 
     /* WISHLIST */
 
-    function toggleWishlist() {
-      const key = "shoppy_wishlist";
-
-      let wishlist = [];
-
+    function readWishlist() {
       try {
-        const saved = JSON.parse(localStorage.getItem(key) || "[]");
-        wishlist = Array.isArray(saved) ? saved : [];
+        const saved = JSON.parse(
+          localStorage.getItem("shoppy_wishlist") || "[]"
+        );
+
+        return Array.isArray(saved) ? saved : [];
       } catch {
-        wishlist = [];
+        return [];
       }
+    }
+
+    function syncWishlistButton() {
+      if (!product) return;
+
+      const button = document.getElementById("wishlistButton");
+
+      if (!button) return;
+
+      const wishlist = readWishlist();
+      const exists = wishlist.some(
+        item => String(item.id) === String(product.id)
+      );
+
+      button.classList.toggle("active", exists);
+      button.setAttribute("aria-pressed", String(exists));
+      button.setAttribute(
+        "aria-label",
+        exists ? "Remove from wishlist" : "Add to wishlist"
+      );
+
+      button.innerHTML = exists
+        ? '<i class="ph-fill ph-heart"></i>'
+        : '<i class="ph ph-heart"></i>';
+    }
+
+    function toggleWishlist() {
+      if (!product) return;
+
+      const key = "shoppy_wishlist";
+      const wishlist = readWishlist();
 
       const index = wishlist.findIndex(
         item => String(item.id) === String(product.id)
       );
 
-      const button = document.getElementById("wishlistButton");
-
       if (index >= 0) {
         wishlist.splice(index, 1);
-        button.classList.remove("active");
-        button.setAttribute("aria-pressed", "false");
-
-        button.innerHTML = '<i class="ph ph-heart"></i>';
-
-        showToast("Removed from wishlist");
       } else {
         wishlist.push({
           id: product.id,
@@ -1821,17 +1972,18 @@
           price: product.price,
           thumbnail: product.thumbnail
         });
-
-        button.classList.add("active");
-        button.setAttribute("aria-pressed", "true");
-
-        button.innerHTML = '<i class="ph-fill ph-heart"></i>';
-
-        showToast("Added to wishlist");
       }
 
       try {
         localStorage.setItem(key, JSON.stringify(wishlist));
+
+        syncWishlistButton();
+
+        showToast(
+          index >= 0
+            ? "Removed from wishlist"
+            : "Added to wishlist"
+        );
       } catch (error) {
         console.warn("Wishlist could not be saved:", error);
         showToast("Could not save wishlist on this device.");
@@ -1841,9 +1993,11 @@
     /* SHARE */
 
     async function shareProduct() {
+      if (!product) return;
+
       const shareData = {
         title: product.title,
-        text: `Check out ${product.title} on Shoppy!`,
+        text: `${product.title} — ${product.description || "Check out this product"} on Shoppy!`,
         url: window.location.href
       };
 
@@ -2010,15 +2164,17 @@
 
     async function loadRelatedProducts() {
       try {
-        const params = new URLSearchParams({
+        const relatedParams = new URLSearchParams({
           category: product.category || ""
         });
 
         const data = await fetchJSON(
-          `/api/products?${params.toString()}`
+          `/api/products?${relatedParams.toString()}`
         );
 
-        const products = (Array.isArray(data.products) ? data.products : [])
+        const products = (
+          Array.isArray(data.products) ? data.products : []
+        )
           .filter(item => String(item.id) !== String(product.id))
           .slice(0, 4);
 
@@ -2053,7 +2209,7 @@
 
                         <div class="related-rating">
                           <i class="ph-fill ph-star" style="color:#e09a00"></i>
-                          ${Number(item.rating || 0).toFixed(1)}
+                          ${(Number(item.rating) || 0).toFixed(1)}
                         </div>
                       </div>
                     </a>
