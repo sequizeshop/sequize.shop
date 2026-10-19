@@ -1,3 +1,4 @@
+
 const admin = require("firebase-admin");
 const { getSession } = require("../lib/auth");
 
@@ -44,6 +45,14 @@ function isValidProductId(id) {
   );
 }
 
+function getRequestBody(req) {
+  if (req.body && typeof req.body === "object") {
+    return req.body;
+  }
+
+  return {};
+}
+
 /* VERIFY PRODUCT FROM FIREBASE */
 
 async function getVerifiedProduct(db, id) {
@@ -78,9 +87,13 @@ async function getVerifiedProduct(db, id) {
 
   const originalPriceUSD = Number(product.originalPriceUSD);
 
+  const images = Array.isArray(product.images)
+    ? product.images
+    : [];
+
   return {
     id,
-    title: String(product.title).slice(0, 200),
+    title: String(product.title).trim().slice(0, 200),
     description: String(product.description || "").slice(0, 2000),
     price: priceINR,
     originalPriceUSD:
@@ -88,9 +101,7 @@ async function getVerifiedProduct(db, id) {
         ? originalPriceUSD
         : Number((priceINR / USD_TO_INR).toFixed(2)),
     thumbnail: String(
-      product.thumbnail ||
-      (Array.isArray(product.images) ? product.images[0] : "") ||
-      ""
+      product.thumbnail || images[0] || ""
     ).slice(0, 2000),
     category: String(product.category || "").slice(0, 100),
     rating: Number(product.rating) || 0,
@@ -106,13 +117,12 @@ function formatWishlist(value) {
   }
 
   return Object.entries(value)
-    .filter(([id, item]) => {
-      return (
-        isValidProductId(id) &&
-        item &&
-        item.id === id
-      );
-    })
+    .filter(([id, item]) => (
+      isValidProductId(id) &&
+      item &&
+      typeof item === "object" &&
+      item.id === id
+    ))
     .map(([id, item]) => ({
       id,
       title: String(item.title || "Product"),
@@ -141,11 +151,7 @@ module.exports = async function handler(req, res) {
   if (!["GET", "POST", "DELETE"].includes(req.method)) {
     res.setHeader("Allow", "GET, POST, DELETE");
 
-    return sendError(
-      res,
-      405,
-      "Method allowed nahi hai."
-    );
+    return sendError(res, 405, "Method allowed nahi hai.");
   }
 
   try {
@@ -169,11 +175,10 @@ module.exports = async function handler(req, res) {
       .child("wishlist")
       .child("items");
 
-    /* GET: LOAD WISHLIST */
+    /* GET: LOAD WISHLIST FROM FIREBASE */
 
     if (req.method === "GET") {
       const snapshot = await wishlistRef.once("value");
-
       const items = formatWishlist(snapshot.val());
 
       return res.status(200).json({
@@ -183,9 +188,9 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const body = req.body || {};
+    const body = getRequestBody(req);
 
-    /* DELETE: CLEAR WISHLIST OR REMOVE ONE PRODUCT */
+    /* DELETE: CLEAR OR REMOVE ONE ITEM */
 
     if (req.method === "DELETE") {
       if (body.clear === true) {
@@ -202,17 +207,14 @@ module.exports = async function handler(req, res) {
       const id = String(body.id || "");
 
       if (!isValidProductId(id)) {
-        return sendError(
-          res,
-          400,
-          "Product ID valid nahi hai."
-        );
+        return sendError(res, 400, "Product ID valid nahi hai.");
       }
 
-      await wishlistRef.child(id).remove();
+      const itemRef = wishlistRef.child(id);
+
+      await itemRef.remove();
 
       const snapshot = await wishlistRef.once("value");
-
       const items = formatWishlist(snapshot.val());
 
       return res.status(200).json({
@@ -223,17 +225,13 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    /* POST: ADD PRODUCT TO WISHLIST */
+    /* POST: ADD VERIFIED PRODUCT */
 
     if (req.method === "POST") {
       const id = String(body.id || "");
 
       if (!isValidProductId(id)) {
-        return sendError(
-          res,
-          400,
-          "Product ID valid nahi hai."
-        );
+        return sendError(res, 400, "Product ID valid nahi hai.");
       }
 
       const product = await getVerifiedProduct(db, id);
@@ -248,37 +246,30 @@ module.exports = async function handler(req, res) {
 
       const itemRef = wishlistRef.child(id);
 
-      const existingSnapshot = await itemRef.once("value");
+      /*
+       * Transaction prevents simultaneous requests from creating
+       * duplicate or overwriting an existing wishlist entry.
+       */
+      const transaction = await itemRef.transaction(current => {
+        if (current !== null) {
+          return;
+        }
 
-      if (existingSnapshot.exists()) {
-        const snapshot = await wishlistRef.once("value");
-
-        const items = formatWishlist(snapshot.val());
-
-        return res.status(200).json({
-          success: true,
-          message: "Product pehle se wishlist mein hai.",
-          alreadyExists: true,
-          total: items.length,
-          items
-        });
-      }
-
-      const wishlistItem = {
-        ...product,
-        addedAt: Date.now()
-      };
-
-      await itemRef.set(wishlistItem);
+        return {
+          ...product,
+          addedAt: Date.now()
+        };
+      });
 
       const snapshot = await wishlistRef.once("value");
-
       const items = formatWishlist(snapshot.val());
 
       return res.status(200).json({
         success: true,
-        message: "Product wishlist mein add ho gaya.",
-        alreadyExists: false,
+        message: transaction.committed
+          ? "Product wishlist mein add ho gaya."
+          : "Product pehle se wishlist mein hai.",
+        alreadyExists: !transaction.committed,
         total: items.length,
         items
       });
