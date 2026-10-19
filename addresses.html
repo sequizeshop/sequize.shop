@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>My Addresses — Shoppy</title>
+
+  <link rel="icon" type="image/png"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+  <link rel="apple-touch-icon"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <style>
+    :root {
+      --black: #111;
+      --gray: #737373;
+      --border: #e9e9e9;
+      --light: #f7f7f7;
+      --danger: #c62828;
+      --success: #15803d;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      color: var(--black);
+      background: #fff;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid #555;
+      outline-offset: 3px;
+    }
+
+    /* NAVBAR */
+
+    .navbar {
+      min-height: 76px;
+      padding: 0 7%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 10;
+    }
+
+    .brand img {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .nav-icon {
+      width: 32px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 23px;
+    }
+
+    .nav-icon:hover {
+      opacity: .6;
+    }
+
+    /* MAIN */
+
+    .container {
+      width: 86%;
+      max-width: 1400px;
+      margin: 45px auto 70px;
+      min-height: 420px;
+    }
+
+    .page-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .page-heading h1 {
+      font-size: clamp(28px, 4vw, 38px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.2;
+    }
+
+    .page-heading p {
+      margin-top: 9px;
+      color: var(--gray);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .btn {
+      min-height: 45px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 19px;
+      border: 1px solid var(--black);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: background .18s;
+    }
+
+    .btn-primary {
+      background: var(--black);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #333;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--black);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--light);
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    /* SUMMARY */
+
+    .list-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .list-summary h2 {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .address-count {
+      color: var(--gray);
+      font-size: 12px;
+    }
+
+    /* ADDRESS LIST */
+
+    .address-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .address-card {
+      min-width: 0;
+      padding: 23px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      transition: border-color .18s;
+    }
+
+    .address-card:hover {
+      border-color: #cfcfcf;
+    }
+
+    .address-card.is-default {
+      border-color: #b7b7b7;
+    }
+
+    .address-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 17px;
+    }
+
+    .address-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      padding: 6px 10px;
+      border-radius: 5px;
+      background: var(--light);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .default-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 25px;
+      padding: 5px 9px;
+      border-radius: 5px;
+      background: #f0fdf4;
+      color: var(--success);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+
+    .address-person {
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .address-phone {
+      margin-top: 5px;
+      color: #444;
+      font-size: 12px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .address-text {
+      margin-top: 13px;
+      color: #555;
+      font-size: 12px;
+      line-height: 1.9;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+
+    .address-landmark {
+      margin-top: 7px;
+      color: var(--gray);
+      font-size: 11px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .delivery-instructions {
+      margin-top: 13px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      color: var(--gray);
+      font-size: 11px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
+
+    .address-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 9px;
+      margin-top: 20px;
+      padding-top: 17px;
+      border-top: 1px solid var(--border);
+    }
+
+    .action-btn {
+      min-height: 37px;
+      padding: 9px 13px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--black);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .action-btn:hover {
+      background: var(--light);
+    }
+
+    .action-btn.danger {
+      color: var(--danger);
+      border-color: #f0d8d8;
+    }
+
+    .action-btn.danger:hover {
+      background: #fef2f2;
+    }
+
+    .action-btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    /* STATUS / EMPTY STATE */
+
+    .status-message {
+      display: none;
+      margin-bottom: 20px;
+      padding: 13px 15px;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .status-message.show {
+      display: block;
+    }
+
+    .status-message.error {
+      background: #fef2f2;
+      color: var(--danger);
+    }
+
+    .status-message.success {
+      background: #f0fdf4;
+      color: var(--success);
+    }
+
+    .status-message.info {
+      background: var(--light);
+      color: #444;
+    }
+
+    .loading-state {
+      padding: 65px 15px;
+      text-align: center;
+      color: var(--gray);
+      font-size: 13px;
+    }
+
+    .spinner {
+      width: 30px;
+      height: 30px;
+      margin: 0 auto 16px;
+      border: 3px solid var(--border);
+      border-top-color: var(--black);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      display: none;
+      padding: 65px 20px;
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .empty-state.show {
+      display: block;
+    }
+
+    .empty-state h2 {
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .empty-state p {
+      max-width: 400px;
+      margin: 10px auto 22px;
+      color: var(--gray);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .empty-state .btn {
+      margin: 0 auto;
+    }
+
+    /* CONFIRM DIALOG */
+
+    .dialog-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, .45);
+    }
+
+    .dialog-overlay.show {
+      display: flex;
+    }
+
+    .dialog {
+      width: 100%;
+      max-width: 390px;
+      padding: 26px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .dialog h3 {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .dialog p {
+      margin-top: 10px;
+      color: var(--gray);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 24px;
+    }
+
+    .dialog-actions .action-btn {
+      min-height: 42px;
+      padding: 11px 15px;
+    }
+
+    .dialog-actions .confirm-delete {
+      border-color: var(--danger);
+      background: var(--danger);
+      color: #fff;
+    }
+
+    /* FOOTER */
+
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 25px 7%;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      color: #888;
+      font-size: 11px;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        width: 90%;
+      }
+
+      .address-list {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .navbar {
+        min-height: 66px;
+        padding: 0 5%;
+      }
+
+      .brand img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .nav-actions {
+        gap: 12px;
+      }
+
+      .container {
+        width: 90%;
+        margin-top: 30px;
+        margin-bottom: 45px;
+      }
+
+      .page-top {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 18px;
+        margin-bottom: 26px;
+      }
+
+      .page-top > .btn {
+        width: 100%;
+      }
+
+      .address-card {
+        padding: 18px;
+      }
+
+      .address-actions {
+        gap: 8px;
+      }
+
+      .action-btn {
+        flex: 1 1 auto;
+      }
+
+      .footer {
+        padding: 22px 5%;
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="navbar">
+    <a href="/home.html" class="brand" aria-label="Shoppy home">
+      <img
+        src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+        alt="Shoppy logo"
+      >
+    </a>
+
+    <nav class="nav-actions" aria-label="Main navigation">
+      <a class="nav-icon" href="/home.html" aria-label="Home" title="Home">
+        <i class="ph ph-house" aria-hidden="true"></i>
+      </a>
+
+      <a class="nav-icon" href="/cart.html" aria-label="Cart" title="Cart">
+        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+      </a>
+
+      <a class="nav-icon" href="/profile.html" aria-label="My profile" title="My profile">
+        <i class="ph ph-user-circle" aria-hidden="true"></i>
+      </a>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <div class="page-top">
+      <div class="page-heading">
+        <h1>My addresses</h1>
+        <p>Manage your saved delivery addresses in one place.</p>
+      </div>
+
+      <a href="/address.html" class="btn btn-primary">
+        Add New Address
+      </a>
+    </div>
+
+    <div
+      class="status-message"
+      id="statusMessage"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+    <section id="loadingState" class="loading-state" aria-live="polite">
+      <div class="spinner"></div>
+      Loading your saved addresses...
+    </section>
+
+    <section id="addressContent" hidden>
+      <div class="list-summary">
+        <h2>Saved addresses</h2>
+        <span class="address-count" id="addressCount">0 addresses</span>
+      </div>
+
+      <div class="address-list" id="addressList"></div>
+    </section>
+
+    <section class="empty-state" id="emptyState">
+      <h2>No addresses found</h2>
+      <p>
+        You haven't saved a delivery address yet. Add your address to make
+        future deliveries easier.
+      </p>
+      <a href="/address.html" class="btn btn-primary">
+        Add Your First Address
+      </a>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Shoppy</span>
+    <span>Your shopping, all in one place.</span>
+  </footer>
+
+  <!-- DELETE CONFIRMATION DIALOG -->
+
+  <div
+    class="dialog-overlay"
+    id="confirmDialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="confirmTitle"
+    aria-hidden="true"
+  >
+    <div class="dialog">
+      <h3 id="confirmTitle">Delete address?</h3>
+      <p id="confirmDescription">
+        Are you sure you want to delete this address? This action cannot be undone.
+      </p>
+
+      <div class="dialog-actions">
+        <button type="button" class="action-btn" id="cancelDeleteBtn">
+          Cancel
+        </button>
+
+        <button type="button" class="action-btn confirm-delete" id="confirmDeleteBtn">
+          Delete Address
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const API_URL = "/api/addresses";
+    const LOGIN_URL = "/login.html";
+    const ADD_ADDRESS_URL = "/address.html";
+
+    const loadingState = document.getElementById("loadingState");
+    const addressContent = document.getElementById("addressContent");
+    const addressList = document.getElementById("addressList");
+    const addressCount = document.getElementById("addressCount");
+    const emptyState = document.getElementById("emptyState");
+    const statusMessage = document.getElementById("statusMessage");
+
+    const confirmDialog = document.getElementById("confirmDialog");
+    const confirmDescription = document.getElementById("confirmDescription");
+    const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+    const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+
+    let addresses = [];
+    let pendingDeleteId = null;
+    let busyAddressIds = new Set();
+    let loading = false;
+    let deleting = false;
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function showMessage(message, type = "info") {
+      statusMessage.textContent = message;
+      statusMessage.className = "status-message show " + type;
+    }
+
+    function hideMessage() {
+      statusMessage.textContent = "";
+      statusMessage.className = "status-message";
+    }
+
+    function showConfirmDialog(address) {
+      pendingDeleteId = address.id;
+
+      confirmDescription.textContent =
+        "Delete the saved address for " +
+        (address.fullName || "this recipient") +
+        "? This action cannot be undone.";
+
+      confirmDialog.classList.add("show");
+      confirmDialog.setAttribute("aria-hidden", "false");
+
+      confirmDeleteBtn.disabled = false;
+      confirmDeleteBtn.textContent = "Delete Address";
+
+      cancelDeleteBtn.focus();
+    }
+
+    function hideConfirmDialog() {
+      confirmDialog.classList.remove("show");
+      confirmDialog.setAttribute("aria-hidden", "true");
+      pendingDeleteId = null;
+      deleting = false;
+
+      confirmDeleteBtn.disabled = false;
+      confirmDeleteBtn.textContent = "Delete Address";
+    }
+
+    cancelDeleteBtn.addEventListener("click", hideConfirmDialog);
+
+    confirmDialog.addEventListener("click", function (event) {
+      if (event.target === confirmDialog && !deleting) {
+        hideConfirmDialog();
+      }
+    });
+
+    window.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && confirmDialog.classList.contains("show") && !deleting) {
+        hideConfirmDialog();
+      }
+    });
+
+    window.addEventListener("pageshow", function () {
+      hideConfirmDialog();
+      busyAddressIds.clear();
+      loading = false;
+      deleting = false;
+    });
+
+    function makeElement(tag, className, text) {
+      const element = document.createElement(tag);
+
+      if (className) {
+        element.className = className;
+      }
+
+      if (text !== undefined && text !== null) {
+        element.textContent = String(text);
+      }
+
+      return element;
+    }
+
+    function addAddressLine(parent, value) {
+      if (!value || !String(value).trim()) return;
+
+      parent.appendChild(
+        makeElement("div", "", String(value).trim())
+      );
+    }
+
+    function formatAddress(address) {
+      return [
+        address.houseNumber,
+        address.building,
+        address.area,
+        address.postOffice,
+        address.city,
+        address.district,
+        address.state,
+        address.pincode,
+        address.country
+      ].filter(value => value && String(value).trim())
+        .map(value => String(value).trim())
+        .filter((value, index, all) => {
+          return all.findIndex(
+            item => item.toLowerCase() === value.toLowerCase()
+          ) === index;
+        });
+    }
+
+    function getAddressId(address) {
+      const id = address && (
+        address.id ||
+        address.addressId ||
+        address.key
+      );
+
+      return typeof id === "string" ? id.trim() : "";
+    }
+
+    function createActionButton(label, className, onClick) {
+      const button = makeElement("button", className, label);
+      button.type = "button";
+      button.addEventListener("click", onClick);
+      return button;
+    }
+
+    function renderAddress(address) {
+      const card = makeElement(
+        "article",
+        "address-card" + (address.isDefault === true ? " is-default" : "")
+      );
+
+      const top = makeElement("div", "address-card-top");
+      const badges = makeElement("div", "address-badges");
+      const typeLabel = address.addressType || "Other";
+
+      badges.appendChild(
+        makeElement("span", "address-label", typeLabel)
+      );
+
+      if (address.isDefault === true) {
+        badges.appendChild(
+          makeElement("span", "default-badge", "DEFAULT")
+        );
+      }
+
+      top.appendChild(badges);
+      card.appendChild(top);
+
+      card.appendChild(
+        makeElement("h3", "address-person", address.fullName || "Recipient")
+      );
+
+      const phoneText = address.alternatePhone
+        ? "Phone: " + (address.phone || "—") +
+          " · Alternate: " + address.alternatePhone
+        : "Phone: " + (address.phone || "—");
+
+      card.appendChild(
+        makeElement("p", "address-phone", phoneText)
+      );
+
+      const addressText = makeElement("div", "address-text");
+
+      formatAddress(address).forEach(line => {
+        addAddressLine(addressText, line);
+      });
+
+      card.appendChild(addressText);
+
+      if (address.landmark) {
+        card.appendChild(
+          makeElement("p", "address-landmark", "Landmark: " + address.landmark)
+        );
+      }
+
+      if (address.deliveryInstructions) {
+        card.appendChild(
+          makeElement(
+            "p",
+            "delivery-instructions",
+            "Delivery instructions: " + address.deliveryInstructions
+          )
+        );
+      }
+
+      const actions = makeElement("div", "address-actions");
+      const addressId = getAddressId(address);
+      const isBusy = busyAddressIds.has(addressId);
+
+      const editButton = createActionButton(
+        "Edit",
+        "action-btn",
+        function () {
+          if (!addressId) {
+            showMessage(
+              "This address is missing its ID and cannot be edited.",
+              "error"
+            );
+            return;
+          }
+
+          window.location.href =
+            ADD_ADDRESS_URL + "?edit=" + encodeURIComponent(addressId);
+        }
+      );
+
+      editButton.disabled = isBusy;
+      actions.appendChild(editButton);
+
+      if (address.isDefault !== true) {
+        const defaultButton = createActionButton(
+          "Set as Default",
+          "action-btn",
+          function () {
+            setDefaultAddress(address);
+          }
+        );
+
+        defaultButton.disabled = isBusy;
+        actions.appendChild(defaultButton);
+      }
+
+      const deleteButton = createActionButton(
+        "Delete",
+        "action-btn danger",
+        function () {
+          if (!addressId) {
+            showMessage(
+              "This address is missing its ID and cannot be deleted.",
+              "error"
+            );
+            return;
+          }
+
+          showConfirmDialog(address);
+        }
+      );
+
+      deleteButton.disabled = isBusy;
+      actions.appendChild(deleteButton);
+
+      card.appendChild(actions);
+
+      return card;
+    }
+
+    function renderAddresses() {
+      addressList.replaceChildren();
+
+      addressCount.textContent =
+        addresses.length + (addresses.length === 1 ? " address" : " addresses");
+
+      if (addresses.length === 0) {
+        addressContent.hidden = true;
+        emptyState.classList.add("show");
+        return;
+      }
+
+      emptyState.classList.remove("show");
+      addressContent.hidden = false;
+
+      addresses.forEach(address => {
+        addressList.appendChild(renderAddress(address));
+      });
+    }
+
+    async function parseResponse(response) {
+      try {
+        return await response.json();
+      } catch (_) {
+        return {};
+      }
+    }
+
+    async function loadAddresses(options = {}) {
+      if (loading) return;
+
+      loading = true;
+      hideMessage();
+
+      if (!options.silent) {
+        loadingState.style.display = "block";
+        addressContent.hidden = true;
+        emptyState.classList.remove("show");
+      }
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          credentials: "same-origin",
+          headers: {
+            "Accept": "application/json"
+          },
+          cache: "no-store"
+        });
+
+        const result = await parseResponse(response);
+
+        if (response.status === 401) {
+          window.location.replace(
+            LOGIN_URL + "?redirect=" +
+            encodeURIComponent("/addresses.html")
+          );
+          return;
+        }
+
+        if (!response.ok || result.success !== true) {
+          throw new Error(
+            result.message || "Could not load your saved addresses."
+          );
+        }
+
+        addresses = Array.isArray(result.addresses)
+          ? result.addresses.map(address => ({
+              ...address,
+              id: getAddressId(address)
+            }))
+          : [];
+
+        /*
+          Keep default address first, then sort the remaining
+          addresses by creation time when timestamps are available.
+        */
+
+        addresses.sort((a, b) => {
+          if (a.isDefault === true && b.isDefault !== true) return -1;
+          if (b.isDefault === true && a.isDefault !== true) return 1;
+
+          const aTime = Number(a.createdAt) || 0;
+          const bTime = Number(b.createdAt) || 0;
+
+          return bTime - aTime;
+        });
+
+        renderAddresses();
+
+      } catch (error) {
+        console.error("Load addresses error:", error);
+
+        showMessage(
+          error.message || "Could not load your addresses. Please try again.",
+          "error"
+        );
+
+        if (addresses.length === 0) {
+          addressContent.hidden = true;
+          emptyState.classList.remove("show");
+        }
+
+      } finally {
+        loading = false;
+        loadingState.style.display = "none";
+      }
+    }
+
+    async function setDefaultAddress(address) {
+      const id = getAddressId(address);
+
+      if (!id || busyAddressIds.has(id)) return;
+
+      busyAddressIds.add(id);
+      hideMessage();
+      renderAddresses();
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "PUT",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            ...address,
+            id: id,
+            isDefault: true
+          })
+        });
+
+        const result = await parseResponse(response);
+
+        if (response.status === 401) {
+          window.location.replace(
+            LOGIN_URL + "?redirect=" +
+            encodeURIComponent("/addresses.html")
+          );
+          return;
+        }
+
+        if (!response.ok || result.success !== true) {
+          throw new Error(
+            result.message || "Could not set this address as default."
+          );
+        }
+
+        showMessage("Default address updated successfully.", "success");
+        await loadAddresses({ silent: true });
+
+      } catch (error) {
+        console.error("Set default address error:", error);
+
+        showMessage(
+          error.message || "Could not update the default address.",
+          "error"
+        );
+
+      } finally {
+        busyAddressIds.delete(id);
+        renderAddresses();
+      }
+    }
+
+    confirmDeleteBtn.addEventListener("click", async function () {
+      if (!pendingDeleteId || deleting) return;
+
+      const id = pendingDeleteId;
+
+      deleting = true;
+      confirmDeleteBtn.disabled = true;
+      cancelDeleteBtn.disabled = true;
+      confirmDeleteBtn.textContent = "Deleting...";
+
+      hideMessage();
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "DELETE",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({ id: id })
+        });
+
+        const result = await parseResponse(response);
+
+        if (response.status === 401) {
+          hideConfirmDialog();
+
+          window.location.replace(
+            LOGIN_URL + "?redirect=" +
+            encodeURIComponent("/addresses.html")
+          );
+          return;
+        }
+
+        if (!response.ok || result.success !== true) {
+          throw new Error(
+            result.message || "Could not delete this address."
+          );
+        }
+
+        hideConfirmDialog();
+
+        showMessage("Address deleted successfully.", "success");
+
+        await loadAddresses({ silent: true });
+
+      } catch (error) {
+        console.error("Delete address error:", error);
+
+        showMessage(
+          error.message || "Could not delete this address. Please try again.",
+          "error"
+        );
+
+      } finally {
+        deleting = false;
+        cancelDeleteBtn.disabled = false;
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteBtn.textContent = "Delete Address";
+      }
+    });
+
+    /*
+      Initial load
+    */
+
+    loadAddresses();
+
+  </script>
+
+</body>
+</html>
