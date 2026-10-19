@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <title>Shoppy — Discover Products</title>
+  <meta name="description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <style>
+    :root {
+      --black: #111111;
+      --white: #ffffff;
+      --gray: #737373;
+      --border: #e9e9e9;
+      --light: #f6f6f6;
+      --radius: 16px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Inter", sans-serif;
+      color: var(--black);
+      background: #fff;
+      min-height: 100vh;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .navbar {
+      height: 76px;
+      padding: 0 7%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand img {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      width: min(440px, 45%);
+      height: 43px;
+      border: 1px solid var(--border);
+      background: #f8f8f8;
+      border-radius: 10px;
+      padding: 0 13px;
+      gap: 10px;
+    }
+
+    .search i { font-size: 19px; color: #777; }
+
+    .search input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--black);
+      font-size: 13px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .nav-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 23px;
+    }
+
+    .hero-wrap {
+      padding: 32px 7% 0;
+    }
+
+    .hero {
+      min-height: 290px;
+      border-radius: 22px;
+      background: #f4f4f4;
+      padding: 48px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+      overflow: hidden;
+    }
+
+    .hero-copy { max-width: 540px; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow i { font-size: 17px; }
+
+    .hero h1 {
+      font-size: clamp(32px, 4vw, 49px);
+      line-height: 1.1;
+      letter-spacing: -2px;
+      font-weight: 800;
+      max-width: 500px;
+    }
+
+    .hero p {
+      margin-top: 14px;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.7;
+      max-width: 430px;
+    }
+
+    .hero-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 23px;
+      padding: 13px 19px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--black);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .hero-art {
+      width: 220px;
+      height: 220px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: #e5e5e5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-art img {
+      width: 78%;
+      height: 78%;
+      object-fit: contain;
+    }
+
+    .container {
+      width: 86%;
+      max-width: 1320px;
+      margin: 44px auto;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-head h2 {
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+    }
+
+    .section-head p {
+      color: var(--gray);
+      font-size: 12px;
+      margin-top: 7px;
+    }
+
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-bottom: 32px;
+    }
+
+    .category-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #444;
+      border-radius: 30px;
+      padding: 10px 15px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: capitalize;
+      transition: .2s;
+    }
+
+    .category-btn:hover,
+    .category-btn.active {
+      background: #111;
+      border-color: #111;
+      color: #fff;
+    }
+
+    .product-count {
+      color: var(--gray);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .product-card {
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,.06);
+    }
+
+    .product-image {
+      position: relative;
+      height: 220px;
+      padding: 18px;
+      background: #f7f7f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .discount {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: #111;
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .product-info { padding: 16px; }
+
+    .product-category {
+      color: #888;
+      font-size: 10px;
+      text-transform: capitalize;
+      font-weight: 700;
+      letter-spacing: .7px;
+    }
+
+    .product-title {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-top: 8px;
+      min-height: 42px;
+      overflow-wrap: anywhere;
+    }
+
+    .product-description {
+      color: var(--gray);
+      font-size: 11px;
+      line-height: 1.6;
+      margin-top: 7px;
+      min-height: 52px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 11px;
+      color: #555;
+      font-size: 11px;
+    }
+
+    .product-rating i { color: #e7a500; font-size: 14px; }
+
+    .product-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .product-price {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    .add-button {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111;
+      color: #fff;
+      border: 0;
+      border-radius: 10px;
+      font-size: 19px;
+    }
+
+    .status {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 45px 20px;
+      color: var(--gray);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .status button {
+      display: block;
+      margin: 14px auto 0;
+      padding: 11px 18px;
+      border: 0;
+      border-radius: 8px;
+      background: #111;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .footer {
+      margin-top: 60px;
+      border-top: 1px solid var(--border);
+      padding: 26px 7%;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      color: #888;
+      font-size: 11px;
+    }
+
+    @media (max-width: 1050px) {
+      .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .product-image { height: 200px; }
+      .navbar { padding: 0 5%; }
+      .hero-wrap { padding-left: 5%; padding-right: 5%; }
+    }
+
+    @media (max-width: 700px) {
+      .navbar { height: 66px; gap: 12px; }
+      .brand img { width: 40px; height: 40px; }
+      .search { width: auto; flex: 1; height: 39px; }
+      .nav-actions { gap: 13px; }
+      .nav-icon { font-size: 21px; }
+      .hero-wrap { padding-top: 20px; }
+      .hero { min-height: 250px; padding: 30px 24px; border-radius: 17px; }
+      .hero h1 { font-size: 34px; letter-spacing: -1.4px; }
+      .hero p { font-size: 12px; }
+      .hero-art { width: 115px; height: 115px; }
+      .hero-art img { width: 84%; height: 84%; }
+      .container { width: 90%; margin: 34px auto; }
+      .section-head h2 { font-size: 20px; }
+      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+      .product-image { height: 165px; padding: 12px; }
+      .product-info { padding: 12px; }
+      .product-title { font-size: 12px; min-height: 36px; }
+      .product-description { font-size: 10px; min-height: 48px; }
+      .product-price { font-size: 15px; }
+      .add-button { width: 32px; height: 32px; }
+      .footer { padding: 22px 5%; }
+    }
+
+    @media (max-width: 390px) {
+      .nav-actions { gap: 9px; }
+      .hero-art { display: none; }
+      .hero h1 { font-size: 32px; }
+      .product-grid { gap: 10px; }
+      .product-image { height: 145px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="navbar">
+    <a href="/home.html" class="brand" aria-label="Shoppy home">
+      <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo">
+    </a>
+
+    <form class="search" id="searchForm" role="search">
+      <i class="ph ph-magnifying-glass"></i>
+      <input id="searchInput" type="search" placeholder="Search products..." aria-label="Search products">
+    </form>
+
+    <nav class="nav-actions" aria-label="Main navigation">
+      <a class="nav-icon" href="/home.html" aria-label="Home"><i class="ph ph-house"></i></a>
+      <a class="nav-icon" href="/cart.html" aria-label="Cart"><i class="ph ph-shopping-cart"></i></a>
+      <a class="nav-icon" href="/profile.html" aria-label="My profile"><i class="ph ph-user-circle"></i></a>
+    </nav>
+  </header>
+
+  <section class="hero-wrap">
+    <div class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><i class="ph ph-sparkle"></i> Welcome to Shoppy</div>
+        <h1>Find your next favorite thing.</h1>
+        <p>Explore everyday essentials, discover new arrivals and find products you'll love.</p>
+        <button class="hero-button" id="shopNow" type="button">
+          Explore Products <i class="ph ph-arrow-right"></i>
+        </button>
+      </div>
+
+      <div class="hero-art" aria-hidden="true">
+        <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="">
+      </div>
+    </div>
+  </section>
+
+  <main class="container" id="productsSection">
+    <div class="section-head">
+      <div>
+        <h2>Shop by Category</h2>
+        <p>Find what you need, all in one place.</p>
+      </div>
+    </div>
+
+    <div id="categories" class="categories">
+      <button class="category-btn active" data-category="">All Products</button>
+    </div>
+
+    <div class="section-head">
+      <div>
+        <h2 id="productsHeading">Popular Products</h2>
+        <p>Discover something you'll love.</p>
+      </div>
+      <span id="productCount" class="product-count"></span>
+    </div>
+
+    <div id="productGrid" class="product-grid" aria-live="polite">
+      <div class="status">Loading products...</div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Shoppy</span>
+    <span>Your shopping, all in one place.</span>
+  </footer>
+
+  <script>
+    const productGrid = document.getElementById("productGrid");
+    const categoriesEl = document.getElementById("categories");
+    const productCount = document.getElementById("productCount");
+    const productsHeading = document.getElementById("productsHeading");
+    const searchInput = document.getElementById("searchInput");
+
+    let currentCategory = "";
+    let currentSearch = "";
+    let allProducts = [];
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function formatPrice(price) {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD"
+      }).format(Number(price) || 0);
+    }
+
+    function showError(message) {
+      productGrid.innerHTML = `
+        <div class="status">
+          ${escapeHTML(message)}
+          <button type="button" id="retryButton">Try Again</button>
+        </div>`;
+      document.getElementById("retryButton").addEventListener("click", loadProducts);
+    }
+
+    function renderProducts(products) {
+      productCount.textContent = `${products.length} product${products.length === 1 ? "" : "s"}`;
+
+      if (!products.length) {
+        productGrid.innerHTML = '<div class="status">No products found. Try another search or category.</div>';
+        return;
+      }
+
+      productGrid.innerHTML = products.map(product => {
+        const image = product.thumbnail || product.images?.[0] || "";
+        const title = escapeHTML(product.title);
+        const description = escapeHTML(product.description);
+        const category = escapeHTML(product.category || "Other");
+        const discount = Number(product.discountPercentage) || 0;
+        const rating = Number(product.rating) || 0;
+
+        return `
+          <article class="product-card">
+            <div class="product-image">
+              ${discount > 0 ? `<span class="discount">-${Math.round(discount)}%</span>` : ""}
+              <img
+                src="${escapeHTML(image)}"
+                alt="${title}"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://placehold.co/400x400/f6f6f6/777?text=Product';"
+              >
+            </div>
+            <div class="product-info">
+              <div class="product-category">${category}</div>
+              <h3 class="product-title">${title}</h3>
+              <p class="product-description">${description}</p>
+              <div class="product-rating">
+                <i class="ph-fill ph-star"></i>
+                <span>${rating ? rating.toFixed(1) : "No rating"}</span>
+              </div>
+              <div class="product-bottom">
+                <span class="product-price">${formatPrice(product.price)}</span>
+                <button class="add-button" type="button" aria-label="Add ${title} to cart" data-product-id="${Number(product.id)}" title="Add to cart">
+                  <i class="ph ph-plus"></i>
+                </button>
+              </div>
+            </div>
+          </article>`;
+      }).join("");
+
+      productGrid.querySelectorAll(".add-button").forEach(button => {
+        button.addEventListener("click", () => {
+          const product = products.find(item => item.id === Number(button.dataset.productId));
+          if (!product) return;
+
+          try {
+            const existing = JSON.parse(localStorage.getItem("shoppy_cart") || "[]");
+            const cart = Array.isArray(existing) ? existing : [];
+            const item = cart.find(entry => entry.id === product.id);
+
+            if (item) {
+              item.quantity = (Number(item.quantity) || 1) + 1;
+            } else {
+              cart.push({
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                thumbnail: product.thumbnail || product.images?.[0] || "",
+                quantity: 1
+              });
+            }
+
+            localStorage.setItem("shoppy_cart", JSON.stringify(cart));
+            button.innerHTML = '<i class="ph ph-check"></i>';
+            button.setAttribute("aria-label", "Added to cart");
+            setTimeout(() => {
+              button.innerHTML = '<i class="ph ph-plus"></i>';
+              button.setAttribute("aria-label", `Add ${product.title} to cart`);
+            }, 1000);
+          } catch {
+            alert("Cart save nahi ho paya. Browser storage check karein.");
+          }
+        });
+      });
+    }
+
+    function renderCategories(products) {
+      const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
+
+      categoriesEl.innerHTML = `
+        <button class="category-btn ${currentCategory ? "" : "active"}" data-category="">All Products</button>
+        ${categories.map(category => `
+          <button class="category-btn ${currentCategory === category ? "active" : ""}"
+            data-category="${escapeHTML(category)}">${escapeHTML(category.replace(/-/g, " "))}</button>
+        `).join("")}
+      `;
+
+      categoriesEl.querySelectorAll(".category-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          currentCategory = button.dataset.category || "";
+          loadProducts();
+        });
+      });
+    }
+
+    async function loadProducts() {
+      productGrid.innerHTML = '<div class="status">Loading products...</div>';
+      productCount.textContent = "";
+      productsHeading.textContent = currentSearch
+        ? "Search Results"
+        : currentCategory
+          ? currentCategory.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())
+          : "Popular Products";
+
+      const params = new URLSearchParams({ limit: "24" });
+      if (currentSearch) params.set("search", currentSearch);
+      else if (currentCategory) params.set("category", currentCategory);
+
+      try {
+        const response = await fetch(`/api/products?${params.toString()}`, {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success || !Array.isArray(data.products)) {
+          throw new Error(data.message || "Products load nahi ho paaye.");
+        }
+
+        allProducts = data.products;
+        if (!currentSearch && !currentCategory) renderCategories(allProducts);
+        renderProducts(allProducts);
+      } catch (error) {
+        showError(error.message || "Products load nahi ho paaye.");
+      }
+    }
+
+    document.getElementById("searchForm").addEventListener("submit", event => {
+      event.preventDefault();
+      currentSearch = searchInput.value.trim();
+      currentCategory = "";
+      loadProducts();
+    });
+
+    searchInput.addEventListener("search", () => {
+      if (!searchInput.value.trim()) {
+        currentSearch = "";
+        currentCategory = "";
+        loadProducts();
+      }
+    });
+
+    document.getElementById("shopNow").addEventListener("click", () => {
+      document.getElementById("productsSection").scrollIntoView({
+        behavior: "smooth"
+      });
+    });
+
+    loadProducts();
+  </script>
+</body>
+</html>
