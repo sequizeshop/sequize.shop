@@ -3,11 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account | Shopy</title>
+
+    <title>Create Account</title>
+
+    <!-- Logo / Favicon -->
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="https://i.ibb.co/Rk4H8sbC/a-shopping-cart-featuring-the-letter-e-symbolic-of-an-e-commerce-platform-on-a-white-background-a-co.jpg"
+    >
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
@@ -38,7 +50,8 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        input, button {
+        input,
+        button {
             font: inherit;
         }
 
@@ -184,6 +197,23 @@
         .signup-card {
             width: 100%;
             max-width: 390px;
+        }
+
+        /* LOGO */
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 22px;
+        }
+
+        .brand-logo img {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+            border-radius: 50%;
+            display: block;
         }
 
         .form-heading {
@@ -464,7 +494,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .progress-dialog h3 {
@@ -551,7 +583,9 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
+            *,
+            *::before,
+            *::after {
                 animation-duration: 0.01ms !important;
                 transition-duration: 0.01ms !important;
             }
@@ -563,8 +597,11 @@
 
 <main class="page-wrapper">
 
+    <!-- LEFT INTRO PANEL -->
+
     <section class="intro-panel">
         <div class="intro-content">
+
             <div class="eyebrow">THE NEW WAY TO SHOP</div>
 
             <h1>Find your<br>next <span>favorite.</span></h1>
@@ -582,9 +619,17 @@
                 </div>
 
                 <div class="visual-products">
-                    <div class="product-tile"><i class="ph ph-sneaker" aria-hidden="true"></i></div>
-                    <div class="product-tile"><i class="ph ph-headphones" aria-hidden="true"></i></div>
-                    <div class="product-tile"><i class="ph ph-handbag" aria-hidden="true"></i></div>
+                    <div class="product-tile">
+                        <i class="ph ph-sneaker" aria-hidden="true"></i>
+                    </div>
+
+                    <div class="product-tile">
+                        <i class="ph ph-headphones" aria-hidden="true"></i>
+                    </div>
+
+                    <div class="product-tile">
+                        <i class="ph ph-handbag" aria-hidden="true"></i>
+                    </div>
                 </div>
             </div>
 
@@ -592,25 +637,46 @@
                 <i class="ph ph-shield-check" aria-hidden="true"></i>
                 A simpler, smarter shopping experience.
             </div>
+
         </div>
     </section>
+
+    <!-- SIGNUP FORM -->
 
     <section class="form-panel">
         <div class="signup-card">
 
-            <div class="form-heading">
-                <h2>Create your account</h2>
-                <p>Join Shopy and discover a better way to shop.</p>
+            <!-- LOGO IMAGE ONLY -->
+
+            <div class="brand-logo">
+                <img
+                    src="https://i.ibb.co/Rk4H8sbC/a-shopping-cart-featuring-the-letter-e-symbolic-of-an-e-commerce-platform-on-a-white-background-a-co.jpg"
+                    alt="Store logo"
+                    width="58"
+                    height="58"
+                >
             </div>
 
-            <div id="message" class="message" role="status" aria-live="polite"></div>
+            <div class="form-heading">
+                <h2>Create your account</h2>
+                <p>Create an account and discover a better way to shop.</p>
+            </div>
+
+            <div
+                id="message"
+                class="message"
+                role="status"
+                aria-live="polite"
+            ></div>
 
             <form id="signupForm">
 
                 <div class="form-group">
                     <label for="fullName">Full Name</label>
+
                     <div class="input-box">
                         <i class="ph ph-user" aria-hidden="true"></i>
+
                         <input
                             type="text"
                             id="fullName"
@@ -626,8 +692,10 @@
 
                 <div class="form-group">
                     <label for="email">Email Address</label>
+
                     <div class="input-box">
                         <i class="ph ph-envelope-simple" aria-hidden="true"></i>
+
                         <input
                             type="email"
                             id="email"
@@ -642,8 +710,10 @@
 
                 <div class="form-group">
                     <label for="password">Password</label>
+
                     <div class="input-box">
                         <i class="ph ph-lock-simple" aria-hidden="true"></i>
+
                         <input
                             type="password"
                             id="password"
@@ -669,32 +739,64 @@
 
                 <label class="terms">
                     <input type="checkbox" id="terms" required>
+
                     <span>
-                        I agree to Shopy's
+                        I agree to the
                         <a href="terms.html">Terms of Service</a>
                         and
                         <a href="privacy.html">Privacy Policy</a>.
                     </span>
                 </label>
 
-                <button type="submit" class="btn btn-primary" id="submitBtn">
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="submitBtn"
+                >
                     <span>Create Account</span>
                     <i class="ph ph-arrow-right" aria-hidden="true"></i>
                 </button>
+
             </form>
 
             <div class="social-section">
+
                 <div class="divider">OR CONTINUE WITH</div>
 
-                <button type="button" class="btn btn-social" id="googleBtn">
-                    <svg class="google-icon" viewBox="0 0 48 48" aria-hidden="true">
-                        <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.9 6.1-15z"/>
-                        <path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.6-5.1c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20 20 0 0 0 24 44z"/>
-                        <path fill="#FBBC05" d="M12.6 27.6a12 12 0 0 1 0-7.2v-5.3H5.8a20 20 0 0 0 0 17.8z"/>
-                        <path fill="#EA4335" d="M24 12c3 0 5.7 1 7.8 3.1l5.8-5.8A19.3 19.3 0 0 0 24 4 20 20 0 0 0 5.8 15.1l6.8 5.3C14.2 15.6 18.7 12 24 12z"/>
+                <button
+                    type="button"
+                    class="btn btn-social"
+                    id="googleBtn"
+                >
+                    <svg
+                        class="google-icon"
+                        viewBox="0 0 48 48"
+                        aria-hidden="true"
+                    >
+                        <path
+                            fill="#4285F4"
+                            d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.9 6.1-15z"
+                        />
+
+                        <path
+                            fill="#34A853"
+                            d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.6-5.1c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20 20 0 0 0 24 44z"
+                        />
+
+                        <path
+                            fill="#FBBC05"
+                            d="M12.6 27.6a12 12 0 0 1 0-7.2v-5.3H5.8a20 20 0 0 0 0 17.8z"
+                        />
+
+                        <path
+                            fill="#EA4335"
+                            d="M24 12c3 0 5.7 1 7.8 3.1l5.8-5.8A19.3 19.3 0 0 0 24 4 20 20 0 0 0 5.8 15.1l6.8 5.3C14.2 15.6 18.7 12 24 12z"
+                        />
                     </svg>
+
                     Continue with Google
                 </button>
+
             </div>
 
             <div class="login-link">
@@ -709,9 +811,11 @@
 
         </div>
     </section>
+
 </main>
 
-<!-- Progress dialogue -->
+<!-- PROGRESS DIALOG -->
+
 <div
     class="dialog-backdrop"
     id="progressBackdrop"
@@ -721,14 +825,23 @@
     aria-describedby="dialogText"
 >
     <div class="progress-dialog" id="progressDialog">
+
         <div class="spinner" aria-hidden="true"></div>
+
         <h3 id="dialogTitle">Creating your account</h3>
+
         <p id="dialogText">
-            Please wait while we securely create your Shopy account.
+            Please wait while we securely create your account.
         </p>
-        <button class="btn btn-primary dialog-ok" id="dialogOk" type="button">
+
+        <button
+            class="btn btn-primary dialog-ok"
+            id="dialogOk"
+            type="button"
+        >
             Continue
         </button>
+
     </div>
 </div>
 
@@ -756,7 +869,7 @@
 
         dialogTitle.textContent = "Creating your account";
         dialogText.textContent =
-            "Please wait while we securely create your Shopy account.";
+            "Please wait while we securely create your account.";
 
         dialogOk.textContent = "Continue";
         dialogOk.onclick = null;
@@ -776,6 +889,7 @@
     }
 
     /* Show / hide password */
+
     togglePassword.addEventListener("click", function () {
         const show = passwordInput.type === "password";
 
@@ -793,7 +907,8 @@
         togglePassword.setAttribute("aria-pressed", String(show));
     });
 
-    /* Connect signup form to /api/signup */
+    /* Signup form */
+
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
 
@@ -806,12 +921,18 @@
         const password = passwordInput.value;
 
         if (name.length < 2 || name.length > 80) {
-            showMessage("Name must be between 2 and 80 characters.", "error");
+            showMessage(
+                "Name must be between 2 and 80 characters.",
+                "error"
+            );
             return;
         }
 
         if (password.length < 8 || password.length > 72) {
-            showMessage("Password must be between 8 and 72 characters.", "error");
+            showMessage(
+                "Password must be between 8 and 72 characters.",
+                "error"
+            );
             return;
         }
 
@@ -839,11 +960,14 @@
             try {
                 data = await response.json();
             } catch (parseError) {
-                throw new Error("The server returned an invalid response. Please try again.");
+                throw new Error(
+                    "The server returned an invalid response. Please try again."
+                );
             }
 
             if (!response.ok || data.success !== true) {
-                const errorMessage = data.message || "Unable to create account right now.";
+                const errorMessage =
+                    data.message || "Unable to create account right now.";
 
                 finishDialog(
                     "Account not created",
@@ -858,19 +982,25 @@
 
             finishDialog(
                 "Account created!",
-                "Your Shopy account has been created successfully.",
+                "Your account has been created successfully.",
                 "Go to sign in",
                 function () {
                     window.location.href = "login.html";
                 }
             );
 
-            showMessage("Account created successfully. You can now sign in.", "success");
+            showMessage(
+                "Account created successfully. You can now sign in.",
+                "success"
+            );
+
             form.reset();
 
             passwordInput.type = "password";
+
             togglePassword.innerHTML =
                 '<i class="ph ph-eye" aria-hidden="true"></i>';
+
             togglePassword.setAttribute("aria-label", "Show password");
             togglePassword.setAttribute("aria-pressed", "false");
 
@@ -895,7 +1025,8 @@
         }
     });
 
-    /* Google sign-in is not connected yet */
+    /* Google sign-in placeholder */
+
     document.getElementById("googleBtn").addEventListener("click", function () {
         showMessage(
             "Google sign-in is not connected yet. Please use email and password.",
