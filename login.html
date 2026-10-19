@@ -1019,7 +1019,7 @@
 
     function getSafeRedirect(path) {
         if (typeof path !== "string" || !path.trim()) {
-            return "/index.html";
+            return "/profile.html";
         }
 
         if (
@@ -1028,14 +1028,14 @@
             path.includes("\\") ||
             /[\r\n]/.test(path)
         ) {
-            return "/index.html";
+            return "/profile.html";
         }
 
         try {
             const target = new URL(path, window.location.origin);
 
             if (target.origin !== window.location.origin) {
-                return "/index.html";
+                return "/profile.html";
             }
 
             return target.pathname + target.search + target.hash;
