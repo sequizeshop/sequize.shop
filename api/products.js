@@ -26,7 +26,9 @@ module.exports = async function handler(req, res) {
         ? req.query.category.trim().toLowerCase().slice(0, 80)
         : "";
 
-    // limit=0 requests all products available from DummyJSON.
+    // Fixed conversion rate: 1 USD = ₹85
+    const USD_TO_INR = 85;
+
     let endpoint = "https://dummyjson.com/products?limit=0";
 
     if (search) {
@@ -58,7 +60,10 @@ module.exports = async function handler(req, res) {
           id: Number(product.id),
           title: String(product.title || "Untitled product"),
           description: String(product.description || ""),
-          price: Number(product.price) || 0,
+
+          // Convert USD to INR
+          price: Math.round((Number(product.price) || 0) * USD_TO_INR * 100) / 100,
+
           discountPercentage:
             Number(product.discountPercentage) || 0,
           rating: Number(product.rating) || 0,
@@ -72,6 +77,8 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
+      currency: "INR",
+      exchangeRate: USD_TO_INR,
       total: Number(result.total) || products.length,
       products
     });
