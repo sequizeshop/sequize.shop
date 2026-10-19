@@ -1,47 +1,33 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#111111">
+  <meta name="theme-color" content="#ffffff">
 
-  <title>Add Delivery Address | Shoppy</title>
+  <title>Add Delivery Address — Shoppy</title>
 
-  <link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/93kQCKxT/20261019-120246.png"
-  >
+  <link rel="icon" type="image/png"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+  <link rel="apple-touch-icon"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
-
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"
-  >
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
     :root {
-      --black: #111111;
-      --white: #ffffff;
-      --gray-50: #fafafa;
-      --gray-100: #f4f4f5;
-      --gray-200: #e4e4e7;
-      --gray-300: #d4d4d8;
-      --gray-400: #a1a1aa;
-      --gray-500: #71717a;
-      --gray-600: #52525b;
-      --gray-700: #3f3f46;
-      --gray-800: #27272a;
+      --black: #111;
+      --gray: #737373;
+      --border: #e9e9e9;
+      --light: #f7f7f7;
+      --danger: #c62828;
       --success: #15803d;
-      --danger: #dc2626;
-      --radius: 14px;
     }
 
     * {
@@ -51,11 +37,16 @@
     }
 
     body {
-      min-height: 100vh;
-      background: var(--gray-50);
+      font-family: "Inter", sans-serif;
       color: var(--black);
-      font-family: 'Inter', sans-serif;
+      background: #fff;
+      min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
     button,
@@ -69,209 +60,117 @@
       cursor: pointer;
     }
 
-    .page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid #555;
+      outline-offset: 3px;
     }
 
-    /* Header */
+    /* NAVBAR — matches Cart and Wishlist */
 
-    .topbar {
-      height: 76px;
-      padding: 0 6%;
+    .navbar {
+      min-height: 76px;
+      padding: 0 7%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--white);
-      border-bottom: 1px solid var(--gray-200);
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 11px;
-      color: var(--black);
-      text-decoration: none;
-      font-size: 23px;
-      font-weight: 800;
-      letter-spacing: -1px;
+      gap: 20px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 10;
     }
 
     .brand img {
-      width: 38px;
-      height: 38px;
+      width: 46px;
+      height: 46px;
       object-fit: contain;
-      border-radius: 50%;
+      display: block;
     }
 
-    .header-right {
+    .nav-actions {
       display: flex;
       align-items: center;
-      gap: 9px;
-      color: var(--gray-500);
-      font-size: 12px;
-      font-weight: 500;
+      gap: 22px;
     }
 
-    .header-right i {
-      font-size: 19px;
-    }
-
-    /* Main layout */
-
-    .main {
-      width: 100%;
-      max-width: 1180px;
-      padding: 35px 24px 60px;
-      margin: 0 auto;
-      flex: 1;
-    }
-
-    .breadcrumbs {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--gray-500);
-      font-size: 12px;
-      margin-bottom: 25px;
-    }
-
-    .breadcrumbs a {
-      color: var(--gray-500);
-      text-decoration: none;
-    }
-
-    .breadcrumbs a:hover {
-      color: var(--black);
-    }
-
-    .breadcrumbs i {
-      font-size: 12px;
-    }
-
-    .page-heading {
-      margin-bottom: 27px;
-    }
-
-    .heading-icon {
-      width: 48px;
-      height: 48px;
+    .nav-icon {
+      width: 32px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--black);
-      color: var(--white);
-      border-radius: 15px;
-      margin-bottom: 18px;
+      font-size: 23px;
     }
 
-    .heading-icon i {
-      font-size: 24px;
+    .nav-icon:hover {
+      opacity: .6;
+    }
+
+    /* MAIN */
+
+    .container {
+      width: 86%;
+      max-width: 1200px;
+      margin: 45px auto 70px;
+    }
+
+    .page-heading {
+      margin-bottom: 30px;
     }
 
     .page-heading h1 {
-      font-size: clamp(26px, 4vw, 34px);
-      line-height: 1.2;
-      letter-spacing: -1.2px;
+      font-size: clamp(28px, 4vw, 38px);
       font-weight: 800;
-      margin-bottom: 9px;
+      letter-spacing: -1.5px;
+      line-height: 1.2;
     }
 
     .page-heading p {
-      color: var(--gray-500);
+      margin-top: 9px;
+      color: var(--gray);
       font-size: 13px;
       line-height: 1.7;
     }
 
-    .content-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 300px;
-      align-items: start;
-      gap: 25px;
-    }
+    /* FORM — no outer card or side cards */
 
-    /* Form card */
-
-    .form-card {
-      background: var(--white);
-      border: 1px solid var(--gray-200);
-      border-radius: 20px;
-      overflow: hidden;
-    }
-
-    .card-heading {
-      padding: 24px 26px;
-      border-bottom: 1px solid var(--gray-200);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .card-heading h2 {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .card-heading p {
-      font-size: 11px;
-      line-height: 1.6;
-      color: var(--gray-500);
-    }
-
-    .required-label {
-      font-size: 10px;
-      color: var(--gray-500);
-      white-space: nowrap;
-    }
-
-    .form-body {
-      padding: 27px 26px 30px;
-    }
-
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 21px;
-    }
-
-    .section-number {
-      width: 29px;
-      height: 29px;
-      border: 1px solid var(--gray-200);
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .section-title h3 {
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .section-title p {
-      color: var(--gray-500);
-      font-size: 10px;
-      margin-top: 4px;
+    .address-form {
+      width: 100%;
+      max-width: 850px;
     }
 
     .form-section + .form-section {
-      margin-top: 31px;
-      padding-top: 29px;
-      border-top: 1px solid var(--gray-200);
+      margin-top: 30px;
+      padding-top: 27px;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-title {
+      margin-bottom: 22px;
+    }
+
+    .section-title h2 {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+    }
+
+    .section-title p {
+      margin-top: 6px;
+      color: var(--gray);
+      font-size: 12px;
+      line-height: 1.7;
     }
 
     .fields-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 19px 16px;
+      gap: 21px 18px;
     }
 
     .field {
@@ -284,17 +183,10 @@
 
     .field label {
       display: block;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gray-800);
       margin-bottom: 9px;
-    }
-
-    .optional {
-      color: var(--gray-400);
-      font-size: 10px;
-      font-weight: 400;
-      margin-left: 4px;
+      color: #333;
+      font-size: 12px;
+      font-weight: 600;
     }
 
     .required {
@@ -302,78 +194,65 @@
       margin-left: 2px;
     }
 
-    .input-wrap {
-      position: relative;
+    .optional {
+      color: #999;
+      font-size: 11px;
+      font-weight: 400;
+      margin-left: 4px;
     }
 
-    .input-wrap > i {
-      position: absolute;
-      left: 13px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 17px;
-      color: var(--gray-400);
-      pointer-events: none;
-    }
+    /* Same clean input style throughout */
 
-    .input-wrap input,
-    .input-wrap select,
-    .input-wrap textarea,
-    .field > input,
-    .field > select,
-    .field > textarea {
+    .field input:not([type="checkbox"]):not([type="radio"]),
+    .field select,
+    .field textarea {
+      display: block;
       width: 100%;
       min-height: 47px;
-      padding: 13px 13px;
-      border: 1px solid var(--gray-200);
-      border-radius: 10px;
+      padding: 13px 14px;
+      border: 1px solid #dcdcdc;
+      border-radius: 8px;
       outline: none;
-      background: var(--white);
+      background: #fff;
       color: var(--black);
-      font-size: 12px;
-      transition: border-color .2s, box-shadow .2s;
+      font-size: 13px;
+      transition: border-color .18s, box-shadow .18s;
     }
 
-    .input-wrap input,
-    .input-wrap select {
-      padding-left: 40px;
-    }
-
-    .input-wrap textarea,
     .field textarea {
-      min-height: 88px;
+      min-height: 95px;
       resize: vertical;
       line-height: 1.7;
     }
 
-    input::placeholder,
-    textarea::placeholder {
-      color: var(--gray-400);
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: #999;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--black);
-      box-shadow: 0 0 0 3px rgba(17, 17, 17, .06);
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: #777;
+      box-shadow: 0 0 0 2px rgba(17, 17, 17, .04);
     }
 
-    input[readonly] {
-      background: var(--gray-50);
+    .field input[readonly] {
+      background: var(--light);
     }
 
     .field-help {
-      color: var(--gray-500);
-      font-size: 10px;
-      line-height: 1.6;
       margin-top: 7px;
+      color: var(--gray);
+      font-size: 11px;
+      line-height: 1.6;
     }
 
     .field-error {
       display: none;
-      font-size: 10px;
-      color: var(--danger);
       margin-top: 7px;
+      color: var(--danger);
+      font-size: 11px;
     }
 
     .field.invalid input,
@@ -386,68 +265,78 @@
       display: block;
     }
 
-    /* Pincode status */
+    /* PIN code lookup */
+
+    .pincode-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    .pincode-row input {
+      min-width: 0;
+    }
+
+    .lookup-button {
+      min-height: 47px;
+      padding: 12px 18px;
+      border: 1px solid var(--black);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--black);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .lookup-button:hover {
+      background: var(--light);
+    }
+
+    .lookup-button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
 
     .pincode-status {
       display: none;
-      align-items: flex-start;
-      gap: 7px;
       margin-top: 9px;
-      padding: 10px 11px;
-      border-radius: 9px;
-      font-size: 10px;
+      font-size: 11px;
       line-height: 1.6;
     }
 
     .pincode-status.show {
-      display: flex;
+      display: block;
     }
 
     .pincode-status.loading {
-      background: var(--gray-100);
-      color: var(--gray-600);
+      color: var(--gray);
     }
 
     .pincode-status.success {
-      background: #f0fdf4;
       color: var(--success);
     }
 
     .pincode-status.error {
-      background: #fef2f2;
       color: var(--danger);
     }
 
-    .pincode-status i {
-      font-size: 15px;
-      flex-shrink: 0;
-    }
-
-    /* Location button */
+    /* Current location */
 
     .location-button {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      min-height: 48px;
-      border: 1px solid var(--gray-300);
-      border-radius: 11px;
-      background: var(--white);
+      min-height: 45px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
       color: var(--black);
       font-size: 12px;
       font-weight: 700;
-      transition: background .2s, border-color .2s;
     }
 
     .location-button:hover {
-      background: var(--gray-100);
-      border-color: var(--black);
-    }
-
-    .location-button i {
-      font-size: 19px;
+      background: var(--light);
+      border-color: #ccc;
     }
 
     .location-button:disabled {
@@ -456,18 +345,18 @@
     }
 
     .location-note {
-      color: var(--gray-500);
-      font-size: 10px;
+      margin-top: 9px;
+      color: var(--gray);
+      font-size: 11px;
       line-height: 1.7;
-      margin-top: 10px;
     }
 
     /* Address type */
 
     .address-types {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 11px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .address-type {
@@ -477,53 +366,43 @@
     .address-type input {
       position: absolute;
       opacity: 0;
-      pointer-events: none;
+      width: 1px;
+      height: 1px;
     }
 
     .address-type label {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      min-height: 47px;
-      padding: 10px;
-      border: 1px solid var(--gray-200);
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 11px;
+      min-width: 90px;
+      min-height: 42px;
+      padding: 10px 17px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: #333;
+      font-size: 12px;
       font-weight: 600;
-      transition: .2s;
-    }
-
-    .address-type label i {
-      font-size: 17px;
-      color: var(--gray-500);
+      cursor: pointer;
     }
 
     .address-type input:checked + label {
       border-color: var(--black);
-      background: var(--gray-50);
-      box-shadow: inset 0 0 0 1px var(--black);
-    }
-
-    .address-type input:checked + label i {
+      background: var(--light);
       color: var(--black);
     }
 
     .address-type input:focus-visible + label {
-      outline: 2px solid var(--black);
+      outline: 2px solid #555;
       outline-offset: 3px;
     }
 
-    /* Checkbox */
+    /* Default address checkbox — no card container */
 
     .default-option {
       display: flex;
       align-items: flex-start;
-      gap: 11px;
-      padding: 15px;
-      border: 1px solid var(--gray-200);
-      border-radius: 11px;
+      gap: 10px;
       margin-top: 22px;
       cursor: pointer;
     }
@@ -531,78 +410,79 @@
     .default-option input {
       width: 16px;
       height: 16px;
-      accent-color: var(--black);
-      margin-top: 2px;
       flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--black);
     }
 
     .default-option strong {
       display: block;
-      font-size: 11px;
-      margin-bottom: 5px;
+      font-size: 12px;
+      font-weight: 700;
     }
 
     .default-option small {
       display: block;
-      color: var(--gray-500);
-      font-size: 10px;
-      line-height: 1.6;
+      margin-top: 5px;
+      color: var(--gray);
+      font-size: 11px;
+      line-height: 1.7;
     }
 
-    /* Submit */
+    /* FORM ACTIONS — text only */
 
     .form-actions {
       display: flex;
+      align-items: center;
       gap: 12px;
-      margin-top: 27px;
+      margin-top: 30px;
     }
 
     .btn {
-      min-height: 49px;
+      min-height: 46px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 9px;
-      border-radius: 10px;
-      padding: 13px 20px;
+      padding: 13px 22px;
+      border-radius: 8px;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
       text-decoration: none;
-      transition: .2s;
+      transition: background .18s, border-color .18s;
     }
 
     .btn-primary {
-      flex: 1;
+      min-width: 160px;
       border: 1px solid var(--black);
       background: var(--black);
-      color: var(--white);
+      color: #fff;
     }
 
     .btn-primary:hover {
-      background: var(--gray-800);
+      background: #333;
     }
 
     .btn-secondary {
-      border: 1px solid var(--gray-200);
-      background: var(--white);
-      color: var(--gray-700);
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--black);
     }
 
     .btn-secondary:hover {
-      background: var(--gray-100);
+      background: var(--light);
     }
 
     .btn:disabled {
-      opacity: .65;
+      opacity: .6;
       cursor: not-allowed;
     }
 
     .form-message {
       display: none;
+      margin-top: 20px;
       padding: 12px 14px;
-      margin-top: 17px;
-      border-radius: 10px;
-      font-size: 11px;
+      border-radius: 8px;
+      font-size: 12px;
       line-height: 1.7;
     }
 
@@ -620,131 +500,29 @@
       color: var(--success);
     }
 
-    /* Side panel */
-
-    .side-column {
-      display: flex;
-      flex-direction: column;
-      gap: 17px;
-    }
-
-    .side-card {
-      padding: 23px;
-      border: 1px solid var(--gray-200);
-      border-radius: 17px;
-      background: var(--white);
-    }
-
-    .side-card h3 {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 17px;
-    }
-
-    .side-card h3 i {
-      font-size: 19px;
-    }
-
-    .benefit {
-      display: flex;
-      gap: 12px;
-      margin-top: 17px;
-    }
-
-    .benefit-icon {
-      width: 34px;
-      height: 34px;
-      flex-shrink: 0;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--gray-100);
-    }
-
-    .benefit-icon i {
-      font-size: 17px;
-    }
-
-    .benefit h4 {
-      font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-
-    .benefit p {
-      font-size: 10px;
-      line-height: 1.7;
-      color: var(--gray-500);
-    }
-
-    .security-card {
-      background: var(--black);
-      color: var(--white);
-      border-color: var(--black);
-    }
-
-    .security-card h3 {
-      color: var(--white);
-    }
-
-    .security-card p {
-      font-size: 11px;
-      line-height: 1.9;
-      color: #d4d4d8;
-    }
-
-    .security-card > i {
-      display: inline-flex;
-      font-size: 24px;
-      margin-bottom: 13px;
-    }
-
-    .saved-address-link {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      text-decoration: none;
-      color: var(--black);
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .saved-address-link i {
-      font-size: 18px;
-    }
-
-    /* Footer */
+    /* FOOTER — matches Cart and Wishlist */
 
     .footer {
-      padding: 22px 24px;
-      background: var(--white);
-      border-top: 1px solid var(--gray-200);
-      text-align: center;
-      color: var(--gray-500);
-      font-size: 10px;
-      line-height: 1.8;
+      border-top: 1px solid var(--border);
+      padding: 25px 7%;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      color: #888;
+      font-size: 11px;
     }
 
-    .footer strong {
-      color: var(--black);
-    }
-
-    /* Loading dialog */
+    /* LOADING DIALOG */
 
     .dialog-overlay {
       display: none;
       position: fixed;
       inset: 0;
       z-index: 1000;
-      background: rgba(0, 0, 0, .5);
       align-items: center;
       justify-content: center;
       padding: 20px;
+      background: rgba(0, 0, 0, .45);
     }
 
     .dialog-overlay.show {
@@ -754,26 +532,25 @@
     .dialog {
       width: 100%;
       max-width: 340px;
-      padding: 30px 25px;
-      border-radius: 18px;
-      background: var(--white);
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
       text-align: center;
     }
 
     .spinner {
-      width: 37px;
-      height: 37px;
-      border: 3px solid var(--gray-200);
+      width: 32px;
+      height: 32px;
+      margin: 0 auto 17px;
+      border: 3px solid var(--border);
       border-top-color: var(--black);
       border-radius: 50%;
       animation: spin .8s linear infinite;
-      margin: 0 auto 19px;
     }
 
     @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+      to { transform: rotate(360deg); }
     }
 
     .dialog h3 {
@@ -782,721 +559,393 @@
     }
 
     .dialog p {
-      color: var(--gray-500);
-      font-size: 11px;
-      line-height: 1.8;
+      color: var(--gray);
+      font-size: 12px;
+      line-height: 1.7;
     }
 
-    /* Responsive */
-
-    @media (max-width: 850px) {
-      .content-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .side-column {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .side-card:last-child {
-        grid-column: 1 / -1;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .topbar {
-        height: 66px;
-        padding: 0 19px;
-      }
-
-      .brand {
-        font-size: 21px;
+    @media (max-width: 600px) {
+      .navbar {
+        min-height: 66px;
+        padding: 0 5%;
       }
 
       .brand img {
-        width: 34px;
-        height: 34px;
+        width: 40px;
+        height: 40px;
       }
 
-      .header-right {
-        font-size: 10px;
+      .nav-actions {
+        gap: 12px;
       }
 
-      .main {
-        padding: 25px 14px 38px;
-      }
-
-      .breadcrumbs {
-        margin-bottom: 21px;
+      .container {
+        width: 90%;
+        margin-top: 30px;
+        margin-bottom: 45px;
       }
 
       .page-heading {
-        margin-bottom: 22px;
-      }
-
-      .page-heading h1 {
-        font-size: 27px;
-      }
-
-      .form-card {
-        border-radius: 15px;
-      }
-
-      .card-heading {
-        padding: 20px 17px;
-      }
-
-      .form-body {
-        padding: 23px 17px;
+        margin-bottom: 25px;
       }
 
       .fields-grid {
         grid-template-columns: minmax(0, 1fr);
-        gap: 17px;
+        gap: 18px;
       }
 
       .field.full {
         grid-column: auto;
       }
 
-      .side-column {
-        grid-template-columns: minmax(0, 1fr);
+      .form-section + .form-section {
+        margin-top: 25px;
+        padding-top: 23px;
       }
 
-      .side-card:last-child {
-        grid-column: auto;
+      .section-title {
+        margin-bottom: 18px;
+      }
+
+      .pincode-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 7px;
+      }
+
+      .lookup-button {
+        padding: 12px;
       }
 
       .form-actions {
         flex-direction: column-reverse;
+        align-items: stretch;
       }
 
-      .btn-secondary,
-      .btn-primary {
+      .btn-primary,
+      .btn-secondary {
         width: 100%;
       }
 
-      .address-types {
-        gap: 7px;
+      .footer {
+        padding: 22px 5%;
+        flex-wrap: wrap;
       }
+    }
 
-      .address-type label {
-        gap: 5px;
-        font-size: 10px;
-        padding: 9px 5px;
-      }
-
-      .required-label {
-        display: none;
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="page">
 
-    <header class="topbar">
-      <a class="brand" href="index.html" aria-label="Shoppy Home">
-        <img
-          src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
-          alt="Shoppy logo"
-        >
-        <span>shoppy</span>
+  <header class="navbar">
+    <a href="/home.html" class="brand" aria-label="Shoppy home">
+      <img
+        src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+        alt="Shoppy logo"
+      >
+    </a>
+
+    <nav class="nav-actions" aria-label="Main navigation">
+      <a class="nav-icon" href="/home.html" aria-label="Home" title="Home">
+        <i class="ph ph-house" aria-hidden="true"></i>
       </a>
 
-      <div class="header-right">
-        <i class="ph ph-shield-check"></i>
-        <span>Secure Address</span>
-      </div>
-    </header>
+      <a class="nav-icon" href="/cart.html" aria-label="Cart" title="Cart">
+        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+      </a>
 
-    <main class="main">
+      <a class="nav-icon" href="/profile.html" aria-label="My profile" title="My profile">
+        <i class="ph ph-user-circle" aria-hidden="true"></i>
+      </a>
+    </nav>
+  </header>
 
-      <nav class="breadcrumbs" aria-label="Breadcrumb">
-        <a href="index.html">Home</a>
-        <i class="ph ph-caret-right"></i>
-        <a href="addresses.html">My Addresses</a>
-        <i class="ph ph-caret-right"></i>
-        <span>Add Address</span>
-      </nav>
+  <main class="container">
 
-      <div class="page-heading">
-        <div class="heading-icon">
-          <i class="ph ph-map-pin-line"></i>
+    <div class="page-heading">
+      <h1>Add delivery address</h1>
+      <p>Enter your details to help us deliver your order to the right place.</p>
+    </div>
+
+    <form id="addressForm" class="address-form" novalidate>
+
+      <!-- CONTACT INFORMATION -->
+
+      <section class="form-section">
+        <div class="section-title">
+          <h2>Contact information</h2>
+          <p>Enter the recipient's name and contact number.</p>
         </div>
 
-        <h1>Add delivery address.</h1>
+        <div class="fields-grid">
 
-        <p>
-          Enter your address details so we can deliver your favorite
-          products right to your doorstep.
-        </p>
-      </div>
-
-      <div class="content-grid">
-
-        <section class="form-card">
-
-          <div class="card-heading">
-            <div>
-              <h2>Delivery information</h2>
-              <p>Fill in the details for your delivery address.</p>
-            </div>
-
-            <span class="required-label">
-              <span class="required">*</span> Required fields
-            </span>
+          <div class="field full" id="fullNameField">
+            <label for="fullName">Full name <span class="required">*</span></label>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              placeholder="Enter recipient's full name"
+              autocomplete="name"
+              maxlength="100"
+              required
+            >
+            <div class="field-error">Please enter your full name.</div>
           </div>
 
-          <form id="addressForm" class="form-body" novalidate>
-
-            <!-- SECTION 1 -->
-
-            <section class="form-section">
-
-              <div class="section-title">
-                <div class="section-number">01</div>
-                <div>
-                  <h3>Contact information</h3>
-                  <p>Who should receive the delivery?</p>
-                </div>
-              </div>
-
-              <div class="fields-grid">
-
-                <div class="field full" id="fullNameField">
-                  <label for="fullName">
-                    Full name <span class="required">*</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-user"></i>
-                    <input
-                      type="text"
-                      id="fullName"
-                      name="fullName"
-                      placeholder="Enter recipient's full name"
-                      autocomplete="name"
-                      maxlength="100"
-                      required
-                    >
-                  </div>
-
-                  <div class="field-error">
-                    Please enter your full name.
-                  </div>
-                </div>
-
-                <div class="field" id="phoneField">
-                  <label for="phone">
-                    Mobile number <span class="required">*</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-phone"></i>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      placeholder="10-digit mobile number"
-                      inputmode="numeric"
-                      autocomplete="tel-national"
-                      maxlength="10"
-                      required
-                    >
-                  </div>
-
-                  <div class="field-error">
-                    Enter a valid 10-digit mobile number.
-                  </div>
-                </div>
-
-                <div class="field">
-                  <label for="alternatePhone">
-                    Alternate number
-                    <span class="optional">Optional</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-device-mobile"></i>
-                    <input
-                      type="tel"
-                      id="alternatePhone"
-                      name="alternatePhone"
-                      placeholder="Alternate mobile number"
-                      inputmode="numeric"
-                      maxlength="10"
-                    >
-                  </div>
-
-                  <div class="field-help">
-                    Use another number if available.
-                  </div>
-                </div>
-
-              </div>
-            </section>
-
-            <!-- SECTION 2 -->
-
-            <section class="form-section">
-
-              <div class="section-title">
-                <div class="section-number">02</div>
-                <div>
-                  <h3>Address details</h3>
-                  <p>Use your PIN code or current location.</p>
-                </div>
-              </div>
-
-              <div class="fields-grid">
-
-                <div class="field full">
-                  <button
-                    type="button"
-                    class="location-button"
-                    id="currentLocationBtn"
-                  >
-                    <i class="ph ph-crosshair-simple"></i>
-                    <span>Use My Current Location</span>
-                  </button>
-
-                  <p class="location-note" id="locationNote">
-                    Allow location access when prompted. Available address
-                    details will be filled automatically.
-                  </p>
-                </div>
-
-                <div class="field" id="pincodeField">
-                  <label for="pincode">
-                    PIN code <span class="required">*</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-map-pin"></i>
-                    <input
-                      type="text"
-                      id="pincode"
-                      name="pincode"
-                      placeholder="Enter 6-digit PIN code"
-                      inputmode="numeric"
-                      autocomplete="postal-code"
-                      maxlength="6"
-                      required
-                    >
-                  </div>
-
-                  <div
-                    class="pincode-status"
-                    id="pincodeStatus"
-                    role="status"
-                    aria-live="polite"
-                  ></div>
-
-                  <div class="field-error">
-                    Enter a valid 6-digit Indian PIN code.
-                  </div>
-                </div>
-
-                <div class="field">
-                  <label for="postOffice">
-                    Post office
-                    <span class="optional">Optional</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-envelope-simple"></i>
-                    <select id="postOffice" name="postOffice">
-                      <option value="">Select post office</option>
-                    </select>
-                  </div>
-
-                  <div class="field-help">
-                    Options appear after a valid PIN code lookup.
-                  </div>
-                </div>
-
-                <div class="field full">
-                  <label for="houseNumber">
-                    House / Flat / Building number
-                    <span class="required">*</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-house"></i>
-                    <input
-                      type="text"
-                      id="houseNumber"
-                      name="houseNumber"
-                      placeholder="e.g. Flat 101, House No. 24"
-                      autocomplete="address-line1"
-                      maxlength="150"
-                      required
-                    >
-                  </div>
-
-                  <div class="field-error">
-                    Please enter your house or flat number.
-                  </div>
-                </div>
-
-                <div class="field full">
-                  <label for="building">
-                    Building / Apartment name
-                    <span class="optional">Optional</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-buildings"></i>
-                    <input
-                      type="text"
-                      id="building"
-                      name="building"
-                      placeholder="e.g. Sunshine Apartments"
-                      maxlength="150"
-                    >
-                  </div>
-                </div>
-
-                <div class="field full" id="areaField">
-                  <label for="area">
-                    Street / Area / Colony
-                    <span class="required">*</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-map-trifold"></i>
-                    <input
-                      type="text"
-                      id="area"
-                      name="area"
-                      placeholder="Enter street, area or colony"
-                      autocomplete="address-line2"
-                      maxlength="200"
-                      required
-                    >
-                  </div>
-
-                  <div class="field-error">
-                    Please enter your street, area or colony.
-                  </div>
-                </div>
-
-                <div class="field full">
-                  <label for="landmark">
-                    Landmark
-                    <span class="optional">Optional</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-signpost"></i>
-                    <input
-                      type="text"
-                      id="landmark"
-                      name="landmark"
-                      placeholder="e.g. Near City Mall"
-                      maxlength="150"
-                    >
-                  </div>
-                </div>
-
-                <div class="field" id="cityField">
-                  <label for="city">
-                    City / Town / Village
-                    <span class="required">*</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-buildings"></i>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      placeholder="Enter city or village"
-                      autocomplete="address-level2"
-                      maxlength="100"
-                      required
-                    >
-                  </div>
-
-                  <div class="field-error">
-                    Please enter your city or village.
-                  </div>
-                </div>
-
-                <div class="field" id="districtField">
-                  <label for="district">
-                    District
-                    <span class="optional">Optional</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-map"></i>
-                    <input
-                      type="text"
-                      id="district"
-                      name="district"
-                      placeholder="Enter district"
-                      maxlength="100"
-                    >
-                  </div>
-                </div>
-
-                <div class="field" id="stateField">
-                  <label for="state">
-                    State / Union Territory
-                    <span class="required">*</span>
-                  </label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-map-pin-line"></i>
-                    <input
-                      type="text"
-                      id="state"
-                      name="state"
-                      placeholder="Enter state"
-                      autocomplete="address-level1"
-                      maxlength="100"
-                      required
-                    >
-                  </div>
-
-                  <div class="field-error">
-                    Please enter your state.
-                  </div>
-                </div>
-
-                <div class="field">
-                  <label for="country">Country</label>
-
-                  <div class="input-wrap">
-                    <i class="ph ph-globe"></i>
-                    <select id="country" name="country">
-                      <option value="India" selected>India</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="field full">
-                  <label for="deliveryInstructions">
-                    Delivery instructions
-                    <span class="optional">Optional</span>
-                  </label>
-
-                  <textarea
-                    id="deliveryInstructions"
-                    name="deliveryInstructions"
-                    placeholder="e.g. Call before delivery, ring the doorbell..."
-                    maxlength="500"
-                  ></textarea>
-
-                  <div class="field-help">
-                    Add any useful instructions for the delivery partner.
-                  </div>
-                </div>
-
-              </div>
-            </section>
-
-            <!-- SECTION 3 -->
-
-            <section class="form-section">
-
-              <div class="section-title">
-                <div class="section-number">03</div>
-                <div>
-                  <h3>Save address as</h3>
-                  <p>Choose a name to identify this address later.</p>
-                </div>
-              </div>
-
-              <div class="address-types">
-
-                <div class="address-type">
-                  <input
-                    type="radio"
-                    id="typeHome"
-                    name="addressType"
-                    value="Home"
-                    checked
-                  >
-
-                  <label for="typeHome">
-                    <i class="ph ph-house"></i>
-                    <span>Home</span>
-                  </label>
-                </div>
-
-                <div class="address-type">
-                  <input
-                    type="radio"
-                    id="typeWork"
-                    name="addressType"
-                    value="Work"
-                  >
-
-                  <label for="typeWork">
-                    <i class="ph ph-briefcase"></i>
-                    <span>Work</span>
-                  </label>
-                </div>
-
-                <div class="address-type">
-                  <input
-                    type="radio"
-                    id="typeOther"
-                    name="addressType"
-                    value="Other"
-                  >
-
-                  <label for="typeOther">
-                    <i class="ph ph-map-pin"></i>
-                    <span>Other</span>
-                  </label>
-                </div>
-
-              </div>
-
-              <label class="default-option" for="isDefault">
-                <input
-                  type="checkbox"
-                  id="isDefault"
-                  name="isDefault"
-                >
-
-                <span>
-                  <strong>Set as default address</strong>
-                  <small>
-                    Use this address by default when selecting a delivery
-                    address. Your other saved addresses will remain available.
-                  </small>
-                </span>
-              </label>
-
-            </section>
-
-            <div
-              class="form-message"
-              id="formMessage"
-              role="status"
-              aria-live="polite"
-            ></div>
-
-            <div class="form-actions">
-
-              <a href="addresses.html" class="btn btn-secondary">
-                <i class="ph ph-arrow-left"></i>
-                Cancel
-              </a>
-
-              <button
-                type="submit"
-                class="btn btn-primary"
-                id="saveAddressBtn"
-              >
-                <i class="ph ph-floppy-disk"></i>
-                <span>Save Address</span>
-              </button>
-
-            </div>
-
-          </form>
-
-        </section>
-
-        <!-- SIDE PANEL -->
-
-        <aside class="side-column">
-
-          <section class="side-card">
-            <h3>
-              <i class="ph ph-sparkle"></i>
-              Helpful features
-            </h3>
-
-            <div class="benefit">
-              <div class="benefit-icon">
-                <i class="ph ph-crosshair-simple"></i>
-              </div>
-
-              <div>
-                <h4>Current location</h4>
-                <p>
-                  Use your device location to fill available address
-                  information automatically.
-                </p>
-              </div>
-            </div>
-
-            <div class="benefit">
-              <div class="benefit-icon">
-                <i class="ph ph-map-pin"></i>
-              </div>
-
-              <div>
-                <h4>PIN code lookup</h4>
-                <p>
-                  Enter a six-digit PIN to find matching postal offices,
-                  district and state.
-                </p>
-              </div>
-            </div>
-
-            <div class="benefit">
-              <div class="benefit-icon">
-                <i class="ph ph-address-book"></i>
-              </div>
-
-              <div>
-                <h4>Multiple addresses</h4>
-                <p>
-                  Keep separate Home, Work and other delivery addresses
-                  for future orders.
-                </p>
-              </div>
-            </div>
-
-          </section>
-
-          <section class="side-card security-card">
-            <i class="ph ph-shield-check"></i>
-
-            <h3>Your delivery, your way.</h3>
-
-            <p>
-              Add the correct delivery details to help your orders reach
-              the right destination. Your location is requested only
-              when you choose the current-location option.
+          <div class="field" id="phoneField">
+            <label for="phone">Mobile number <span class="required">*</span></label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="10-digit mobile number"
+              inputmode="numeric"
+              autocomplete="tel-national"
+              maxlength="10"
+              required
+            >
+            <div class="field-error">Enter a valid 10-digit mobile number.</div>
+          </div>
+
+          <div class="field">
+            <label for="alternatePhone">
+              Alternate number <span class="optional">Optional</span>
+            </label>
+            <input
+              type="tel"
+              id="alternatePhone"
+              name="alternatePhone"
+              placeholder="Alternate mobile number"
+              inputmode="numeric"
+              maxlength="10"
+            >
+            <div class="field-error">Enter a valid 10-digit alternate number.</div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ADDRESS DETAILS -->
+
+      <section class="form-section">
+        <div class="section-title">
+          <h2>Address details</h2>
+          <p>Use your current location or enter your address manually.</p>
+        </div>
+
+        <div class="fields-grid">
+
+          <div class="field full">
+            <button
+              type="button"
+              class="location-button"
+              id="currentLocationBtn"
+            >Use My Current Location</button>
+
+            <p class="location-note" id="locationNote">
+              Allow location access when prompted. Available address details will be filled automatically.
             </p>
-          </section>
+          </div>
 
-          <section class="side-card">
-            <a href="addresses.html" class="saved-address-link">
-              <span>
-                <i class="ph ph-address-book"></i>
-                &nbsp; View saved addresses
-              </span>
+          <div class="field" id="pincodeField">
+            <label for="pincode">PIN code <span class="required">*</span></label>
 
-              <i class="ph ph-arrow-up-right"></i>
-            </a>
-          </section>
+            <div class="pincode-row">
+              <input
+                type="text"
+                id="pincode"
+                name="pincode"
+                placeholder="6-digit PIN code"
+                inputmode="numeric"
+                autocomplete="postal-code"
+                maxlength="6"
+                required
+              >
+              <button type="button" id="lookupPincodeBtn" class="lookup-button">
+                Check
+              </button>
+            </div>
 
-        </aside>
+            <div class="pincode-status" id="pincodeStatus" role="status" aria-live="polite"></div>
+            <div class="field-error">Enter a valid 6-digit Indian PIN code.</div>
+          </div>
 
+          <div class="field">
+            <label for="postOffice">Post office <span class="optional">Optional</span></label>
+            <select id="postOffice" name="postOffice">
+              <option value="">Select post office</option>
+            </select>
+            <div class="field-help">Available options appear after PIN code lookup.</div>
+          </div>
+
+          <div class="field full" id="houseNumberField">
+            <label for="houseNumber">House / Flat / Building number <span class="required">*</span></label>
+            <input
+              type="text"
+              id="houseNumber"
+              name="houseNumber"
+              placeholder="e.g. Flat 101, House No. 24"
+              autocomplete="address-line1"
+              maxlength="150"
+              required
+            >
+            <div class="field-error">Please enter your house or flat number.</div>
+          </div>
+
+          <div class="field full">
+            <label for="building">Building / Apartment name <span class="optional">Optional</span></label>
+            <input
+              type="text"
+              id="building"
+              name="building"
+              placeholder="e.g. Sunshine Apartments"
+              maxlength="150"
+            >
+          </div>
+
+          <div class="field full" id="areaField">
+            <label for="area">Street / Area / Colony <span class="required">*</span></label>
+            <input
+              type="text"
+              id="area"
+              name="area"
+              placeholder="Enter street, area or colony"
+              autocomplete="address-line2"
+              maxlength="200"
+              required
+            >
+            <div class="field-error">Please enter your street, area or colony.</div>
+          </div>
+
+          <div class="field full">
+            <label for="landmark">Landmark <span class="optional">Optional</span></label>
+            <input
+              type="text"
+              id="landmark"
+              name="landmark"
+              placeholder="e.g. Near City Mall"
+              maxlength="150"
+            >
+          </div>
+
+          <div class="field" id="cityField">
+            <label for="city">City / Town / Village <span class="required">*</span></label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              placeholder="Enter city or village"
+              autocomplete="address-level2"
+              maxlength="100"
+              required
+            >
+            <div class="field-error">Please enter your city or village.</div>
+          </div>
+
+          <div class="field">
+            <label for="district">District <span class="optional">Optional</span></label>
+            <input
+              type="text"
+              id="district"
+              name="district"
+              placeholder="Enter district"
+              maxlength="100"
+            >
+          </div>
+
+          <div class="field" id="stateField">
+            <label for="state">State / Union Territory <span class="required">*</span></label>
+            <input
+              type="text"
+              id="state"
+              name="state"
+              placeholder="Enter state"
+              autocomplete="address-level1"
+              maxlength="100"
+              required
+            >
+            <div class="field-error">Please enter your state.</div>
+          </div>
+
+          <div class="field">
+            <label for="country">Country</label>
+            <select id="country" name="country">
+              <option value="India" selected>India</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="deliveryInstructions">
+              Delivery instructions <span class="optional">Optional</span>
+            </label>
+            <textarea
+              id="deliveryInstructions"
+              name="deliveryInstructions"
+              placeholder="e.g. Call before delivery, ring the doorbell..."
+              maxlength="500"
+            ></textarea>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ADDRESS TYPE -->
+
+      <section class="form-section">
+        <div class="section-title">
+          <h2>Save address as</h2>
+          <p>Choose a name to identify this address later.</p>
+        </div>
+
+        <div class="address-types">
+          <div class="address-type">
+            <input type="radio" id="typeHome" name="addressType" value="Home" checked>
+            <label for="typeHome">Home</label>
+          </div>
+
+          <div class="address-type">
+            <input type="radio" id="typeWork" name="addressType" value="Work">
+            <label for="typeWork">Work</label>
+          </div>
+
+          <div class="address-type">
+            <input type="radio" id="typeOther" name="addressType" value="Other">
+            <label for="typeOther">Other</label>
+          </div>
+        </div>
+
+        <label class="default-option" for="isDefault">
+          <input type="checkbox" id="isDefault" name="isDefault">
+          <span>
+            <strong>Set as default address</strong>
+            <small>Use this address by default when selecting a delivery address.</small>
+          </span>
+        </label>
+      </section>
+
+      <div class="form-message" id="formMessage" role="status" aria-live="polite"></div>
+
+      <div class="form-actions">
+        <a href="/addresses.html" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" id="saveAddressBtn">Save Address</button>
       </div>
-    </main>
 
-    <footer class="footer">
-      <strong>shoppy</strong> &nbsp;·&nbsp; Your everyday shopping destination.
-      <br>
-      Address information should be checked before saving.
-    </footer>
+    </form>
+  </main>
 
-  </div>
-
-  <!-- LOADING DIALOG -->
+  <footer class="footer">
+    <span>© <span id="year"></span> Shoppy</span>
+    <span>Your shopping, all in one place.</span>
+  </footer>
 
   <div
     class="dialog-overlay"
@@ -1507,12 +956,8 @@
   >
     <div class="dialog">
       <div class="spinner"></div>
-
       <h3 id="dialogTitle">Saving your address</h3>
-
-      <p id="dialogDescription">
-        Please wait while we process your information.
-      </p>
+      <p id="dialogDescription">Please wait while your address is saved.</p>
     </div>
   </div>
 
@@ -1520,30 +965,22 @@
     "use strict";
 
     const form = document.getElementById("addressForm");
-
     const pincodeInput = document.getElementById("pincode");
     const postOfficeSelect = document.getElementById("postOffice");
-
     const pincodeStatus = document.getElementById("pincodeStatus");
-
-    const currentLocationBtn =
-      document.getElementById("currentLocationBtn");
-
+    const lookupPincodeBtn = document.getElementById("lookupPincodeBtn");
+    const currentLocationBtn = document.getElementById("currentLocationBtn");
     const locationNote = document.getElementById("locationNote");
-
     const saveAddressBtn = document.getElementById("saveAddressBtn");
-
     const formMessage = document.getElementById("formMessage");
-
     const loadingDialog = document.getElementById("loadingDialog");
 
     let pincodeRequestController = null;
     let pincodeRequestTimer = null;
     let currentPincodeRequest = 0;
+    let saving = false;
 
-    /*
-     * Safe field helpers
-     */
+    document.getElementById("year").textContent = new Date().getFullYear();
 
     function getValue(id) {
       return document.getElementById(id).value.trim();
@@ -1553,11 +990,9 @@
       if (value === undefined || value === null) return;
 
       const input = document.getElementById(id);
-
       if (!input) return;
 
       const cleanValue = String(value).trim();
-
       if (!cleanValue) return;
 
       if (!overwrite && input.value.trim()) return;
@@ -1575,23 +1010,14 @@
       clearFieldError("phoneField");
     });
 
-    document.getElementById("alternatePhone").addEventListener(
-      "input",
-      function () {
-        normalizePhone(this);
-      }
-    );
-
-    /*
-     * Validation helpers
-     */
+    document.getElementById("alternatePhone").addEventListener("input", function () {
+      normalizePhone(this);
+      clearFieldError("alternatePhoneField");
+    });
 
     function setFieldError(fieldId, show) {
       const field = document.getElementById(fieldId);
-
-      if (!field) return;
-
-      field.classList.toggle("invalid", Boolean(show));
+      if (field) field.classList.toggle("invalid", Boolean(show));
     }
 
     function clearFieldError(fieldId) {
@@ -1609,80 +1035,47 @@
     }
 
     function showPincodeStatus(message, type) {
+      pincodeStatus.textContent = message;
       pincodeStatus.className = "pincode-status show " + type;
-
-      const icon = document.createElement("i");
-
-      if (type === "loading") {
-        icon.className = "ph ph-circle-notch";
-      } else if (type === "success") {
-        icon.className = "ph ph-check-circle";
-      } else {
-        icon.className = "ph ph-warning-circle";
-      }
-
-      const text = document.createElement("span");
-      text.textContent = message;
-
-      pincodeStatus.replaceChildren(icon, text);
     }
 
     function clearPincodeStatus() {
+      pincodeStatus.textContent = "";
       pincodeStatus.className = "pincode-status";
-      pincodeStatus.replaceChildren();
     }
 
-    /*
-     * PIN code lookup.
-     *
-     * The public API can return multiple post offices for a PIN.
-     * The user can select the correct office from the dropdown.
-     */
+    /* PIN CODE LOOKUP */
 
     async function lookupPincode(pincode) {
       const requestId = ++currentPincodeRequest;
 
       if (pincodeRequestController) {
         pincodeRequestController.abort();
+        pincodeRequestController = null;
       }
 
       if (!/^\d{6}$/.test(pincode)) {
         clearPincodeStatus();
-
+        setFieldError("pincodeField", pincode.length > 0);
         if (pincode.length > 0) {
-          showPincodeStatus(
-            "Please enter a valid 6-digit Indian PIN code.",
-            "error"
-          );
+          showPincodeStatus("Enter a valid 6-digit Indian PIN code.", "error");
         }
-
-        setFieldError(
-          "pincodeField",
-          pincode.length > 0 && !/^\d{6}$/.test(pincode)
-        );
-
         return;
       }
 
       setFieldError("pincodeField", false);
-
       pincodeRequestController = new AbortController();
-
-      showPincodeStatus(
-        "Looking up PIN code details...",
-        "loading"
-      );
+      lookupPincodeBtn.disabled = true;
+      lookupPincodeBtn.textContent = "Checking...";
+      showPincodeStatus("Looking up PIN code details...", "loading");
 
       try {
         const response = await fetch(
-          "https://api.pincodeapi.in/api/v1/pincode/" +
-          encodeURIComponent(pincode),
+          "https://api.pincodeapi.in/api/v1/pincode/" + encodeURIComponent(pincode),
           {
             method: "GET",
             signal: pincodeRequestController.signal,
-            headers: {
-              "Accept": "application/json"
-            }
+            headers: { "Accept": "application/json" }
           }
         );
 
@@ -1704,89 +1097,45 @@
           !Array.isArray(result.data.post_offices) ||
           result.data.post_offices.length === 0
         ) {
-          throw new Error(
-            "No postal records were found for this PIN code."
-          );
+          throw new Error("No postal records were found for this PIN code.");
         }
 
         const offices = result.data.post_offices;
+        const states = [...new Set(offices.map(office => office.state).filter(Boolean))];
+        const districts = [...new Set(offices.map(office => office.district).filter(Boolean))];
 
-        const states = [
-          ...new Set(
-            offices
-              .map(office => office.state)
-              .filter(Boolean)
-          )
-        ];
-
-        const districts = [
-          ...new Set(
-            offices
-              .map(office => office.district)
-              .filter(Boolean)
-          )
-        ];
-
-        if (states.length === 1) {
-          setValue("state", states[0]);
-        }
-
-        if (districts.length === 1) {
-          setValue("district", districts[0]);
-        }
-
-        /*
-         * Populate the post office selector.
-         */
+        if (states.length === 1) setValue("state", states[0]);
+        if (districts.length === 1) setValue("district", districts[0]);
 
         postOfficeSelect.replaceChildren();
 
         const placeholder = document.createElement("option");
         placeholder.value = "";
         placeholder.textContent = "Select post office";
-
         postOfficeSelect.appendChild(placeholder);
 
         offices.forEach(office => {
-          const name = office.office_name;
-
-          if (!name) return;
+          if (!office.office_name) return;
 
           const option = document.createElement("option");
-
-          option.value = name;
-
+          option.value = office.office_name;
           option.textContent = [
-            name,
+            office.office_name,
             office.office_type || "",
             office.district || ""
           ].filter(Boolean).join(" · ");
 
-          option.dataset.officeName = name;
           option.dataset.district = office.district || "";
           option.dataset.state = office.state || "";
-
           postOfficeSelect.appendChild(option);
         });
-
-        /*
-         * Auto-fill city from the district when the city field
-         * is empty. A district is not always the same as a city,
-         * so users can edit this field if needed.
-         */
 
         if (!getValue("city") && districts.length === 1) {
           setValue("city", districts[0]);
         }
 
-        if (offices.length === 1) {
-          postOfficeSelect.selectedIndex = 1;
-
-          const office = offices[0];
-
-          if (office.office_name) {
-            postOfficeSelect.value = office.office_name;
-          }
+        if (offices.length === 1 && offices[0].office_name) {
+          postOfficeSelect.value = offices[0].office_name;
         }
 
         showPincodeStatus(
@@ -1796,46 +1145,49 @@
 
       } catch (error) {
         if (error.name === "AbortError") return;
-
         if (requestId !== currentPincodeRequest) return;
 
         console.error("PIN lookup error:", error);
-
         showPincodeStatus(
-          error.message ||
-          "Could not retrieve PIN code details. You can enter the address manually.",
+          error.message || "Could not retrieve PIN details. You can enter the address manually.",
           "error"
         );
 
       } finally {
         if (requestId === currentPincodeRequest) {
           pincodeRequestController = null;
+          lookupPincodeBtn.disabled = false;
+          lookupPincodeBtn.textContent = "Check";
         }
       }
     }
 
     pincodeInput.addEventListener("input", function () {
       this.value = this.value.replace(/\D/g, "").slice(0, 6);
-
       clearTimeout(pincodeRequestTimer);
 
-      const value = this.value;
+      currentPincodeRequest++;
 
-      if (value.length < 6) {
-        currentPincodeRequest++;
-
-        if (pincodeRequestController) {
-          pincodeRequestController.abort();
-          pincodeRequestController = null;
-        }
-
-        clearPincodeStatus();
-        return;
+      if (pincodeRequestController) {
+        pincodeRequestController.abort();
+        pincodeRequestController = null;
       }
 
-      pincodeRequestTimer = setTimeout(function () {
-        lookupPincode(value);
-      }, 350);
+      lookupPincodeBtn.disabled = false;
+      lookupPincodeBtn.textContent = "Check";
+      clearPincodeStatus();
+
+      if (this.value.length === 6) {
+        const value = this.value;
+        pincodeRequestTimer = setTimeout(() => lookupPincode(value), 350);
+      } else {
+        setFieldError("pincodeField", false);
+      }
+    });
+
+    lookupPincodeBtn.addEventListener("click", function () {
+      clearTimeout(pincodeRequestTimer);
+      lookupPincode(getValue("pincode"));
     });
 
     pincodeInput.addEventListener("blur", function () {
@@ -1845,82 +1197,49 @@
       }
     });
 
-    /*
-     * When a user selects a post office, use its location metadata.
-     */
-
     postOfficeSelect.addEventListener("change", function () {
       const option = this.options[this.selectedIndex];
-
       if (!option || !option.value) return;
 
-      if (option.dataset.district) {
-        setValue("district", option.dataset.district);
-      }
+      if (option.dataset.district) setValue("district", option.dataset.district);
+      if (option.dataset.state) setValue("state", option.dataset.state);
 
-      if (option.dataset.state) {
-        setValue("state", option.dataset.state);
-      }
-
-      if (
-        !getValue("city") &&
-        option.dataset.district
-      ) {
+      if (!getValue("city") && option.dataset.district) {
         setValue("city", option.dataset.district);
       }
     });
 
-    /*
-     * Current location.
-     *
-     * Requires browser location permission and a secure context
-     * such as HTTPS or localhost.
-     *
-     * Reverse geocoding is performed through OpenStreetMap Nominatim.
-     * The returned details are suggestions and should be checked.
-     */
+    /* CURRENT LOCATION */
 
     function setLocationButtonLoading(loading) {
       currentLocationBtn.disabled = loading;
-
-      currentLocationBtn.innerHTML = loading
-        ? '<i class="ph ph-circle-notch"></i><span>Finding your location...</span>'
-        : '<i class="ph ph-crosshair-simple"></i><span>Use My Current Location</span>';
+      currentLocationBtn.textContent = loading
+        ? "Finding your location..."
+        : "Use My Current Location";
     }
 
     function updateLocationNote(message, isError = false) {
       locationNote.textContent = message;
-      locationNote.style.color = isError
-        ? "var(--danger)"
-        : "var(--gray-500)";
+      locationNote.style.color = isError ? "var(--danger)" : "var(--gray)";
     }
 
     function getBrowserPosition() {
       return new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
-          reject(
-            new Error("Your browser does not support location services.")
-          );
+          reject(new Error("Your browser does not support location services."));
           return;
         }
 
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          reject,
-          {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 60000
-          }
-        );
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 60000
+        });
       });
     }
 
     async function reverseGeocode(latitude, longitude) {
-      const url = new URL(
-        "https://nominatim.openstreetmap.org/reverse"
-      );
-
+      const url = new URL("https://nominatim.openstreetmap.org/reverse");
       url.searchParams.set("format", "jsonv2");
       url.searchParams.set("lat", latitude);
       url.searchParams.set("lon", longitude);
@@ -1929,52 +1248,39 @@
 
       const response = await fetch(url.toString(), {
         method: "GET",
-        headers: {
-          "Accept": "application/json"
-        }
+        headers: { "Accept": "application/json" }
       });
 
       if (!response.ok) {
-        throw new Error(
-          "We could not retrieve your address. Please enter it manually."
-        );
+        throw new Error("We could not retrieve your address. Please enter it manually.");
       }
 
       return response.json();
     }
 
     function findCity(address) {
-      return (
-        address.city ||
+      return address.city ||
         address.town ||
         address.village ||
         address.municipality ||
         address.city_district ||
         address.suburb ||
         address.county ||
-        ""
-      );
+        "";
     }
 
     function findArea(address) {
-      return (
-        address.suburb ||
+      return address.suburb ||
         address.neighbourhood ||
         address.residential ||
         address.quarter ||
         address.hamlet ||
         address.road ||
-        ""
-      );
+        "";
     }
 
     function fillLocationData(data) {
       const address = data.address || {};
-
-      /*
-       * Do not overwrite information the user has already entered.
-       * Location data is a suggestion and can be edited.
-       */
 
       setValue("houseNumber", address.house_number, false);
       setValue("area", findArea(address), false);
@@ -1984,64 +1290,44 @@
       setValue("state", address.state || "", false);
       setValue("pincode", address.postcode || "", false);
 
-      const countryName = address.country;
-
-      if (
-        countryName &&
-        countryName.toLowerCase() === "india"
-      ) {
+      if (address.country && address.country.toLowerCase() === "india") {
         document.getElementById("country").value = "India";
       }
 
       const pincode = getValue("pincode");
-
-      if (/^\d{6}$/.test(pincode)) {
-        lookupPincode(pincode);
-      }
-
-      const displayName = data.display_name || "";
+      if (/^\d{6}$/.test(pincode)) lookupPincode(pincode);
 
       updateLocationNote(
-        displayName
-          ? "Location found. Please check the filled address and add your house or flat number if missing."
-          : "Location details filled where available. Please check your address."
+        data.display_name
+          ? "Location found. Check the filled address and add your house or flat number if missing."
+          : "Available location details filled. Please check your address."
       );
     }
 
     currentLocationBtn.addEventListener("click", async function () {
       clearFormMessage();
       setLocationButtonLoading(true);
-
-      updateLocationNote(
-        "Requesting location permission from your browser..."
-      );
+      updateLocationNote("Requesting location permission from your browser...");
 
       try {
         const position = await getBrowserPosition();
-
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        const data = await reverseGeocode(latitude, longitude);
-
+        const data = await reverseGeocode(
+          position.coords.latitude,
+          position.coords.longitude
+        );
         fillLocationData(data);
 
       } catch (error) {
         console.error("Location error:", error);
 
-        let message =
-          error.message ||
-          "Could not retrieve your current location.";
+        let message = error.message || "Could not retrieve your current location.";
 
         if (error.code === 1) {
-          message =
-            "Location permission was denied. Allow location access in your browser settings or enter your address manually.";
+          message = "Location permission was denied. Allow location access in your browser settings or enter the address manually.";
         } else if (error.code === 2) {
-          message =
-            "Your location could not be determined. Please try again or enter the address manually.";
+          message = "Your location could not be determined. Please try again or enter the address manually.";
         } else if (error.code === 3) {
-          message =
-            "Location request timed out. Please try again.";
+          message = "Location request timed out. Please try again.";
         }
 
         updateLocationNote(message, true);
@@ -2051,81 +1337,40 @@
       }
     });
 
-    /*
-     * Validate all required fields.
-     */
+    /* VALIDATION */
 
     function validateForm() {
       let valid = true;
-
       clearFormMessage();
 
       const requiredFields = [
-        {
-          input: "fullName",
-          field: "fullNameField"
-        },
-        {
-          input: "phone",
-          field: "phoneField"
-        },
-        {
-          input: "pincode",
-          field: "pincodeField"
-        },
-        {
-          input: "houseNumber",
-          field: null
-        },
-        {
-          input: "area",
-          field: "areaField"
-        },
-        {
-          input: "city",
-          field: "cityField"
-        },
-        {
-          input: "state",
-          field: "stateField"
-        }
+        ["fullName", "fullNameField"],
+        ["phone", "phoneField"],
+        ["pincode", "pincodeField"],
+        ["houseNumber", "houseNumberField"],
+        ["area", "areaField"],
+        ["city", "cityField"],
+        ["state", "stateField"]
       ];
 
-      requiredFields.forEach(item => {
-        const input = document.getElementById(item.input);
+      requiredFields.forEach(([inputId, fieldId]) => {
+        const input = document.getElementById(inputId);
+        const empty = !input.value.trim();
 
-        const isEmpty = !input.value.trim();
+        setFieldError(fieldId, empty);
 
-        if (isEmpty) {
-          valid = false;
-
-          if (item.field) {
-            setFieldError(item.field, true);
-          } else {
-            input.style.borderColor = "var(--danger)";
-          }
-        } else {
-          if (item.field) {
-            setFieldError(item.field, false);
-          }
-
-          input.style.borderColor = "";
-        }
+        if (empty) valid = false;
       });
 
       if (!/^\d{10}$/.test(getValue("phone"))) {
-        valid = false;
         setFieldError("phoneField", true);
+        valid = false;
       }
 
       const alternatePhone = getValue("alternatePhone");
 
-      if (
-        alternatePhone &&
-        !/^\d{10}$/.test(alternatePhone)
-      ) {
+      if (alternatePhone && !/^\d{10}$/.test(alternatePhone)) {
         valid = false;
-
         showFormMessage(
           "Please enter a valid 10-digit alternate mobile number.",
           "error"
@@ -2133,27 +1378,9 @@
       }
 
       if (!/^\d{6}$/.test(getValue("pincode"))) {
-        valid = false;
         setFieldError("pincodeField", true);
+        valid = false;
       }
-
-      const requiredAddressInputs = [
-        "houseNumber",
-        "area",
-        "city",
-        "state"
-      ];
-
-      requiredAddressInputs.forEach(id => {
-        const input = document.getElementById(id);
-
-        if (!input.value.trim()) {
-          valid = false;
-          input.style.borderColor = "var(--danger)";
-        } else {
-          input.style.borderColor = "";
-        }
-      });
 
       if (!valid && !formMessage.classList.contains("show")) {
         showFormMessage(
@@ -2165,13 +1392,7 @@
       return valid;
     }
 
-    /*
-     * Address payload.
-     *
-     * The server must validate the authenticated user, generate the
-     * address ID, and save the address in Firebase.
-     * Never trust a client-provided user ID for ownership.
-     */
+    /* ADDRESS PAYLOAD */
 
     function buildAddressPayload() {
       const selectedType = document.querySelector(
@@ -2186,67 +1407,47 @@
         fullName: getValue("fullName"),
         phone: getValue("phone"),
         alternatePhone: getValue("alternatePhone"),
-
         pincode: getValue("pincode"),
-        postOffice:
-          selectedPostOffice && selectedPostOffice.value
-            ? selectedPostOffice.value
-            : "",
-
+        postOffice: selectedPostOffice && selectedPostOffice.value
+          ? selectedPostOffice.value
+          : "",
         houseNumber: getValue("houseNumber"),
         building: getValue("building"),
         area: getValue("area"),
         landmark: getValue("landmark"),
-
         city: getValue("city"),
         district: getValue("district"),
         state: getValue("state"),
         country: getValue("country"),
-
         deliveryInstructions: getValue("deliveryInstructions"),
-
         addressType: selectedType ? selectedType.value : "Home",
         isDefault: document.getElementById("isDefault").checked
       };
     }
 
-    /*
-     * Save address using the backend API.
-     *
-     * Expected endpoint: POST /api/addresses
-     *
-     * This frontend expects the backend to return:
-     * { success: true, address: { id: "..." } }
-     */
+    /* SAVE ADDRESS */
 
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
 
+      if (saving) return;
+
       if (!validateForm()) {
-        const firstInvalid = form.querySelector(
-          ".invalid input, input[style*='danger']"
-        );
-
-        if (firstInvalid) {
-          firstInvalid.focus();
-        }
-
+        const firstInvalid = form.querySelector(".field.invalid input");
+        if (firstInvalid) firstInvalid.focus();
         return;
       }
 
+      saving = true;
       saveAddressBtn.disabled = true;
-
+      saveAddressBtn.textContent = "Saving...";
       loadingDialog.classList.add("show");
 
-      document.getElementById("dialogTitle").textContent =
-        "Saving your address";
-
+      document.getElementById("dialogTitle").textContent = "Saving your address";
       document.getElementById("dialogDescription").textContent =
         "Please wait while your address is saved securely.";
 
       try {
-        const payload = buildAddressPayload();
-
         const response = await fetch("/api/addresses", {
           method: "POST",
           credentials: "same-origin",
@@ -2254,7 +1455,7 @@
             "Content-Type": "application/json",
             "Accept": "application/json"
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(buildAddressPayload())
         });
 
         let result = {};
@@ -2267,46 +1468,35 @@
 
         if (response.status === 401) {
           loadingDialog.classList.remove("show");
-
-          showFormMessage(
-            "Please log in before saving your address.",
-            "error"
-          );
+          showFormMessage("Please log in before saving your address.", "error");
 
           setTimeout(() => {
             window.location.href =
-              "login.html?redirect=" +
-              encodeURIComponent("address.html");
-          }, 1200);
+              "/login.html?redirect=" + encodeURIComponent("address.html");
+          }, 1000);
 
           return;
         }
 
         if (!response.ok || result.success !== true) {
           throw new Error(
-            result.message ||
-            "Your address could not be saved. Please try again."
+            result.message || "Your address could not be saved. Please try again."
           );
         }
 
         document.getElementById("dialogTitle").textContent =
           "Address saved successfully";
-
         document.getElementById("dialogDescription").textContent =
-          "Your delivery address has been saved. Redirecting to your addresses...";
+          "Your delivery address has been saved. Redirecting...";
 
-        showFormMessage(
-          "Your address was saved successfully.",
-          "success"
-        );
+        showFormMessage("Your address was saved successfully.", "success");
 
         setTimeout(() => {
-          window.location.href = "addresses.html";
+          window.location.href = "/addresses.html";
         }, 900);
 
       } catch (error) {
         console.error("Save address error:", error);
-
         loadingDialog.classList.remove("show");
 
         showFormMessage(
@@ -2316,50 +1506,39 @@
         );
 
       } finally {
+        saving = false;
         saveAddressBtn.disabled = false;
+        saveAddressBtn.textContent = "Save Address";
       }
     });
 
-    /*
-     * Remove visual validation errors as users edit fields.
-     */
+    /* CLEAR VALIDATION ERRORS WHEN EDITING */
 
     [
       ["fullName", "fullNameField"],
       ["pincode", "pincodeField"],
+      ["houseNumber", "houseNumberField"],
       ["area", "areaField"],
       ["city", "cityField"],
       ["state", "stateField"],
       ["phone", "phoneField"]
     ].forEach(([inputId, fieldId]) => {
-      document.getElementById(inputId).addEventListener(
-        "input",
-        function () {
-          if (this.value.trim()) {
-            clearFieldError(fieldId);
-          }
-
-          clearFormMessage();
-        }
-      );
+      document.getElementById(inputId).addEventListener("input", function () {
+        if (this.value.trim()) clearFieldError(fieldId);
+        clearFormMessage();
+      });
     });
 
     [
       "houseNumber",
-      "building",
-      "landmark",
-      "district",
-      "deliveryInstructions"
+      "area",
+      "city",
+      "state",
+      "alternatePhone"
     ].forEach(id => {
-      document.getElementById(id).addEventListener(
-        "input",
-        function () {
-          this.style.borderColor = "";
-          clearFormMessage();
-        }
-      );
+      document.getElementById(id).addEventListener("input", clearFormMessage);
     });
-
   </script>
 </body>
 </html>
+```
