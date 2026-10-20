@@ -1,0 +1,679 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <title>My Orders | Shoppy</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: #111;
+      font-family: Inter, Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .navbar {
+      height: 76px;
+      padding: 0 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      gap: 20px;
+    }
+
+    .logo img {
+      width: 118px;
+      height: auto;
+      max-height: 48px;
+      object-fit: contain;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+    }
+
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #222;
+    }
+
+    .nav-links svg {
+      width: 21px;
+      height: 21px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    main {
+      width: min(100% - 40px, 1000px);
+      margin: 42px auto 70px;
+      min-height: 55vh;
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.8px;
+    }
+
+    .subheading {
+      color: #777;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    .refresh-btn,
+    .action-btn {
+      padding: 11px 16px;
+      background: #fff;
+      color: #111;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .refresh-btn:hover,
+    .action-btn:hover {
+      background: #f7f7f7;
+    }
+
+    #message {
+      padding: 18px 0;
+      color: #666;
+      line-height: 1.7;
+    }
+
+    .order-card {
+      border: 1px solid #e7e7e7;
+      border-radius: 5px;
+      margin-bottom: 22px;
+      overflow: hidden;
+    }
+
+    .order-top {
+      padding: 20px;
+      background: #fafafa;
+      border-bottom: 1px solid #e7e7e7;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .meta-label {
+      display: block;
+      color: #777;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 7px;
+    }
+
+    .meta-value {
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    .status-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 3px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .2px;
+      background: #fff5d9;
+      color: #805900;
+    }
+
+    .status.paid {
+      background: #e7f7ed;
+      color: #176b37;
+    }
+
+    .status.failed {
+      background: #fdeaea;
+      color: #a32121;
+    }
+
+    .order-body {
+      padding: 22px 20px;
+    }
+
+    .product-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+      line-height: 1.6;
+    }
+
+    .product-row:first-child {
+      padding-top: 0;
+    }
+
+    .product-name {
+      font-weight: 600;
+    }
+
+    .product-info {
+      margin-top: 5px;
+      color: #777;
+      font-size: 12px;
+    }
+
+    .product-price {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .order-bottom {
+      padding: 18px 20px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .total-label {
+      color: #777;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .total {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .primary-btn {
+      padding: 12px 17px;
+      background: #111;
+      color: #fff;
+      border: 1px solid #111;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .primary-btn:hover {
+      background: #333;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 65px 20px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+    }
+
+    .empty-state h2 {
+      margin: 0 0 10px;
+      font-size: 21px;
+    }
+
+    .empty-state p {
+      color: #777;
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    footer {
+      border-top: 1px solid #eee;
+      padding: 24px 20px;
+      text-align: center;
+      color: #777;
+      font-size: 12px;
+    }
+
+    .notice {
+      margin: 0 0 22px;
+      padding: 13px 15px;
+      background: #fafafa;
+      border: 1px solid #eee;
+      color: #555;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 600px) {
+      .navbar {
+        height: 65px;
+        padding: 0 18px;
+      }
+
+      .logo img {
+        width: 100px;
+      }
+
+      .nav-links {
+        gap: 18px;
+      }
+
+      .nav-links svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      main {
+        width: calc(100% - 30px);
+        margin-top: 30px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .order-top,
+      .order-body,
+      .order-bottom {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      .order-top {
+        flex-direction: column;
+      }
+
+      .order-bottom {
+        align-items: stretch;
+      }
+
+      .order-actions {
+        width: 100%;
+      }
+
+      .order-actions button {
+        flex: 1;
+      }
+
+      .product-row {
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="navbar">
+    <a class="logo" href="/" aria-label="Shoppy home">
+      <img
+        src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+        alt="Shoppy"
+      >
+    </a>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="/" aria-label="Home" title="Home">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m3 10 9-7 9 7"></path>
+          <path d="M5 9v12h14V9M9 21v-7h6v7"></path>
+        </svg>
+      </a>
+
+      <a href="/shop.html" aria-label="Shop" title="Shop">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 3h2l2.4 12.1a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"></path>
+          <circle cx="10" cy="21" r="1"></circle>
+          <circle cx="19" cy="21" r="1"></circle>
+        </svg>
+      </a>
+
+      <a href="/cart.html" aria-label="Cart" title="Cart">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 3h2l2.4 12.1a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"></path>
+          <circle cx="10" cy="21" r="1"></circle>
+          <circle cx="19" cy="21" r="1"></circle>
+        </svg>
+      </a>
+
+      <a href="/account.html" aria-label="Account" title="Account">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21a8 8 0 0 1 16 0"></path>
+        </svg>
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="heading">
+      <div>
+        <h1>My Orders</h1>
+        <div class="subheading">View your orders and payment status.</div>
+      </div>
+      <button class="refresh-btn" id="refreshBtn" type="button">
+        Refresh orders
+      </button>
+    </div>
+
+    <p class="notice">
+      Payment status is shown according to the order records available on
+      Shoppy. A pending payment is not a confirmed payment.
+    </p>
+
+    <div id="message" role="status" aria-live="polite">
+      Loading your orders...
+    </div>
+
+    <section id="ordersList" aria-label="Your orders"></section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Shoppy. All rights reserved.
+  </footer>
+
+  <script>
+    const ordersList = document.getElementById("ordersList");
+    const message = document.getElementById("message");
+    const refreshBtn = document.getElementById("refreshBtn");
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, function (char) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        }[char];
+      });
+    }
+
+    function formatINR(value) {
+      const amount = Number(value);
+      if (!Number.isFinite(amount)) return "—";
+
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 2
+      }).format(amount);
+    }
+
+    function formatDate(value) {
+      if (value === undefined || value === null || value === "") {
+        return "Date unavailable";
+      }
+
+      let date;
+
+      if (typeof value === "number" || /^\d+$/.test(String(value))) {
+        date = new Date(Number(value));
+      } else {
+        date = new Date(value);
+      }
+
+      if (Number.isNaN(date.getTime())) return "Date unavailable";
+
+      return date.toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function readableStatus(value) {
+      return String(value || "UNKNOWN")
+        .replace(/_/g, " ")
+        .toLowerCase()
+        .replace(/\b\w/g, letter => letter.toUpperCase());
+    }
+
+    function paymentClass(status) {
+      const value = String(status || "").toUpperCase();
+
+      if (value === "PAID" || value === "SUCCESS" || value === "COMPLETED") {
+        return "paid";
+      }
+
+      if (value === "FAILED" || value === "CANCELLED" || value === "EXPIRED") {
+        return "failed";
+      }
+
+      return "";
+    }
+
+    function renderOrder(order) {
+      const orderId = String(order.orderId || "");
+      const paymentStatus = String(order.paymentStatus || "PENDING");
+      const orderStatus = String(order.orderStatus || "PENDING");
+      const items = Array.isArray(order.items) ? order.items : [];
+
+      const productsHTML = items.length
+        ? items.map(item => {
+            const title = escapeHTML(item.title || "Product");
+            const quantity = Math.max(0, Number(item.quantity) || 0);
+            const unitPriceUSD = Number(item.unitPriceUSD);
+            const lineTotalUSD = Number(item.lineTotalUSD);
+
+            let priceText = "";
+
+            if (Number.isFinite(lineTotalUSD)) {
+              priceText = formatINR(
+                lineTotalUSD * (Number(order.exchangeRate) || 85)
+              );
+            } else if (Number.isFinite(unitPriceUSD)) {
+              priceText = formatINR(
+                unitPriceUSD * quantity * (Number(order.exchangeRate) || 85)
+              );
+            }
+
+            return `
+              <div class="product-row">
+                <div>
+                  <div class="product-name">${title}</div>
+                  <div class="product-info">Quantity: ${quantity}</div>
+                </div>
+                <div class="product-price">${priceText || "—"}</div>
+              </div>
+            `;
+          }).join("")
+        : '<p class="subheading">No item details available for this order.</p>';
+
+      const encodedOrderId = encodeURIComponent(orderId);
+
+      return `
+        <article class="order-card">
+          <div class="order-top">
+            <div>
+              <span class="meta-label">Order ID</span>
+              <div class="meta-value">${escapeHTML(orderId || "Unavailable")}</div>
+            </div>
+
+            <div>
+              <span class="meta-label">Order date</span>
+              <div class="meta-value">${escapeHTML(formatDate(order.createdAt))}</div>
+            </div>
+
+            <div class="status-group">
+              <span class="status ${paymentClass(paymentStatus)}">
+                Payment: ${escapeHTML(readableStatus(paymentStatus))}
+              </span>
+              <span class="status">
+                ${escapeHTML(readableStatus(orderStatus))}
+              </span>
+            </div>
+          </div>
+
+          <div class="order-body">
+            ${productsHTML}
+          </div>
+
+          <div class="order-bottom">
+            <div>
+              <div class="total-label">Order total</div>
+              <div class="total">${formatINR(order.totalINR)}</div>
+            </div>
+
+            <div class="order-actions">
+              <button class="action-btn" type="button"
+                data-copy-order="${escapeHTML(orderId)}">
+                Copy order ID
+              </button>
+              ${
+                paymentStatus.toUpperCase() === "PENDING"
+                  ? `<button class="primary-btn" type="button"
+                       data-pay-order="${escapeHTML(encodedOrderId)}">
+                       Continue to payment
+                     </button>`
+                  : ""
+              }
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    async function loadOrders() {
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = "Loading...";
+      ordersList.replaceChildren();
+      message.textContent = "Loading your orders...";
+
+      try {
+        const response = await fetch("/api/orders", {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store",
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status === 401) {
+          message.textContent = "Please log in to view your orders.";
+          ordersList.innerHTML = `
+            <div class="empty-state">
+              <h2>Login required</h2>
+              <p>Log in to your Shoppy account to see your orders.</p>
+              <a class="primary-btn" href="/login.html">Log in</a>
+            </div>
+          `;
+          return;
+        }
+
+        if (!response.ok || data.success !== true) {
+          throw new Error(data.message || "Unable to load orders.");
+        }
+
+        const orders = Array.isArray(data.orders) ? data.orders : [];
+
+        if (orders.length === 0) {
+          message.textContent = "";
+          ordersList.innerHTML = `
+            <div class="empty-state">
+              <h2>No orders yet</h2>
+              <p>Your orders will appear here after you place an order.</p>
+              <a class="primary-btn" href="/shop.html">Start shopping</a>
+            </div>
+          `;
+          return;
+        }
+
+        message.textContent = `${orders.length} order${orders.length === 1 ? "" : "s"} found.`;
+        ordersList.innerHTML = orders.map(renderOrder).join("");
+
+      } catch (error) {
+        console.error("Load orders error:", error);
+        message.textContent =
+          "We couldn't load your orders. Please try again.";
+      } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = "Refresh orders";
+      }
+    }
+
+    refreshBtn.addEventListener("click", loadOrders);
+
+    ordersList.addEventListener("click", async function (event) {
+      const copyButton = event.target.closest("[data-copy-order]");
+      const payButton = event.target.closest("[data-pay-order]");
+
+      if (copyButton) {
+        try {
+          await navigator.clipboard.writeText(copyButton.dataset.copyOrder);
+          copyButton.textContent = "Copied";
+          setTimeout(() => {
+            copyButton.textContent = "Copy order ID";
+          }, 1500);
+        } catch {
+          message.textContent =
+            "Copy failed. Please select and copy the order ID manually.";
+        }
+      }
+
+      if (payButton) {
+        /*
+          This is a placeholder until the real payment flow is connected.
+          Do not mark an order paid just because a UPI app opens.
+        */
+        window.location.href =
+          "/payment.html?orderId=" + payButton.dataset.payOrder;
+      }
+    });
+
+    loadOrders();
+  </script>
+</body>
+</html>
