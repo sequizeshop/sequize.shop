@@ -8,7 +8,7 @@
     },
     {
       "source": "/home",
-      "destination": "/home.html"
+      "destination": "/index.html"
     },
     {
       "source": "/login",
@@ -16,7 +16,7 @@
     },
     {
       "source": "/signup",
-      "destination": "/index.html"
+      "destination": "/signup.html"
     },
     {
       "source": "/address",
