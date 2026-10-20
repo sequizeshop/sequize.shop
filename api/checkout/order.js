@@ -5,7 +5,7 @@ const { getSession } = require("../../lib/auth");
 const DATABASE_URL =
   "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app";
 
-const PRODUCT_ID_PATTERN = /^[A-Za-z0-9]{40}$/;
+const PRODUCT_ID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
 const USD_TO_INR = 85;
 
 function getDatabase() {
