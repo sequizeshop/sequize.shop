@@ -137,7 +137,10 @@ async function getVerifiedProduct(db, productId) {
   }
 
   const snapshot = await db.ref("products").child(productId).once("value");
-
+console.log("Cart product lookup:", {
+  productId,
+  found: snapshot.exists()
+});
   if (!snapshot.exists()) {
     return null;
   }
