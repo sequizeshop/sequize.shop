@@ -1014,108 +1014,113 @@
       return currentOrder;
     }
 
-    async function startPayment() {
-      if (busy) return;
+   async function startPayment() {
+  if (busy) return;
 
-      busy = true;
-      payButton.disabled = true;
-      payButton.textContent = "Preparing payment...";
-      showStatus("Checking your order...", "info");
+  busy = true;
+  payButton.disabled = true;
+  payButton.textContent = "Preparing payment...";
 
-      try {
-        let orderId = getOrderIdFromPage();
+  showStatus("Checking your order...", "info");
 
-        if (orderId) {
-          await loadExistingOrder(orderId);
-        } else {
-          if (!selectedAddress) {
-            throw new Error("Please select a delivery address first.");
-          }
+  try {
+    const orderId = getOrderIdFromPage();
 
-          if (!cartItems.length) {
-            throw new Error("Your cart is empty.");
-          }
-
-          payButton.textContent = "Creating order...";
-          await createOrderOnce();
-        }
-
-        const order = currentOrder;
-
-        if (!order || !order.orderId) {
-          throw new Error("Could not identify your order.");
-        }
-
-        if (String(order.paymentStatus).toUpperCase() === "PAID") {
-          showStatus("This order is already paid.", "success");
-          return;
-        }
-
-        payButton.textContent = "Connecting to YouPI...";
-
-        const gatewayResponse = await fetch(
-          GATEWAY_URL + "/api/payments",
-          {
-            method: "POST",
-            mode: "cors",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json"
-            },
-            body: JSON.stringify({
-              orderId: order.orderId,
-              amount: Number(order.totalINR),
-              currency: "INR"
-            })
-          }
+    if (orderId) {
+      await loadExistingOrder(orderId);
+    } else {
+      if (!selectedAddress) {
+        throw new Error(
+          "Please select a delivery address first."
         );
-
-        const gatewayData = await gatewayResponse.json().catch(() => ({}));
-
-        if (!gatewayResponse.ok || gatewayData.success !== true) {
-          throw new Error(
-            gatewayData.message || "YouPI could not create a payment record."
-          );
-        }
-
-        const payment = gatewayData.payment;
-
-        if (!payment || !payment.paymentId) {
-          throw new Error("YouPI did not return a payment ID.");
-        }
-
-        sessionStorage.setItem("shoppyPaymentId", payment.paymentId);
-
-        // Show QR only after the gateway has created a payment record.
-        qrAmount.textContent = money(order.totalINR);
-        qrPayment.classList.add("show");
-
-        showStatus(
-          "Payment record created. Scan the QR code and check the amount " +
-          "in your UPI app. This personal QR does not automatically verify " +
-          "payment. Your order remains pending until payment is verified.",
-          "info"
-        );
-
-        payButton.textContent = "Payment Awaiting Verification";
-        payButton.disabled = true;
-
-      } catch (error) {
-        console.error("Payment setup error:", error);
-
-        showStatus(
-          (error.message || "Unable to prepare payment.") +
-          " Your order will not be marked as paid.",
-          "error"
-        );
-
-        payButton.textContent = "Retry Payment Setup";
-        payButton.disabled = false;
-
-      } finally {
-        busy = false;
       }
+
+      if (!cartItems.length) {
+        throw new Error("Your cart is empty.");
+      }
+
+      payButton.textContent = "Creating order...";
+
+      await createOrderOnce();
     }
+
+    const order = currentOrder;
+
+    if (!order || !order.orderId) {
+      throw new Error("Could not identify your order.");
+    }
+
+    if (
+      String(order.paymentStatus).toUpperCase() === "PAID"
+    ) {
+      showStatus(
+        "This order is already paid.",
+        "success"
+      );
+
+      payButton.textContent = "Order Already Paid";
+      return;
+    }
+
+    payButton.textContent = "Connecting to UPI...";
+
+    const result = await apiJSON(
+      "/api/checkout/order",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          action: "create-payment",
+          orderId: order.orderId
+        })
+      }
+    );
+
+    if (
+      typeof result.paymentUrl !== "string" ||
+      !result.paymentUrl.startsWith(
+        "https://autoupi.in/pay/"
+      ) ||
+      typeof result.paymentId !== "string"
+    ) {
+      throw new Error(
+        "The payment provider returned an invalid payment link."
+      );
+    }
+
+    sessionStorage.setItem(
+      "shoppyPaymentId",
+      result.paymentId
+    );
+
+    sessionStorage.setItem(
+      "shoppyPendingOrderId",
+      order.orderId
+    );
+
+    showStatus(
+      "Opening the secure UPI payment page...",
+      "info"
+    );
+
+    // Open the payment page returned by the verified backend.
+    window.location.assign(result.paymentUrl);
+
+  } catch (error) {
+    console.error("Payment setup error:", error);
+
+    showStatus(
+      (error.message || "Unable to prepare payment.") +
+        " Your order has not been marked as paid.",
+      "error"
+    );
+
+    payButton.textContent = "Retry Payment";
+    payButton.disabled = false;
+
+  } finally {
+    busy = false;
+  }
+}
 
     payButton.addEventListener("click", startPayment);
 
