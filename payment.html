@@ -205,292 +205,425 @@
     <div>Secure Checkout</div>
   </footer>
 
-  <script>
-    const USD_TO_INR = 85;
-    const addressContainer = document.getElementById("addressContainer");
-    const addressSummary = document.getElementById("addressSummary");
-    const productsContainer = document.getElementById("productsContainer");
-    const payButton = document.getElementById("payButton");
-    const statusMessage = document.getElementById("statusMessage");
 
-    let selectedAddress = null;
-    let cartItems = [];
-    let cartTotalUSD = 0;
+<script>
+  const USD_TO_INR = 85;
 
-    function money(value) {
-      return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 2
-      }).format(value);
-    }
+  const addressContainer = document.getElementById("addressContainer");
+  const addressSummary = document.getElementById("addressSummary");
+  const productsContainer = document.getElementById("productsContainer");
+  const payButton = document.getElementById("payButton");
+  const statusMessage = document.getElementById("statusMessage");
 
-    function showStatus(message, type = "info") {
-      statusMessage.className = "status show " + type;
-      statusMessage.textContent = message;
-    }
+  const GATEWAY_URL = "https://payment-gateway-nufy.onrender.com";
 
-    function getAddressId() {
-      const params = new URLSearchParams(location.search);
-      return (
-        params.get("addressId") ||
-        sessionStorage.getItem("checkoutAddressId") ||
-        localStorage.getItem("checkoutAddressId") ||
-        ""
-      ).trim();
-    }
+  let selectedAddress = null;
+  let cartItems = [];
+  let cartTotalUSD = 0;
+  let currentOrder = null;
+  let busy = false;
 
-    function safeText(value) {
-      return String(value || "").trim();
-    }
+  function money(value) {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 2
+    }).format(Number(value) || 0);
+  }
 
-    function addressLines(address) {
-      return [
-        address.houseNumber,
-        address.building,
-        address.area,
-        address.landmark ? "Near " + address.landmark : "",
-        address.postOffice,
-        address.city,
-        address.district && address.district !== address.city ? address.district : "",
-        address.state,
-        address.pincode,
-        address.country
-      ].map(safeText).filter(Boolean);
-    }
+  function showStatus(message, type = "info") {
+    statusMessage.className = "status show " + type;
+    statusMessage.textContent = message;
+  }
 
-    function renderAddress(address) {
-      const wrapper = document.createElement("div");
-      wrapper.className = "address-card";
+  function safeText(value) {
+    return String(value ?? "").trim();
+  }
 
-      const icon = document.createElement("div");
-      icon.className = "address-icon";
-      icon.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+  function getOrderIdFromPage() {
+    const params = new URLSearchParams(location.search);
 
-      const content = document.createElement("div");
-      content.className = "address-content";
+    return (
+      params.get("orderId") ||
+      sessionStorage.getItem("shoppyPendingOrderId") ||
+      ""
+    ).trim();
+  }
 
-      const name = document.createElement("strong");
-      name.textContent = safeText(address.fullName);
-      content.appendChild(name);
+  function getAddressId() {
+    const params = new URLSearchParams(location.search);
 
-      const phone = document.createElement("div");
-      phone.textContent = safeText(address.phone);
-      content.appendChild(phone);
+    return (
+      params.get("addressId") ||
+      sessionStorage.getItem("checkoutAddressId") ||
+      localStorage.getItem("checkoutAddressId") ||
+      ""
+    ).trim();
+  }
 
-      addressLines(address).forEach(line => {
-        const div = document.createElement("div");
-        div.textContent = line;
-        content.appendChild(div);
-      });
+  function addressLines(address) {
+    return [
+      address.houseNumber,
+      address.building,
+      address.area,
+      address.landmark ? "Near " + address.landmark : "",
+      address.postOffice,
+      address.city,
+      address.district && address.district !== address.city
+        ? address.district : "",
+      address.state,
+      address.pincode,
+      address.country
+    ].map(safeText).filter(Boolean);
+  }
 
-      const type = document.createElement("div");
-      type.className = "muted";
-      type.textContent = safeText(address.addressType) + (address.isDefault ? " · Default address" : "");
-      content.appendChild(type);
+  function renderAddress(address) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "address-card";
 
-      wrapper.append(icon, content);
-      return wrapper;
-    }
+    const content = document.createElement("div");
+    content.className = "address-content";
 
-    function renderProduct(item) {
-      const row = document.createElement("div");
-      row.className = "product";
+    const name = document.createElement("strong");
+    name.textContent = safeText(address.fullName);
+    content.appendChild(name);
 
-      const image = document.createElement("img");
-      image.className = "product-image";
-      image.alt = safeText(item.title) || "Product image";
-      image.loading = "lazy";
-      image.src = safeText(item.thumbnail) || "https://placehold.co/120x120/f7f7f7/777?text=Product";
-      image.onerror = () => {
-        image.onerror = null;
-        image.src = "https://placehold.co/120x120/f7f7f7/777?text=Product";
-      };
+    [address.phone, ...addressLines(address)].filter(Boolean).forEach(value => {
+      const line = document.createElement("div");
+      line.textContent = value;
+      content.appendChild(line);
+    });
 
-      const info = document.createElement("div");
-      info.className = "product-info";
+    wrapper.appendChild(content);
+    return wrapper;
+  }
 
-      const title = document.createElement("div");
-      title.className = "product-name";
-      title.textContent = safeText(item.title) || "Product";
+  function renderProduct(item) {
+    const row = document.createElement("div");
+    row.className = "product";
 
-      const meta = document.createElement("div");
-      meta.className = "product-meta";
-      meta.textContent = "Quantity: " + item.quantity;
+    const image = document.createElement("img");
+    image.className = "product-image";
+    image.alt = safeText(item.title) || "Product";
+    image.src = safeText(item.thumbnail) ||
+      "https://placehold.co/120x120/f7f7f7/777?text=Product";
 
-      const unit = document.createElement("div");
-      unit.className = "product-meta";
-      unit.textContent = money(item.price * USD_TO_INR) + " each";
+    image.onerror = () => {
+      image.onerror = null;
+      image.src = "https://placehold.co/120x120/f7f7f7/777?text=Product";
+    };
 
-      info.append(title, meta, unit);
+    const info = document.createElement("div");
+    info.className = "product-info";
 
-      const price = document.createElement("div");
-      price.className = "product-price";
-      price.textContent = money(item.price * item.quantity * USD_TO_INR);
+    const title = document.createElement("div");
+    title.className = "product-name";
+    title.textContent = safeText(item.title) || "Product";
 
-      row.append(image, info, price);
-      return row;
-    }
+    const meta = document.createElement("div");
+    meta.className = "product-meta";
+    meta.textContent = "Quantity: " + Number(item.quantity || 0);
 
-    async function loadCart() {
-      const response = await fetch("/api/cart", {
-        method: "GET",
-        credentials: "same-origin",
-        cache: "no-store"
-      });
-      const data = await response.json();
+    const unit = document.createElement("div");
+    unit.className = "product-meta";
+    unit.textContent = money(Number(item.price) * USD_TO_INR) + " each";
 
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Could not load your cart.");
-      }
+    info.append(title, meta, unit);
 
-      cartItems = Array.isArray(data.items) ? data.items : [];
-      cartTotalUSD = Number(data.totalPrice);
+    const price = document.createElement("div");
+    price.className = "product-price";
+    price.textContent = money(
+      Number(item.price) * Number(item.quantity) * USD_TO_INR
+    );
 
-      if (!Number.isFinite(cartTotalUSD)) {
-        cartTotalUSD = cartItems.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
-      }
+    row.append(image, info, price);
+    return row;
+  }
 
-      if (!cartItems.length) {
-        productsContainer.textContent = "Your cart is empty. Add products before checkout.";
-        productsContainer.className = "empty";
-        payButton.disabled = true;
-        payButton.textContent = "Cart Is Empty";
-        document.getElementById("itemCount").textContent = "0";
-        document.getElementById("subtotal").textContent = money(0);
-        document.getElementById("grandTotal").textContent = money(0);
-        return;
-      }
-
-      productsContainer.className = "";
-      productsContainer.replaceChildren(...cartItems.map(renderProduct));
-
-      const quantity = cartItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
-      document.getElementById("itemCount").textContent = quantity + (quantity === 1 ? " item" : " items");
-      document.getElementById("subtotal").textContent = money(cartTotalUSD * USD_TO_INR);
-      document.getElementById("grandTotal").textContent = money(cartTotalUSD * USD_TO_INR);
-
-      payButton.disabled = false;
-      payButton.textContent = "Continue to Payment";
-    }
-
-    async function loadAddress() {
-      const response = await fetch("/api/addresses", {
-        method: "GET",
-        credentials: "same-origin",
-        cache: "no-store"
-      });
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Could not load saved addresses.");
-      }
-
-      const addresses = Array.isArray(data.addresses) ? data.addresses : [];
-      const requestedId = getAddressId();
-
-      selectedAddress = requestedId
-        ? addresses.find(address => address.id === requestedId)
-        : null;
-
-      // Fallback for a first visit: use the default address, or the only saved address.
-      if (!selectedAddress) {
-        selectedAddress = addresses.find(address => address.isDefault) ||
-          (addresses.length === 1 ? addresses[0] : null);
-      }
-
-      if (!selectedAddress) {
-        addressContainer.className = "empty";
-        addressContainer.textContent = addresses.length
-          ? "Please select your delivery address again."
-          : "No saved delivery address found. Please add an address first.";
-
-        addressSummary.textContent = addressContainer.textContent;
-        payButton.disabled = true;
-        return;
-      }
-
-      sessionStorage.setItem("checkoutAddressId", selectedAddress.id);
-
-      addressContainer.className = "";
-      addressContainer.replaceChildren(renderAddress(selectedAddress));
-
-      addressSummary.className = "";
-      addressSummary.replaceChildren(renderAddress(selectedAddress));
-    }
-
-    payButton.addEventListener("click", async () => {
-      if (!selectedAddress || !selectedAddress.id) {
-        showStatus("Please select a delivery address first.", "error");
-        return;
-      }
-
-      if (!cartItems.length) {
-        showStatus("Your cart is empty.", "error");
-        return;
-      }
-
-      payButton.disabled = true;
-      payButton.textContent = "Creating Order...";
-      showStatus("Verifying your cart, prices and delivery address...");
-
-      try {
-        const response = await fetch("/api/checkout/order", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ addressId: selectedAddress.id })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success || !data.order) {
-          throw new Error(data.message || "Unable to create the order.");
-        }
-
-        const order = data.order;
-
-        if (typeof order.totalINR !== "number" || !Number.isFinite(order.totalINR) || order.totalINR <= 0) {
-          throw new Error("The server returned an invalid order total.");
-        }
-
-        sessionStorage.setItem("shoppyPendingOrderId", order.orderId);
-        document.getElementById("grandTotal").textContent = money(order.totalINR);
-
-        showStatus(
-          "Order created. Order ID: " + order.orderId +
-          ". Payment is still pending. UPI payment will not be marked successful until trusted payment verification is connected.",
-          "success"
-        );
-
-        payButton.textContent = "Order Created — Payment Pending";
-      } catch (error) {
-        showStatus(error.message || "Something went wrong. Please try again.", "error");
-        payButton.disabled = false;
-        payButton.textContent = "Continue to Payment";
+  async function apiJSON(url, options = {}) {
+    const response = await fetch(url, {
+      credentials: "same-origin",
+      cache: "no-store",
+      ...options,
+      headers: {
+        Accept: "application/json",
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(options.headers || {})
       }
     });
 
-    async function init() {
-      const results = await Promise.allSettled([loadCart(), loadAddress()]);
-      const errors = results.filter(result => result.status === "rejected");
+    const data = await response.json().catch(() => ({}));
 
-      if (errors.length) {
-        const message = errors.map(result => result.reason?.message || "Unable to load checkout details.").join(" ");
-        showStatus(message + " Please log in and refresh the page.", "error");
-
-        if (results[0].status === "rejected") {
-          productsContainer.textContent = "Unable to load cart. Please log in and try again.";
-        }
-        if (results[1].status === "rejected") {
-          addressContainer.textContent = "Unable to load address. Please log in and try again.";
-          addressSummary.textContent = "Unable to load address.";
-        }
-        payButton.disabled = true;
-      }
+    if (!response.ok || data.success !== true) {
+      throw new Error(data.message || "Request failed (" + response.status + ").");
     }
 
-    init();
-  </script>
+    return data;
+  }
+
+  async function loadCart() {
+    const data = await apiJSON("/api/cart");
+    cartItems = Array.isArray(data.items) ? data.items : [];
+
+    cartTotalUSD = Number(data.totalPrice);
+
+    if (!Number.isFinite(cartTotalUSD)) {
+      cartTotalUSD = cartItems.reduce(
+        (sum, item) => sum +
+          Number(item.price || 0) * Number(item.quantity || 0),
+        0
+      );
+    }
+
+    productsContainer.replaceChildren(
+      ...cartItems.map(renderProduct)
+    );
+
+    document.getElementById("itemCount").textContent =
+      cartItems.reduce((sum, item) =>
+        sum + Number(item.quantity || 0), 0) + " items";
+
+    document.getElementById("subtotal").textContent =
+      money(cartTotalUSD * USD_TO_INR);
+
+    document.getElementById("grandTotal").textContent =
+      money(cartTotalUSD * USD_TO_INR);
+  }
+
+  async function loadAddress() {
+    const data = await apiJSON("/api/addresses");
+    const addresses = Array.isArray(data.addresses) ? data.addresses : [];
+    const addressId = getAddressId();
+
+    selectedAddress = addressId
+      ? addresses.find(address => address.id === addressId)
+      : null;
+
+    if (!selectedAddress) {
+      selectedAddress = addresses.find(address => address.isDefault) ||
+        (addresses.length === 1 ? addresses[0] : null);
+    }
+
+    if (!selectedAddress) {
+      throw new Error("Please select a saved delivery address.");
+    }
+
+    sessionStorage.setItem("checkoutAddressId", selectedAddress.id);
+
+    addressContainer.replaceChildren(renderAddress(selectedAddress));
+    addressSummary.replaceChildren(renderAddress(selectedAddress));
+  }
+
+  async function loadExistingOrder(orderId) {
+    const data = await apiJSON("/api/orders");
+
+    const orders = Array.isArray(data.orders) ? data.orders : [];
+    const order = orders.find(item => item.orderId === orderId);
+
+    if (!order) {
+      throw new Error("Order not found. Please open My Orders and try again.");
+    }
+
+    if (String(order.paymentStatus).toUpperCase() === "PAID") {
+      throw new Error("This order is already marked as paid.");
+    }
+
+    if (!Number.isFinite(Number(order.totalINR)) || Number(order.totalINR) <= 0) {
+      throw new Error("Invalid order amount returned by the server.");
+    }
+
+    currentOrder = order;
+    sessionStorage.setItem("shoppyPendingOrderId", order.orderId);
+
+    document.getElementById("grandTotal").textContent = money(order.totalINR);
+    document.getElementById("subtotal").textContent = money(order.totalINR);
+
+    payButton.textContent = "Continue to UPI Payment";
+    payButton.disabled = false;
+  }
+
+  async function createOrderOnce() {
+    if (currentOrder) return currentOrder;
+
+    const data = await apiJSON("/api/checkout/order", {
+      method: "POST",
+      body: JSON.stringify({
+        addressId: selectedAddress.id
+      })
+    });
+
+    if (!data.order || !data.order.orderId) {
+      throw new Error("The server did not return a valid order.");
+    }
+
+    currentOrder = data.order;
+
+    sessionStorage.setItem("shoppyPendingOrderId", currentOrder.orderId);
+
+    // Put the order ID in the URL so a refresh does not create another order.
+    const url = new URL(location.href);
+    url.searchParams.set("orderId", currentOrder.orderId);
+    history.replaceState({}, "", url);
+
+    return currentOrder;
+  }
+
+  async function startPayment() {
+    if (busy) return;
+
+    busy = true;
+    payButton.disabled = true;
+    payButton.textContent = "Preparing payment...";
+    showStatus("Checking your order...", "info");
+
+    try {
+      let orderId = getOrderIdFromPage();
+
+      if (orderId) {
+        await loadExistingOrder(orderId);
+      } else {
+        if (!selectedAddress) {
+          throw new Error("Please select a delivery address first.");
+        }
+
+        if (!cartItems.length) {
+          throw new Error("Your cart is empty.");
+        }
+
+        payButton.textContent = "Creating order...";
+        await createOrderOnce();
+      }
+
+      const order = currentOrder;
+
+      if (!order || !order.orderId) {
+        throw new Error("Could not identify your order.");
+      }
+
+      if (String(order.paymentStatus).toUpperCase() === "PAID") {
+        showStatus("This order is already paid.", "success");
+        return;
+      }
+
+      payButton.textContent = "Connecting to YouPI...";
+
+      /*
+        Amount and order ID come from the Shoppy server's saved order.
+        The gateway currently creates a PENDING record only.
+      */
+      const gatewayResponse = await fetch(
+        GATEWAY_URL + "/api/payments",
+        {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            orderId: order.orderId,
+            amount: Number(order.totalINR),
+            currency: "INR"
+          })
+        }
+      );
+
+      const gatewayData = await gatewayResponse.json().catch(() => ({}));
+
+      if (!gatewayResponse.ok || gatewayData.success !== true) {
+        throw new Error(
+          gatewayData.message || "YouPI could not create a payment record."
+        );
+      }
+
+      const payment = gatewayData.payment;
+
+      if (!payment || !payment.paymentId) {
+        throw new Error("YouPI did not return a payment ID.");
+      }
+
+      sessionStorage.setItem("shoppyPaymentId", payment.paymentId);
+
+      showStatus(
+        "Your order is saved. YouPI payment record created. Payment ID: " +
+        payment.paymentId +
+        ". The gateway still needs real UPI initiation and trusted payment verification; no payment has been confirmed.",
+        "info"
+      );
+
+      payButton.textContent = "Payment Awaiting UPI Setup";
+
+    } catch (error) {
+      console.error("Payment setup error:", error);
+
+      showStatus(
+        (error.message || "Unable to prepare payment.") +
+        " Your order will not be marked as paid.",
+        "error"
+      );
+
+      payButton.textContent = "Retry Payment Setup";
+      payButton.disabled = false;
+
+    } finally {
+      busy = false;
+    }
+  }
+
+  payButton.addEventListener("click", startPayment);
+
+  async function init() {
+    payButton.disabled = true;
+    payButton.textContent = "Loading order details...";
+
+    try {
+      const existingOrderId = getOrderIdFromPage();
+
+      if (existingOrderId) {
+        // Returning from My Orders: load the existing order, never recreate it.
+        await loadExistingOrder(existingOrderId);
+
+        try {
+          await loadAddress();
+        } catch (error) {
+          console.warn("Address display unavailable:", error.message);
+        }
+
+        try {
+          await loadCart();
+        } catch (error) {
+          productsContainer.textContent =
+            "This order already exists. Your cart may now be empty.";
+        }
+
+        payButton.textContent = "Continue to UPI Payment";
+        payButton.disabled = false;
+        return;
+      }
+
+      const results = await Promise.allSettled([
+        loadCart(),
+        loadAddress()
+      ]);
+
+      const failed = results.find(result => result.status === "rejected");
+
+      if (failed) {
+        throw failed.reason;
+      }
+
+      payButton.textContent = "Continue to Payment";
+      payButton.disabled = false;
+
+    } catch (error) {
+      showStatus(error.message || "Unable to load checkout details.", "error");
+      payButton.textContent = "Unable to Continue";
+      payButton.disabled = true;
+    }
+  }
+
+  init();
+</script>
+
 </body>
 </html>
