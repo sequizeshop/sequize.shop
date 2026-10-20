@@ -1,1256 +1,1039 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ffffff">
-  <title>Shoppy — Discover Products</title>
-  <meta name="description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
-  <meta name="robots" content="index, follow">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="canonical" href="https://YOUR-DOMAIN/home.html">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Shoppy">
-  <meta property="og:title" content="Shoppy — Discover Products">
-  <meta property="og:description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
-  <meta property="og:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-  <meta property="og:url" content="https://YOUR-DOMAIN/home.html">
-  <meta property="og:image:alt" content="Shoppy logo">
+    <title>Create Account</title>
 
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Shoppy — Discover Products">
-  <meta name="twitter:description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
-  <meta name="twitter:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+    <!-- Logo / Favicon -->
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+    >
 
-  <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-  <link rel="apple-touch-icon" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
-  <style>
-    :root {
-      --black: #111;
-      --white: #fff;
-      --gray: #737373;
-      --border: #e9e9e9;
-      --light: #f6f6f6;
-      --radius: 16px;
-      --success: #16803c;
-    }
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: Inter, sans-serif;
-      color: var(--black);
-      background: #fff;
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-    }
+    <style>
+        :root {
+            --black: #111111;
+            --white: #ffffff;
+            --gray-50: #fafafa;
+            --gray-100: #f4f4f4;
+            --gray-200: #e5e5e5;
+            --gray-400: #a3a3a3;
+            --gray-500: #737373;
+            --font: 'Inter', sans-serif;
+            --control-height: 44px;
+            --radius: 7px;
+        }
 
-    a { color: inherit; text-decoration: none; }
-    button, input { font: inherit; }
-    button { cursor: pointer; }
-    button:focus-visible, a:focus-visible, input:focus-visible {
-      outline: 2px solid #555;
-      outline-offset: 3px;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .navbar {
-      min-height: 76px;
-      padding: 0 7%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 25px;
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
+        body {
+            min-height: 100vh;
+            font-family: var(--font);
+            background: var(--white);
+            color: var(--black);
+            -webkit-font-smoothing: antialiased;
+        }
 
-    .brand { display: flex; align-items: center; flex-shrink: 0; }
-    .brand img { width: 46px; height: 46px; object-fit: contain; }
+        input,
+        button {
+            font: inherit;
+        }
 
-    .search {
-      display: flex;
-      align-items: center;
-      width: min(440px, 45%);
-      height: 43px;
-      border: 1px solid var(--border);
-      background: #f8f8f8;
-      border-radius: 10px;
-      padding: 0 13px;
-      gap: 10px;
-    }
+        button {
+            cursor: pointer;
+        }
 
-    .search i { font-size: 19px; color: #777; }
-    .search input {
-      width: 100%;
-      min-width: 0;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: var(--black);
-      font-size: 13px;
-    }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
 
-    .nav-actions { display: flex; align-items: center; gap: 22px; }
-    .nav-icon {
-      width: 32px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 23px;
-      position: relative;
-    }
-    .nav-icon:hover { opacity: .6; }
+        .page-wrapper {
+            width: calc(100% - 80px);
+            max-width: 1160px;
+            min-height: 100vh;
+            margin: auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            align-items: center;
+            gap: 48px;
+            padding: 40px 0;
+        }
 
-    .cart-count {
-      position: absolute;
-      top: -1px;
-      right: -7px;
-      min-width: 17px;
-      height: 17px;
-      padding: 0 4px;
-      border-radius: 20px;
-      background: #111;
-      color: #fff;
-      font-size: 9px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        /* LEFT INTRO PANEL */
 
-    [hidden] { display: none !important; }
+        .intro-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 35px;
+            min-height: 430px;
+        }
 
-    .hero-wrap { padding: 32px 7% 0; }
-    .hero-wrap.search-hidden { display: none; }
+        .intro-content {
+            width: 100%;
+            max-width: 390px;
+        }
 
-    .hero {
-      min-height: 290px;
-      border-radius: 22px;
-      background: #f4f4f4;
-      padding: 48px 6%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 25px;
-      overflow: hidden;
-    }
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-500);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 25px;
+        }
 
-    .hero-copy { max-width: 540px; }
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 18px;
-    }
-    .eyebrow i { font-size: 17px; }
+        .eyebrow::before {
+            content: "";
+            width: 20px;
+            height: 1px;
+            background: var(--black);
+        }
 
-    .hero h1 {
-      font-size: clamp(32px, 4vw, 49px);
-      line-height: 1.1;
-      letter-spacing: -2px;
-      font-weight: 800;
-      max-width: 500px;
-    }
+        .intro-content h1 {
+            font-size: clamp(34px, 3.2vw, 48px);
+            line-height: 1.15;
+            letter-spacing: -2px;
+            margin-bottom: 17px;
+        }
 
-    .hero p {
-      margin-top: 14px;
-      color: #666;
-      font-size: 14px;
-      line-height: 1.7;
-      max-width: 430px;
-    }
+        .intro-content h1 span {
+            color: var(--gray-400);
+        }
 
-    .hero-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      margin-top: 23px;
-      padding: 13px 19px;
-      border: 0;
-      border-radius: 9px;
-      background: var(--black);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .hero-button:hover { background: #333; }
+        .intro-description {
+            max-width: 330px;
+            color: var(--gray-500);
+            font-size: 12px;
+            line-height: 1.9;
+        }
 
-    .hero-art {
-      width: 220px;
-      height: 220px;
-      flex-shrink: 0;
-      border-radius: 50%;
-      background: #e5e5e5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .hero-art img { width: 78%; height: 78%; object-fit: contain; }
+        .visual {
+            margin-top: 35px;
+            padding: 18px;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 7px;
+        }
 
-    .container {
-      width: 86%;
-      max-width: 1320px;
-      margin: 44px auto;
-    }
+        .visual-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
 
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 18px;
-      margin-bottom: 20px;
-    }
-    .section-head h2 {
-      font-size: 23px;
-      font-weight: 800;
-      letter-spacing: -.8px;
-    }
-    .section-head p { color: var(--gray); font-size: 12px; margin-top: 7px; }
+        .visual-label {
+            color: var(--gray-500);
+            font-size: 10px;
+        }
 
-    .categories { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 32px; }
-    .category-btn {
-      border: 1px solid var(--border);
-      background: #fff;
-      color: #444;
-      border-radius: 30px;
-      padding: 10px 15px;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: capitalize;
-      transition: .2s;
-    }
-    .category-btn:hover, .category-btn.active {
-      background: #111;
-      border-color: #111;
-      color: #fff;
-    }
-    .product-count { color: var(--gray); font-size: 12px; white-space: nowrap; }
+        .visual-top i {
+            font-size: 18px;
+        }
 
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 22px;
-    }
+        .visual-products {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
 
-    .product-card {
-      min-width: 0;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: #fff;
-      transition: transform .2s, box-shadow .2s;
-      cursor: pointer;
-    }
-    .product-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 28px rgba(0,0,0,.06);
-    }
+        .product-tile {
+            height: 65px;
+            background: var(--gray-100);
+            border-radius: 5px;
+            display: grid;
+            place-items: center;
+        }
 
-    .product-image {
-      position: relative;
-      height: 220px;
-      padding: 18px;
-      background: #f7f7f7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .product-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      opacity: 1;
-      transition: opacity .2s;
-    }
-    .product-image img.is-loading { opacity: 0; }
+        .product-tile i {
+            font-size: 25px;
+        }
 
-    .discount {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background: #111;
-      color: #fff;
-      padding: 6px 8px;
-      border-radius: 6px;
-      font-size: 10px;
-      font-weight: 700;
-      z-index: 1;
-    }
+        .intro-footer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 22px;
+            color: var(--gray-500);
+            font-size: 10px;
+        }
 
-    .product-info { padding: 16px; }
-    .product-category {
-      color: #888;
-      font-size: 10px;
-      text-transform: capitalize;
-      font-weight: 700;
-      letter-spacing: .7px;
-    }
-    .product-title {
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.5;
-      margin-top: 8px;
-      min-height: 42px;
-      overflow-wrap: anywhere;
-    }
-    .product-description {
-      color: var(--gray);
-      font-size: 11px;
-      line-height: 1.6;
-      margin-top: 7px;
-      min-height: 52px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .product-rating {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: 11px;
-      color: #555;
-      font-size: 11px;
-    }
-    .product-rating i { color: #e7a500; font-size: 14px; }
-    .product-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 13px;
-    }
-    .product-price { font-size: 17px; font-weight: 800; letter-spacing: -.5px; }
+        .intro-footer i {
+            font-size: 15px;
+        }
 
-    .add-button {
-      width: 36px;
-      height: 36px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #111;
-      color: #fff;
-      border: 0;
-      border-radius: 10px;
-      font-size: 19px;
-    }
-    .add-button:hover { background: #333; }
-    .add-button.added { background: var(--success); color: #fff; }
-    .add-button:disabled { opacity: .65; cursor: wait; }
+        /* SIGNUP FORM */
 
-    /* Skeleton loading */
-    .skeleton {
-      position: relative;
-      overflow: hidden;
-      background: #eaeaea;
-      border-radius: 7px;
-    }
-    .skeleton::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      transform: translateX(-100%);
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.72), transparent);
-      animation: shimmer 1.35s infinite;
-    }
-    @keyframes shimmer {
-      100% { transform: translateX(100%); }
-    }
-    .skeleton-card { cursor: default; pointer-events: none; }
-    .skeleton-card:hover { transform: none; box-shadow: none; }
-    .skeleton-image { height: 220px; border-radius: 0; }
-    .skeleton-line { height: 10px; margin-top: 12px; }
-    .skeleton-line.short { width: 35%; }
-    .skeleton-line.medium { width: 65%; }
-    .skeleton-line.long { width: 95%; }
-    .skeleton-line.price { width: 38%; height: 17px; }
-    .skeleton-row { display: flex; align-items: center; justify-content: space-between; margin-top: 15px; }
-    .skeleton-circle { width: 36px; height: 36px; border-radius: 10px; }
+        .form-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+        }
 
-    .product-grid.list-view { display: flex; flex-direction: column; gap: 14px; }
-    .product-grid.list-view .product-card {
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
-      width: 100%;
-    }
-    .product-grid.list-view .product-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 5px 20px rgba(0,0,0,.05);
-    }
-    .product-grid.list-view .product-image {
-      width: 190px;
-      min-width: 190px;
-      height: 190px;
-      flex-shrink: 0;
-    }
-    .product-grid.list-view .product-info {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .product-grid.list-view .product-title,
-    .product-grid.list-view .product-description { min-height: 0; }
+        .signup-card {
+            width: 100%;
+            max-width: 390px;
+        }
 
-    .load-more-wrap { display: flex; justify-content: center; margin-top: 30px; }
-    .load-more-button {
-      min-width: 170px;
-      padding: 13px 22px;
-      border: 1px solid #111;
-      border-radius: 10px;
-      background: #111;
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .load-more-button:hover { background: #333; }
-    .load-more-button:disabled { opacity: .6; cursor: wait; }
+        /* LOGO */
 
-    .status {
-      grid-column: 1 / -1;
-      width: 100%;
-      text-align: center;
-      padding: 45px 20px;
-      color: var(--gray);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 13px;
-      line-height: 1.7;
-    }
-    .status button {
-      display: block;
-      margin: 14px auto 0;
-      padding: 11px 18px;
-      border: 0;
-      border-radius: 8px;
-      background: #111;
-      color: #fff;
-      font-weight: 700;
-    }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 22px;
+        }
 
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translate(-50%, 20px);
-      background: #111;
-      color: #fff;
-      padding: 13px 18px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .2s, transform .2s;
-      max-width: calc(100% - 32px);
-      text-align: center;
-    }
-    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+        .brand-logo img {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+            border-radius: 50%;
+            display: block;
+        }
 
-    .footer {
-      margin-top: 60px;
-      border-top: 1px solid var(--border);
-      padding: 26px 7%;
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      color: #888;
-      font-size: 11px;
-    }
+        .form-heading {
+            margin-bottom: 25px;
+        }
 
-    @media (max-width: 1050px) {
-      .product-grid:not(.list-view) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .product-image, .skeleton-image { height: 200px; }
-      .navbar { padding: 0 5%; }
-      .hero-wrap { padding-left: 5%; padding-right: 5%; }
-    }
+        .form-heading h2 {
+            font-size: 27px;
+            letter-spacing: -1px;
+            margin-bottom: 9px;
+        }
 
-    @media (max-width: 700px) {
-      .navbar { min-height: 66px; gap: 12px; }
-      .brand img { width: 40px; height: 40px; }
-      .search { width: auto; flex: 1; height: 39px; padding: 0 10px; }
-      .search input { font-size: 12px; }
-      .nav-actions { gap: 10px; }
-      .nav-icon { width: 25px; font-size: 21px; }
-      .hero-wrap { padding-top: 20px; }
-      .hero { min-height: 250px; padding: 30px 24px; border-radius: 17px; }
-      .hero h1 { font-size: 34px; letter-spacing: -1.4px; }
-      .hero p { font-size: 12px; }
-      .hero-art { width: 115px; height: 115px; }
-      .hero-art img { width: 84%; height: 84%; }
-      .container { width: 90%; margin: 34px auto; }
-      .section-head h2 { font-size: 20px; }
-      .product-grid:not(.list-view) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
-      .product-image, .skeleton-image { height: 165px; padding: 12px; }
-      .skeleton-image { padding: 0; }
-      .product-info { padding: 12px; }
-      .product-title { font-size: 12px; min-height: 36px; }
-      .product-description { font-size: 10px; min-height: 48px; }
-      .product-price { font-size: 15px; }
-      .add-button { width: 32px; height: 32px; }
-      .footer { padding: 22px 5%; }
-      .product-grid.list-view .product-image { width: 120px; min-width: 120px; height: 145px; padding: 8px; }
-      .product-grid.list-view .product-info { padding: 10px; }
-      .product-grid.list-view .product-title { font-size: 12px; }
-      .product-grid.list-view .product-description { font-size: 10px; -webkit-line-clamp: 2; }
-      .product-grid.list-view .product-price { font-size: 14px; }
-    }
+        .form-heading p {
+            font-size: 11px;
+            line-height: 1.8;
+            color: var(--gray-500);
+        }
 
-    @media (max-width: 390px) {
-      .navbar { gap: 8px; }
-      .nav-actions { gap: 7px; }
-      .search { gap: 6px; }
-      .hero-art { display: none; }
-      .hero h1 { font-size: 32px; }
-      .product-grid:not(.list-view) { gap: 10px; }
-      .product-grid:not(.list-view) .product-image,
-      .product-grid:not(.list-view) .skeleton-image { height: 145px; }
-      .product-grid:not(.list-view) .product-info { padding: 10px; }
-      .product-grid.list-view .product-image { width: 100px; min-width: 100px; height: 130px; }
-      .product-grid.list-view .product-info { padding: 8px; }
-      .product-grid.list-view .product-category { font-size: 9px; }
-      .product-grid.list-view .product-title { font-size: 11px; }
-      .product-grid.list-view .product-rating { margin-top: 6px; }
-      .product-grid.list-view .product-bottom { margin-top: 8px; }
-    }
+        .form-group {
+            margin-bottom: 16px;
+        }
 
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after { transition-duration: .01ms !important; }
-      .skeleton::after { animation: none; }
-    }
-  </style>
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .input-box {
+            width: 100%;
+            height: var(--control-height);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 11px;
+            background: var(--white);
+            border: 1px solid #dedede;
+            border-radius: var(--radius);
+            transition: 0.2s ease;
+        }
+
+        .input-box:focus-within {
+            border-color: var(--black);
+            box-shadow: 0 0 0 2px #00000008;
+        }
+
+        .input-box > i {
+            flex-shrink: 0;
+            font-size: 17px;
+            color: var(--gray-500);
+        }
+
+        .input-box input {
+            width: 100%;
+            min-width: 0;
+            height: 100%;
+            outline: none;
+            border: none;
+            background: transparent;
+            color: var(--black);
+            font-size: 12px;
+        }
+
+        .input-box input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .password-toggle {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border: none;
+            background: transparent;
+            color: var(--gray-500);
+            border-radius: 4px;
+        }
+
+        .password-toggle i {
+            font-size: 18px;
+        }
+
+        /* TERMS */
+
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 20px 0;
+            color: var(--gray-500);
+            font-size: 10px;
+            line-height: 1.8;
+        }
+
+        .terms input {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            margin-top: 2px;
+            accent-color: var(--black);
+        }
+
+        .terms a {
+            color: var(--black);
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        /* BUTTONS */
+
+        .btn {
+            width: 100%;
+            min-height: var(--control-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 700;
+            transition: 0.2s ease;
+        }
+
+        .btn i {
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            color: var(--white);
+            background: var(--black);
+            border: 1px solid var(--black);
+        }
+
+        .btn-primary:hover {
+            background: #333333;
+        }
+
+        .btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .social-section {
+            margin-top: 24px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            color: var(--gray-400);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: var(--gray-200);
+        }
+
+        .btn-social {
+            background: var(--white);
+            color: var(--black);
+            border: 1px solid var(--gray-200);
+        }
+
+        .btn-social:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .google-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        /* LOGIN LINK */
+
+        .login-link {
+            margin-top: 22px;
+            padding-top: 17px;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+            color: var(--gray-500);
+            font-size: 10px;
+        }
+
+        .login-link a {
+            color: var(--black);
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        .secure-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 18px;
+            color: var(--gray-400);
+            font-size: 10px;
+        }
+
+        /* STATUS MESSAGES */
+
+        .message {
+            display: none;
+            margin-bottom: 15px;
+            padding: 11px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .message.error,
+        .message.success {
+            display: block;
+        }
+
+        .message.error {
+            color: #991b1b;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .message.success {
+            color: #166534;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        /* PROGRESS DIALOG */
+
+        .dialog-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(17, 17, 17, 0.42);
+            backdrop-filter: blur(3px);
+        }
+
+        .dialog-backdrop.show {
+            display: flex;
+        }
+
+        .progress-dialog {
+            width: 100%;
+            max-width: 340px;
+            padding: 28px 24px;
+            text-align: center;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            box-shadow: 0 18px 60px #0002;
+        }
+
+        .spinner {
+            width: 38px;
+            height: 38px;
+            margin: 0 auto 17px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--black);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .progress-dialog h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .progress-dialog p {
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--gray-500);
+        }
+
+        .progress-dialog .dialog-ok {
+            display: none;
+            margin-top: 18px;
+        }
+
+        .progress-dialog.done .spinner {
+            display: none;
+        }
+
+        .progress-dialog.done .dialog-ok {
+            display: flex;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+            .page-wrapper {
+                width: calc(100% - 56px);
+                gap: 28px;
+            }
+
+            .intro-panel {
+                padding: 25px;
+                min-height: 400px;
+            }
+
+            .intro-content h1 {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .page-wrapper {
+                width: calc(100% - 40px);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 28px 0;
+            }
+
+            .intro-panel {
+                display: none;
+            }
+
+            .form-panel {
+                width: 100%;
+            }
+
+            .signup-card {
+                max-width: 420px;
+            }
+
+            .form-heading h2 {
+                font-size: 25px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .page-wrapper {
+                width: calc(100% - 32px);
+            }
+
+            .form-heading h2 {
+                font-size: 23px;
+            }
+
+            .form-group {
+                margin-bottom: 14px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <header class="navbar">
-    <a href="/home.html" class="brand" aria-label="Shoppy home">
-      <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo">
-    </a>
 
-    <form class="search" id="searchForm" role="search">
-      <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-      <input id="searchInput" type="search" placeholder="Search products..."
-        aria-label="Search products" autocomplete="off" maxlength="100">
-    </form>
+<main class="page-wrapper">
 
-    <nav class="nav-actions" aria-label="Main navigation">
-      <a class="nav-icon" href="/home.html" aria-label="Home" title="Home">
-        <i class="ph ph-house" aria-hidden="true"></i>
-      </a>
-      <a class="nav-icon" href="/cart.html" aria-label="Cart" title="Shopping cart">
-        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
-        <span class="cart-count" id="cartCount" hidden>0</span>
-      </a>
-      <a class="nav-icon" href="/profile.html" aria-label="My profile" title="My profile">
-        <i class="ph ph-user-circle" aria-hidden="true"></i>
-      </a>
-    </nav>
-  </header>
+    <!-- LEFT INTRO PANEL -->
 
-  <section class="hero-wrap" id="heroWrap">
-    <div class="hero">
-      <div class="hero-copy">
-        <div class="eyebrow">
-          <i class="ph ph-sparkle" aria-hidden="true"></i>
-          Welcome to Shoppy
+    <section class="intro-panel">
+        <div class="intro-content">
+
+            <div class="eyebrow">THE NEW WAY TO SHOP</div>
+
+            <h1>Find your<br>next <span>favorite.</span></h1>
+
+            <p class="intro-description">
+                Discover products that fit your lifestyle.
+                Explore new arrivals, find everyday essentials,
+                and make every purchase count.
+            </p>
+
+            <div class="visual">
+                <div class="visual-top">
+                    <span class="visual-label">Curated for you</span>
+                    <i class="ph ph-arrow-up-right" aria-hidden="true"></i>
+                </div>
+
+                <div class="visual-products">
+                    <div class="product-tile">
+                        <i class="ph ph-sneaker" aria-hidden="true"></i>
+                    </div>
+
+                    <div class="product-tile">
+                        <i class="ph ph-headphones" aria-hidden="true"></i>
+                    </div>
+
+                    <div class="product-tile">
+                        <i class="ph ph-handbag" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="intro-footer">
+                <i class="ph ph-shield-check" aria-hidden="true"></i>
+                A simpler, smarter shopping experience.
+            </div>
+
         </div>
-        <h1>Find your next favorite thing.</h1>
-        <p>Explore everyday essentials, discover new arrivals and find products you'll love.</p>
-        <button class="hero-button" id="shopNow" type="button">
-          Explore Products <i class="ph ph-arrow-right" aria-hidden="true"></i>
+    </section>
+
+    <!-- SIGNUP FORM -->
+
+    <section class="form-panel">
+        <div class="signup-card">
+
+            <!-- LOGO IMAGE ONLY -->
+
+            <div class="brand-logo">
+                <img
+                    src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+                    alt="Store logo"
+                    width="58"
+                    height="58"
+                >
+            </div>
+
+            <div class="form-heading">
+                <h2>Create your account</h2>
+                <p>Create an account and discover a better way to shop.</p>
+            </div>
+
+            <div
+                id="message"
+                class="message"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+            <form id="signupForm">
+
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+
+                    <div class="input-box">
+                        <i class="ph ph-user" aria-hidden="true"></i>
+
+                        <input
+                            type="text"
+                            id="fullName"
+                            name="name"
+                            placeholder="Enter your full name"
+                            autocomplete="name"
+                            minlength="2"
+                            maxlength="80"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+
+                    <div class="input-box">
+                        <i class="ph ph-envelope-simple" aria-hidden="true"></i>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            maxlength="254"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <div class="input-box">
+                        <i class="ph ph-lock-simple" aria-hidden="true"></i>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Create a strong password"
+                            autocomplete="new-password"
+                            minlength="8"
+                            maxlength="72"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="togglePassword"
+                            aria-label="Show password"
+                            aria-pressed="false"
+                        >
+                            <i class="ph ph-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <label class="terms">
+                    <input type="checkbox" id="terms" required>
+
+                    <span>
+                        I agree to the
+                        <a href="terms.html">Terms of Service</a>
+                        and
+                        <a href="privacy.html">Privacy Policy</a>.
+                    </span>
+                </label>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="submitBtn"
+                >
+                    <span>Create Account</span>
+                    <i class="ph ph-arrow-right" aria-hidden="true"></i>
+                </button>
+
+            </form>
+
+            <div class="social-section">
+
+                <div class="divider">OR CONTINUE WITH</div>
+
+                <button
+                    type="button"
+                    class="btn btn-social"
+                    id="googleBtn"
+                >
+                    <svg
+                        class="google-icon"
+                        viewBox="0 0 48 48"
+                        aria-hidden="true"
+                    >
+                        <path
+                            fill="#4285F4"
+                            d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.9 6.1-15z"
+                        />
+
+                        <path
+                            fill="#34A853"
+                            d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.6-5.1c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20 20 0 0 0 24 44z"
+                        />
+
+                        <path
+                            fill="#FBBC05"
+                            d="M12.6 27.6a12 12 0 0 1 0-7.2v-5.3H5.8a20 20 0 0 0 0 17.8z"
+                        />
+
+                        <path
+                            fill="#EA4335"
+                            d="M24 12c3 0 5.7 1 7.8 3.1l5.8-5.8A19.3 19.3 0 0 0 24 4 20 20 0 0 0 5.8 15.1l6.8 5.3C14.2 15.6 18.7 12 24 12z"
+                        />
+                    </svg>
+
+                    Continue with Google
+                </button>
+
+            </div>
+
+            <div class="login-link">
+                Already have an account?
+                <a href="login.html">Sign in</a>
+            </div>
+
+            <div class="secure-note">
+                <i class="ph ph-lock-key" aria-hidden="true"></i>
+                Your information is protected.
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<!-- PROGRESS DIALOG -->
+
+<div
+    class="dialog-backdrop"
+    id="progressBackdrop"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="dialogTitle"
+    aria-describedby="dialogText"
+>
+    <div class="progress-dialog" id="progressDialog">
+
+        <div class="spinner" aria-hidden="true"></div>
+
+        <h3 id="dialogTitle">Creating your account</h3>
+
+        <p id="dialogText">
+            Please wait while we securely create your account.
+        </p>
+
+        <button
+            class="btn btn-primary dialog-ok"
+            id="dialogOk"
+            type="button"
+        >
+            Continue
         </button>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="">
-      </div>
+
     </div>
-  </section>
+</div>
 
-  <main class="container" id="productsSection">
-    <div class="section-head" id="categoriesHeading">
-      <div>
-        <h2>Shop by Category</h2>
-        <p>Find what you need, all in one place.</p>
-      </div>
-    </div>
+<script>
+    const form = document.getElementById("signupForm");
+    const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const message = document.getElementById("message");
+    const submitBtn = document.getElementById("submitBtn");
 
-    <div id="categories" class="categories">
-      <button class="category-btn active" data-category="" type="button">All Products</button>
-    </div>
+    const backdrop = document.getElementById("progressBackdrop");
+    const dialog = document.getElementById("progressDialog");
+    const dialogTitle = document.getElementById("dialogTitle");
+    const dialogText = document.getElementById("dialogText");
+    const dialogOk = document.getElementById("dialogOk");
 
-    <div class="section-head">
-      <div>
-        <h2 id="productsHeading">Popular Products</h2>
-        <p id="productsSubtitle">Discover something you'll love.</p>
-      </div>
-      <span id="productCount" class="product-count"></span>
-    </div>
-
-    <div id="productGrid" class="product-grid" aria-live="polite" aria-busy="true"></div>
-
-    <div class="load-more-wrap">
-      <button id="loadMoreButton" class="load-more-button" type="button" hidden>
-        Load More Products
-      </button>
-    </div>
-  </main>
-
-  <footer class="footer">
-    <span>© <span id="year"></span> Shoppy</span>
-    <span>Your shopping, all in one place.</span>
-  </footer>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-  <script>
-    "use strict";
-
-    const productGrid = document.getElementById("productGrid");
-    const categoriesEl = document.getElementById("categories");
-    const categoriesHeading = document.getElementById("categoriesHeading");
-    const productCount = document.getElementById("productCount");
-    const productsHeading = document.getElementById("productsHeading");
-    const productsSubtitle = document.getElementById("productsSubtitle");
-    const searchInput = document.getElementById("searchInput");
-    const searchForm = document.getElementById("searchForm");
-    const heroWrap = document.getElementById("heroWrap");
-    const loadMoreButton = document.getElementById("loadMoreButton");
-    const toast = document.getElementById("toast");
-    const cartCount = document.getElementById("cartCount");
-
-    const PAGE_SIZE = 24;
-    const CART_STORAGE_KEY = "shoppy_cart";
-    const PRODUCT_ID_PATTERN = /^[A-Za-z0-9]{40}$/;
-
-    let currentCategory = "";
-    let currentSearch = "";
-    let allProducts = [];
-    let displayedCount = 0;
-    let toastTimer = null;
-    let requestController = null;
-    let requestNumber = 0;
-    let cartProductIds = new Set();
-    let cartIsLoaded = false;
-
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    function isValidProductId(id) {
-      return typeof id === "string" && PRODUCT_ID_PATTERN.test(id);
+    function showMessage(text, type) {
+        message.textContent = text;
+        message.className = "message " + type;
     }
 
-    function normalizeProductId(id) {
-      const value = String(id ?? "");
-      return isValidProductId(value) ? value : "";
+    function showProgress() {
+        backdrop.classList.add("show");
+        dialog.classList.remove("done");
+
+        dialogTitle.textContent = "Creating your account";
+        dialogText.textContent =
+            "Please wait while we securely create your account.";
+
+        dialogOk.textContent = "Continue";
+        dialogOk.onclick = null;
     }
 
-    function escapeHTML(value) {
-      return String(value ?? "").replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      })[char]);
+    function finishDialog(title, text, buttonText, action) {
+        dialog.classList.add("done");
+        dialogTitle.textContent = title;
+        dialogText.textContent = text;
+        dialogOk.textContent = buttonText;
+        dialogOk.onclick = action;
     }
 
-    // API price is already converted to INR at the backend.
-    // Do not multiply it by 85 again here.
-    function formatPrice(price) {
-      return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 2
-      }).format(Number(price) || 0);
+    function closeDialog() {
+        backdrop.classList.remove("show");
+        dialog.classList.remove("done");
     }
 
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
-    }
+    /* Show / hide password */
 
-    function readCart() {
-      try {
-        const stored = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "[]");
-        return Array.isArray(stored) ? stored : [];
-      } catch {
-        return [];
-      }
-    }
+    togglePassword.addEventListener("click", function () {
+        const show = passwordInput.type === "password";
 
-    function writeCart(items) {
-      try {
-        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-      } catch (error) {
-        console.warn("Could not update local cart cache:", error);
-      }
-    }
+        passwordInput.type = show ? "text" : "password";
 
-    function updateLocalCartItem(item) {
-      const id = normalizeProductId(item.id);
-      if (!id) return;
+        togglePassword.innerHTML = show
+            ? '<i class="ph ph-eye-slash" aria-hidden="true"></i>'
+            : '<i class="ph ph-eye" aria-hidden="true"></i>';
 
-      const cart = readCart();
-      const index = cart.findIndex(entry => normalizeProductId(entry.id) === id);
-      const normalizedItem = { ...item, id };
-
-      if (index >= 0) cart[index] = { ...cart[index], ...normalizedItem };
-      else cart.push(normalizedItem);
-
-      writeCart(cart);
-    }
-
-    function updateCartBadge(items) {
-      const total = items.reduce(
-        (sum, item) => sum + Math.max(1, Number(item.quantity) || 1),
-        0
-      );
-
-      cartCount.textContent = total > 99 ? "99+" : String(total);
-      cartCount.hidden = total <= 0;
-    }
-
-    function updateCartButton(button, product) {
-      const id = normalizeProductId(product.id);
-      const isAdded = Boolean(id) && cartProductIds.has(id);
-
-      button.classList.toggle("added", isAdded);
-      button.innerHTML = isAdded
-        ? '<i class="ph ph-check" aria-hidden="true"></i>'
-        : '<i class="ph ph-plus" aria-hidden="true"></i>';
-
-      button.setAttribute("aria-label", isAdded
-        ? `${product.title} is in your cart`
-        : `Add ${product.title} to cart`);
-
-      button.title = isAdded ? "Already in cart" : "Add to cart";
-    }
-
-    function refreshVisibleCartButtons() {
-      productGrid.querySelectorAll(".add-button").forEach(button => {
-        const buttonId = normalizeProductId(button.dataset.productId);
-        if (!buttonId) return;
-
-        const product = allProducts.find(
-          item => normalizeProductId(item.id) === buttonId
+        togglePassword.setAttribute(
+            "aria-label",
+            show ? "Hide password" : "Show password"
         );
 
-        if (product) updateCartButton(button, product);
-      });
-    }
+        togglePassword.setAttribute("aria-pressed", String(show));
+    });
 
-    async function loadCart() {
-      try {
-        const response = await fetch("/api/cart", {
-          method: "GET",
-          headers: { Accept: "application/json" },
-          credentials: "same-origin",
-          cache: "no-store"
-        });
+    /* Signup form */
 
-        const data = await response.json().catch(() => ({}));
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-        if (response.status === 401) {
-          cartIsLoaded = false;
-          cartProductIds = new Set();
-          cartCount.hidden = true;
-          refreshVisibleCartButtons();
-          return false;
-        }
-
-        if (!response.ok || data.success !== true) {
-          throw new Error(data.message || "Could not load cart.");
-        }
-
-        const items = Array.isArray(data.items) ? data.items : [];
-        const validItems = items.filter(item => isValidProductId(String(item.id)));
-
-        cartProductIds = new Set(validItems.map(item => String(item.id)));
-
-        writeCart(validItems);
-        updateCartBadge(validItems);
-        cartIsLoaded = true;
-        refreshVisibleCartButtons();
-        return true;
-      } catch (error) {
-        console.error("Cart loading error:", error);
-        return false;
-      }
-    }
-
-    async function addToCart(product, button) {
-      if (button.disabled) return;
-
-      const productId = normalizeProductId(product.id);
-      if (!productId) {
-        showToast("Invalid product ID. Please refresh the page.");
-        return;
-      }
-
-      if (!cartIsLoaded) {
-        button.disabled = true;
-        const loaded = await loadCart();
-        button.disabled = false;
-
-        if (!loaded) {
-          showToast("Please login to save your cart.");
-          window.location.href = "/login.html";
-          return;
-        }
-      }
-
-      if (cartProductIds.has(productId)) {
-        updateCartButton(button, product);
-        showToast("This product is already in your cart.");
-        return;
-      }
-
-      button.disabled = true;
-
-      try {
-        const response = await fetch("/api/cart", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json"
-          },
-          credentials: "same-origin",
-          body: JSON.stringify({
-            id: productId,
-            title: product.title,
-
-            // Store the original USD amount. INR conversion is for display only.
-            price: Number(product.originalPriceUSD ?? product.price / 85) || 0,
-
-            thumbnail: product.thumbnail || product.images?.[0] || "",
-            category: product.category || "other",
-            quantity: 1
-          })
-        });
-
-        const data = await response.json().catch(() => ({}));
-
-        if (response.status === 401) {
-          showToast("Please login to save your cart.");
-          window.location.href = "/login.html";
-          return;
-        }
-
-        if (!response.ok || data.success !== true) {
-          throw new Error(data.message || "Product could not be added.");
-        }
-
-        const savedItem = data.item || {
-          id: productId,
-          title: product.title,
-          price: Number(product.originalPriceUSD ?? product.price / 85) || 0,
-          thumbnail: product.thumbnail || product.images?.[0] || "",
-          category: product.category || "other",
-          quantity: 1
-        };
-
-        const savedId = normalizeProductId(savedItem.id);
-        if (!savedId || savedId !== productId) {
-          throw new Error("Server returned an invalid product ID.");
-        }
-
-        cartProductIds.add(productId);
-        updateLocalCartItem({ ...savedItem, id: productId });
-        updateCartBadge(readCart());
-        updateCartButton(button, product);
-        showToast("Product added to cart!");
-      } catch (error) {
-        console.error("Add to cart error:", error);
-        showToast(error.message || "Cart save nahi hua. Dobara try karein.");
-      } finally {
-        button.disabled = false;
-      }
-    }
-
-    function renderSkeletons(count = 8) {
-      productGrid.setAttribute("aria-busy", "true");
-      productGrid.innerHTML = Array.from({ length: count }, () => `
-        <article class="product-card skeleton-card" aria-hidden="true">
-          <div class="skeleton skeleton-image"></div>
-          <div class="product-info">
-            <div class="skeleton skeleton-line short"></div>
-            <div class="skeleton skeleton-line long"></div>
-            <div class="skeleton skeleton-line medium"></div>
-            <div class="skeleton skeleton-line long"></div>
-            <div class="skeleton skeleton-line medium"></div>
-            <div class="skeleton-row">
-              <div class="skeleton skeleton-line price"></div>
-              <div class="skeleton skeleton-circle"></div>
-            </div>
-          </div>
-        </article>
-      `).join("");
-    }
-
-    function showError(message) {
-      productGrid.setAttribute("aria-busy", "false");
-      productCount.textContent = "";
-      loadMoreButton.hidden = true;
-
-      productGrid.innerHTML = `
-        <div class="status">
-          ${escapeHTML(message)}
-          <button type="button" id="retryButton">Try Again</button>
-        </div>
-      `;
-
-      document.getElementById("retryButton").addEventListener("click", loadProducts);
-    }
-
-    function createProductCard(product) {
-      const id = normalizeProductId(product.id);
-
-      if (!id) {
-        console.error("Skipping product with invalid 40-character ID:", product);
-        return "";
-      }
-
-      const image = product.thumbnail || product.images?.[0] || "";
-      const title = escapeHTML(product.title);
-      const description = escapeHTML(product.description);
-      const category = escapeHTML(product.category || "Other");
-      const discount = Number(product.discountPercentage) || 0;
-      const rating = Number(product.rating) || 0;
-      const isAdded = cartProductIds.has(id);
-
-      return `
-        <article class="product-card" data-product-id="${id}"
-          tabindex="0" aria-label="View details for ${title}">
-          <div class="product-image">
-            ${discount > 0
-              ? `<span class="discount">-${Math.round(discount)}%</span>`
-              : ""}
-
-            <img
-              class="is-loading"
-              src="${escapeHTML(image)}"
-              alt="${title}"
-              loading="lazy"
-              data-product-image
-            >
-          </div>
-
-          <div class="product-info">
-            <div class="product-category">${category.replace(/-/g, " ")}</div>
-            <h3 class="product-title">${title}</h3>
-            <p class="product-description">${description}</p>
-
-            <div class="product-rating">
-              <i class="ph-fill ph-star" aria-hidden="true"></i>
-              <span>${rating ? rating.toFixed(1) : "No rating"}</span>
-            </div>
-
-            <div class="product-bottom">
-              <span class="product-price">${formatPrice(product.price)}</span>
-
-              <button
-                class="add-button ${isAdded ? "added" : ""}"
-                type="button"
-                aria-label="${isAdded ? `${title} is in your cart` : `Add ${title} to cart`}"
-                data-product-id="${id}"
-                title="${isAdded ? "Already in cart" : "Add to cart"}"
-              >
-                <i class="ph ${isAdded ? "ph-check" : "ph-plus"}" aria-hidden="true"></i>
-              </button>
-            </div>
-          </div>
-        </article>
-      `;
-    }
-
-    function attachImageHandlers(container) {
-      container.querySelectorAll("[data-product-image]").forEach(img => {
-        const finishLoading = () => img.classList.remove("is-loading");
-
-        img.addEventListener("load", finishLoading, { once: true });
-        img.addEventListener("error", () => {
-          img.onerror = null;
-          img.src = "https://placehold.co/400x400/f6f6f6/777?text=Product";
-          finishLoading();
-        }, { once: true });
-
-        if (img.complete) {
-          if (img.naturalWidth > 0) finishLoading();
-          else img.dispatchEvent(new Event("error"));
-        }
-      });
-    }
-
-    function attachCartHandlers(container) {
-      container.querySelectorAll(".add-button").forEach(button => {
-        if (button.dataset.cartHandlerAttached === "true") return;
-        button.dataset.cartHandlerAttached = "true";
-
-        button.addEventListener("click", async event => {
-          event.stopPropagation();
-
-          const buttonId = normalizeProductId(button.dataset.productId);
-          if (!buttonId) {
-            showToast("Invalid product ID. Please refresh the page.");
+        if (!form.reportValidity()) {
             return;
-          }
-
-          const product = allProducts.find(
-            item => normalizeProductId(item.id) === buttonId
-          );
-
-          if (product) await addToCart(product, button);
-        });
-      });
-    }
-
-    function updateProductCount() {
-      const total = allProducts.length;
-      const shown = Math.min(displayedCount, total);
-
-      productCount.textContent =
-        `${total} product${total === 1 ? "" : "s"}` +
-        (shown < total ? ` · Showing ${shown}` : "");
-
-      loadMoreButton.hidden = shown >= total || total === 0;
-      loadMoreButton.disabled = false;
-      loadMoreButton.textContent = "Load More Products";
-    }
-
-    function renderNextBatch() {
-      const start = displayedCount;
-      const end = Math.min(start + PAGE_SIZE, allProducts.length);
-
-      if (start >= end) {
-        updateProductCount();
-        return;
-      }
-
-      productGrid.insertAdjacentHTML(
-        "beforeend",
-        allProducts.slice(start, end).map(createProductCard).join("")
-      );
-
-      displayedCount = end;
-      attachCartHandlers(productGrid);
-      attachImageHandlers(productGrid);
-      updateProductCount();
-    }
-
-    function renderProducts(products) {
-      allProducts = products;
-      displayedCount = 0;
-      productGrid.setAttribute("aria-busy", "false");
-      productGrid.innerHTML = "";
-
-      if (!products.length) {
-        productCount.textContent = "";
-        loadMoreButton.hidden = true;
-        productGrid.innerHTML = `
-          <div class="status">No products found. Try another search or category.</div>
-        `;
-        return;
-      }
-
-      renderNextBatch();
-    }
-
-    function renderCategories(products) {
-      const categories = [
-        ...new Set(products.map(product => product.category).filter(Boolean))
-      ].sort();
-
-      categoriesEl.innerHTML = `
-        <button class="category-btn ${currentCategory ? "" : "active"}"
-          data-category="" type="button">All Products</button>
-
-        ${categories.map(category => `
-          <button class="category-btn ${currentCategory === category ? "active" : ""}"
-            data-category="${escapeHTML(category)}" type="button">
-            ${escapeHTML(category.replace(/-/g, " "))}
-          </button>
-        `).join("")}
-      `;
-
-      categoriesEl.querySelectorAll(".category-btn").forEach(button => {
-        button.addEventListener("click", () => {
-          currentCategory = button.dataset.category || "";
-          currentSearch = "";
-          searchInput.value = "";
-          loadProducts();
-        });
-      });
-    }
-
-    function updatePageLayout() {
-      const searching = Boolean(currentSearch);
-
-      heroWrap.classList.toggle("search-hidden", searching);
-      productGrid.classList.toggle("list-view", searching);
-      categoriesHeading.hidden = searching;
-      categoriesEl.hidden = searching;
-
-      if (searching) {
-        productsHeading.textContent = "Search Results";
-        productsSubtitle.textContent = `Products matching "${currentSearch}"`;
-      } else if (currentCategory) {
-        productsHeading.textContent = currentCategory
-          .replace(/-/g, " ")
-          .replace(/\b\w/g, char => char.toUpperCase());
-        productsSubtitle.textContent = "Explore products in this category.";
-      } else {
-        productsHeading.textContent = "Popular Products";
-        productsSubtitle.textContent = "Discover something you'll love.";
-      }
-    }
-
-    async function loadProducts() {
-      if (requestController) requestController.abort();
-      requestController = new AbortController();
-
-      const signal = requestController.signal;
-      const thisRequest = ++requestNumber;
-
-      updatePageLayout();
-      renderSkeletons(8);
-      productCount.textContent = "";
-      loadMoreButton.hidden = true;
-
-      const params = new URLSearchParams();
-      if (currentSearch) params.set("search", currentSearch);
-      if (currentCategory) params.set("category", currentCategory);
-
-      try {
-        const response = await fetch(`/api/products?${params.toString()}`, {
-          method: "GET",
-          headers: { Accept: "application/json" },
-          credentials: "same-origin",
-          cache: "no-store",
-          signal
-        });
-
-        const contentType = response.headers.get("content-type") || "";
-        if (!contentType.includes("application/json")) {
-          throw new Error(`Products API response invalid hai (HTTP ${response.status}).`);
         }
 
-        const data = await response.json();
+        const name = document.getElementById("fullName").value.trim();
+        const email = document.getElementById("email").value.trim().toLowerCase();
+        const password = passwordInput.value;
 
-        if (signal.aborted || thisRequest !== requestNumber) return;
-
-        if (!response.ok || data.success !== true || !Array.isArray(data.products)) {
-          throw new Error(data.message || `Products load nahi hue (HTTP ${response.status}).`);
+        if (name.length < 2 || name.length > 80) {
+            showMessage(
+                "Name must be between 2 and 80 characters.",
+                "error"
+            );
+            return;
         }
 
-        // Categories are created from the full product list on the initial page load.
-        if (!currentSearch && !currentCategory) {
-          renderCategories(data.products);
+        if (password.length < 8 || password.length > 72) {
+            showMessage(
+                "Password must be between 8 and 72 characters.",
+                "error"
+            );
+            return;
         }
 
-        renderProducts(data.products);
-      } catch (error) {
-        if (error.name === "AbortError" || thisRequest !== requestNumber) return;
-        console.error("Products loading error:", error);
-        showError(error.message || "Products load nahi ho paaye. Dobara try karein.");
-      }
-    }
+        message.className = "message";
+        submitBtn.disabled = true;
+        submitBtn.querySelector("span").textContent = "Creating account...";
 
-    // Clicking a product card opens its individual detail page.
-    // The Add to Cart button is handled separately and does not navigate.
-    productGrid.addEventListener("click", event => {
-      if (event.target.closest(".add-button")) return;
+        showProgress();
 
-      const card = event.target.closest(".product-card[data-product-id]");
-      if (!card) return;
+        try {
+            const response = await fetch("/api/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password
+                })
+            });
 
-      const id = normalizeProductId(card.dataset.productId);
-      if (id) {
-        window.location.href = `/product.html?id=${encodeURIComponent(id)}`;
-      }
+            let data;
+
+            try {
+                data = await response.json();
+            } catch (parseError) {
+                throw new Error(
+                    "The server returned an invalid response. Please try again."
+                );
+            }
+
+            if (!response.ok || data.success !== true) {
+                const errorMessage =
+                    data.message || "Unable to create account right now.";
+
+                finishDialog(
+                    "Account not created",
+                    errorMessage,
+                    "Try again",
+                    closeDialog
+                );
+
+                showMessage(errorMessage, "error");
+                return;
+            }
+
+            finishDialog(
+                "Account created!",
+                "Your account has been created successfully.",
+                "Go to sign in",
+                function () {
+                    window.location.href = "login.html";
+                }
+            );
+
+            showMessage(
+                "Account created successfully. You can now sign in.",
+                "success"
+            );
+
+            form.reset();
+
+            passwordInput.type = "password";
+
+            togglePassword.innerHTML =
+                '<i class="ph ph-eye" aria-hidden="true"></i>';
+
+            togglePassword.setAttribute("aria-label", "Show password");
+            togglePassword.setAttribute("aria-pressed", "false");
+
+        } catch (error) {
+            console.error("Signup request error:", error);
+
+            const errorMessage =
+                error.message || "Unable to connect. Please try again.";
+
+            finishDialog(
+                "Something went wrong",
+                errorMessage,
+                "Try again",
+                closeDialog
+            );
+
+            showMessage(errorMessage, "error");
+
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.querySelector("span").textContent = "Create Account";
+        }
     });
 
-    productGrid.addEventListener("keydown", event => {
-      if (event.key !== "Enter" && event.key !== " ") return;
-      if (event.target.closest("button")) return;
+    /* Google sign-in placeholder */
 
-      const card = event.target.closest(".product-card[data-product-id]");
-      if (!card) return;
-
-      event.preventDefault();
-      const id = normalizeProductId(card.dataset.productId);
-      if (id) {
-        window.location.href = `/product.html?id=${encodeURIComponent(id)}`;
-      }
+    document.getElementById("googleBtn").addEventListener("click", function () {
+        showMessage(
+            "Google sign-in is not connected yet. Please use email and password.",
+            "error"
+        );
     });
+</script>
 
-    loadMoreButton.addEventListener("click", () => {
-      if (displayedCount >= allProducts.length) {
-        loadMoreButton.hidden = true;
-        return;
-      }
-
-      loadMoreButton.disabled = true;
-      loadMoreButton.textContent = "Loading...";
-      requestAnimationFrame(renderNextBatch);
-    });
-
-    searchForm.addEventListener("submit", event => {
-      event.preventDefault();
-      currentSearch = searchInput.value.trim();
-      currentCategory = "";
-      loadProducts();
-    });
-
-    function clearSearchIfEmpty() {
-      if (!searchInput.value.trim() && (currentSearch || currentCategory)) {
-        currentSearch = "";
-        currentCategory = "";
-        loadProducts();
-      }
-    }
-
-    searchInput.addEventListener("search", clearSearchIfEmpty);
-    searchInput.addEventListener("input", clearSearchIfEmpty);
-
-    document.getElementById("shopNow").addEventListener("click", () => {
-      document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
-    });
-
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) loadCart();
-    });
-
-    window.addEventListener("pageshow", () => {
-      loadCart();
-    });
-
-    async function initializeHomePage() {
-      await loadCart();
-      await loadProducts();
-    }
-
-    initializeHomePage();
-  </script>
 </body>
 </html>
