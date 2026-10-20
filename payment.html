@@ -1,89 +1,494 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Payment | Shoppy</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; color: #111; background: #fff; font-family: Inter, Arial, sans-serif; }
+
+    body {
+      margin: 0;
+      color: #111;
+      background: #fff;
+      font-family: Inter, Arial, sans-serif;
+    }
+
     a { color: inherit; text-decoration: none; }
     button { font: inherit; }
-    .navbar { height: 72px; padding: 0 5%; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-    .logo img { width: 135px; max-height: 46px; object-fit: contain; display: block; }
-    .nav-links { display: flex; align-items: center; gap: 26px; }
-    .nav-links a { display: grid; place-items: center; width: 36px; height: 40px; border-radius: 7px; }
+
+    .navbar {
+      height: 72px;
+      padding: 0 5%;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .logo img {
+      width: 135px;
+      max-height: 46px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+    }
+
+    .nav-links a {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 40px;
+      border-radius: 7px;
+    }
+
     .nav-links a:hover { background: #f5f5f5; }
-    .nav-links svg { width: 23px; height: 23px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .page { max-width: 1200px; margin: 38px auto 60px; padding: 0 24px; }
+
+    .nav-links svg {
+      width: 23px;
+      height: 23px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 38px auto 60px;
+      padding: 0 24px;
+    }
+
     .heading { margin-bottom: 25px; }
-    h1 { margin: 0 0 8px; font-size: 29px; }
-    .muted { color: #666; font-size: 13px; line-height: 1.7; }
-    .layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(290px, 1fr); gap: 25px; align-items: start; }
-    .section { border: 1px solid #e6e6e6; border-radius: 9px; padding: 23px; margin-bottom: 18px; }
-    .section-title { font-size: 18px; font-weight: 700; margin: 0 0 20px; }
-    .step { display: flex; align-items: center; gap: 11px; }
-    .step-number { display: grid; place-items: center; flex-shrink: 0; width: 29px; height: 29px; border-radius: 50%; background: #111; color: #fff; font-size: 13px; }
-    .address-card { display: flex; align-items: flex-start; gap: 13px; padding: 17px; border: 1px solid #dedede; border-radius: 8px; }
-    .address-icon { flex-shrink: 0; width: 20px; height: 20px; }
-    .address-content { flex: 1; min-width: 0; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
-    .address-content strong { display: block; font-size: 14px; margin-bottom: 3px; }
-    .text-link { font-size: 12px; text-decoration: underline; white-space: nowrap; }
-    .product { display: flex; gap: 13px; padding: 15px 0; border-bottom: 1px solid #eee; align-items: center; }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 29px;
+    }
+
+    .muted {
+      color: #666;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(290px, 1fr);
+      gap: 25px;
+      align-items: start;
+    }
+
+    .section {
+      border: 1px solid #e6e6e6;
+      border-radius: 9px;
+      padding: 23px;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 20px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .step-number {
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      width: 29px;
+      height: 29px;
+      border-radius: 50%;
+      background: #111;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .address-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      padding: 17px;
+      border: 1px solid #dedede;
+      border-radius: 8px;
+    }
+
+    .address-content {
+      flex: 1;
+      min-width: 0;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
+
+    .address-content strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .text-link {
+      font-size: 12px;
+      text-decoration: underline;
+      white-space: nowrap;
+    }
+
+    .product {
+      display: flex;
+      gap: 13px;
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+      align-items: center;
+    }
+
     .product:first-child { padding-top: 0; }
-    .product-image { width: 68px; height: 72px; flex-shrink: 0; object-fit: contain; border: 1px solid #eee; border-radius: 9px; background: #fafafa; }
-    .product-info { flex: 1; min-width: 0; }
-    .product-name { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; line-height: 1.5; }
-    .product-meta { color: #777; font-size: 12px; margin-top: 5px; }
-    .product-price { font-size: 13px; font-weight: 600; white-space: nowrap; }
-    .empty { text-align: center; padding: 20px 5px; color: #666; font-size: 13px; line-height: 1.8; }
-    .payment-option { display: flex; align-items: center; gap: 13px; padding: 16px; border: 1px solid #222; border-radius: 8px; }
-    .radio { width: 19px; height: 19px; border: 2px solid #111; border-radius: 50%; position: relative; flex-shrink: 0; }
-    .radio:after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: #111; }
-    .upi-mark { width: 49px; height: 45px; display: grid; place-items: center; background: #fafafa; border: 1px solid #eee; border-radius: 10px; font-weight: 800; font-size: 14px; }
-    .recommended { margin-left: auto; padding: 5px 8px; background: #e9f7ed; color: #177642; border-radius: 5px; font-size: 11px; white-space: nowrap; }
-    .apps-title { font-size: 13px; font-weight: 600; margin: 23px 0 15px; }
-    .apps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-    .app { text-align: center; font-size: 11px; color: #555; min-width: 0; }
-    .app-logo { width: 58px; height: 58px; margin: 0 auto 9px; display: grid; place-items: center; background: #fff; border: 1px solid #e8e8e8; border-radius: 15px; padding: 10px; }
-    .app-logo img { width: 100%; height: 100%; object-fit: contain; }
-    .app-logo span { font-size: 12px; font-weight: 700; }
-    .security { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #f8f8f8; border-radius: 8px; margin-top: 19px; padding: 15px 7px; }
-    .security div { text-align: center; font-size: 11px; line-height: 1.7; color: #555; }
-    .notice { margin-top: 22px; padding: 13px; background: #f4f8ff; border: 1px solid #d5e4ff; border-radius: 7px; color: #245b9b; font-size: 12px; line-height: 1.8; }
-    .summary-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; margin: 17px 0; font-size: 13px; }
+
+    .product-image {
+      width: 68px;
+      height: 72px;
+      flex-shrink: 0;
+      object-fit: contain;
+      border: 1px solid #eee;
+      border-radius: 9px;
+      background: #fafafa;
+    }
+
+    .product-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .product-name {
+      font-size: 13px;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+      line-height: 1.5;
+    }
+
+    .product-meta {
+      color: #777;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .product-price {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 20px 5px;
+      color: #666;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .payment-option {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 16px;
+      border: 1px solid #222;
+      border-radius: 8px;
+    }
+
+    .radio {
+      width: 19px;
+      height: 19px;
+      border: 2px solid #111;
+      border-radius: 50%;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .radio:after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: #111;
+    }
+
+    .upi-mark {
+      width: 49px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .recommended {
+      margin-left: auto;
+      padding: 5px 8px;
+      background: #e9f7ed;
+      color: #177642;
+      border-radius: 5px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .apps-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 23px 0 15px;
+    }
+
+    .apps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .app {
+      text-align: center;
+      font-size: 11px;
+      color: #555;
+      min-width: 0;
+    }
+
+    .app-logo {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 9px;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 15px;
+      padding: 10px;
+    }
+
+    .app-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .app-logo span {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .security {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: #f8f8f8;
+      border-radius: 8px;
+      margin-top: 19px;
+      padding: 15px 7px;
+    }
+
+    .security div {
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.7;
+      color: #555;
+    }
+
+    .notice {
+      margin-top: 22px;
+      padding: 13px;
+      background: #f4f8ff;
+      border: 1px solid #d5e4ff;
+      border-radius: 7px;
+      color: #245b9b;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    /* UPI QR payment section */
+    .qr-payment {
+      display: none;
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid #e5e5e5;
+      border-radius: 9px;
+      text-align: center;
+    }
+
+    .qr-payment.show { display: block; }
+
+    .qr-payment h3 {
+      font-size: 18px;
+      margin: 0 0 10px;
+    }
+
+    .qr-image {
+      display: block;
+      width: min(100%, 280px);
+      aspect-ratio: 1;
+      object-fit: contain;
+      margin: 16px auto;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .qr-amount {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 12px 0;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+      margin: 17px 0;
+      font-size: 13px;
+    }
+
     .summary-row span:first-child { color: #666; }
-    .summary-row strong { text-align: right; overflow-wrap: anywhere; }
-    .divider { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
-    .grand-total { font-size: 19px; font-weight: 800; }
+
+    .summary-row strong {
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .divider {
+      border: 0;
+      border-top: 1px solid #eee;
+      margin: 20px 0;
+    }
+
+    .grand-total {
+      font-size: 19px;
+      font-weight: 800;
+    }
+
     .grand-total span:first-child { color: #111; }
-    .pay-button { width: 100%; margin-top: 20px; padding: 16px; border: 0; border-radius: 7px; background: #111; color: white; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+    .pay-button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 16px;
+      border: 0;
+      border-radius: 7px;
+      background: #111;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
     .pay-button:hover { background: #333; }
-    .pay-button:disabled { opacity: .55; cursor: not-allowed; }
-    .status { display: none; padding: 13px; margin-top: 14px; border-radius: 7px; font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+
+    .pay-button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .status {
+      display: none;
+      padding: 13px;
+      margin-top: 14px;
+      border-radius: 7px;
+      font-size: 12px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
     .status.show { display: block; }
-    .status.error { color: #a21c1c; background: #fff1f1; border: 1px solid #f1cccc; }
-    .status.info { color: #245b9b; background: #f4f8ff; border: 1px solid #d5e4ff; }
-    .status.success { color: #176b39; background: #effaf2; border: 1px solid #ccebd4; }
-    .footer { border-top: 1px solid #eee; padding: 25px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; color: #666; font-size: 12px; }
-    .footer strong { color: #111; font-size: 18px; }
+
+    .status.error {
+      color: #a21c1c;
+      background: #fff1f1;
+      border: 1px solid #f1cccc;
+    }
+
+    .status.info {
+      color: #245b9b;
+      background: #f4f8ff;
+      border: 1px solid #d5e4ff;
+    }
+
+    .status.success {
+      color: #176b39;
+      background: #effaf2;
+      border: 1px solid #ccebd4;
+    }
+
+    .footer {
+      border-top: 1px solid #eee;
+      padding: 25px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      color: #666;
+      font-size: 12px;
+    }
+
+    .footer strong {
+      color: #111;
+      font-size: 18px;
+    }
+
     @media(max-width: 760px) {
-      .navbar { height: 65px; padding: 0 16px; }
+      .navbar {
+        height: 65px;
+        padding: 0 16px;
+      }
+
       .logo img { width: 112px; }
       .nav-links { gap: 8px; }
       .nav-links a { width: 32px; }
-      .nav-links svg { width: 21px; height: 21px; }
-      .page { margin: 27px auto 40px; padding: 0 15px; }
+
+      .nav-links svg {
+        width: 21px;
+        height: 21px;
+      }
+
+      .page {
+        margin: 27px auto 40px;
+        padding: 0 15px;
+      }
+
       h1 { font-size: 26px; }
-      .layout { grid-template-columns: 1fr; gap: 0; }
+
+      .layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
       .section { padding: 17px; }
       .apps { gap: 5px; }
-      .app-logo { width: 51px; height: 51px; border-radius: 13px; padding: 9px; }
+
+      .app-logo {
+        width: 51px;
+        height: 51px;
+        border-radius: 13px;
+        padding: 9px;
+      }
+
       .recommended { display: none; }
+
       .footer { padding: 22px 16px; }
     }
   </style>
@@ -92,21 +497,41 @@
 <body>
   <header class="navbar">
     <a class="logo" href="/" aria-label="Shoppy home">
-      <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy">
+      <img
+        src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+        alt="Shoppy"
+      >
     </a>
 
     <nav class="nav-links" aria-label="Main navigation">
       <a href="/" aria-label="Home" title="Home">
-        <svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path d="m3 10 9-7 9 7"/>
+          <path d="M5 9v12h14V9M9 21v-7h6v7"/>
+        </svg>
       </a>
+
       <a href="/shop.html" aria-label="Shop" title="Shop">
-        <svg viewBox="0 0 24 24"><path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 1.9-1.5L22 8H6"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 1.9-1.5L22 8H6"/>
+          <circle cx="10" cy="21" r="1"/>
+          <circle cx="18" cy="21" r="1"/>
+        </svg>
       </a>
+
       <a href="/cart.html" aria-label="Cart" title="Cart">
-        <svg viewBox="0 0 24 24"><path d="M3 3h2l2.2 12.1a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path d="M3 3h2l2.2 12.1a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 2-1.6L21 8H6"/>
+          <circle cx="10" cy="21" r="1"/>
+          <circle cx="18" cy="21" r="1"/>
+        </svg>
       </a>
+
       <a href="/account.html" aria-label="Account" title="Account">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 21v-2a8 8 0 0 1 16 0v2"/>
+        </svg>
       </a>
     </nav>
   </header>
@@ -114,30 +539,50 @@
   <main class="page">
     <div class="heading">
       <h1>Payment</h1>
-      <div class="muted">Review your order and delivery address before continuing.</div>
+      <div class="muted">
+        Review your order and delivery address before continuing.
+      </div>
     </div>
 
     <div class="layout">
       <div>
         <section class="section">
-          <h2 class="section-title step"><span class="step-number">1</span> Delivery Address</h2>
-          <div id="addressContainer" class="empty">Loading delivery address...</div>
+          <h2 class="section-title step">
+            <span class="step-number">1</span>
+            Delivery Address
+          </h2>
+          <div id="addressContainer" class="empty">
+            Loading delivery address...
+          </div>
         </section>
 
         <section class="section">
-          <h2 class="section-title step"><span class="step-number">2</span> Order Items</h2>
-          <div id="productsContainer" class="empty">Loading your cart...</div>
+          <h2 class="section-title step">
+            <span class="step-number">2</span>
+            Order Items
+          </h2>
+          <div id="productsContainer" class="empty">
+            Loading your cart...
+          </div>
         </section>
 
         <section class="section">
-          <h2 class="section-title step"><span class="step-number">3</span> Payment Method</h2>
+          <h2 class="section-title step">
+            <span class="step-number">3</span>
+            Payment Method
+          </h2>
+
           <div class="payment-option">
             <span class="radio"></span>
             <div class="upi-mark">UPI</div>
+
             <div>
               <strong>UPI Payment</strong>
-              <div class="muted">Pay using your preferred UPI app.</div>
+              <div class="muted">
+                Pay using your preferred UPI app.
+              </div>
             </div>
+
             <span class="recommended">UPI</span>
           </div>
 
@@ -148,32 +593,96 @@
           </div>
 
           <div class="apps-title">Available UPI apps</div>
+
           <div class="apps">
             <div class="app">
-              <div class="app-logo"><img src="https://cdn.simpleicons.org/googlepay/4285F4" alt="Google Pay" onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"><span style="display:none">GPay</span></div>
+              <div class="app-logo">
+                <img
+                  src="https://cdn.simpleicons.org/googlepay/4285F4"
+                  alt="Google Pay"
+                  onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
+                >
+                <span style="display:none">GPay</span>
+              </div>
               Google Pay
             </div>
+
             <div class="app">
-              <div class="app-logo"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe" onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"><span style="display:none">PhonePe</span></div>
+              <div class="app-logo">
+                <img
+                  src="https://cdn.simpleicons.org/phonepe/5F259F"
+                  alt="PhonePe"
+                  onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
+                >
+                <span style="display:none">PhonePe</span>
+              </div>
               PhonePe
             </div>
+
             <div class="app">
-              <div class="app-logo"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm" onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"><span style="display:none">Paytm</span></div>
+              <div class="app-logo">
+                <img
+                  src="https://cdn.simpleicons.org/paytm/00BAF2"
+                  alt="Paytm"
+                  onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
+                >
+                <span style="display:none">Paytm</span>
+              </div>
               Paytm
             </div>
+
             <div class="app">
-              <div class="app-logo"><img src="https://cdn.simpleicons.org/bhim/008B45" alt="BHIM" onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"><span style="display:none">BHIM</span></div>
+              <div class="app-logo">
+                <img
+                  src="https://cdn.simpleicons.org/bhim/008B45"
+                  alt="BHIM"
+                  onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
+                >
+                <span style="display:none">BHIM</span>
+              </div>
               BHIM
             </div>
           </div>
 
+          <!-- Personal UPI QR -->
+          <div id="qrPayment" class="qr-payment">
+            <h3>Scan &amp; Pay with UPI</h3>
+
+            <p class="muted">
+              Open Google Pay, PhonePe or another UPI app on a
+              second device and scan this QR code.
+            </p>
+
+            <img
+              class="qr-image"
+              src="/upi-qr.jpg"
+              alt="UPI payment QR code"
+            >
+
+            <div class="muted">Order amount</div>
+            <div id="qrAmount" class="qr-amount">₹0.00</div>
+
+            <p class="muted">
+              Check the amount carefully in your UPI app before
+              confirming payment.
+            </p>
+
+            <p class="muted">
+              Your order will remain pending until the payment
+              is verified.
+            </p>
+          </div>
+
           <div class="notice">
-            Your order total will be checked by the server. Payment is not complete until a trusted payment provider confirms it. Never share your UPI PIN or OTP.
+            Your order total is checked by the server. This personal
+            QR code does not automatically confirm payment. Never
+            share your UPI PIN or OTP.
           </div>
 
           <button id="payButton" class="pay-button" type="button" disabled>
             Loading order details...
           </button>
+
           <div id="statusMessage" class="status" role="status" aria-live="polite"></div>
         </section>
       </div>
@@ -182,448 +691,488 @@
         <section class="section">
           <h2 class="section-title">Order Summary</h2>
 
-          <div class="summary-row"><span>Items</span><strong id="itemCount">—</strong></div>
-          <div class="summary-row"><span>Subtotal</span><strong id="subtotal">—</strong></div>
-          <div class="summary-row"><span>Shipping</span><strong>Free</strong></div>
+          <div class="summary-row">
+            <span>Items</span>
+            <strong id="itemCount">—</strong>
+          </div>
+
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <strong id="subtotal">—</strong>
+          </div>
+
+          <div class="summary-row">
+            <span>Shipping</span>
+            <strong>Free</strong>
+          </div>
+
           <hr class="divider">
-          <div class="summary-row grand-total"><span>Total</span><strong id="grandTotal">—</strong></div>
-          <p class="muted">Final total is verified again by the server when the order is created.</p>
+
+          <div class="summary-row grand-total">
+            <span>Total</span>
+            <strong id="grandTotal">—</strong>
+          </div>
+
+          <p class="muted">
+            Final total is verified by the server when the order is created.
+          </p>
         </section>
 
         <section class="section">
           <h2 class="section-title">Delivery Details</h2>
-          <div id="addressSummary" class="empty">Loading address...</div>
-          <a class="text-link" href="/addresses.html?mode=checkout">Change delivery address</a>
+
+          <div id="addressSummary" class="empty">
+            Loading address...
+          </div>
+
+          <a class="text-link" href="/addresses.html?mode=checkout">
+            Change delivery address
+          </a>
         </section>
       </aside>
     </div>
   </main>
 
   <footer class="footer">
-    <div><strong>Shoppy</strong><div class="muted">Better Products. Better Life.</div></div>
+    <div>
+      <strong>Shoppy</strong>
+      <div class="muted">Better Products. Better Life.</div>
+    </div>
+
     <div>© 2026 Shoppy. All rights reserved.</div>
     <div>Secure Checkout</div>
   </footer>
 
+  <script>
+    const USD_TO_INR = 85;
 
-<script>
-  const USD_TO_INR = 85;
+    const addressContainer = document.getElementById("addressContainer");
+    const addressSummary = document.getElementById("addressSummary");
+    const productsContainer = document.getElementById("productsContainer");
+    const payButton = document.getElementById("payButton");
+    const statusMessage = document.getElementById("statusMessage");
+    const qrPayment = document.getElementById("qrPayment");
+    const qrAmount = document.getElementById("qrAmount");
 
-  const addressContainer = document.getElementById("addressContainer");
-  const addressSummary = document.getElementById("addressSummary");
-  const productsContainer = document.getElementById("productsContainer");
-  const payButton = document.getElementById("payButton");
-  const statusMessage = document.getElementById("statusMessage");
+    const GATEWAY_URL = "https://payment-gateway-nufy.onrender.com";
 
-  const GATEWAY_URL = "https://payment-gateway-nufy.onrender.com";
+    let selectedAddress = null;
+    let cartItems = [];
+    let cartTotalUSD = 0;
+    let currentOrder = null;
+    let busy = false;
 
-  let selectedAddress = null;
-  let cartItems = [];
-  let cartTotalUSD = 0;
-  let currentOrder = null;
-  let busy = false;
-
-  function money(value) {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 2
-    }).format(Number(value) || 0);
-  }
-
-  function showStatus(message, type = "info") {
-    statusMessage.className = "status show " + type;
-    statusMessage.textContent = message;
-  }
-
-  function safeText(value) {
-    return String(value ?? "").trim();
-  }
-
-  function getOrderIdFromPage() {
-    const params = new URLSearchParams(location.search);
-
-    return (
-      params.get("orderId") ||
-      sessionStorage.getItem("shoppyPendingOrderId") ||
-      ""
-    ).trim();
-  }
-
-  function getAddressId() {
-    const params = new URLSearchParams(location.search);
-
-    return (
-      params.get("addressId") ||
-      sessionStorage.getItem("checkoutAddressId") ||
-      localStorage.getItem("checkoutAddressId") ||
-      ""
-    ).trim();
-  }
-
-  function addressLines(address) {
-    return [
-      address.houseNumber,
-      address.building,
-      address.area,
-      address.landmark ? "Near " + address.landmark : "",
-      address.postOffice,
-      address.city,
-      address.district && address.district !== address.city
-        ? address.district : "",
-      address.state,
-      address.pincode,
-      address.country
-    ].map(safeText).filter(Boolean);
-  }
-
-  function renderAddress(address) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "address-card";
-
-    const content = document.createElement("div");
-    content.className = "address-content";
-
-    const name = document.createElement("strong");
-    name.textContent = safeText(address.fullName);
-    content.appendChild(name);
-
-    [address.phone, ...addressLines(address)].filter(Boolean).forEach(value => {
-      const line = document.createElement("div");
-      line.textContent = value;
-      content.appendChild(line);
-    });
-
-    wrapper.appendChild(content);
-    return wrapper;
-  }
-
-  function renderProduct(item) {
-    const row = document.createElement("div");
-    row.className = "product";
-
-    const image = document.createElement("img");
-    image.className = "product-image";
-    image.alt = safeText(item.title) || "Product";
-    image.src = safeText(item.thumbnail) ||
-      "https://placehold.co/120x120/f7f7f7/777?text=Product";
-
-    image.onerror = () => {
-      image.onerror = null;
-      image.src = "https://placehold.co/120x120/f7f7f7/777?text=Product";
-    };
-
-    const info = document.createElement("div");
-    info.className = "product-info";
-
-    const title = document.createElement("div");
-    title.className = "product-name";
-    title.textContent = safeText(item.title) || "Product";
-
-    const meta = document.createElement("div");
-    meta.className = "product-meta";
-    meta.textContent = "Quantity: " + Number(item.quantity || 0);
-
-    const unit = document.createElement("div");
-    unit.className = "product-meta";
-    unit.textContent = money(Number(item.price) * USD_TO_INR) + " each";
-
-    info.append(title, meta, unit);
-
-    const price = document.createElement("div");
-    price.className = "product-price";
-    price.textContent = money(
-      Number(item.price) * Number(item.quantity) * USD_TO_INR
-    );
-
-    row.append(image, info, price);
-    return row;
-  }
-
-  async function apiJSON(url, options = {}) {
-    const response = await fetch(url, {
-      credentials: "same-origin",
-      cache: "no-store",
-      ...options,
-      headers: {
-        Accept: "application/json",
-        ...(options.body ? { "Content-Type": "application/json" } : {}),
-        ...(options.headers || {})
-      }
-    });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok || data.success !== true) {
-      throw new Error(data.message || "Request failed (" + response.status + ").");
+    function money(value) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 2
+      }).format(Number(value) || 0);
     }
 
-    return data;
-  }
-
-  async function loadCart() {
-    const data = await apiJSON("/api/cart");
-    cartItems = Array.isArray(data.items) ? data.items : [];
-
-    cartTotalUSD = Number(data.totalPrice);
-
-    if (!Number.isFinite(cartTotalUSD)) {
-      cartTotalUSD = cartItems.reduce(
-        (sum, item) => sum +
-          Number(item.price || 0) * Number(item.quantity || 0),
-        0
-      );
+    function showStatus(message, type = "info") {
+      statusMessage.className = "status show " + type;
+      statusMessage.textContent = message;
     }
 
-    productsContainer.replaceChildren(
-      ...cartItems.map(renderProduct)
-    );
-
-    document.getElementById("itemCount").textContent =
-      cartItems.reduce((sum, item) =>
-        sum + Number(item.quantity || 0), 0) + " items";
-
-    document.getElementById("subtotal").textContent =
-      money(cartTotalUSD * USD_TO_INR);
-
-    document.getElementById("grandTotal").textContent =
-      money(cartTotalUSD * USD_TO_INR);
-  }
-
-  async function loadAddress() {
-    const data = await apiJSON("/api/addresses");
-    const addresses = Array.isArray(data.addresses) ? data.addresses : [];
-    const addressId = getAddressId();
-
-    selectedAddress = addressId
-      ? addresses.find(address => address.id === addressId)
-      : null;
-
-    if (!selectedAddress) {
-      selectedAddress = addresses.find(address => address.isDefault) ||
-        (addresses.length === 1 ? addresses[0] : null);
+    function safeText(value) {
+      return String(value ?? "").trim();
     }
 
-    if (!selectedAddress) {
-      throw new Error("Please select a saved delivery address.");
+    function getOrderIdFromPage() {
+      const params = new URLSearchParams(location.search);
+
+      return (
+        params.get("orderId") ||
+        sessionStorage.getItem("shoppyPendingOrderId") ||
+        ""
+      ).trim();
     }
 
-    sessionStorage.setItem("checkoutAddressId", selectedAddress.id);
+    function getAddressId() {
+      const params = new URLSearchParams(location.search);
 
-    addressContainer.replaceChildren(renderAddress(selectedAddress));
-    addressSummary.replaceChildren(renderAddress(selectedAddress));
-  }
-
-  async function loadExistingOrder(orderId) {
-    const data = await apiJSON("/api/orders");
-
-    const orders = Array.isArray(data.orders) ? data.orders : [];
-    const order = orders.find(item => item.orderId === orderId);
-
-    if (!order) {
-      throw new Error("Order not found. Please open My Orders and try again.");
+      return (
+        params.get("addressId") ||
+        sessionStorage.getItem("checkoutAddressId") ||
+        localStorage.getItem("checkoutAddressId") ||
+        ""
+      ).trim();
     }
 
-    if (String(order.paymentStatus).toUpperCase() === "PAID") {
-      throw new Error("This order is already marked as paid.");
+    function addressLines(address) {
+      return [
+        address.houseNumber,
+        address.building,
+        address.area,
+        address.landmark ? "Near " + address.landmark : "",
+        address.postOffice,
+        address.city,
+        address.district && address.district !== address.city
+          ? address.district : "",
+        address.state,
+        address.pincode,
+        address.country
+      ].map(safeText).filter(Boolean);
     }
 
-    if (!Number.isFinite(Number(order.totalINR)) || Number(order.totalINR) <= 0) {
-      throw new Error("Invalid order amount returned by the server.");
+    function renderAddress(address) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "address-card";
+
+      const content = document.createElement("div");
+      content.className = "address-content";
+
+      const name = document.createElement("strong");
+      name.textContent = safeText(address.fullName);
+      content.appendChild(name);
+
+      [address.phone, ...addressLines(address)]
+        .filter(Boolean)
+        .forEach(value => {
+          const line = document.createElement("div");
+          line.textContent = value;
+          content.appendChild(line);
+        });
+
+      wrapper.appendChild(content);
+      return wrapper;
     }
 
-    currentOrder = order;
-    sessionStorage.setItem("shoppyPendingOrderId", order.orderId);
+    function renderProduct(item) {
+      const row = document.createElement("div");
+      row.className = "product";
 
-    document.getElementById("grandTotal").textContent = money(order.totalINR);
-    document.getElementById("subtotal").textContent = money(order.totalINR);
+      const image = document.createElement("img");
+      image.className = "product-image";
+      image.alt = safeText(item.title) || "Product";
+      image.src = safeText(item.thumbnail) ||
+        "https://placehold.co/120x120/f7f7f7/777?text=Product";
 
-    payButton.textContent = "Continue to UPI Payment";
-    payButton.disabled = false;
-  }
+      image.onerror = () => {
+        image.onerror = null;
+        image.src = "https://placehold.co/120x120/f7f7f7/777?text=Product";
+      };
 
-  async function createOrderOnce() {
-    if (currentOrder) return currentOrder;
+      const info = document.createElement("div");
+      info.className = "product-info";
 
-    const data = await apiJSON("/api/checkout/order", {
-      method: "POST",
-      body: JSON.stringify({
-        addressId: selectedAddress.id
-      })
-    });
+      const title = document.createElement("div");
+      title.className = "product-name";
+      title.textContent = safeText(item.title) || "Product";
 
-    if (!data.order || !data.order.orderId) {
-      throw new Error("The server did not return a valid order.");
-    }
+      const meta = document.createElement("div");
+      meta.className = "product-meta";
+      meta.textContent = "Quantity: " + Number(item.quantity || 0);
 
-    currentOrder = data.order;
+      const unit = document.createElement("div");
+      unit.className = "product-meta";
+      unit.textContent = money(Number(item.price) * USD_TO_INR) + " each";
 
-    sessionStorage.setItem("shoppyPendingOrderId", currentOrder.orderId);
+      info.append(title, meta, unit);
 
-    // Put the order ID in the URL so a refresh does not create another order.
-    const url = new URL(location.href);
-    url.searchParams.set("orderId", currentOrder.orderId);
-    history.replaceState({}, "", url);
-
-    return currentOrder;
-  }
-
-  async function startPayment() {
-    if (busy) return;
-
-    busy = true;
-    payButton.disabled = true;
-    payButton.textContent = "Preparing payment...";
-    showStatus("Checking your order...", "info");
-
-    try {
-      let orderId = getOrderIdFromPage();
-
-      if (orderId) {
-        await loadExistingOrder(orderId);
-      } else {
-        if (!selectedAddress) {
-          throw new Error("Please select a delivery address first.");
-        }
-
-        if (!cartItems.length) {
-          throw new Error("Your cart is empty.");
-        }
-
-        payButton.textContent = "Creating order...";
-        await createOrderOnce();
-      }
-
-      const order = currentOrder;
-
-      if (!order || !order.orderId) {
-        throw new Error("Could not identify your order.");
-      }
-
-      if (String(order.paymentStatus).toUpperCase() === "PAID") {
-        showStatus("This order is already paid.", "success");
-        return;
-      }
-
-      payButton.textContent = "Connecting to YouPI...";
-
-      /*
-        Amount and order ID come from the Shoppy server's saved order.
-        The gateway currently creates a PENDING record only.
-      */
-      const gatewayResponse = await fetch(
-        GATEWAY_URL + "/api/payments",
-        {
-          method: "POST",
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({
-            orderId: order.orderId,
-            amount: Number(order.totalINR),
-            currency: "INR"
-          })
-        }
+      const price = document.createElement("div");
+      price.className = "product-price";
+      price.textContent = money(
+        Number(item.price) * Number(item.quantity) * USD_TO_INR
       );
 
-      const gatewayData = await gatewayResponse.json().catch(() => ({}));
+      row.append(image, info, price);
+      return row;
+    }
 
-      if (!gatewayResponse.ok || gatewayData.success !== true) {
+    async function apiJSON(url, options = {}) {
+      const response = await fetch(url, {
+        credentials: "same-origin",
+        cache: "no-store",
+        ...options,
+        headers: {
+          Accept: "application/json",
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+          ...(options.headers || {})
+        }
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.success !== true) {
         throw new Error(
-          gatewayData.message || "YouPI could not create a payment record."
+          data.message || "Request failed (" + response.status + ")."
         );
       }
 
-      const payment = gatewayData.payment;
-
-      if (!payment || !payment.paymentId) {
-        throw new Error("YouPI did not return a payment ID.");
-      }
-
-      sessionStorage.setItem("shoppyPaymentId", payment.paymentId);
-
-      showStatus(
-        "Your order is saved. YouPI payment record created. Payment ID: " +
-        payment.paymentId +
-        ". The gateway still needs real UPI initiation and trusted payment verification; no payment has been confirmed.",
-        "info"
-      );
-
-      payButton.textContent = "Payment Awaiting UPI Setup";
-
-    } catch (error) {
-      console.error("Payment setup error:", error);
-
-      showStatus(
-        (error.message || "Unable to prepare payment.") +
-        " Your order will not be marked as paid.",
-        "error"
-      );
-
-      payButton.textContent = "Retry Payment Setup";
-      payButton.disabled = false;
-
-    } finally {
-      busy = false;
+      return data;
     }
-  }
 
-  payButton.addEventListener("click", startPayment);
+    async function loadCart() {
+      const data = await apiJSON("/api/cart");
+      cartItems = Array.isArray(data.items) ? data.items : [];
 
-  async function init() {
-    payButton.disabled = true;
-    payButton.textContent = "Loading order details...";
+      cartTotalUSD = Number(data.totalPrice);
 
-    try {
-      const existingOrderId = getOrderIdFromPage();
-
-      if (existingOrderId) {
-        // Returning from My Orders: load the existing order, never recreate it.
-        await loadExistingOrder(existingOrderId);
-
-        try {
-          await loadAddress();
-        } catch (error) {
-          console.warn("Address display unavailable:", error.message);
-        }
-
-        try {
-          await loadCart();
-        } catch (error) {
-          productsContainer.textContent =
-            "This order already exists. Your cart may now be empty.";
-        }
-
-        payButton.textContent = "Continue to UPI Payment";
-        payButton.disabled = false;
-        return;
+      if (!Number.isFinite(cartTotalUSD)) {
+        cartTotalUSD = cartItems.reduce(
+          (sum, item) => sum +
+            Number(item.price || 0) * Number(item.quantity || 0),
+          0
+        );
       }
 
-      const results = await Promise.allSettled([
-        loadCart(),
-        loadAddress()
-      ]);
+      productsContainer.replaceChildren(...cartItems.map(renderProduct));
 
-      const failed = results.find(result => result.status === "rejected");
+      document.getElementById("itemCount").textContent =
+        cartItems.reduce(
+          (sum, item) => sum + Number(item.quantity || 0), 0
+        ) + " items";
 
-      if (failed) {
-        throw failed.reason;
+      document.getElementById("subtotal").textContent =
+        money(cartTotalUSD * USD_TO_INR);
+
+      document.getElementById("grandTotal").textContent =
+        money(cartTotalUSD * USD_TO_INR);
+    }
+
+    async function loadAddress() {
+      const data = await apiJSON("/api/addresses");
+      const addresses = Array.isArray(data.addresses) ? data.addresses : [];
+      const addressId = getAddressId();
+
+      selectedAddress = addressId
+        ? addresses.find(address => address.id === addressId)
+        : null;
+
+      if (!selectedAddress) {
+        selectedAddress = addresses.find(address => address.isDefault) ||
+          (addresses.length === 1 ? addresses[0] : null);
       }
 
-      payButton.textContent = "Continue to Payment";
+      if (!selectedAddress) {
+        throw new Error("Please select a saved delivery address.");
+      }
+
+      sessionStorage.setItem("checkoutAddressId", selectedAddress.id);
+
+      addressContainer.replaceChildren(renderAddress(selectedAddress));
+      addressSummary.replaceChildren(renderAddress(selectedAddress));
+    }
+
+    async function loadExistingOrder(orderId) {
+      const data = await apiJSON("/api/orders");
+      const orders = Array.isArray(data.orders) ? data.orders : [];
+      const order = orders.find(item => item.orderId === orderId);
+
+      if (!order) {
+        throw new Error("Order not found. Please open My Orders and try again.");
+      }
+
+      if (String(order.paymentStatus).toUpperCase() === "PAID") {
+        throw new Error("This order is already marked as paid.");
+      }
+
+      if (
+        !Number.isFinite(Number(order.totalINR)) ||
+        Number(order.totalINR) <= 0
+      ) {
+        throw new Error("Invalid order amount returned by the server.");
+      }
+
+      currentOrder = order;
+      sessionStorage.setItem("shoppyPendingOrderId", order.orderId);
+
+      document.getElementById("grandTotal").textContent =
+        money(order.totalINR);
+
+      document.getElementById("subtotal").textContent =
+        money(order.totalINR);
+
+      payButton.textContent = "Continue to UPI Payment";
       payButton.disabled = false;
+    }
 
-    } catch (error) {
-      showStatus(error.message || "Unable to load checkout details.", "error");
-      payButton.textContent = "Unable to Continue";
+    async function createOrderOnce() {
+      if (currentOrder) return currentOrder;
+
+      const data = await apiJSON("/api/checkout/order", {
+        method: "POST",
+        body: JSON.stringify({
+          addressId: selectedAddress.id
+        })
+      });
+
+      if (!data.order || !data.order.orderId) {
+        throw new Error("The server did not return a valid order.");
+      }
+
+      currentOrder = data.order;
+
+      sessionStorage.setItem("shoppyPendingOrderId", currentOrder.orderId);
+
+      const url = new URL(location.href);
+      url.searchParams.set("orderId", currentOrder.orderId);
+      history.replaceState({}, "", url);
+
+      return currentOrder;
+    }
+
+    async function startPayment() {
+      if (busy) return;
+
+      busy = true;
       payButton.disabled = true;
+      payButton.textContent = "Preparing payment...";
+      showStatus("Checking your order...", "info");
+
+      try {
+        let orderId = getOrderIdFromPage();
+
+        if (orderId) {
+          await loadExistingOrder(orderId);
+        } else {
+          if (!selectedAddress) {
+            throw new Error("Please select a delivery address first.");
+          }
+
+          if (!cartItems.length) {
+            throw new Error("Your cart is empty.");
+          }
+
+          payButton.textContent = "Creating order...";
+          await createOrderOnce();
+        }
+
+        const order = currentOrder;
+
+        if (!order || !order.orderId) {
+          throw new Error("Could not identify your order.");
+        }
+
+        if (String(order.paymentStatus).toUpperCase() === "PAID") {
+          showStatus("This order is already paid.", "success");
+          return;
+        }
+
+        payButton.textContent = "Connecting to YouPI...";
+
+        const gatewayResponse = await fetch(
+          GATEWAY_URL + "/api/payments",
+          {
+            method: "POST",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify({
+              orderId: order.orderId,
+              amount: Number(order.totalINR),
+              currency: "INR"
+            })
+          }
+        );
+
+        const gatewayData = await gatewayResponse.json().catch(() => ({}));
+
+        if (!gatewayResponse.ok || gatewayData.success !== true) {
+          throw new Error(
+            gatewayData.message || "YouPI could not create a payment record."
+          );
+        }
+
+        const payment = gatewayData.payment;
+
+        if (!payment || !payment.paymentId) {
+          throw new Error("YouPI did not return a payment ID.");
+        }
+
+        sessionStorage.setItem("shoppyPaymentId", payment.paymentId);
+
+        // Show QR only after the gateway has created a payment record.
+        qrAmount.textContent = money(order.totalINR);
+        qrPayment.classList.add("show");
+
+        showStatus(
+          "Payment record created. Scan the QR code and check the amount " +
+          "in your UPI app. This personal QR does not automatically verify " +
+          "payment. Your order remains pending until payment is verified.",
+          "info"
+        );
+
+        payButton.textContent = "Payment Awaiting Verification";
+        payButton.disabled = true;
+
+      } catch (error) {
+        console.error("Payment setup error:", error);
+
+        showStatus(
+          (error.message || "Unable to prepare payment.") +
+          " Your order will not be marked as paid.",
+          "error"
+        );
+
+        payButton.textContent = "Retry Payment Setup";
+        payButton.disabled = false;
+
+      } finally {
+        busy = false;
+      }
     }
-  }
 
-  init();
-</script>
+    payButton.addEventListener("click", startPayment);
 
+    async function init() {
+      payButton.disabled = true;
+      payButton.textContent = "Loading order details...";
+
+      try {
+        const existingOrderId = getOrderIdFromPage();
+
+        if (existingOrderId) {
+          await loadExistingOrder(existingOrderId);
+
+          try {
+            await loadAddress();
+          } catch (error) {
+            console.warn("Address display unavailable:", error.message);
+          }
+
+          try {
+            await loadCart();
+          } catch (error) {
+            productsContainer.textContent =
+              "This order already exists. Your cart may now be empty.";
+          }
+
+          payButton.textContent = "Continue to UPI Payment";
+          payButton.disabled = false;
+          return;
+        }
+
+        const results = await Promise.allSettled([
+          loadCart(),
+          loadAddress()
+        ]);
+
+        const failed = results.find(result => result.status === "rejected");
+
+        if (failed) {
+          throw failed.reason;
+        }
+
+        payButton.textContent = "Continue to Payment";
+        payButton.disabled = false;
+
+      } catch (error) {
+        showStatus(
+          error.message || "Unable to load checkout details.",
+          "error"
+        );
+
+        payButton.textContent = "Unable to Continue";
+        payButton.disabled = true;
+      }
+    }
+
+    init();
+  </script>
 </body>
 </html>
