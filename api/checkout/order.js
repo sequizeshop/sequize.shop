@@ -204,7 +204,9 @@ async function createPayment(req, res, session) {
     console.error(
       "Gateway payment creation failed:",
       response.status,
-      result.error || result.message || ""
+      result.error || result.message || "",
+      result.debug || "",
+      result.where || ""
     );
 
     return sendError(
