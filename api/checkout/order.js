@@ -138,38 +138,54 @@ async function createPayment(req, res, session) {
   const gatewayOrderId = `${orderId}_${Date.now().toString(36)}`;
 
   let response;
+  let result = {};
 
-  try {
-    response = await fetch(`${baseUrl}/api/v1/payments`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        ...(merchantId ? { "X-Merchant-Id": merchantId } : {})
-      },
-      body: JSON.stringify({
-        orderId: gatewayOrderId,
-        amount: (amountPaise / 100).toFixed(2),
-        currency: "INR",
-        description: `Shoppy order ${orderId}`,
-        metadata: {
-          shoppyOrderId: orderId,
-          userId: uid
-        }
-      }),
-      signal: AbortSignal.timeout(25000)
-    });
-  } catch (error) {
-    console.error("Gateway request failed:", error.message);
+  // The gateway can answer with a short-lived 500 (for example while its
+  // single database file is busy). Creating a payment is safe to repeat with
+  // the same reference, so retry a couple of times before giving up.
+  const MAX_ATTEMPTS = 3;
 
-    return sendError(
-      res,
-      502,
-      "Payment gateway is not reachable. Please try again."
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      response = await fetch(`${baseUrl}/api/v1/payments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          ...(merchantId ? { "X-Merchant-Id": merchantId } : {})
+        },
+        body: JSON.stringify({
+          orderId: gatewayOrderId,
+          amount: (amountPaise / 100).toFixed(2),
+          currency: "INR",
+          description: `Shoppy order ${orderId}`,
+          metadata: {
+            shoppyOrderId: orderId,
+            userId: uid
+          }
+        }),
+        signal: AbortSignal.timeout(20000)
+      });
+    } catch (error) {
+      console.error("Gateway request failed:", error.message);
+
+      return sendError(
+        res,
+        502,
+        "Payment gateway is not reachable. Please try again."
+      );
+    }
+
+    result = await response.json().catch(() => ({}));
+
+    if (response.status < 500 || attempt === MAX_ATTEMPTS) break;
+
+    console.warn(
+      `Gateway answered ${response.status} (attempt ${attempt}/${MAX_ATTEMPTS}), retrying.`
     );
-  }
 
-  const result = await response.json().catch(() => ({}));
+    await new Promise(resolve => setTimeout(resolve, 1200 * attempt));
+  }
 
   if (response.status === 409) {
     return sendError(
@@ -208,7 +224,9 @@ async function createPayment(req, res, session) {
   await db.ref(`paymentIndex/${paymentId}`).set({
     uid,
     orderId,
-    gatewayOrderId,
+    // The gateway may add its own suffix to a reused reference; the webhook
+    // compares against whatever reference the gateway actually used.
+    gatewayOrderId: String(result.orderId || gatewayOrderId),
     amountPaise,
     status: String(result.status || "INITIATED"),
     createdAt: now,
