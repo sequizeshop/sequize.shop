@@ -55,14 +55,20 @@ function getVerifiedPrice(product) {
 }
 
 /*
- * Create an Auto Upi payment using the existing checkout API.
- * The gateway secret is never sent to the browser.
+ * Create a YouPI PG payment for an existing order.
+ *
+ * The amount always comes from the order stored in the database
+ * (verified on the server), never from the browser.
+ *
+ * Required environment variables (Vercel):
+ *   YOUPI_API_URL      e.g. https://youpi-pg-4n2w.onrender.com
+ *   YOUPI_MERCHANT_ID  optional - if empty, the gateway uses its default merchant
  */
 async function createPayment(req, res, session) {
-  const gatewayUrl = process.env.PAYMENT_GATEWAY_URL;
-  const gatewaySecret = process.env.SHOPPY_GATEWAY_SECRET;
+  const gatewayUrl = process.env.YOUPI_API_URL;
+  const merchantId = (process.env.YOUPI_MERCHANT_ID || "").trim();
 
-  if (!gatewayUrl || !gatewaySecret) {
+  if (!gatewayUrl) {
     return sendError(
       res,
       500,
@@ -82,9 +88,8 @@ async function createPayment(req, res, session) {
   const db = getDatabase();
   const uid = String(session.uid);
 
-  const snapshot = await db
-    .ref(`users/${uid}/orders/${orderId}`)
-    .get();
+  const orderRef = db.ref(`users/${uid}/orders/${orderId}`);
+  const snapshot = await orderRef.get();
 
   if (!snapshot.exists()) {
     return sendError(res, 404, "Order not found.");
@@ -118,34 +123,72 @@ async function createPayment(req, res, session) {
     );
   }
 
+  // Integer paise avoids any floating point drift.
+  const amountPaise = Math.round(Number(order.totalINR) * 100);
+
+  if (!Number.isInteger(amountPaise) || amountPaise <= 0) {
+    return sendError(res, 400, "Invalid order amount.");
+  }
+
   const baseUrl = gatewayUrl.replace(/\/+$/, "");
 
-  const response = await fetch(`${baseUrl}/api/payments`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-      "x-shoppy-gateway-secret": gatewaySecret
-    },
-    body: JSON.stringify({
-      orderId,
-      userId: uid
-    }),
-    signal: AbortSignal.timeout(25000)
-  });
+  // Every attempt gets its own reference, so a retry after an
+  // expired or failed attempt never clashes with the earlier one.
+  // The webhook maps the paymentId back to the real order.
+  const gatewayOrderId = `${orderId}_${Date.now().toString(36)}`;
+
+  let response;
+
+  try {
+    response = await fetch(`${baseUrl}/api/v1/payments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        ...(merchantId ? { "X-Merchant-Id": merchantId } : {})
+      },
+      body: JSON.stringify({
+        orderId: gatewayOrderId,
+        amount: (amountPaise / 100).toFixed(2),
+        currency: "INR",
+        description: `Shoppy order ${orderId}`,
+        metadata: {
+          shoppyOrderId: orderId,
+          userId: uid
+        }
+      }),
+      signal: AbortSignal.timeout(25000)
+    });
+  } catch (error) {
+    console.error("Gateway request failed:", error.message);
+
+    return sendError(
+      res,
+      502,
+      "Payment gateway is not reachable. Please try again."
+    );
+  }
 
   const result = await response.json().catch(() => ({}));
 
+  if (response.status === 409) {
+    return sendError(
+      res,
+      409,
+      result.message ||
+        "You already have an active payment on another device. Finish or cancel it first."
+    );
+  }
+
   if (
     !response.ok ||
-    result.success !== true ||
-    typeof result.paymentUrl !== "string" ||
-    !result.paymentUrl.startsWith("https://autoupi.in/pay/") ||
-    typeof result.paymentId !== "string"
+    typeof result.paymentId !== "string" ||
+    !/^[A-Za-z0-9_-]{1,128}$/.test(result.paymentId)
   ) {
     console.error(
       "Gateway payment creation failed:",
-      response.status
+      response.status,
+      result.error || result.message || ""
     );
 
     return sendError(
@@ -153,19 +196,39 @@ async function createPayment(req, res, session) {
       response.status >= 400 && response.status < 500
         ? response.status
         : 502,
-      result.message || "Unable to start payment."
+      result.message || result.error || "Unable to start payment."
     );
   }
 
+  const paymentId = result.paymentId;
+  const now = Date.now();
+
+  // Remember which order this payment belongs to. The webhook uses
+  // this record to find the order and to check the paid amount.
+  await db.ref(`paymentIndex/${paymentId}`).set({
+    uid,
+    orderId,
+    gatewayOrderId,
+    amountPaise,
+    status: String(result.status || "INITIATED"),
+    createdAt: now,
+    updatedAt: now
+  });
+
+  await orderRef.update({
+    lastPaymentId: paymentId,
+    updatedAt: now
+  });
+
   return res.status(200).json({
     success: true,
-    orderId: result.orderId,
-    paymentId: result.paymentId,
-    amount: result.amount,
-    payableAmount: result.payableAmount,
-    currency: result.currency,
-    paymentUrl: result.paymentUrl,
-    status: result.status
+    orderId,
+    paymentId,
+    amount: (amountPaise / 100).toFixed(2),
+    currency: "INR",
+    // Built from our own configured URL, not taken from the response.
+    checkoutUrl: `${baseUrl}/checkout/${paymentId}`,
+    status: result.status || "INITIATED"
   });
 }
 
