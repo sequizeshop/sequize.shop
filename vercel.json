@@ -49,10 +49,6 @@
     },
     {
       "source": "/user/account/redirect",
-      "destination": "/profile.html?mode=checkout"
-    },
-    {
-      "source": "/account",
       "destination": "/profile.html"
     },
     {
