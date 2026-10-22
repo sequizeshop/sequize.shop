@@ -920,13 +920,13 @@
         message.className = "message " + type;
     }
 
-    function showProgress() {
+    function showProgress(title, text) {
         backdrop.classList.add("show");
         dialog.classList.remove("done");
 
-        dialogTitle.textContent = "Creating your account";
+        dialogTitle.textContent = title || "Creating your account";
         dialogText.textContent =
-            "Please wait while we securely create your account.";
+            text || "Please wait while we securely create your account.";
 
         dialogOk.textContent = "Continue";
         dialogOk.onclick = null;
@@ -1010,7 +1010,7 @@
         }, 1000);
     }
 
-    /* Send verification code */
+    /* Send verification code (shows the same dialog, closes when sent) */
 
     sendOtpBtn.addEventListener("click", async function () {
         const email = emailInput.value.trim().toLowerCase();
@@ -1022,17 +1022,28 @@
         }
 
         sendOtpBtn.disabled = true;
-        sendOtpBtn.textContent = "Sending...";
         message.className = "message";
+
+        showProgress(
+            "Sending verification code",
+            "Please wait while we send a code to your email."
+        );
 
         try {
             const result = await callOtp({ action: "send", email: email });
 
             if (!result.ok) {
-                showMessage(
-                    result.data.message || "Could not send the code. Please try again.",
-                    "error"
+                const sendError =
+                    result.data.message || "Could not send the code. Please try again.";
+
+                finishDialog(
+                    "Code not sent",
+                    sendError,
+                    "Try again",
+                    closeDialog
                 );
+
+                showMessage(sendError, "error");
 
                 if (result.data.retryAfter) {
                     startCooldown(result.data.retryAfter);
@@ -1043,6 +1054,10 @@
 
                 return;
             }
+
+            /* Sent: close the dialog automatically */
+
+            closeDialog();
 
             showMessage(
                 result.data.message || "Verification code sent to your email.",
@@ -1055,10 +1070,17 @@
         } catch (error) {
             console.error("Send OTP error:", error);
 
-            showMessage(
-                error.message || "Unable to connect. Please try again.",
-                "error"
+            const errorMessage =
+                error.message || "Unable to connect. Please try again.";
+
+            finishDialog(
+                "Something went wrong",
+                errorMessage,
+                "Try again",
+                closeDialog
             );
+
+            showMessage(errorMessage, "error");
 
             sendOtpBtn.disabled = false;
             sendOtpBtn.textContent = "Send code";
