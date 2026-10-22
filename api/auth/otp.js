@@ -100,6 +100,8 @@ async function handleSend(req, res, email) {
   let blocked = null;
 
   // Atomic: cooldown + hourly limit are checked and the new OTP stored together.
+  // `current` can be null on the first run (local cache); Firebase then re-runs
+  // this function with the real server value if our guess was wrong.
   await ref.transaction(current => {
     blocked = null;
     const c = current || {};
@@ -166,10 +168,14 @@ async function handleVerify(req, res, email) {
   let result = "none";
 
   await ref.transaction(current => {
-    if (!current || !current.hash) {
-      result = "none";
-      return;
-    }
+    result = "none"; // reset on every (re)run of this function
+
+    // First run is often null (local cache). Return null, NOT undefined,
+    // so Firebase re-runs this function with the real server value.
+    if (current === null) return null;
+
+    if (!current.hash) return; // genuinely invalid data -> abort
+
     if (now > Number(current.expiresAt)) {
       result = "expired";
       return null;
@@ -250,12 +256,17 @@ async function consumeEmailVerification(email) {
   let ok = false;
 
   await ref.transaction(current => {
-    if (current && Number(current.expiresAt) > Date.now()) {
+    ok = false;
+
+    // null on first run -> return null so Firebase retries with real data
+    if (current === null) return null;
+
+    if (Number(current.expiresAt) > Date.now()) {
       ok = true;
       return null; // delete -> single use
     }
-    ok = false;
-    return current === null ? undefined : null; // clean an expired marker
+
+    return null; // expired marker -> clean it
   });
 
   return ok;
