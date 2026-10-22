@@ -6,6 +6,7 @@ const {
   emailHash,
   sendJson
 } = require("../lib/auth");
+const { consumeEmailVerification } = require("./auth/otp");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
@@ -89,6 +90,20 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    // Email must have been verified with an OTP (single use, valid 15 min).
+    // Checked after the duplicate check so a verification is not wasted
+    // when the email is already registered.
+    const verified = await consumeEmailVerification(cleanEmail);
+
+    if (!verified) {
+      await emailRef.remove().catch(() => {});
+      reservedEmailHash = null;
+      return sendJson(res, 403, {
+        success: false,
+        message: "Please verify your email first."
+      });
+    }
+
     const passwordHash = await bcrypt.hash(password, 12);
 
     await db.ref(`users/${uid}`).set({
@@ -102,11 +117,11 @@ module.exports = async function handler(req, res) {
 
     await emailRef.set({ uid, status: "active" });
 
-   await setSessionCookie(res, {
-  uid: uid,
-  email: cleanEmail,
-  name: cleanName
-});
+    await setSessionCookie(res, {
+      uid: uid,
+      email: cleanEmail,
+      name: cleanName
+    });
 
     return sendJson(res, 201, {
       success: true,
