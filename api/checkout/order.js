@@ -8,10 +8,18 @@ const {
 
 const ID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
 const PRODUCT_ID_PATTERN = ID_PATTERN;
+
 const USD_TO_INR = 85;
 
+// 95% discount: customer pays only 5% of the original price.
+const DISCOUNT_PERCENT = 95;
+const DISCOUNT_MULTIPLIER = (100 - DISCOUNT_PERCENT) / 100;
+
 function sendError(res, status, message) {
-  return res.status(status).json({ success: false, message });
+  return res.status(status).json({
+    success: false,
+    message
+  });
 }
 
 function getVerifiedPrice(product) {
@@ -35,8 +43,21 @@ function getVerifiedPrice(product) {
   throw new Error("Invalid product price.");
 }
 
+/*
+ * Apply a 95% discount to the original product price.
+ * The customer pays only 5% of the original price.
+ */
+function getDiscountedPrice(originalPriceUSD) {
+  return Number(
+    (originalPriceUSD * DISCOUNT_MULTIPLIER).toFixed(2)
+  );
+}
+
 function getSiteUrl(req) {
-  const configured = (process.env.SITE_URL || "").trim().replace(/\/+$/, "");
+  const configured = (process.env.SITE_URL || "")
+    .trim()
+    .replace(/\/+$/, "");
+
   return configured || `https://${req.headers.host}`;
 }
 
@@ -45,24 +66,42 @@ async function loadOwnOrder(db, uid, orderId) {
   const orderRef = db.ref(`users/${uid}/orders/${orderId}`);
   const snapshot = await orderRef.get();
 
-  if (!snapshot.exists()) return { orderRef, order: null };
+  if (!snapshot.exists()) {
+    return {
+      orderRef,
+      order: null
+    };
+  }
 
   const order = snapshot.val();
 
-  if (order.orderId !== orderId || String(order.userId) !== uid) {
-    return { orderRef, order: null };
+  if (
+    order.orderId !== orderId ||
+    String(order.userId) !== uid
+  ) {
+    return {
+      orderRef,
+      order: null
+    };
   }
 
-  return { orderRef, order };
+  return {
+    orderRef,
+    order
+  };
 }
 
 /*
  * Create a Cashfree order (payment session) for an existing order.
  * The amount always comes from our database, never from the browser.
+ *
+ * The database order total already includes the 95% discount.
  */
 async function createPayment(req, res, session) {
   const orderId =
-    typeof req.body?.orderId === "string" ? req.body.orderId.trim() : "";
+    typeof req.body?.orderId === "string"
+      ? req.body.orderId.trim()
+      : "";
 
   if (!ID_PATTERN.test(orderId)) {
     return sendError(res, 400, "Valid order ID is required.");
@@ -71,9 +110,15 @@ async function createPayment(req, res, session) {
   const db = getDatabase();
   const uid = String(session.uid);
 
-  const { orderRef, order } = await loadOwnOrder(db, uid, orderId);
+  const { orderRef, order } = await loadOwnOrder(
+    db,
+    uid,
+    orderId
+  );
 
-  if (!order) return sendError(res, 404, "Order not found.");
+  if (!order) {
+    return sendError(res, 404, "Order not found.");
+  }
 
   if (
     order.currency !== "INR" ||
@@ -87,12 +132,22 @@ async function createPayment(req, res, session) {
     order.paymentStatus !== "PENDING" ||
     order.orderStatus !== "PENDING_PAYMENT"
   ) {
-    return sendError(res, 409, "Order is invalid or already processed.");
+    return sendError(
+      res,
+      409,
+      "Order is invalid or already processed."
+    );
   }
 
-  const amountPaise = Math.round(Number(order.totalINR) * 100);
+  // Uses the discounted total saved in the database.
+  const amountPaise = Math.round(
+    Number(order.totalINR) * 100
+  );
 
-  if (!Number.isInteger(amountPaise) || amountPaise <= 0) {
+  if (
+    !Number.isInteger(amountPaise) ||
+    amountPaise <= 0
+  ) {
     return sendError(res, 400, "Invalid order amount.");
   }
 
@@ -113,38 +168,58 @@ async function createPayment(req, res, session) {
     );
   }
 
-  // Every attempt gets its own Cashfree order id, so a retry never clashes.
-  // Cashfree allows letters, numbers, _ and - (max 50 chars).
-  const cfOrderId = `${orderId}_${Date.now().toString(36)}`.slice(0, 50);
+  // Every attempt gets its own Cashfree order ID.
+  const cfOrderId =
+    `${orderId}_${Date.now().toString(36)}`.slice(0, 50);
 
   const body = {
     order_id: cfOrderId,
-    order_amount: Number((amountPaise / 100).toFixed(2)),
+    order_amount: Number(
+      (amountPaise / 100).toFixed(2)
+    ),
     order_currency: "INR",
+
     customer_details: {
-      customer_id: uid.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 50),
+      customer_id: uid
+        .replace(/[^A-Za-z0-9_-]/g, "_")
+        .slice(0, 50),
+
       customer_phone: phone
     },
+
     order_meta: {
       notify_url: `${getSiteUrl(req)}/api/cashfree-webhook`
     },
+
     order_note: `Shoppy order ${orderId}`.slice(0, 200)
   };
 
   let response;
   let result = {};
+
   const MAX_ATTEMPTS = 3;
 
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+  for (
+    let attempt = 1;
+    attempt <= MAX_ATTEMPTS;
+    attempt++
+  ) {
     try {
-      response = await fetch(`${cashfreeBase()}/orders`, {
-        method: "POST",
-        headers: cashfreeHeaders(),
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(20000)
-      });
+      response = await fetch(
+        `${cashfreeBase()}/orders`,
+        {
+          method: "POST",
+          headers: cashfreeHeaders(),
+          body: JSON.stringify(body),
+          signal: AbortSignal.timeout(20000)
+        }
+      );
     } catch (error) {
-      console.error("Cashfree request failed:", error.message);
+      console.error(
+        "Cashfree request failed:",
+        error.message
+      );
+
       return sendError(
         res,
         502,
@@ -154,9 +229,16 @@ async function createPayment(req, res, session) {
 
     result = await response.json().catch(() => ({}));
 
-    if (response.status < 500 || attempt === MAX_ATTEMPTS) break;
+    if (
+      response.status < 500 ||
+      attempt === MAX_ATTEMPTS
+    ) {
+      break;
+    }
 
-    await new Promise(r => setTimeout(r, 1200 * attempt));
+    await new Promise(resolve =>
+      setTimeout(resolve, 1200 * attempt)
+    );
   }
 
   if (
@@ -173,7 +255,9 @@ async function createPayment(req, res, session) {
 
     return sendError(
       res,
-      response.status >= 400 && response.status < 500 ? 400 : 502,
+      response.status >= 400 && response.status < 500
+        ? 400
+        : 502,
       "Unable to start payment. Please try again."
     );
   }
@@ -191,7 +275,10 @@ async function createPayment(req, res, session) {
     updatedAt: now
   });
 
-  await orderRef.update({ lastPaymentId: cfOrderId, updatedAt: now });
+  await orderRef.update({
+    lastPaymentId: cfOrderId,
+    updatedAt: now
+  });
 
   return res.status(200).json({
     success: true,
@@ -208,7 +295,9 @@ async function createPayment(req, res, session) {
  */
 async function verifyPayment(req, res, session) {
   const orderId =
-    typeof req.body?.orderId === "string" ? req.body.orderId.trim() : "";
+    typeof req.body?.orderId === "string"
+      ? req.body.orderId.trim()
+      : "";
 
   if (!ID_PATTERN.test(orderId)) {
     return sendError(res, 400, "Valid order ID is required.");
@@ -217,21 +306,39 @@ async function verifyPayment(req, res, session) {
   const db = getDatabase();
   const uid = String(session.uid);
 
-  const { order } = await loadOwnOrder(db, uid, orderId);
+  const { order } = await loadOwnOrder(
+    db,
+    uid,
+    orderId
+  );
 
-  if (!order) return sendError(res, 404, "Order not found.");
+  if (!order) {
+    return sendError(res, 404, "Order not found.");
+  }
 
   if (order.paymentStatus === "PAID") {
-    return res.status(200).json({ success: true, paymentStatus: "PAID" });
+    return res.status(200).json({
+      success: true,
+      paymentStatus: "PAID"
+    });
   }
 
   if (!order.lastPaymentId) {
-    return res.status(200).json({ success: true, paymentStatus: "FAILED" });
+    return res.status(200).json({
+      success: true,
+      paymentStatus: "FAILED"
+    });
   }
 
-  const paymentStatus = await syncPayment(db, String(order.lastPaymentId));
+  const paymentStatus = await syncPayment(
+    db,
+    String(order.lastPaymentId)
+  );
 
-  return res.status(200).json({ success: true, paymentStatus });
+  return res.status(200).json({
+    success: true,
+    paymentStatus
+  });
 }
 
 module.exports = async function handler(req, res) {
@@ -239,14 +346,23 @@ module.exports = async function handler(req, res) {
 
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
-    return sendError(res, 405, "Method not allowed.");
+
+    return sendError(
+      res,
+      405,
+      "Method not allowed."
+    );
   }
 
   try {
     const session = await getSession(req);
 
     if (!session || !session.uid) {
-      return sendError(res, 401, "Please log in to continue.");
+      return sendError(
+        res,
+        401,
+        "Please log in to continue."
+      );
     }
 
     if (req.body?.action === "create-payment") {
@@ -265,7 +381,11 @@ module.exports = async function handler(req, res) {
         : "";
 
     if (!ID_PATTERN.test(addressId)) {
-      return sendError(res, 400, "A valid address ID is required.");
+      return sendError(
+        res,
+        400,
+        "A valid address ID is required."
+      );
     }
 
     const db = getDatabase();
@@ -276,25 +396,44 @@ module.exports = async function handler(req, res) {
       .get();
 
     if (!addressSnapshot.exists()) {
-      return sendError(res, 404, "Delivery address not found.");
+      return sendError(
+        res,
+        404,
+        "Delivery address not found."
+      );
     }
 
     const address = addressSnapshot.val();
 
     const requiredFields = [
-      "fullName", "phone", "pincode", "houseNumber",
-      "area", "city", "state", "country"
+      "fullName",
+      "phone",
+      "pincode",
+      "houseNumber",
+      "area",
+      "city",
+      "state",
+      "country"
     ];
 
     if (
       requiredFields.some(
-        f => typeof address[f] !== "string" || !address[f].trim()
+        field =>
+          typeof address[field] !== "string" ||
+          !address[field].trim()
       )
     ) {
-      return sendError(res, 422, "Delivery address is incomplete.");
+      return sendError(
+        res,
+        422,
+        "Delivery address is incomplete."
+      );
     }
 
-    const cartSnapshot = await db.ref(`users/${uid}/cart/items`).get();
+    const cartSnapshot = await db
+      .ref(`users/${uid}/cart/items`)
+      .get();
+
     const savedItems = cartSnapshot.val();
 
     if (
@@ -302,30 +441,57 @@ module.exports = async function handler(req, res) {
       typeof savedItems !== "object" ||
       Array.isArray(savedItems)
     ) {
-      return sendError(res, 400, "Your cart is empty.");
+      return sendError(
+        res,
+        400,
+        "Your cart is empty."
+      );
     }
 
     const entries = Object.entries(savedItems);
 
-    if (entries.length === 0 || entries.length > 50) {
-      return sendError(res, 400, "Your cart is empty or too large.");
+    if (
+      entries.length === 0 ||
+      entries.length > 50
+    ) {
+      return sendError(
+        res,
+        400,
+        "Your cart is empty or too large."
+      );
     }
 
     const items = [];
-    let totalUSD = 0;
+
+    let originalTotalUSD = 0;
+    let discountedTotalUSD = 0;
 
     for (const [productId, cartItem] of entries) {
       if (!PRODUCT_ID_PATTERN.test(productId)) {
-        return sendError(res, 400, "Cart contains an invalid product.");
+        return sendError(
+          res,
+          400,
+          "Cart contains an invalid product."
+        );
       }
 
       const quantity = Number(cartItem?.quantity);
 
-      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
-        return sendError(res, 400, "Cart contains an invalid quantity.");
+      if (
+        !Number.isInteger(quantity) ||
+        quantity < 1 ||
+        quantity > 99
+      ) {
+        return sendError(
+          res,
+          400,
+          "Cart contains an invalid quantity."
+        );
       }
 
-      const productSnapshot = await db.ref(`products/${productId}`).get();
+      const productSnapshot = await db
+        .ref(`products/${productId}`)
+        .get();
 
       if (!productSnapshot.exists()) {
         return sendError(
@@ -342,29 +508,104 @@ module.exports = async function handler(req, res) {
         typeof product.title !== "string" ||
         !product.title.trim()
       ) {
-        return sendError(res, 409, "A product has invalid details.");
+        return sendError(
+          res,
+          409,
+          "A product has invalid details."
+        );
       }
 
-      const unitPriceUSD = getVerifiedPrice(product);
-      const lineTotalUSD = Number((unitPriceUSD * quantity).toFixed(2));
+      // Original verified price from the database.
+      const originalUnitPriceUSD = Number(
+        getVerifiedPrice(product).toFixed(2)
+      );
+
+      // Apply the 95% discount to EACH product.
+      const discountedUnitPriceUSD =
+        getDiscountedPrice(originalUnitPriceUSD);
+
+      // Calculate the discounted line total.
+      const originalLineTotalUSD = Number(
+        (
+          originalUnitPriceUSD * quantity
+        ).toFixed(2)
+      );
+
+      const discountedLineTotalUSD = Number(
+        (
+          discountedUnitPriceUSD * quantity
+        ).toFixed(2)
+      );
 
       items.push({
         productId,
         title: product.title.slice(0, 200),
         quantity,
-        unitPriceUSD: Number(unitPriceUSD.toFixed(2)),
-        lineTotalUSD
+
+        // Original price before discount.
+        originalUnitPriceUSD,
+
+        // Actual discounted unit price.
+        unitPriceUSD: discountedUnitPriceUSD,
+
+        // Original total for this product line.
+        originalLineTotalUSD,
+
+        // Actual discounted total for this product line.
+        lineTotalUSD: discountedLineTotalUSD,
+
+        discountPercent: DISCOUNT_PERCENT
       });
 
-      totalUSD = Number((totalUSD + lineTotalUSD).toFixed(2));
+      originalTotalUSD = Number(
+        (
+          originalTotalUSD +
+          originalLineTotalUSD
+        ).toFixed(2)
+      );
+
+      discountedTotalUSD = Number(
+        (
+          discountedTotalUSD +
+          discountedLineTotalUSD
+        ).toFixed(2)
+      );
     }
 
-    if (!Number.isFinite(totalUSD) || totalUSD <= 0) {
-      return sendError(res, 400, "Order total is invalid.");
+    if (
+      !Number.isFinite(discountedTotalUSD) ||
+      discountedTotalUSD <= 0
+    ) {
+      return sendError(
+        res,
+        400,
+        "Order total is invalid."
+      );
     }
 
-    const totalINR = Number((totalUSD * USD_TO_INR).toFixed(2));
-    const orderRef = db.ref(`users/${uid}/orders`).push();
+    // The Cashfree payment amount is based on the discounted total.
+    const totalINR = Number(
+      (
+        discountedTotalUSD * USD_TO_INR
+      ).toFixed(2)
+    );
+
+    const originalTotalINR = Number(
+      (
+        originalTotalUSD * USD_TO_INR
+      ).toFixed(2)
+    );
+
+    const discountAmountINR = Number(
+      (
+        originalTotalINR - totalINR
+      ).toFixed(2)
+    );
+
+    const orderRef = db
+      .ref(`users/${uid}/orders`)
+      .push();
+
     const now = Date.now();
 
     const order = {
@@ -372,12 +613,25 @@ module.exports = async function handler(req, res) {
       userId: uid,
       addressId,
       items,
+
       currency: "INR",
       exchangeRate: USD_TO_INR,
-      totalUSD,
+
+      // Original totals before discount.
+      originalTotalUSD,
+      originalTotalINR,
+
+      // Discount information.
+      discountPercent: DISCOUNT_PERCENT,
+      discountAmountINR,
+
+      // Final discounted totals.
+      totalUSD: discountedTotalUSD,
       totalINR,
+
       paymentStatus: "PENDING",
       orderStatus: "PENDING_PAYMENT",
+
       createdAt: now,
       updatedAt: now
     };
@@ -387,16 +641,26 @@ module.exports = async function handler(req, res) {
     return res.status(201).json({
       success: true,
       message: "Order created. Payment is still pending.",
+
       order: {
         orderId: order.orderId,
         currency: order.currency,
+
+        originalTotalINR: order.originalTotalINR,
+        discountPercent: order.discountPercent,
+        discountAmountINR: order.discountAmountINR,
+
         totalINR: order.totalINR,
+
         paymentStatus: order.paymentStatus,
         orderStatus: order.orderStatus
       }
     });
   } catch (error) {
-    console.error("Checkout order API error:", error.message);
+    console.error(
+      "Checkout order API error:",
+      error.message
+    );
 
     return sendError(
       res,
