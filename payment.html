@@ -1261,6 +1261,16 @@ function getOrderIdFromPage() {
   ).trim();
 }
 
+    console.log(
+  "URL Order ID:",
+  new URLSearchParams(location.search).get("orderId")
+);
+
+console.log(
+  "Saved Order ID:",
+  sessionStorage.getItem("shoppyPendingOrderId")
+);
+
 function getAddressId() {
   const params = new URLSearchParams(location.search);
 
