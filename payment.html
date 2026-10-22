@@ -4,933 +4,201 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#ffffff">
-
 <title>Payment — Shoppy</title>
-
 <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 <link rel="apple-touch-icon" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
 <style>
-:root{
-  --black:#111;
-  --gray:#737373;
-  --border:#e9e9e9;
-  --light:#f7f7f7;
-  --danger:#c62828;
-  --success:#177642;
-  --discount:#177642;
-  --radius:16px
-}
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box
-}
-
-body{
-  font-family:"Inter",sans-serif;
-  color:var(--black);
-  background:#fff;
-  min-height:100vh;
-  -webkit-font-smoothing:antialiased
-}
-
-a{
-  text-decoration:none;
-  color:inherit
-}
-
-button,input{
-  font:inherit
-}
-
-button{
-  cursor:pointer
-}
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible{
-  outline:2px solid #555;
-  outline-offset:3px
-}
-
+:root{--black:#111;--gray:#737373;--border:#e9e9e9;--light:#f7f7f7;--danger:#c62828;--success:#177642;--discount:#177642;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;color:var(--black);background:#fff;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;outline-offset:3px}
 /* NAVBAR */
-
-.navbar{
-  min-height:76px;
-  padding:0 7%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  background:#fff;
-  z-index:10
-}
-
-.brand img{
-  width:46px;
-  height:46px;
-  object-fit:contain;
-  display:block
-}
-
-.nav-actions{
-  display:flex;
-  align-items:center;
-  gap:22px
-}
-
-.nav-icon{
-  width:32px;
-  height:36px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:23px
-}
-
-.nav-icon:hover{
-  opacity:.6
-}
-
+.navbar{min-height:76px;padding:0 7%;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:10}
+.brand img{width:46px;height:46px;object-fit:contain;display:block}
+.nav-actions{display:flex;align-items:center;gap:22px}
+.nav-icon{width:32px;height:36px;display:flex;align-items:center;justify-content:center;font-size:23px}
+.nav-icon:hover{opacity:.6}
 /* MAIN */
-
-.container{
-  width:86%;
-  max-width:1200px;
-  margin:45px auto 70px
-}
-
-.page-heading{
-  margin-bottom:30px
-}
-
-.page-heading h1{
-  font-size:clamp(28px,4vw,38px);
-  font-weight:800;
-  letter-spacing:-1.5px
-}
-
-.page-heading p{
-  margin-top:9px;
-  color:var(--gray);
-  font-size:13px;
-  line-height:1.7
-}
-
-.checkout-layout{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 330px;
-  align-items:start;
-  gap:25px
-}
-
-.checkout-main{
-  min-width:0
-}
-
-.checkout-section{
-  margin-bottom:27px;
-  min-width:0
-}
-
-.section-heading{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  margin-bottom:14px
-}
-
-.section-heading h2{
-  font-size:18px;
-  line-height:1.5;
-  font-weight:800;
-  letter-spacing:-.35px
-}
-
-.section-heading p{
-  margin-top:5px;
-  color:var(--gray);
-  font-size:12px;
-  line-height:1.7
-}
-
-.change-address{
-  flex-shrink:0;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  font-size:11px;
-  font-weight:700;
-  text-decoration:underline;
-  text-underline-offset:3px
-}
-
-.change-address:hover{
-  opacity:.65
-}
-
-.content-card{
-  min-width:0;
-  padding:20px;
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  background:#fff
-}
-
+.container{width:86%;max-width:1200px;margin:45px auto 70px}
+.page-heading{margin-bottom:30px}
+.page-heading h1{font-size:clamp(28px,4vw,38px);font-weight:800;letter-spacing:-1.5px}
+.page-heading p{margin-top:9px;color:var(--gray);font-size:13px;line-height:1.7}
+.checkout-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;align-items:start;gap:25px}
+.checkout-main{min-width:0}
+.checkout-section{margin-bottom:27px;min-width:0}
+.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.section-heading h2{font-size:18px;line-height:1.5;font-weight:800;letter-spacing:-.35px}
+.section-heading p{margin-top:5px;color:var(--gray);font-size:12px;line-height:1.7}
+.change-address{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.change-address:hover{opacity:.65}
+.content-card{min-width:0;padding:20px;border:1px solid var(--border);border-radius:var(--radius);background:#fff}
 /* ADDRESS */
-
-.address-card{
-  display:flex;
-  align-items:flex-start;
-  gap:13px;
-  min-width:0
-}
-
-.address-icon{
-  width:38px;
-  height:38px;
-  flex-shrink:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:var(--light);
-  border-radius:10px;
-  font-size:20px
-}
-
-.address-content{
-  min-width:0;
-  flex:1;
-  font-size:12px;
-  line-height:1.8;
-  color:#555;
-  overflow-wrap:anywhere;
-  word-break:normal
-}
-
-.address-content strong{
-  display:block;
-  margin-bottom:3px;
-  color:var(--black);
-  font-size:13px;
-  font-weight:700;
-  line-height:1.6
-}
-
-.address-phone{
-  margin-bottom:3px;
-  color:#333;
-  font-weight:600
-}
-
-.address-loading,
-.empty-message{
-  color:var(--gray);
-  font-size:12px;
-  line-height:1.8
-}
-
+.address-card{display:flex;align-items:flex-start;gap:13px;min-width:0}
+.address-icon{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--light);border-radius:10px;font-size:20px}
+.address-content{min-width:0;flex:1;font-size:12px;line-height:1.8;color:#555;overflow-wrap:anywhere;word-break:normal}
+.address-content strong{display:block;margin-bottom:3px;color:var(--black);font-size:13px;font-weight:700;line-height:1.6}
+.address-phone{margin-bottom:3px;color:#333;font-weight:600}
+.address-loading,.empty-message{color:var(--gray);font-size:12px;line-height:1.8}
 /* PRODUCTS */
-
-.product-list{
-  display:flex;
-  flex-direction:column
-}
-
-.product{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  padding:15px 0;
-  border-bottom:1px solid var(--border);
-  min-width:0
-}
-
-.product:first-child{
-  padding-top:0
-}
-
-.product:last-child{
-  padding-bottom:0;
-  border-bottom:0
-}
-
-.product-image{
-  width:78px;
-  height:82px;
-  flex-shrink:0;
-  border-radius:10px;
-  background:var(--light);
-  padding:7px;
-  object-fit:contain
-}
-
-.product-info{
-  min-width:0;
-  flex:1
-}
-
-.product-name{
-  font-size:13px;
-  line-height:1.6;
-  font-weight:700;
-  overflow-wrap:anywhere
-}
-
-.product-meta{
-  margin-top:5px;
-  color:var(--gray);
-  font-size:11px;
-  line-height:1.6
-}
-
-.product-price{
-  flex-shrink:0;
-  font-size:13px;
-  font-weight:800;
-  text-align:right;
-  white-space:nowrap
-}
-
-.product-original-price{
-  color:#999;
-  font-size:11px;
-  font-weight:500;
-  text-decoration:line-through;
-  margin-bottom:4px
-}
-
-.product-discount{
-  display:inline-block;
-  margin-top:5px;
-  padding:4px 6px;
-  border-radius:5px;
-  background:#e9f7ed;
-  color:var(--discount);
-  font-size:10px;
-  font-weight:800
-}
-
+.product-list{display:flex;flex-direction:column}
+.product{display:flex;align-items:center;gap:15px;padding:15px 0;border-bottom:1px solid var(--border);min-width:0}
+.product:first-child{padding-top:0}
+.product:last-child{padding-bottom:0;border-bottom:0}
+.product-image{width:78px;height:82px;flex-shrink:0;border-radius:10px;background:var(--light);padding:7px;object-fit:contain}
+.product-info{min-width:0;flex:1}
+.product-name{font-size:13px;line-height:1.6;font-weight:700;overflow-wrap:anywhere}
+.product-meta{margin-top:5px;color:var(--gray);font-size:11px;line-height:1.6}
+.product-price{flex-shrink:0;font-size:13px;font-weight:800;text-align:right;white-space:nowrap}
 /* PAYMENT METHODS */
-
-.payment-options{
-  display:flex;
-  flex-direction:column;
-  gap:0
-}
-
-.payment-method{
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:16px 0;
-  border-bottom:1px solid var(--border);
-  cursor:pointer;
-  min-width:0
-}
-
-.payment-method:first-child{
-  padding-top:0
-}
-
-.payment-method:last-child{
-  padding-bottom:0;
-  border-bottom:0
-}
-
-.payment-method input[type="radio"]{
-  width:18px;
-  height:18px;
-  margin:0;
-  flex-shrink:0;
-  accent-color:var(--black);
-  cursor:pointer
-}
-
-.method-icon{
-  width:46px;
-  height:43px;
-  flex-shrink:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:#fff;
-  font-size:14px;
-  font-weight:800
-}
-
-.method-icon i{
-  font-size:22px
-}
-
-.method-info{
-  min-width:0;
-  flex:1
-}
-
-.method-title{
-  font-size:13px;
-  font-weight:700
-}
-
-.method-description{
-  margin-top:5px;
-  color:var(--gray);
-  font-size:11px;
-  line-height:1.7
-}
-
-.method-badge{
-  flex-shrink:0;
-  padding:5px 8px;
-  border-radius:6px;
-  background:#f0f0f0;
-  color:#555;
-  font-size:10px;
-  font-weight:700
-}
-
-.payment-method.selected .method-badge{
-  background:#e9f7ed;
-  color:var(--success)
-}
-
-.method-extra{
-  display:none;
-  margin-top:15px;
-  padding-top:15px;
-  border-top:1px solid var(--border)
-}
-
-.method-extra.visible{
-  display:block
-}
-
-.method-extra p{
-  font-size:12px;
-  color:var(--gray);
-  line-height:1.8
-}
-
-.card-fields{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:12px
-}
-
-.field{
-  min-width:0
-}
-
-.field.full{
-  grid-column:1/-1
-}
-
-.field label{
-  display:block;
-  margin-bottom:7px;
-  font-size:11px;
-  font-weight:700
-}
-
-.field input{
-  width:100%;
-  min-width:0;
-  height:43px;
-  padding:0 12px;
-  border:1px solid var(--border);
-  border-radius:9px;
-  background:#fff;
-  color:var(--black);
-  font-size:12px
-}
-
-.field input:disabled{
-  background:var(--light);
-  cursor:not-allowed
-}
-
-.card-notice{
-  margin-top:12px;
-  color:var(--danger);
-  font-size:11px;
-  line-height:1.7
-}
-
-.security{
-  display:flex;
-  flex-wrap:wrap;
-  gap:16px;
-  margin-top:19px;
-  padding-top:16px;
-  border-top:1px solid var(--border)
-}
-
-.security-item{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  color:var(--gray);
-  font-size:10px;
-  line-height:1.6
-}
-
-.security-item i{
-  font-size:17px
-}
-
-.notice{
-  margin-top:17px;
-  padding:12px 13px;
-  border-radius:9px;
-  background:#f7f7f7;
-  color:#555;
-  font-size:11px;
-  line-height:1.8
-}
-
+.payment-options{display:flex;flex-direction:column;gap:0}
+.payment-method{display:flex;align-items:center;gap:13px;padding:16px 0;border-bottom:1px solid var(--border);cursor:pointer;min-width:0}
+.payment-method:first-child{padding-top:0}
+.payment-method:last-child{padding-bottom:0;border-bottom:0}
+.payment-method input[type="radio"]{width:18px;height:18px;margin:0;flex-shrink:0;accent-color:var(--black);cursor:pointer}
+.method-icon{width:46px;height:43px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:14px;font-weight:800}
+.method-icon i{font-size:22px}
+.method-info{min-width:0;flex:1}
+.method-title{font-size:13px;font-weight:700}
+.method-description{margin-top:5px;color:var(--gray);font-size:11px;line-height:1.7}
+.method-badge{flex-shrink:0;padding:5px 8px;border-radius:6px;background:#f0f0f0;color:#555;font-size:10px;font-weight:700}
+.payment-method.selected .method-badge{background:#e9f7ed;color:var(--success)}
+.method-extra{display:none;margin-top:15px;padding-top:15px;border-top:1px solid var(--border)}
+.method-extra.visible{display:block}
+.method-extra p{font-size:12px;color:var(--gray);line-height:1.8}
+.card-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.field{min-width:0}
+.field.full{grid-column:1/-1}
+.field label{display:block;margin-bottom:7px;font-size:11px;font-weight:700}
+.field input{width:100%;min-width:0;height:43px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--black);font-size:12px}
+.field input:disabled{background:var(--light);cursor:not-allowed}
+.card-notice{margin-top:12px;color:var(--danger);font-size:11px;line-height:1.7}
+.security{display:flex;flex-wrap:wrap;gap:16px;margin-top:19px;padding-top:16px;border-top:1px solid var(--border)}
+.security-item{display:flex;align-items:center;gap:7px;color:var(--gray);font-size:10px;line-height:1.6}
+.security-item i{font-size:17px}
+.notice{margin-top:17px;padding:12px 13px;border-radius:9px;background:#f7f7f7;color:#555;font-size:11px;line-height:1.8}
 /* SUMMARY */
-
-.summary-section{
-  position:sticky;
-  top:100px;
-  min-width:0
-}
-
-.summary-heading{
-  margin-bottom:14px;
-  font-size:18px;
-  font-weight:800;
-  letter-spacing:-.35px
-}
-
-.summary-card{
-  padding:23px;
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  background:#fff
-}
-
-.summary-line{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
-  margin:16px 0;
-  color:var(--gray);
-  font-size:12px;
-  line-height:1.7
-}
-
-.summary-line strong{
-  color:var(--black);
-  font-weight:700;
-  text-align:right;
-  overflow-wrap:anywhere
-}
-
-.summary-original{
-  text-decoration:line-through;
-  color:#999!important;
-  font-weight:500!important
-}
-
-.discount-line{
-  color:var(--discount)
-}
-
-.discount-line strong{
-  color:var(--discount)
-}
-
-.summary-divider{
-  height:1px;
-  background:var(--border);
-  margin:21px 0
-}
-
-.summary-total{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
-  font-size:15px;
-  font-weight:800
-}
-
-.summary-total strong{
-  text-align:right;
-  overflow-wrap:anywhere
-}
-
-.summary-description{
-  margin-top:15px;
-  color:var(--gray);
-  font-size:11px;
-  line-height:1.8
-}
-
-.discount-banner{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  margin:0 0 18px;
-  padding:12px;
-  border-radius:9px;
-  background:#e9f7ed;
-  color:#176b39;
-  font-size:12px;
-  font-weight:800;
-  line-height:1.6
-}
-
-.discount-banner i{
-  flex-shrink:0;
-  font-size:20px
-}
-
+.summary-section{position:sticky;top:100px;min-width:0}
+.summary-heading{margin-bottom:14px;font-size:18px;font-weight:800;letter-spacing:-.35px}
+.summary-card{padding:23px;border:1px solid var(--border);border-radius:var(--radius);background:#fff}
+.summary-line{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:16px 0;color:var(--gray);font-size:12px;line-height:1.7}
+.summary-line strong{color:var(--black);font-weight:700;text-align:right;overflow-wrap:anywhere}
+.summary-divider{height:1px;background:var(--border);margin:21px 0}
+.summary-total{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;font-size:15px;font-weight:800}
+.summary-total strong{text-align:right;overflow-wrap:anywhere}
+.summary-description{margin-top:15px;color:var(--gray);font-size:11px;line-height:1.8}
+.product-original-price{color:#999;font-size:11px;font-weight:500;text-decoration:line-through;margin-bottom:4px}
+.product-discount{display:inline-block;margin-top:5px;padding:4px 6px;border-radius:5px;background:#e9f7ed;color:var(--discount);font-size:10px;font-weight:800}
+.summary-original{text-decoration:line-through;color:#999!important;font-weight:500!important}
+.discount-line,.discount-line strong{color:var(--discount)}
+.discount-banner{display:flex;align-items:center;gap:9px;margin:0 0 18px;padding:12px;border-radius:9px;background:#e9f7ed;color:#176b39;font-size:12px;font-weight:800;line-height:1.6}
+.discount-banner i{flex-shrink:0;font-size:20px}
 /* BUTTONS */
-
-.checkout-actions{
-  margin-top:18px
-}
-
-.pay-button,
-.continue-button{
-  width:100%;
-  min-height:47px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:9px;
-  padding:14px;
-  border-radius:10px;
-  font-size:12px;
-  font-weight:700
-}
-
-.pay-button{
-  border:0;
-  background:var(--black);
-  color:#fff;
-  transition:background .2s,opacity .2s
-}
-
-.pay-button:hover:not(:disabled){
-  background:#333
-}
-
-.pay-button:disabled{
-  opacity:.5;
-  cursor:not-allowed
-}
-
-.continue-button{
-  margin-top:10px;
-  border:1px solid var(--border);
-  background:#fff;
-  color:var(--black)
-}
-
-.continue-button:hover{
-  background:var(--light)
-}
-
+.checkout-actions{margin-top:18px}
+.pay-button,.continue-button{width:100%;min-height:47px;display:flex;justify-content:center;align-items:center;gap:9px;padding:14px;border-radius:10px;font-size:12px;font-weight:700}
+.pay-button{border:0;background:var(--black);color:#fff;transition:background .2s,opacity .2s}
+.pay-button:hover:not(:disabled){background:#333}
+.pay-button:disabled{opacity:.5;cursor:not-allowed}
+.continue-button{margin-top:10px;border:1px solid var(--border);background:#fff;color:var(--black)}
+.continue-button:hover{background:var(--light)}
 /* STATUS */
-
-.status{
-  display:none;
-  padding:13px;
-  margin-top:14px;
-  border-radius:9px;
-  font-size:12px;
-  line-height:1.8;
-  overflow-wrap:anywhere
-}
-
-.status.show{
-  display:block
-}
-
-.status.error{
-  color:#a21c1c;
-  background:#fff1f1;
-  border:1px solid #f1cccc
-}
-
-.status.info{
-  color:#245b9b;
-  background:#f4f8ff;
-  border:1px solid #d5e4ff
-}
-
-.status.success{
-  color:#176b39;
-  background:#effaf2;
-  border:1px solid #ccebd4
-}
-
+.status{display:none;padding:13px;margin-top:14px;border-radius:9px;font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+.status.show{display:block}
+.status.error{color:#a21c1c;background:#fff1f1;border:1px solid #f1cccc}
+.status.info{color:#245b9b;background:#f4f8ff;border:1px solid #d5e4ff}
+.status.success{color:#176b39;background:#effaf2;border:1px solid #ccebd4}
 /* FOOTER */
-
-.footer{
-  border-top:1px solid var(--border);
-  padding:25px 7%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:15px;
-  color:#888;
-  font-size:11px
-}
-
+.footer{border-top:1px solid var(--border);padding:25px 7%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;color:#888;font-size:11px}
 /* RESPONSIVE */
-
-@media(max-width:900px){
-  .checkout-layout{
-    grid-template-columns:1fr;
-    gap:30px
-  }
-
-  .summary-section{
-    position:static
-  }
-}
-
+@media(max-width:900px){.checkout-layout{grid-template-columns:1fr;gap:30px}.summary-section{position:static}}
 @media(max-width:600px){
-  .navbar{
-    min-height:66px;
-    padding:0 5%
-  }
-
-  .brand img{
-    width:40px;
-    height:40px
-  }
-
-  .nav-actions{
-    gap:12px
-  }
-
-  .container{
-    width:90%;
-    margin-top:30px
-  }
-
-  .page-heading{
-    margin-bottom:25px
-  }
-
-  .section-heading h2,
-  .summary-heading{
-    font-size:16px
-  }
-
-  .section-heading{
-    align-items:flex-start
-  }
-
-  .change-address{
-    margin-top:3px;
-    font-size:10px
-  }
-
-  .content-card{
-    padding:15px
-  }
-
-  .address-icon{
-    width:33px;
-    height:33px;
-    font-size:18px
-  }
-
-  .address-content{
-    font-size:11px;
-    line-height:1.8
-  }
-
-  .product{
-    gap:11px
-  }
-
-  .product-image{
-    width:70px;
-    height:76px
-  }
-
-  .product-name,
-  .product-price{
-    font-size:12px
-  }
-
-  .method-icon{
-    width:40px;
-    height:40px
-  }
-
-  .method-badge{
-    display:none
-  }
-
-  .card-fields{
-    grid-template-columns:1fr 1fr
-  }
-
-  .summary-card{
-    padding:19px
-  }
-
-  .footer{
-    padding:22px 5%
-  }
-}
-
+.navbar{min-height:66px;padding:0 5%}
+.brand img{width:40px;height:40px}
+.nav-actions{gap:12px}
+.container{width:90%;margin-top:30px}
+.page-heading{margin-bottom:25px}
+.section-heading h2,.summary-heading{font-size:16px}
+.section-heading{align-items:flex-start}
+.change-address{margin-top:3px;font-size:10px}
+.content-card{padding:15px}
+.address-icon{width:33px;height:33px;font-size:18px}
+.address-content{font-size:11px;line-height:1.8}
+.product{gap:11px}
+.product-image{width:70px;height:76px}
+.product-name,.product-price{font-size:12px}
+.method-icon{width:40px;height:40px}
+.method-badge{display:none}
+.card-fields{grid-template-columns:1fr 1fr}
+.summary-card{padding:19px}
+.footer{padding:22px 5%}}
 @media(max-width:360px){
-  .container{
-    width:92%
-  }
-
-  .content-card{
-    padding:12px
-  }
-
-  .section-heading{
-    flex-wrap:wrap
-  }
-
-  .product-image{
-    width:58px;
-    height:65px
-  }
-
-  .product-price{
-    font-size:11px
-  }
-
-  .payment-method{
-    gap:9px
-  }
-
-  .method-description{
-    font-size:10px
-  }
-}
-
-@media(prefers-reduced-motion:reduce){
-  *,
-  *::before,
-  *::after{
-    scroll-behavior:auto!important;
-    transition:none!important
-  }
-}
+.container{width:92%}
+.content-card{padding:12px}
+.section-heading{flex-wrap:wrap}
+.product-image{width:58px;height:65px}
+.product-price{font-size:11px}
+.payment-method{gap:9px}
+.method-description{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
-
 <body>
 
 <header class="navbar">
-  <a href="/" class="brand" aria-label="Shoppy home">
-    <img
-      src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
-      alt="Shoppy logo"
-    >
-  </a>
-
+  <a href="/" class="brand" aria-label="Shoppy home"><img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo"></a>
   <nav class="nav-actions" aria-label="Main navigation">
-    <a class="nav-icon" href="/" aria-label="Home" title="Home">
-      <i class="ph ph-house" aria-hidden="true"></i>
-    </a>
-
-    <a class="nav-icon" href="/shop.html" aria-label="Shop" title="Shop">
-      <i class="ph ph-shopping-cart" aria-hidden="true"></i>
-    </a>
-
-    <a class="nav-icon" href="/cart.html" aria-label="Cart" title="Cart">
-      <i class="ph ph-shopping-cart" aria-hidden="true"></i>
-    </a>
-
-    <a class="nav-icon" href="/account.html" aria-label="Account" title="Account">
-      <i class="ph ph-user-circle" aria-hidden="true"></i>
-    </a>
+    <a class="nav-icon" href="/" aria-label="Home" title="Home"><i class="ph ph-house" aria-hidden="true"></i></a>
+    <a class="nav-icon" href="/shop.html" aria-label="Shop" title="Shop"><i class="ph ph-shopping-cart" aria-hidden="true"></i></a>
+    <a class="nav-icon" href="/cart.html" aria-label="Cart" title="Cart"><i class="ph ph-shopping-cart" aria-hidden="true"></i></a>
+    <a class="nav-icon" href="/account.html" aria-label="Account" title="Account"><i class="ph ph-user-circle" aria-hidden="true"></i></a>
   </nav>
 </header>
 
 <main class="container">
-
   <div class="page-heading">
     <h1>Payment</h1>
     <p>Review your order and delivery address before continuing.</p>
   </div>
 
   <div class="checkout-layout">
-
     <div class="checkout-main">
 
       <!-- DELIVERY ADDRESS -->
-
       <section class="checkout-section">
-
         <div class="section-heading">
-          <div>
-            <h2>Delivery Address</h2>
-          </div>
-
+          <div><h2>Delivery Address</h2></div>
           <a class="change-address" href="/addresses.html?mode=checkout">
-            <i class="ph ph-pencil-simple" aria-hidden="true"></i>
-            Change Address
+            <i class="ph ph-pencil-simple" aria-hidden="true"></i> Change Address
           </a>
         </div>
-
         <div class="content-card">
-          <div id="addressContainer" class="address-loading">
-            Loading delivery address...
-          </div>
+          <div id="addressContainer" class="address-loading">Loading delivery address...</div>
         </div>
-
       </section>
 
       <!-- ORDER ITEMS -->
-
       <section class="checkout-section">
-
         <div class="section-heading">
           <div>
             <h2>Order Items</h2>
             <p id="orderItemsSubtitle">Your selected products</p>
           </div>
         </div>
-
         <div class="content-card">
           <div id="productsContainer" class="product-list">
             <div class="empty-message">Loading your cart...</div>
           </div>
         </div>
-
       </section>
 
       <!-- PAYMENT METHOD -->
-
       <section class="checkout-section">
-
         <div class="section-heading">
           <div>
             <h2>Payment Method</h2>
@@ -939,404 +207,201 @@ input:focus-visible{
         </div>
 
         <div class="content-card">
-
           <div class="payment-options">
 
             <label class="payment-method selected" id="upiMethod">
-
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="upi"
-                checked
-              >
-
+              <input type="radio" name="paymentMethod" value="upi" checked>
               <span class="method-icon">UPI</span>
-
               <span class="method-info">
                 <span class="method-title">UPI Payment</span>
-                <span class="method-description">
-                  Pay using your preferred UPI app.
-                </span>
+                <span class="method-description">Pay using your preferred UPI app.</span>
               </span>
-
               <span class="method-badge">Available</span>
-
             </label>
 
             <label class="payment-method" id="cardMethod">
-
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="card"
-              >
-
-              <span class="method-icon">
-                <i class="ph ph-credit-card" aria-hidden="true"></i>
-              </span>
-
+              <input type="radio" name="paymentMethod" value="card">
+              <span class="method-icon"><i class="ph ph-credit-card" aria-hidden="true"></i></span>
               <span class="method-info">
                 <span class="method-title">Credit / Debit Card</span>
-                <span class="method-description">
-                  Pay using your bank card.
-                </span>
+                <span class="method-description">Pay using your bank card.</span>
               </span>
-
               <span class="method-badge">Not Available</span>
-
             </label>
 
           </div>
 
           <div id="upiDetails" class="method-extra visible">
-            <p>
-              Continue to open the secure Cashfree payment checkout.
-              Available UPI options depend on the payment provider.
-            </p>
+            <p>Continue to open the secure Cashfree payment checkout. Available UPI options depend on the payment provider.</p>
           </div>
 
           <div id="cardDetails" class="method-extra">
-
-            <p>
-              Card payment is not currently enabled.
-              The following fields are for the UI preview only.
-            </p>
-
+            <p>Card payment is not currently enabled. The following fields are for the UI preview only.</p>
             <div class="card-fields">
-
               <div class="field full">
                 <label for="cardNumber">Card Number</label>
-                <input
-                  id="cardNumber"
-                  type="text"
-                  inputmode="numeric"
-                  autocomplete="cc-number"
-                  placeholder="Card payment unavailable"
-                  disabled
-                >
+                <input id="cardNumber" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="Card payment unavailable" disabled>
               </div>
-
               <div class="field">
                 <label for="cardExpiry">Expiry Date</label>
-                <input
-                  id="cardExpiry"
-                  type="text"
-                  autocomplete="cc-exp"
-                  placeholder="MM/YY"
-                  disabled
-                >
+                <input id="cardExpiry" type="text" autocomplete="cc-exp" placeholder="MM/YY" disabled>
               </div>
-
               <div class="field">
                 <label for="cardCvv">CVV</label>
-                <input
-                  id="cardCvv"
-                  type="password"
-                  inputmode="numeric"
-                  autocomplete="cc-csc"
-                  placeholder="CVV"
-                  disabled
-                >
+                <input id="cardCvv" type="password" inputmode="numeric" autocomplete="cc-csc" placeholder="CVV" disabled>
               </div>
-
             </div>
-
-            <div class="card-notice">
-              Card payments are not enabled yet.
-              Please select UPI to continue with payment.
-            </div>
-
+            <div class="card-notice">Card payments are not enabled yet. Please select UPI to continue with payment.</div>
           </div>
 
           <div class="security">
-
-            <div class="security-item">
-              <i class="ph ph-shield-check" aria-hidden="true"></i>
-              <span>Secure Checkout</span>
-            </div>
-
-            <div class="security-item">
-              <i class="ph ph-lightning" aria-hidden="true"></i>
-              <span>Fast Payment</span>
-            </div>
-
-            <div class="security-item">
-              <i class="ph ph-check-circle" aria-hidden="true"></i>
-              <span>Verified Order Total</span>
-            </div>
-
+            <div class="security-item"><i class="ph ph-shield-check" aria-hidden="true"></i><span>Secure Checkout</span></div>
+            <div class="security-item"><i class="ph ph-lightning" aria-hidden="true"></i><span>Fast Payment</span></div>
+            <div class="security-item"><i class="ph ph-check-circle" aria-hidden="true"></i><span>Verified Order Total</span></div>
           </div>
 
           <div class="notice">
-            Your order total is checked by the server. Your order is
-            confirmed only after the payment is verified. Never share
-            your UPI PIN or OTP.
+            Your order total is checked by the server. Your order is confirmed only after the payment is verified. Never share your UPI PIN or OTP.
           </div>
-
         </div>
 
         <div id="statusMessage" class="status" role="status" aria-live="polite"></div>
 
         <div class="checkout-actions">
-
           <button id="payButton" class="pay-button" type="button" disabled>
             Continue to UPI Payment
             <i class="ph ph-arrow-right" aria-hidden="true"></i>
           </button>
-
           <a href="/cart.html" class="continue-button">
-            <i class="ph ph-arrow-left" aria-hidden="true"></i>
-            Back to Cart
+            <i class="ph ph-arrow-left" aria-hidden="true"></i> Back to Cart
           </a>
-
         </div>
-
       </section>
 
     </div>
 
     <!-- ORDER SUMMARY -->
-
     <aside class="summary-section">
-
       <h2 class="summary-heading">Order Summary</h2>
-
       <div class="summary-card">
-
-        <div class="discount-banner">
-          <i class="ph ph-tag" aria-hidden="true"></i>
-          <span>95% OFF — Special Testing Discount</span>
-        </div>
-
-        <div class="summary-line">
-          <span>Items</span>
-          <strong id="itemCount">—</strong>
-        </div>
-
-        <div class="summary-line">
-          <span>Original Subtotal</span>
-          <strong id="originalSubtotal" class="summary-original">—</strong>
-        </div>
-
-        <div class="summary-line discount-line">
-          <span>Discount (95%)</span>
-          <strong id="discountAmount">—</strong>
-        </div>
-
-        <div class="summary-line">
-          <span>Subtotal after discount</span>
-          <strong id="subtotal">—</strong>
-        </div>
-
-        <div class="summary-line">
-          <span>Shipping</span>
-          <strong>Free</strong>
-        </div>
-
+        <div class="discount-banner"><i class="ph ph-tag" aria-hidden="true"></i><span>95% OFF — Special Testing Discount</span></div>
+        <div class="summary-line"><span>Items</span><strong id="itemCount">—</strong></div>
+        <div class="summary-line"><span>Original Subtotal</span><strong id="originalSubtotal" class="summary-original">—</strong></div>
+        <div class="summary-line discount-line"><span>Discount (95%)</span><strong id="discountAmount">—</strong></div>
+        <div class="summary-line"><span>Subtotal after discount</span><strong id="subtotal">—</strong></div>
+        <div class="summary-line"><span>Shipping</span><strong>Free</strong></div>
         <div class="summary-divider"></div>
-
-        <div class="summary-total">
-          <span>Total to Pay</span>
-          <strong id="grandTotal">—</strong>
-        </div>
-
-        <p class="summary-description">
-          The final payable amount is verified by the server when
-          the order is created.
-        </p>
-
+        <div class="summary-total"><span>Total to Pay</span><strong id="grandTotal">—</strong></div>
+        <p class="summary-description">The final payable amount is verified by the server when the order is created.</p>
       </div>
-
     </aside>
-
   </div>
-
 </main>
 
 <footer class="footer">
-
   <span>© <span id="year"></span> Shoppy</span>
-
   <span>Better Products. Better Life.</span>
-
   <span>Secure Checkout</span>
-
 </footer>
 
 <!-- CASHFREE CHECKOUT SDK -->
-
 <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
 <script>
 "use strict";
 
 /* CONFIGURATION */
-
 const USD_TO_INR = 85;
-
 const DISCOUNT_PERCENT = 95;
-const DISCOUNT_MULTIPLIER =
-  (100 - DISCOUNT_PERCENT) / 100;
-
-const CASHFREE_MODE = "production";
+const DISCOUNT_MULTIPLIER = (100 - DISCOUNT_PERCENT) / 100;
+const CASHFREE_MODE = "production"; // test ke liye "sandbox"
 const ORDERS_URL = "/orders.html";
 
 /* ELEMENTS */
-
 const $ = id => document.getElementById(id);
-
 const addressContainer = $("addressContainer");
 const productsContainer = $("productsContainer");
 const payButton = $("payButton");
 const statusMessage = $("statusMessage");
-
 const upiDetails = $("upiDetails");
 const cardDetails = $("cardDetails");
-
 const upiMethod = $("upiMethod");
 const cardMethod = $("cardMethod");
 
 /* STATE */
-
 let cashfree = null;
-
 let selectedAddress = null;
 let cartItems = [];
-
 let cartTotalUSD = 0;
-
 let currentOrder = null;
-
 let busy = false;
 let paymentDone = false;
-
-let originalTotalINR = 0;
-let discountedTotalINR = 0;
-let discountAmountINR = 0;
 
 $("year").textContent = new Date().getFullYear();
 
 /* HELPERS */
+const money = v => new Intl.NumberFormat("en-IN", {
+  style: "currency", currency: "INR",
+  minimumFractionDigits: 2, maximumFractionDigits: 2
+}).format(Number(v) || 0);
 
-const money = value =>
-  new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(Number(value) || 0);
-
-const safeText = value =>
-  String(value ?? "").trim();
+const safeText = v => String(v ?? "").trim();
 
 function showStatus(message, type = "info") {
-  if (!statusMessage) {
-    console.error(message);
-    return;
-  }
-
+  if (!statusMessage) return console.error(message);
   statusMessage.className = "status show " + type;
   statusMessage.textContent = message;
 }
 
-function setPayLabel(
-  text,
-  icon = "ph-arrow-right"
-) {
-  payButton.innerHTML =
-    text +
-    ' <i class="ph ' +
-    icon +
-    '" aria-hidden="true"></i>';
+function setPayLabel(text, icon = "ph-arrow-right") {
+  payButton.innerHTML = text + ' <i class="ph ' + icon + '" aria-hidden="true"></i>';
 }
 
+/* Order ID sirf URL se aata hai. Purani sessionStorage value ab kabhi use nahi hoti. */
 function getOrderIdFromPage() {
-  const params = new URLSearchParams(location.search);
-
-  return (
-    params.get("orderId") ||
-    sessionStorage.getItem("shoppyPendingOrderId") ||
-    ""
-  ).trim();
+  return (new URLSearchParams(location.search).get("orderId") || "").trim();
 }
 
-    console.log(
-  "URL Order ID:",
-  new URLSearchParams(location.search).get("orderId")
-);
-
-console.log(
-  "Saved Order ID:",
-  sessionStorage.getItem("shoppyPendingOrderId")
-);
+/* Purana/galat order ID hatao taaki naya checkout bina error ke chale */
+function dropStaleOrder() {
+  sessionStorage.removeItem("shoppyPendingOrderId");
+  currentOrder = null;
+  const url = new URL(location.href);
+  url.searchParams.delete("orderId");
+  history.replaceState({}, "", url);
+}
 
 function getAddressId() {
-  const params = new URLSearchParams(location.search);
-
-  return (
-    params.get("addressId") ||
+  const p = new URLSearchParams(location.search);
+  return (p.get("addressId") ||
     sessionStorage.getItem("checkoutAddressId") ||
-    localStorage.getItem("checkoutAddressId") ||
-    ""
-  ).trim();
+    localStorage.getItem("checkoutAddressId") || "").trim();
 }
 
-/*
- * Calculate the 95% discounted price for cart preview.
- * The server remains authoritative for the final order amount.
- */
+/* Sirf preview ke liye; asli amount hamesha server tay karta hai */
+const getDiscountedPrice = p =>
+  Number((Number(p || 0) * DISCOUNT_MULTIPLIER).toFixed(2));
 
-function getDiscountedPrice(originalPrice) {
-  return Number(
-    (Number(originalPrice || 0) * DISCOUNT_MULTIPLIER).toFixed(2)
-  );
-}
-
-/*
- * Display order summary.
- */
-
-function renderSummary({
-  itemCount = 0,
-  originalINR = 0,
-  discountINR = 0,
-  finalINR = 0
-} = {}) {
+function renderSummary({ itemCount = 0, originalINR = 0, discountINR = 0, finalINR = 0 } = {}) {
   $("itemCount").textContent = itemCount + " items";
-
   $("originalSubtotal").textContent = money(originalINR);
-
-  $("discountAmount").textContent =
-    "−" + money(discountINR);
-
+  $("discountAmount").textContent = "−" + money(discountINR);
   $("subtotal").textContent = money(finalINR);
-
   $("grandTotal").textContent = money(finalINR);
 }
 
-/* ADDRESS */
+const countItems = list =>
+  list.reduce((s, i) => s + Number(i.quantity || 0), 0);
 
-function addressLines(address) {
+/* ADDRESS */
+function addressLines(a) {
   return [
-    address.houseNumber,
-    address.building,
-    address.area,
-    address.landmark
-      ? "Near " + address.landmark
-      : "",
-    address.postOffice,
-    address.city,
-    address.district &&
-    address.district !== address.city
-      ? address.district
-      : "",
-    address.state,
-    address.pincode,
-    address.country
-  ]
-    .map(safeText)
-    .filter(Boolean);
+    a.houseNumber, a.building, a.area,
+    a.landmark ? "Near " + a.landmark : "",
+    a.postOffice, a.city,
+    a.district && a.district !== a.city ? a.district : "",
+    a.state, a.pincode, a.country
+  ].map(safeText).filter(Boolean);
 }
 
 function renderAddress(address) {
@@ -1345,100 +410,66 @@ function renderAddress(address) {
 
   const icon = document.createElement("div");
   icon.className = "address-icon";
-
-  icon.innerHTML =
-    '<i class="ph ph-map-pin" aria-hidden="true"></i>';
+  icon.innerHTML = '<i class="ph ph-map-pin" aria-hidden="true"></i>';
 
   const content = document.createElement("div");
   content.className = "address-content";
 
   const name = document.createElement("strong");
-
-  name.textContent =
-    safeText(address.fullName) ||
-    "Delivery Address";
-
+  name.textContent = safeText(address.fullName) || "Delivery Address";
   content.appendChild(name);
 
   if (address.phone) {
     const phone = document.createElement("div");
-
     phone.className = "address-phone";
     phone.textContent = safeText(address.phone);
-
     content.appendChild(phone);
   }
 
-  addressLines(address).forEach(value => {
+  addressLines(address).forEach(v => {
     const line = document.createElement("div");
-
-    line.textContent = value;
-
+    line.textContent = v;
     content.appendChild(line);
   });
 
   wrapper.append(icon, content);
-
   return wrapper;
 }
 
 /* PRODUCTS */
-
 function renderProduct(item) {
-  const fallback =
-    "https://placehold.co/120x120/f7f7f7/777?text=Product";
+  const fallback = "https://placehold.co/120x120/f7f7f7/777?text=Product";
 
   const row = document.createElement("div");
   row.className = "product";
 
   const image = document.createElement("img");
-
   image.className = "product-image";
   image.alt = safeText(item.title) || "Product";
   image.src = safeText(item.thumbnail) || fallback;
-
-  image.onerror = () => {
-    image.onerror = null;
-    image.src = fallback;
-  };
+  image.onerror = () => { image.onerror = null; image.src = fallback; };
 
   const info = document.createElement("div");
   info.className = "product-info";
 
   const title = document.createElement("div");
-
   title.className = "product-name";
   title.textContent = safeText(item.title) || "Product";
 
-  const quantity = Math.max(
-    0,
-    Number(item.quantity) || 0
-  );
+  const quantity = Math.max(0, Number(item.quantity) || 0);
 
   const meta = document.createElement("div");
-
   meta.className = "product-meta";
   meta.textContent = "Quantity: " + quantity;
 
-  /*
-   * Product price in the cart API is displayed using the
-   * existing USD_TO_INR conversion.
-   */
-
-  const originalUnitINR =
-    Number(item.price || 0) * USD_TO_INR;
-
-  const discountedUnitINR =
-    getDiscountedPrice(originalUnitINR);
+  const originalUnitINR = Number(item.price || 0) * USD_TO_INR;
+  const discountedUnitINR = getDiscountedPrice(originalUnitINR);
 
   const unit = document.createElement("div");
-
   unit.className = "product-meta";
-  unit.textContent =
-    money(discountedUnitINR) + " each after discount";
+  unit.textContent = money(discountedUnitINR) + " each after discount";
 
   const badge = document.createElement("span");
-
   badge.className = "product-discount";
   badge.textContent = DISCOUNT_PERCENT + "% OFF";
 
@@ -1447,43 +478,27 @@ function renderProduct(item) {
   const price = document.createElement("div");
   price.className = "product-price";
 
-  const originalLineINR =
-    originalUnitINR * quantity;
-
-  const discountedLineINR =
-    discountedUnitINR * quantity;
-
   const oldPrice = document.createElement("div");
-
   oldPrice.className = "product-original-price";
-  oldPrice.textContent = money(originalLineINR);
+  oldPrice.textContent = money(originalUnitINR * quantity);
 
   const finalPrice = document.createElement("div");
-
-  finalPrice.textContent = money(discountedLineINR);
+  finalPrice.textContent = money(discountedUnitINR * quantity);
 
   price.append(oldPrice, finalPrice);
-
   row.append(image, info, price);
-
   return row;
 }
 
 /* API */
-
 async function apiJSON(url, options = {}) {
   const response = await fetch(url, {
     credentials: "same-origin",
     cache: "no-store",
     ...options,
-
     headers: {
       Accept: "application/json",
-
-      ...(options.body
-        ? { "Content-Type": "application/json" }
-        : {}),
-
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
       ...(options.headers || {})
     }
   });
@@ -1491,93 +506,40 @@ async function apiJSON(url, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok || data.success !== true) {
-    throw new Error(
-      data.message ||
-      "Request failed (" + response.status + ")."
-    );
+    throw new Error(data.message || "Request failed (" + response.status + ").");
   }
-
   return data;
 }
 
 /* LOAD CART */
-
 async function loadCart() {
   const data = await apiJSON("/api/cart");
-
-  cartItems = Array.isArray(data.items)
-    ? data.items
-    : [];
-
+  cartItems = Array.isArray(data.items) ? data.items : [];
   cartTotalUSD = Number(data.totalPrice);
 
   if (!Number.isFinite(cartTotalUSD)) {
     cartTotalUSD = cartItems.reduce(
-      (sum, item) =>
-        sum +
-        Number(item.price || 0) *
-        Number(item.quantity || 0),
-      0
+      (s, i) => s + Number(i.price || 0) * Number(i.quantity || 0), 0
     );
   }
 
-  productsContainer.replaceChildren(
-    ...cartItems.map(renderProduct)
-  );
+  productsContainer.replaceChildren(...cartItems.map(renderProduct));
 
   $("orderItemsSubtitle").textContent =
-    cartItems.length +
-    (
-      cartItems.length === 1
-        ? " product in your order"
-        : " products in your order"
-    );
+    cartItems.length + (cartItems.length === 1
+      ? " product in your order" : " products in your order");
 
-  const itemCount = cartItems.reduce(
-    (sum, item) =>
-      sum + Number(item.quantity || 0),
-    0
-  );
+  const originalINR = Number((cartTotalUSD * USD_TO_INR).toFixed(2));
 
-  /*
-   * Cart preview: apply 95% discount to each product.
-   */
-
-  originalTotalINR = Number(
-    (cartTotalUSD * USD_TO_INR).toFixed(2)
-  );
-
-  discountedTotalINR = cartItems.reduce(
-    (sum, item) => {
-      const quantity = Number(item.quantity || 0);
-
-      const originalUnitINR =
-        Number(item.price || 0) * USD_TO_INR;
-
-      const discountedUnitINR =
-        getDiscountedPrice(originalUnitINR);
-
-      return sum + discountedUnitINR * quantity;
-    },
-    0
-  );
-
-  discountedTotalINR = Number(
-    discountedTotalINR.toFixed(2)
-  );
-
-  discountAmountINR = Number(
-    (
-      originalTotalINR -
-      discountedTotalINR
-    ).toFixed(2)
-  );
+  const finalINR = Number(cartItems.reduce((sum, item) =>
+    sum + getDiscountedPrice(Number(item.price || 0) * USD_TO_INR) *
+    Number(item.quantity || 0), 0).toFixed(2));
 
   renderSummary({
-    itemCount,
-    originalINR: originalTotalINR,
-    discountINR: discountAmountINR,
-    finalINR: discountedTotalINR
+    itemCount: countItems(cartItems),
+    originalINR,
+    discountINR: Number((originalINR - finalINR).toFixed(2)),
+    finalINR
   });
 
   if (cartItems.length === 0) {
@@ -1587,241 +549,126 @@ async function loadCart() {
 }
 
 /* LOAD ADDRESS */
-
 async function loadAddress() {
   const data = await apiJSON("/api/addresses");
-
-  const addresses = Array.isArray(data.addresses)
-    ? data.addresses
-    : [];
-
+  const addresses = Array.isArray(data.addresses) ? data.addresses : [];
   const addressId = getAddressId();
 
-  selectedAddress = addressId
-    ? addresses.find(address => address.id === addressId)
-    : null;
+  selectedAddress = addressId ? addresses.find(a => a.id === addressId) : null;
 
   if (!selectedAddress) {
     selectedAddress =
-      addresses.find(address => address.isDefault) ||
-      (
-        addresses.length === 1
-          ? addresses[0]
-          : null
-      );
+      addresses.find(a => a.isDefault) ||
+      (addresses.length === 1 ? addresses[0] : null);
   }
 
   if (!selectedAddress) {
-    throw new Error(
-      "Please select a saved delivery address."
-    );
+    throw new Error("Please select a saved delivery address.");
   }
 
-  sessionStorage.setItem(
-    "checkoutAddressId",
-    selectedAddress.id
-  );
-
-  addressContainer.replaceChildren(
-    renderAddress(selectedAddress)
-  );
+  sessionStorage.setItem("checkoutAddressId", selectedAddress.id);
+  addressContainer.replaceChildren(renderAddress(selectedAddress));
 }
 
-/* LOAD EXISTING ORDER */
-
+/* LOAD EXISTING ORDER (error.code: NOT_FOUND / PAID) */
 async function loadExistingOrder(orderId) {
   const data = await apiJSON("/api/orders");
-
-  const orders = Array.isArray(data.orders)
-    ? data.orders
-    : [];
-
-  const order = orders.find(
-    item => item.orderId === orderId
-  );
+  const orders = Array.isArray(data.orders) ? data.orders : [];
+  const order = orders.find(o => o.orderId === orderId);
 
   if (!order) {
-    throw new Error(
-      "Order not found. Please open My Orders and try again."
-    );
+    const e = new Error("Order not found. Please open My Orders and try again.");
+    e.code = "NOT_FOUND";
+    throw e;
   }
 
-  if (
-    String(order.paymentStatus).toUpperCase() === "PAID"
-  ) {
-    throw new Error(
-      "This order is already marked as paid."
-    );
+  if (String(order.paymentStatus).toUpperCase() === "PAID") {
+    const e = new Error("This order is already marked as paid.");
+    e.code = "PAID";
+    throw e;
   }
 
-  if (
-    !Number.isFinite(Number(order.totalINR)) ||
-    Number(order.totalINR) <= 0
-  ) {
-    throw new Error(
-      "Invalid order amount returned by the server."
-    );
+  if (!Number.isFinite(Number(order.totalINR)) || Number(order.totalINR) <= 0) {
+    throw new Error("Invalid order amount returned by the server.");
   }
 
   currentOrder = order;
 
-  sessionStorage.setItem(
-    "shoppyPendingOrderId",
-    order.orderId
-  );
-
-  /*
-   * Existing orders must use the actual amount stored on the server.
-   * Do not apply the discount a second time.
-   */
-
+  // Existing order: server ki saved amount dikhao, discount dobara mat lagao
   const finalINR = Number(order.totalINR);
 
-  const originalINR = Number(
+  let originalINR = Number(
     order.originalTotalINR ??
-    (
-      Number(order.totalUSD || 0) *
-      USD_TO_INR /
-      DISCOUNT_MULTIPLIER
-    )
+    (Number(order.totalUSD || 0) * USD_TO_INR / DISCOUNT_MULTIPLIER)
   );
+  if (!Number.isFinite(originalINR) || originalINR < finalINR) {
+    originalINR = finalINR;
+  }
 
-  const calculatedDiscount = Number(
-    Math.max(0, originalINR - finalINR).toFixed(2)
+  let discountINR = Number(
+    order.discountAmountINR ?? Math.max(0, originalINR - finalINR)
   );
-
-  const savedDiscount = Number(
-    order.discountAmountINR ?? calculatedDiscount
-  );
-
-  const itemCount = Array.isArray(order.items)
-    ? order.items.reduce(
-        (sum, item) =>
-          sum + Number(item.quantity || 0),
-        0
-      )
-    : cartItems.reduce(
-        (sum, item) =>
-          sum + Number(item.quantity || 0),
-        0
-      );
+  if (!Number.isFinite(discountINR) || discountINR < 0) discountINR = 0;
 
   renderSummary({
-    itemCount,
-    originalINR:
-      Number.isFinite(originalINR) && originalINR >= finalINR
-        ? originalINR
-        : finalINR,
-    discountINR:
-      Number.isFinite(savedDiscount) && savedDiscount >= 0
-        ? savedDiscount
-        : 0,
+    itemCount: Array.isArray(order.items) ? countItems(order.items) : countItems(cartItems),
+    originalINR,
+    discountINR: Number(discountINR.toFixed(2)),
     finalINR
   });
 
   setPayLabel("Continue to UPI Payment");
-
   payButton.disabled = false;
 }
 
 /* CREATE ORDER */
-
 async function createOrderOnce() {
-  if (currentOrder) {
-    return currentOrder;
-  }
+  if (currentOrder) return currentOrder;
 
-  const data = await apiJSON(
-    "/api/checkout/order",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        addressId: selectedAddress.id
-      })
-    }
-  );
+  const data = await apiJSON("/api/checkout/order", {
+    method: "POST",
+    body: JSON.stringify({ addressId: selectedAddress.id })
+  });
 
   if (!data.order || !data.order.orderId) {
-    throw new Error(
-      "The server did not return a valid order."
-    );
+    throw new Error("The server did not return a valid order.");
   }
 
   currentOrder = data.order;
 
-  sessionStorage.setItem(
-    "shoppyPendingOrderId",
-    currentOrder.orderId
-  );
-
-  /*
-   * Use the server's confirmed amount after order creation.
-   */
-
-  if (
-    !Number.isFinite(Number(currentOrder.totalINR)) ||
-    Number(currentOrder.totalINR) <= 0
-  ) {
-    throw new Error(
-      "The server returned an invalid order total."
-    );
-  }
-
   const finalINR = Number(currentOrder.totalINR);
 
-  const originalINR = Number(
-    currentOrder.originalTotalINR ?? finalINR
-  );
+  if (!Number.isFinite(finalINR) || finalINR <= 0) {
+    throw new Error("The server returned an invalid order total.");
+  }
 
-  const savedDiscount = Number(
-    currentOrder.discountAmountINR ??
-    Math.max(0, originalINR - finalINR)
-  );
+  const originalINR = Number(currentOrder.originalTotalINR ?? finalINR);
 
   renderSummary({
-    itemCount: cartItems.reduce(
-      (sum, item) =>
-        sum + Number(item.quantity || 0),
-      0
-    ),
-
+    itemCount: countItems(cartItems),
     originalINR,
-    discountINR: savedDiscount,
+    discountINR: Number(currentOrder.discountAmountINR ??
+      Math.max(0, originalINR - finalINR)),
     finalINR
   });
 
   const url = new URL(location.href);
-
-  url.searchParams.set(
-    "orderId",
-    currentOrder.orderId
-  );
-
+  url.searchParams.set("orderId", currentOrder.orderId);
   history.replaceState({}, "", url);
 
   return currentOrder;
 }
 
 /* OPEN CASHFREE CHECKOUT */
-
 async function openCashfreeCheckout(order, result) {
   if (typeof window.Cashfree !== "function") {
-    throw new Error(
-      "The payment script could not be loaded. Please refresh and try again."
-    );
+    throw new Error("The payment script could not be loaded. Please refresh and try again.");
   }
-
-  if (!cashfree) {
-    cashfree = Cashfree({
-      mode: CASHFREE_MODE
-    });
-  }
+  if (!cashfree) cashfree = Cashfree({ mode: CASHFREE_MODE });
 
   const resetButton = () => {
     if (paymentDone) return;
-
     setPayLabel("Continue to UPI Payment");
-
     payButton.disabled = false;
   };
 
@@ -1830,386 +677,203 @@ async function openCashfreeCheckout(order, result) {
     redirectTarget: "_modal"
   });
 
-  /*
-   * Always ask the server to verify the payment.
-   */
+  showStatus("Checking your payment status...", "info");
 
-  showStatus(
-    "Checking your payment status...",
-    "info"
-  );
+  const check = await apiJSON("/api/checkout/order", {
+    method: "POST",
+    body: JSON.stringify({ action: "verify-payment", orderId: order.orderId })
+  });
 
-  const check = await apiJSON(
-    "/api/checkout/order",
-    {
-      method: "POST",
-
-      body: JSON.stringify({
-        action: "verify-payment",
-        orderId: order.orderId
-      })
-    }
-  );
-
-  const status = String(
-    check.paymentStatus
-  ).toUpperCase();
+  const status = String(check.paymentStatus).toUpperCase();
 
   if (status === "PAID") {
     paymentDone = true;
-
+    sessionStorage.removeItem("shoppyPendingOrderId");
     payButton.textContent = "Payment Received";
     payButton.disabled = true;
-
-    showStatus(
-      "Payment received. Redirecting to your orders...",
-      "success"
-    );
+    showStatus("Payment received. Redirecting to your orders...", "success");
 
     setTimeout(() => {
-      location.href =
-        ORDERS_URL +
-        "?orderId=" +
-        encodeURIComponent(order.orderId);
+      location.href = ORDERS_URL + "?orderId=" + encodeURIComponent(order.orderId);
     }, 1200);
 
   } else if (status === "PENDING") {
-    showStatus(
-      "Payment is still being processed. Please check My Orders in a few minutes before paying again.",
-      "info"
-    );
-
+    showStatus("Payment is still being processed. Please check My Orders in a few minutes before paying again.", "info");
     resetButton();
 
   } else {
-    showStatus(
-      "Payment was not completed. Your order has not been marked as paid. You can try again.",
-      "error"
-    );
-
+    showStatus("Payment was not completed. Your order has not been marked as paid. You can try again.", "error");
     resetButton();
   }
 }
 
 /* PAYMENT METHOD SELECTION */
-
 function updatePaymentMethod() {
-  const selected = document.querySelector(
-    'input[name="paymentMethod"]:checked'
-  );
+  const selected = document.querySelector('input[name="paymentMethod"]:checked');
+  const method = selected ? selected.value : "upi";
 
-  const method = selected
-    ? selected.value
-    : "upi";
-
-  upiDetails.classList.toggle(
-    "visible",
-    method === "upi"
-  );
-
-  cardDetails.classList.toggle(
-    "visible",
-    method === "card"
-  );
-
-  upiMethod.classList.toggle(
-    "selected",
-    method === "upi"
-  );
-
-  cardMethod.classList.toggle(
-    "selected",
-    method === "card"
-  );
+  upiDetails.classList.toggle("visible", method === "upi");
+  cardDetails.classList.toggle("visible", method === "card");
+  upiMethod.classList.toggle("selected", method === "upi");
+  cardMethod.classList.toggle("selected", method === "card");
 
   if (method === "card") {
     payButton.disabled = true;
-
-    setPayLabel(
-      "Card Payment Unavailable",
-      "ph-lock"
-    );
-
+    setPayLabel("Card Payment Unavailable", "ph-lock");
   } else {
     setPayLabel("Continue to UPI Payment");
-
-    if (
-      !busy &&
-      (
-        currentOrder ||
-        (
-          selectedAddress &&
-          cartItems.length
-        )
-      )
-    ) {
+    if (!busy && (currentOrder || (selectedAddress && cartItems.length))) {
       payButton.disabled = false;
     }
   }
 }
 
-document
-  .querySelectorAll('input[name="paymentMethod"]')
-  .forEach(input => {
-    input.addEventListener(
-      "change",
-      updatePaymentMethod
-    );
-  });
+document.querySelectorAll('input[name="paymentMethod"]')
+  .forEach(i => i.addEventListener("change", updatePaymentMethod));
 
 /* START PAYMENT */
-
 async function startPayment() {
   if (busy) return;
 
-  const selectedMethod = document.querySelector(
-    'input[name="paymentMethod"]:checked'
-  );
+  const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
 
-  if (
-    !selectedMethod ||
-    selectedMethod.value !== "upi"
-  ) {
-    showStatus(
-      "Card payment is not available yet. Please select UPI.",
-      "error"
-    );
-
+  if (!selectedMethod || selectedMethod.value !== "upi") {
+    showStatus("Card payment is not available yet. Please select UPI.", "error");
     return;
   }
 
   busy = true;
-
   payButton.disabled = true;
   payButton.textContent = "Preparing payment...";
-
-  showStatus(
-    "Checking your order...",
-    "info"
-  );
+  showStatus("Checking your order...", "info");
 
   try {
     const orderId = getOrderIdFromPage();
 
     if (orderId) {
       await loadExistingOrder(orderId);
-
     } else {
-      if (!selectedAddress) {
-        throw new Error(
-          "Please select a delivery address first."
-        );
-      }
-
-      if (!cartItems.length) {
-        throw new Error("Your cart is empty.");
-      }
-
+      if (!selectedAddress) throw new Error("Please select a delivery address first.");
+      if (!cartItems.length) throw new Error("Your cart is empty.");
       payButton.textContent = "Creating order...";
-
       await createOrderOnce();
     }
 
     const order = currentOrder;
 
-    if (!order || !order.orderId) {
-      throw new Error(
-        "Could not identify your order."
-      );
+    if (!order || !order.orderId) throw new Error("Could not identify your order.");
+
+    payButton.textContent = "Connecting to payment...";
+
+    // Server database ke saved total se Cashfree session banata hai
+    const result = await apiJSON("/api/checkout/order", {
+      method: "POST",
+      body: JSON.stringify({ action: "create-payment", orderId: order.orderId })
+    });
+
+    if (typeof result.paymentSessionId !== "string" || !result.paymentSessionId) {
+      throw new Error("The payment provider returned an invalid payment session.");
     }
 
-    if (
-      String(order.paymentStatus).toUpperCase() === "PAID"
-    ) {
-      showStatus(
-        "This order is already paid.",
-        "success"
-      );
-
-      payButton.textContent = "Order Already Paid";
-
-      return;
-    }
-
-    payButton.textContent =
-      "Connecting to payment...";
-
-    /*
-     * The server creates the Cashfree payment session
-     * using the discounted total saved in the database.
-     */
-
-    const result = await apiJSON(
-      "/api/checkout/order",
-      {
-        method: "POST",
-
-        body: JSON.stringify({
-          action: "create-payment",
-          orderId: order.orderId
-        })
-      }
-    );
-
-    if (
-      typeof result.paymentSessionId !== "string" ||
-      !result.paymentSessionId
-    ) {
-      throw new Error(
-        "The payment provider returned an invalid payment session."
-      );
-    }
-
-    sessionStorage.setItem(
-      "shoppyPendingOrderId",
-      order.orderId
-    );
-
-    showStatus(
-      "Opening the secure payment window...",
-      "info"
-    );
-
+    showStatus("Opening the secure payment window...", "info");
     await openCashfreeCheckout(order, result);
 
   } catch (error) {
-    console.error(
-      "Payment setup error:",
-      error
-    );
+    console.error("Payment setup error:", error);
+
+    if (error.code === "PAID") {
+      location.href = ORDERS_URL;
+      return;
+    }
+
+    if (error.code === "NOT_FOUND") dropStaleOrder();
 
     showStatus(
-      (
-        error.message ||
-        "Unable to prepare payment."
-      ) +
+      (error.message || "Unable to prepare payment.") +
       " Your order has not been marked as paid.",
       "error"
     );
 
     setPayLabel("Retry UPI Payment");
-
     payButton.disabled = false;
 
   } finally {
     busy = false;
 
-    const selected = document.querySelector(
-      'input[name="paymentMethod"]:checked'
-    );
+    const selected = document.querySelector('input[name="paymentMethod"]:checked');
 
-    if (
-      selected &&
-      selected.value === "card"
-    ) {
+    if (selected && selected.value === "card") {
       payButton.disabled = true;
-
     } else if (!paymentDone) {
       payButton.disabled = false;
     }
   }
 }
 
-payButton.addEventListener(
-  "click",
-  startPayment
-);
+payButton.addEventListener("click", startPayment);
 
 /* INITIAL LOAD */
-
 async function init() {
   payButton.disabled = true;
-
-  payButton.textContent =
-    "Loading order details...";
+  payButton.textContent = "Loading order details...";
 
   try {
-    const existingOrderId =
-      getOrderIdFromPage();
+    const existingOrderId = getOrderIdFromPage();
+    let usedExisting = false;
 
     if (existingOrderId) {
-      /*
-       * Existing order amount comes from the backend.
-       * Do not discount an existing discounted order again.
-       */
-
-      await loadExistingOrder(existingOrderId);
-
       try {
-        await loadAddress();
-
+        await loadExistingOrder(existingOrderId);
+        usedExisting = true;
       } catch (error) {
-        console.warn(
-          "Address display unavailable:",
-          error.message
-        );
+        if (error.code === "PAID") {
+          location.href = ORDERS_URL + "?orderId=" + encodeURIComponent(existingOrderId);
+          return;
+        }
+        if (error.code === "NOT_FOUND") {
+          // Purana/galat order ID: hatao aur naya checkout cart se shuru karo
+          dropStaleOrder();
+        } else {
+          throw error;
+        }
       }
+    }
 
-      /*
-       * Load cart items for display only.
-       * The existing order's total must not be overwritten.
-       */
+    if (usedExisting) {
+      try { await loadAddress(); }
+      catch (e) { console.warn("Address display unavailable:", e.message); }
 
+      // Cart sirf dikhane ke liye; existing order ka total overwrite nahi hota
       try {
         const data = await apiJSON("/api/cart");
-
-        cartItems = Array.isArray(data.items)
-          ? data.items
-          : [];
-
-        productsContainer.replaceChildren(
-          ...cartItems.map(renderProduct)
-        );
+        cartItems = Array.isArray(data.items) ? data.items : [];
+        productsContainer.replaceChildren(...cartItems.map(renderProduct));
 
         $("orderItemsSubtitle").textContent =
-          cartItems.length +
-          (
-            cartItems.length === 1
-              ? " product in your order"
-              : " products in your order"
-          );
+          cartItems.length + (cartItems.length === 1
+            ? " product in your order" : " products in your order");
 
         if (cartItems.length === 0) {
           productsContainer.innerHTML =
             '<div class="empty-message">This order already exists. Your cart may now be empty.</div>';
         }
-
-      } catch (error) {
+      } catch (e) {
         productsContainer.innerHTML =
           '<div class="empty-message">This order already exists. Your cart may now be empty.</div>';
       }
-
     } else {
-      const results = await Promise.allSettled([
-        loadCart(),
-        loadAddress()
-      ]);
-
-      const failed = results.find(
-        result => result.status === "rejected"
-      );
-
-      if (failed) {
-        throw failed.reason;
-      }
+      const results = await Promise.allSettled([loadCart(), loadAddress()]);
+      const failed = results.find(r => r.status === "rejected");
+      if (failed) throw failed.reason;
     }
 
     setPayLabel("Continue to UPI Payment");
-
     payButton.disabled = false;
-
     updatePaymentMethod();
 
   } catch (error) {
-    showStatus(
-      error.message ||
-      "Unable to load checkout details.",
-      "error"
-    );
-
-    payButton.textContent =
-      "Unable to Continue";
-
+    showStatus(error.message || "Unable to load checkout details.", "error");
+    payButton.textContent = "Unable to Continue";
     payButton.disabled = true;
   }
 }
