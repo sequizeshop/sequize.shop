@@ -1,6 +1,15 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+
+  "redirects": [
+    {
+      "source": "/account",
+      "destination": "/user/account/redirect?mode=checkout",
+      "permanent": false
+    }
+  ],
+
   "rewrites": [
     {
       "source": "/",
@@ -34,25 +43,16 @@
       "source": "/product",
       "destination": "/product.html"
     },
-    
     {
       "source": "/profile",
       "destination": "/profile.html"
     },
-    
     {
-       "source": "/account",
-       "destination": "/user/account/redirect?mode=checkout",
-       "permanent": false
+      "source": "/user/account/redirect",
+      "destination": "/profile.html?mode=checkout"
     },
-    
     {
-       "source": "/user/account/redirect",
-       "destination": "/profile.html?mode=checkout"
-    },
-    
-    {
-      "source": "account",
+      "source": "/account",
       "destination": "/profile.html"
     },
     {
@@ -60,8 +60,8 @@
       "destination": "/wishlist.html"
     },
     {
-       "source": "/api/logout",
-       "destination": "/api/signup"
+      "source": "/api/logout",
+      "destination": "/api/signup"
     }
   ]
 }
