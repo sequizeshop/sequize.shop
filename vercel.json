@@ -34,8 +34,25 @@
       "source": "/product",
       "destination": "/product.html"
     },
+    
     {
       "source": "/profile",
+      "destination": "/profile.html"
+    },
+    
+    {
+       "source": "/account",
+       "destination": "/user/account/redirect?mode=checkout",
+       "permanent": false
+    },
+    
+    {
+       "source": "/user/account/redirect",
+       "destination": "/profile.html?mode=checkout"
+    },
+    
+    {
+      "source": "account",
       "destination": "/profile.html"
     },
     {
