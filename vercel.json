@@ -41,6 +41,10 @@
     {
       "source": "/wishlist",
       "destination": "/wishlist.html"
+    },
+    {
+       "source": "/api/logout",
+       "destination": "/api/signup"
     }
   ]
 }
