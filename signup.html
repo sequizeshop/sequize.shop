@@ -298,6 +298,28 @@
             font-size: 18px;
         }
 
+        /* SEND CODE BUTTON (inside the code input box) */
+
+        .send-code {
+            flex-shrink: 0;
+            padding: 6px 10px;
+            border: none;
+            background: transparent;
+            color: var(--black);
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .send-code:disabled {
+            color: var(--gray-400);
+            text-decoration: none;
+            cursor: not-allowed;
+        }
+
         /* TERMS */
 
         .terms {
@@ -709,6 +731,34 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="otp">Verification Code</label>
+
+                    <div class="input-box">
+                        <i class="ph ph-shield-check" aria-hidden="true"></i>
+
+                        <input
+                            type="text"
+                            id="otp"
+                            name="otp"
+                            placeholder="6-digit code"
+                            autocomplete="one-time-code"
+                            inputmode="numeric"
+                            pattern="[0-9]{6}"
+                            maxlength="6"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="send-code"
+                            id="sendOtpBtn"
+                        >
+                            Send code
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="password">Password</label>
 
                     <div class="input-box">
@@ -847,6 +897,9 @@
 
 <script>
     const form = document.getElementById("signupForm");
+    const emailInput = document.getElementById("email");
+    const otpInput = document.getElementById("otp");
+    const sendOtpBtn = document.getElementById("sendOtpBtn");
     const passwordInput = document.getElementById("password");
     const togglePassword = document.getElementById("togglePassword");
     const message = document.getElementById("message");
@@ -857,6 +910,10 @@
     const dialogTitle = document.getElementById("dialogTitle");
     const dialogText = document.getElementById("dialogText");
     const dialogOk = document.getElementById("dialogOk");
+
+    /* Email that has already passed OTP verification (valid ~15 min on server) */
+    let verifiedEmail = null;
+    let cooldownTimer = null;
 
     function showMessage(text, type) {
         message.textContent = text;
@@ -907,6 +964,113 @@
         togglePassword.setAttribute("aria-pressed", String(show));
     });
 
+    /* OTP helpers */
+
+    async function callOtp(payload) {
+        const response = await fetch("/api/auth/otp", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        let data = {};
+
+        try {
+            data = await response.json();
+        } catch (parseError) {
+            throw new Error(
+                "The server returned an invalid response. Please try again."
+            );
+        }
+
+        return { ok: response.ok && data.success === true, data: data };
+    }
+
+    function startCooldown(seconds) {
+        clearInterval(cooldownTimer);
+
+        let left = Math.max(1, Math.ceil(seconds));
+
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.textContent = "Resend in " + left + "s";
+
+        cooldownTimer = setInterval(function () {
+            left -= 1;
+
+            if (left <= 0) {
+                clearInterval(cooldownTimer);
+                sendOtpBtn.disabled = false;
+                sendOtpBtn.textContent = "Resend code";
+                return;
+            }
+
+            sendOtpBtn.textContent = "Resend in " + left + "s";
+        }, 1000);
+    }
+
+    /* Send verification code */
+
+    sendOtpBtn.addEventListener("click", async function () {
+        const email = emailInput.value.trim().toLowerCase();
+
+        if (!email || !emailInput.checkValidity()) {
+            showMessage("Please enter a valid email address first.", "error");
+            emailInput.focus();
+            return;
+        }
+
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.textContent = "Sending...";
+        message.className = "message";
+
+        try {
+            const result = await callOtp({ action: "send", email: email });
+
+            if (!result.ok) {
+                showMessage(
+                    result.data.message || "Could not send the code. Please try again.",
+                    "error"
+                );
+
+                if (result.data.retryAfter) {
+                    startCooldown(result.data.retryAfter);
+                } else {
+                    sendOtpBtn.disabled = false;
+                    sendOtpBtn.textContent = "Send code";
+                }
+
+                return;
+            }
+
+            showMessage(
+                result.data.message || "Verification code sent to your email.",
+                "success"
+            );
+
+            startCooldown(result.data.resendAfterSeconds || 60);
+            otpInput.focus();
+
+        } catch (error) {
+            console.error("Send OTP error:", error);
+
+            showMessage(
+                error.message || "Unable to connect. Please try again.",
+                "error"
+            );
+
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.textContent = "Send code";
+        }
+    });
+
+    /* Only digits in the code field */
+
+    otpInput.addEventListener("input", function () {
+        otpInput.value = otpInput.value.replace(/\D/g, "").slice(0, 6);
+    });
+
     /* Signup form */
 
     form.addEventListener("submit", async function (event) {
@@ -917,8 +1081,9 @@
         }
 
         const name = document.getElementById("fullName").value.trim();
-        const email = document.getElementById("email").value.trim().toLowerCase();
+        const email = emailInput.value.trim().toLowerCase();
         const password = passwordInput.value;
+        const otp = otpInput.value.trim();
 
         if (name.length < 2 || name.length > 80) {
             showMessage(
@@ -936,6 +1101,14 @@
             return;
         }
 
+        if (verifiedEmail !== email && !/^\d{6}$/.test(otp)) {
+            showMessage(
+                "Enter the 6-digit code sent to your email.",
+                "error"
+            );
+            return;
+        }
+
         message.className = "message";
         submitBtn.disabled = true;
         submitBtn.querySelector("span").textContent = "Creating account...";
@@ -943,6 +1116,35 @@
         showProgress();
 
         try {
+            /* Step 1: verify email code (skipped if already verified) */
+
+            if (verifiedEmail !== email) {
+                const verify = await callOtp({
+                    action: "verify",
+                    email: email,
+                    otp: otp
+                });
+
+                if (!verify.ok) {
+                    const verifyError =
+                        verify.data.message || "Could not verify the code. Please try again.";
+
+                    finishDialog(
+                        "Verification failed",
+                        verifyError,
+                        "Try again",
+                        closeDialog
+                    );
+
+                    showMessage(verifyError, "error");
+                    return;
+                }
+
+                verifiedEmail = email;
+            }
+
+            /* Step 2: create account */
+
             const response = await fetch("/api/signup", {
                 method: "POST",
                 headers: {
@@ -969,6 +1171,11 @@
                 const errorMessage =
                     data.message || "Unable to create account right now.";
 
+                /* Verification was used up or missing: ask for a new code */
+                if (response.status === 403 || response.status >= 500) {
+                    verifiedEmail = null;
+                }
+
                 finishDialog(
                     "Account not created",
                     errorMessage,
@@ -994,7 +1201,12 @@
                 "success"
             );
 
+            verifiedEmail = null;
             form.reset();
+
+            clearInterval(cooldownTimer);
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.textContent = "Send code";
 
             passwordInput.type = "password";
 
