@@ -9,20 +9,39 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --text: #171717;
+      --muted: #737373;
+      --border: #e8e8e8;
+      --background: #ffffff;
+      --soft: #f8f8f8;
+      --radius: 12px;
+    }
 
     body {
       margin: 0;
-      color: #111;
+      color: var(--text);
       background: #fff;
       font-family: Inter, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
-    a { color: inherit; text-decoration: none; }
-    button { font: inherit; }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
 
     .navbar {
-      height: 72px;
+      min-height: 72px;
       padding: 0 5%;
       border-bottom: 1px solid #eee;
       display: flex;
@@ -41,7 +60,7 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 26px;
+      gap: 22px;
     }
 
     .nav-links a {
@@ -52,7 +71,9 @@
       border-radius: 7px;
     }
 
-    .nav-links a:hover { background: #f5f5f5; }
+    .nav-links a:hover {
+      background: #f5f5f5;
+    }
 
     .nav-links svg {
       width: 23px;
@@ -65,16 +86,23 @@
     }
 
     .page {
-      max-width: 1200px;
-      margin: 38px auto 60px;
-      padding: 0 24px;
+      max-width: 1240px;
+      margin: 38px auto 65px;
+      padding: 0 26px;
     }
 
-    .heading { margin-bottom: 25px; }
+    /* Main heading remains unchanged in content */
+
+    .heading {
+      margin-bottom: 30px;
+    }
 
     h1 {
       margin: 0 0 8px;
       font-size: 29px;
+      line-height: 1.3;
+      font-weight: 800;
+      letter-spacing: -.6px;
     }
 
     .muted {
@@ -85,70 +113,121 @@
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.65fr) minmax(290px, 1fr);
-      gap: 25px;
+      grid-template-columns: minmax(0, 1.65fr) minmax(290px, .95fr);
+      gap: 38px;
       align-items: start;
     }
 
-    .section {
-      border: 1px solid #e6e6e6;
-      border-radius: 9px;
-      padding: 23px;
-      margin-bottom: 18px;
+    .left-column,
+    .right-column {
+      min-width: 0;
+    }
+
+    /* Section titles are outside the cards */
+
+    .section-block {
+      margin-bottom: 30px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 0 0 13px;
     }
 
     .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin: 0 0 20px;
+      margin: 0;
+      font-size: 17px;
+      font-weight: 750;
+      line-height: 1.5;
+      letter-spacing: -.2px;
     }
 
-    .step {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .step-number {
-      display: grid;
-      place-items: center;
+    .text-link {
       flex-shrink: 0;
-      width: 29px;
-      height: 29px;
-      border-radius: 50%;
-      background: #111;
-      color: #fff;
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
+
+    .text-link:hover {
+      color: #777;
+    }
+
+    /* Only the content area is a card */
+
+    .content-card {
+      min-width: 0;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    /* Address */
 
     .address-card {
       display: flex;
       align-items: flex-start;
-      gap: 13px;
-      padding: 17px;
-      border: 1px solid #dedede;
-      border-radius: 8px;
+      gap: 12px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      min-width: 0;
+    }
+
+    .address-icon {
+      width: 37px;
+      height: 37px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .address-icon svg {
+      width: 19px;
+      height: 19px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .address-content {
       flex: 1;
       min-width: 0;
-      font-size: 13px;
-      line-height: 1.8;
+      font-size: 12px;
+      line-height: 1.65;
       overflow-wrap: anywhere;
+      word-break: normal;
     }
 
     .address-content strong {
       display: block;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      color: #171717;
+    }
+
+    .address-phone {
+      color: #555;
       margin-bottom: 3px;
     }
 
-    .text-link {
-      font-size: 12px;
-      text-decoration: underline;
-      white-space: nowrap;
+    .address-lines {
+      color: #666;
     }
+
+    /* Products */
 
     .product {
       display: flex;
@@ -156,13 +235,21 @@
       padding: 15px 0;
       border-bottom: 1px solid #eee;
       align-items: center;
+      min-width: 0;
     }
 
-    .product:first-child { padding-top: 0; }
+    .product:first-child {
+      padding-top: 0;
+    }
+
+    .product:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
 
     .product-image {
-      width: 68px;
-      height: 72px;
+      width: 66px;
+      height: 70px;
       flex-shrink: 0;
       object-fit: contain;
       border: 1px solid #eee;
@@ -177,83 +264,220 @@
 
     .product-name {
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 650;
       overflow-wrap: anywhere;
       line-height: 1.5;
     }
 
     .product-meta {
       color: #777;
-      font-size: 12px;
+      font-size: 11px;
       margin-top: 5px;
+      line-height: 1.5;
     }
 
     .product-price {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 700;
       white-space: nowrap;
+      text-align: right;
     }
 
     .empty {
       text-align: center;
-      padding: 20px 5px;
+      padding: 18px 5px;
       color: #666;
-      font-size: 13px;
+      font-size: 12px;
       line-height: 1.8;
     }
 
-    .payment-option {
+    /* Payment methods */
+
+    .payment-description {
+      color: #666;
+      font-size: 12px;
+      line-height: 1.7;
+      margin: -3px 0 17px;
+    }
+
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .payment-method {
+      position: relative;
+      min-width: 0;
+    }
+
+    .payment-method input[type="radio"] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .payment-method label {
+      min-height: 83px;
+      height: 100%;
+      padding: 15px;
       display: flex;
       align-items: center;
-      gap: 13px;
-      padding: 16px;
-      border: 1px solid #222;
-      border-radius: 8px;
+      gap: 11px;
+      border: 1px solid #e4e4e4;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color .18s, background .18s;
     }
 
-    .radio {
-      width: 19px;
-      height: 19px;
-      border: 2px solid #111;
+    .payment-method label:hover {
+      border-color: #aaa;
+    }
+
+    .payment-method input:checked + label {
+      border: 1.5px solid #171717;
+      background: #fafafa;
+    }
+
+    .payment-method input:focus-visible + label {
+      outline: 2px solid #555;
+      outline-offset: 3px;
+    }
+
+    .method-radio {
+      width: 17px;
+      height: 17px;
+      border: 1.5px solid #bdbdbd;
       border-radius: 50%;
-      position: relative;
       flex-shrink: 0;
+      position: relative;
     }
 
-    .radio:after {
+    .payment-method input:checked + label .method-radio {
+      border-color: #171717;
+    }
+
+    .payment-method input:checked + label .method-radio::after {
       content: "";
       position: absolute;
-      inset: 3px;
+      inset: 3.5px;
+      background: #171717;
       border-radius: 50%;
-      background: #111;
     }
 
-    .upi-mark {
-      width: 49px;
-      height: 45px;
+    .method-icon {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
       display: grid;
       place-items: center;
-      background: #fafafa;
       border: 1px solid #eee;
-      border-radius: 10px;
+      border-radius: 9px;
+      background: #fff;
+      font-size: 12px;
       font-weight: 800;
-      font-size: 14px;
     }
 
-    .recommended {
-      margin-left: auto;
-      padding: 5px 8px;
-      background: #e9f7ed;
-      color: #177642;
-      border-radius: 5px;
-      font-size: 11px;
-      white-space: nowrap;
+    .method-info {
+      min-width: 0;
     }
 
-    .apps-title {
+    .method-name {
       font-size: 13px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .method-subtitle {
+      margin-top: 3px;
+      color: #777;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    /* Card fields are shown only if Card is selected */
+
+    .card-fields {
+      display: none;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid #eee;
+    }
+
+    .card-fields.visible {
+      display: block;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 12px;
       font-weight: 600;
-      margin: 23px 0 15px;
+    }
+
+    .field input {
+      width: 100%;
+      min-height: 45px;
+      padding: 11px 12px;
+      color: #171717;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 7px;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .field input:focus {
+      border-color: #777;
+    }
+
+    .field input::placeholder {
+      color: #aaa;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .card-demo-notice {
+      display: none;
+      margin-top: 14px;
+      padding: 11px 12px;
+      background: #fff8eb;
+      border: 1px solid #f1dfb7;
+      border-radius: 7px;
+      color: #79551b;
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .card-demo-notice.visible {
+      display: block;
+    }
+
+    /* UPI information */
+
+    .upi-details {
+      display: block;
+      margin-top: 17px;
+    }
+
+    .upi-apps-title {
+      font-size: 12px;
+      font-weight: 650;
+      margin: 0 0 12px;
     }
 
     .apps {
@@ -270,15 +494,15 @@
     }
 
     .app-logo {
-      width: 58px;
-      height: 58px;
-      margin: 0 auto 9px;
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 8px;
       display: grid;
       place-items: center;
       background: #fff;
       border: 1px solid #e8e8e8;
-      border-radius: 15px;
-      padding: 10px;
+      border-radius: 12px;
+      padding: 9px;
     }
 
     .app-logo img {
@@ -288,36 +512,26 @@
     }
 
     .app-logo span {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
     }
 
-    .security {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      background: #f8f8f8;
-      border-radius: 8px;
-      margin-top: 19px;
-      padding: 15px 7px;
-    }
-
-    .security div {
-      text-align: center;
-      font-size: 11px;
-      line-height: 1.7;
-      color: #555;
-    }
-
     .notice {
-      margin-top: 22px;
-      padding: 13px;
-      background: #f4f8ff;
-      border: 1px solid #d5e4ff;
-      border-radius: 7px;
-      color: #245b9b;
-      font-size: 12px;
+      margin-top: 18px;
+      padding: 12px;
+      background: #f7f9fc;
+      border: 1px solid #e4eaf3;
+      border-radius: 8px;
+      color: #52627a;
+      font-size: 11px;
       line-height: 1.8;
+    }
+
+    /* Order summary */
+
+    .summary-card {
+      position: sticky;
+      top: 20px;
     }
 
     .summary-row {
@@ -326,14 +540,21 @@
       align-items: flex-start;
       gap: 15px;
       margin: 17px 0;
-      font-size: 13px;
+      font-size: 12px;
     }
 
-    .summary-row span:first-child { color: #666; }
+    .summary-row:first-child {
+      margin-top: 0;
+    }
+
+    .summary-row span:first-child {
+      color: #666;
+    }
 
     .summary-row strong {
       text-align: right;
       overflow-wrap: anywhere;
+      font-weight: 650;
     }
 
     .divider {
@@ -345,28 +566,61 @@
     .grand-total {
       font-size: 19px;
       font-weight: 800;
+      align-items: center;
     }
 
-    .grand-total span:first-child { color: #111; }
+    .grand-total span:first-child {
+      color: #171717;
+      font-weight: 750;
+    }
+
+    .grand-total strong {
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .summary-note {
+      margin: 16px 0 0;
+      color: #777;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    /* Continue button outside every card */
+
+    .checkout-action {
+      margin-top: 26px;
+    }
 
     .pay-button {
       width: 100%;
-      margin-top: 20px;
-      padding: 16px;
+      min-height: 53px;
+      padding: 15px 18px;
       border: 0;
-      border-radius: 7px;
-      background: #111;
+      border-radius: 8px;
+      background: #171717;
       color: white;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
+      transition: background .18s, opacity .18s;
     }
 
-    .pay-button:hover { background: #333; }
+    .pay-button:hover {
+      background: #333;
+    }
 
     .pay-button:disabled {
       opacity: .55;
       cursor: not-allowed;
+    }
+
+    .secure-caption {
+      margin-top: 11px;
+      text-align: center;
+      color: #777;
+      font-size: 11px;
+      line-height: 1.7;
     }
 
     .status {
@@ -379,7 +633,9 @@
       overflow-wrap: anywhere;
     }
 
-    .status.show { display: block; }
+    .status.show {
+      display: block;
+    }
 
     .status.error {
       color: #a21c1c;
@@ -416,15 +672,56 @@
       font-size: 18px;
     }
 
-    @media(max-width: 760px) {
+    /* Laptop */
+
+    @media (min-width: 761px) {
+      .left-column {
+        padding-right: 4px;
+      }
+    }
+
+    /* Tablet and mobile */
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1.25fr) minmax(260px, .85fr);
+        gap: 22px;
+      }
+
+      .content-card {
+        padding: 16px;
+      }
+
+      .payment-methods {
+        grid-template-columns: 1fr;
+      }
+
+      .payment-method label {
+        min-height: 73px;
+      }
+
+      .apps {
+        gap: 6px;
+      }
+    }
+
+    @media (max-width: 760px) {
       .navbar {
-        height: 65px;
+        min-height: 65px;
         padding: 0 16px;
       }
 
-      .logo img { width: 112px; }
-      .nav-links { gap: 8px; }
-      .nav-links a { width: 32px; }
+      .logo img {
+        width: 112px;
+      }
+
+      .nav-links {
+        gap: 8px;
+      }
+
+      .nav-links a {
+        width: 32px;
+      }
 
       .nav-links svg {
         width: 21px;
@@ -433,29 +730,149 @@
 
       .page {
         margin: 27px auto 40px;
-        padding: 0 15px;
+        padding: 0 16px;
       }
 
-      h1 { font-size: 26px; }
+      h1 {
+        font-size: 26px;
+      }
+
+      .heading {
+        margin-bottom: 25px;
+      }
 
       .layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
+      }
+
+      .section-block {
+        margin-bottom: 25px;
+      }
+
+      .section-title {
+        font-size: 16px;
+      }
+
+      .content-card {
+        padding: 16px;
+        border-radius: 10px;
+      }
+
+      .address-content {
+        font-size: 12px;
+        line-height: 1.7;
+      }
+
+      .product-image {
+        width: 59px;
+        height: 64px;
+      }
+
+      .product {
+        gap: 10px;
+      }
+
+      .product-price {
+        font-size: 11px;
+      }
+
+      .payment-methods {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .payment-method label {
+        padding: 11px 9px;
+        gap: 8px;
+        min-height: 82px;
+      }
+
+      .method-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 10px;
+      }
+
+      .method-name {
+        font-size: 12px;
+      }
+
+      .method-subtitle {
+        font-size: 10px;
+      }
+
+      .method-radio {
+        width: 15px;
+        height: 15px;
+      }
+
+      .apps {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 5px;
+      }
+
+      .app-logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 11px;
+        padding: 8px;
+      }
+
+      .app {
+        font-size: 10px;
+      }
+
+      .summary-card {
+        position: static;
+      }
+
+      .checkout-action {
+        margin-top: 24px;
+      }
+
+      .pay-button {
+        min-height: 52px;
+      }
+
+      .footer {
+        padding: 22px 16px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .page {
+        padding: 0 12px;
+      }
+
+      .content-card {
+        padding: 13px;
+      }
+
+      .section-heading {
+        gap: 8px;
+      }
+
+      .section-title {
+        font-size: 15px;
+      }
+
+      .text-link {
+        font-size: 11px;
+      }
+
+      .payment-methods {
+        grid-template-columns: 1fr;
+      }
+
+      .payment-method label {
+        min-height: 68px;
+      }
+
+      .field-row {
         grid-template-columns: 1fr;
         gap: 0;
       }
-
-      .section { padding: 17px; }
-      .apps { gap: 5px; }
-
-      .app-logo {
-        width: 51px;
-        height: 51px;
-        border-radius: 13px;
-        padding: 9px;
-      }
-
-      .recommended { display: none; }
-
-      .footer { padding: 22px 16px; }
     }
   </style>
 </head>
@@ -511,163 +928,329 @@
     </div>
 
     <div class="layout">
-      <div>
-        <section class="section">
-          <h2 class="section-title step">
-            <span class="step-number">1</span>
-            Delivery Address
-          </h2>
-          <div id="addressContainer" class="empty">
-            Loading delivery address...
+
+      <!-- LEFT COLUMN -->
+
+      <div class="left-column">
+
+        <!-- DELIVERY ADDRESS: title outside the card -->
+
+        <section class="section-block">
+          <div class="section-heading">
+            <h2 class="section-title">Delivery Address</h2>
+
+            <a class="text-link" href="/addresses.html?mode=checkout">
+              Change address
+            </a>
+          </div>
+
+          <div class="content-card">
+            <div id="addressContainer" class="empty">
+              Loading delivery address...
+            </div>
           </div>
         </section>
 
-        <section class="section">
-          <h2 class="section-title step">
-            <span class="step-number">2</span>
-            Order Items
-          </h2>
-          <div id="productsContainer" class="empty">
-            Loading your cart...
+        <!-- ORDER ITEMS: title outside the card -->
+
+        <section class="section-block">
+          <div class="section-heading">
+            <h2 class="section-title">Order Items</h2>
+          </div>
+
+          <div class="content-card">
+            <div id="productsContainer" class="empty">
+              Loading your cart...
+            </div>
           </div>
         </section>
 
-        <section class="section">
-          <h2 class="section-title step">
-            <span class="step-number">3</span>
-            Payment Method
-          </h2>
+        <!-- PAYMENT METHOD: title outside the card -->
 
-          <div class="payment-option">
-            <span class="radio"></span>
-            <div class="upi-mark">UPI</div>
-
-            <div>
-              <strong>UPI Payment</strong>
-              <div class="muted">
-                Pay using your preferred UPI app.
-              </div>
-            </div>
-
-            <span class="recommended">UPI</span>
+        <section class="section-block">
+          <div class="section-heading">
+            <h2 class="section-title">Payment Method</h2>
           </div>
 
-          <div class="security">
-            <div><strong>Secure</strong><br>Checkout</div>
-            <div><strong>Fast</strong><br>UPI Payment</div>
-            <div><strong>Verified</strong><br>Order Total</div>
+          <div class="content-card">
+
+            <p class="payment-description">
+              Select your preferred payment method to continue.
+            </p>
+
+            <div class="payment-methods">
+
+              <!-- UPI -->
+
+              <div class="payment-method">
+                <input
+                  type="radio"
+                  id="methodUPI"
+                  name="paymentMethod"
+                  value="upi"
+                  checked
+                >
+
+                <label for="methodUPI">
+                  <span class="method-radio"></span>
+
+                  <span class="method-icon">UPI</span>
+
+                  <span class="method-info">
+                    <span class="method-name">UPI Payment</span>
+                    <span class="method-subtitle">
+                      Pay using UPI apps
+                    </span>
+                  </span>
+                </label>
+              </div>
+
+              <!-- CARD: UI ONLY -->
+
+              <div class="payment-method">
+                <input
+                  type="radio"
+                  id="methodCard"
+                  name="paymentMethod"
+                  value="card"
+                >
+
+                <label for="methodCard">
+                  <span class="method-radio"></span>
+
+                  <span class="method-icon">
+                    <svg
+                      width="21"
+                      height="21"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="2" y="5" width="20" height="14" rx="3"/>
+                      <path d="M2 10h20M6 15h4"/>
+                    </svg>
+                  </span>
+
+                  <span class="method-info">
+                    <span class="method-name">Credit / Debit Card</span>
+                    <span class="method-subtitle">
+                      Card payment
+                    </span>
+                  </span>
+                </label>
+              </div>
+
+            </div>
+
+            <!-- Card inputs: hidden by default -->
+
+            <div id="cardFields" class="card-fields">
+
+              <div class="field">
+                <label for="cardNumber">Card Number</label>
+
+                <input
+                  id="cardNumber"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="cc-number"
+                  placeholder="1234 5678 9012 3456"
+                  maxlength="23"
+                >
+              </div>
+
+              <div class="field">
+                <label for="cardName">Name on Card</label>
+
+                <input
+                  id="cardName"
+                  type="text"
+                  autocomplete="cc-name"
+                  placeholder="Enter name on card"
+                >
+              </div>
+
+              <div class="field-row">
+
+                <div class="field">
+                  <label for="cardExpiry">Expiry Date</label>
+
+                  <input
+                    id="cardExpiry"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="cc-exp"
+                    placeholder="MM/YY"
+                    maxlength="5"
+                  >
+                </div>
+
+                <div class="field">
+                  <label for="cardCVV">CVV</label>
+
+                  <input
+                    id="cardCVV"
+                    type="password"
+                    inputmode="numeric"
+                    autocomplete="cc-csc"
+                    placeholder="CVV"
+                    maxlength="4
+                  >
+                </div>
+
+              </div>
+
+              <div id="cardDemoNotice" class="card-demo-notice">
+                Card payments are not connected to the payment gateway yet.
+                Please select UPI to make a payment.
+              </div>
+
+            </div>
+
+            <!-- UPI apps -->
+
+            <div id="upiDetails" class="upi-details">
+
+              <div class="upi-apps-title">
+                Available UPI apps
+              </div>
+
+              <div class="apps">
+
+                <div class="app">
+                  <div class="app-logo">
+                    <img
+                      src="https://cdn.simpleicons.org/googlepay/4285F4"
+                      alt="Google Pay"
+                      onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
+                    >
+                    <span style="display:none">GPay</span>
+                  </div>
+                  Google Pay
+                </div>
+
+                <div class="app">
+                  <div class="app-logo">
+                    <img
+                      src="https://cdn.simpleicons.org/phonepe/5F259F"
+                      alt="PhonePe"
+                      onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
+                    >
+                    <span style="display:none">PhonePe</span>
+                  </div>
+                  PhonePe
+                </div>
+
+                <div class="app">
+                  <div class="app-logo">
+                    <img
+                      src="https://cdn.simpleicons.org/paytm/00BAF2"
+                      alt="Paytm"
+                      onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
+                    >
+                    <span style="display:none">Paytm</span>
+                  </div>
+                  Paytm
+                </div>
+
+                <div class="app">
+                  <div class="app-logo">
+                    <img
+                      src="https://cdn.simpleicons.org/bhim/008B45"
+                      alt="BHIM"
+                      onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
+                    >
+                    <span style="display:none">BHIM</span>
+                  </div>
+                  BHIM
+                </div>
+
+              </div>
+            </div>
+
+            <div class="notice">
+              Your order total is checked by the server. Your order is
+              confirmed only after the payment is verified. Never share
+              your UPI PIN or OTP.
+            </div>
+
           </div>
-
-          <div class="apps-title">Available UPI apps</div>
-
-          <div class="apps">
-            <div class="app">
-              <div class="app-logo">
-                <img
-                  src="https://cdn.simpleicons.org/googlepay/4285F4"
-                  alt="Google Pay"
-                  onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
-                >
-                <span style="display:none">GPay</span>
-              </div>
-              Google Pay
-            </div>
-
-            <div class="app">
-              <div class="app-logo">
-                <img
-                  src="https://cdn.simpleicons.org/phonepe/5F259F"
-                  alt="PhonePe"
-                  onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
-                >
-                <span style="display:none">PhonePe</span>
-              </div>
-              PhonePe
-            </div>
-
-            <div class="app">
-              <div class="app-logo">
-                <img
-                  src="https://cdn.simpleicons.org/paytm/00BAF2"
-                  alt="Paytm"
-                  onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
-                >
-                <span style="display:none">Paytm</span>
-              </div>
-              Paytm
-            </div>
-
-            <div class="app">
-              <div class="app-logo">
-                <img
-                  src="https://cdn.simpleicons.org/bhim/008B45"
-                  alt="BHIM"
-                  onerror="this.style.display='none';this.parentElement.querySelector('span').style.display='block'"
-                >
-                <span style="display:none">BHIM</span>
-              </div>
-              BHIM
-            </div>
-          </div>
-
-          <div class="notice">
-            Your order total is checked by the server. Your order is
-            confirmed only after the payment is verified. Never share
-            your UPI PIN or OTP.
-          </div>
-
-          <button id="payButton" class="pay-button" type="button" disabled>
-            Loading order details...
-          </button>
-
-          <div id="statusMessage" class="status" role="status" aria-live="polite"></div>
         </section>
+
       </div>
 
-      <aside>
-        <section class="section">
-          <h2 class="section-title">Order Summary</h2>
+      <!-- RIGHT COLUMN -->
 
-          <div class="summary-row">
-            <span>Items</span>
-            <strong id="itemCount">—</strong>
+      <aside class="right-column">
+
+        <!-- ORDER SUMMARY: title outside the card -->
+
+        <section class="section-block">
+
+          <div class="section-heading">
+            <h2 class="section-title">Order Summary</h2>
           </div>
 
-          <div class="summary-row">
-            <span>Subtotal</span>
-            <strong id="subtotal">—</strong>
+          <div class="content-card summary-card">
+
+            <div class="summary-row">
+              <span>Items</span>
+              <strong id="itemCount">—</strong>
+            </div>
+
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <strong id="subtotal">—</strong>
+            </div>
+
+            <div class="summary-row">
+              <span>Shipping</span>
+              <strong>Free</strong>
+            </div>
+
+            <hr class="divider">
+
+            <div class="summary-row grand-total">
+              <span>Total</span>
+              <strong id="grandTotal">—</strong>
+            </div>
+
+            <p class="summary-note">
+              Final total is verified by the server when the order is created.
+            </p>
+
           </div>
 
-          <div class="summary-row">
-            <span>Shipping</span>
-            <strong>Free</strong>
-          </div>
-
-          <hr class="divider">
-
-          <div class="summary-row grand-total">
-            <span>Total</span>
-            <strong id="grandTotal">—</strong>
-          </div>
-
-          <p class="muted">
-            Final total is verified by the server when the order is created.
-          </p>
         </section>
 
-        <section class="section">
-          <h2 class="section-title">Delivery Details</h2>
-
-          <div id="addressSummary" class="empty">
-            Loading address...
-          </div>
-
-          <a class="text-link" href="/addresses.html?mode=checkout">
-            Change delivery address
-          </a>
-        </section>
       </aside>
+
     </div>
+
+    <!-- BUTTON OUTSIDE ALL CARDS -->
+
+    <div class="checkout-action">
+
+      <button id="payButton" class="pay-button" type="button" disabled>
+        Loading order details...
+      </button>
+
+      <div class="secure-caption">
+        Secure Checkout · Payment verified before order confirmation
+      </div>
+
+      <div
+        id="statusMessage"
+        class="status"
+        role="status"
+        aria-live="polite"
+      ></div>
+
+    </div>
+
   </main>
 
   <footer class="footer">
@@ -680,21 +1263,21 @@
     <div>Secure Checkout</div>
   </footer>
 
-  <!-- YouPI PG checkout script (opens the payment modal) -->
-  <script src="https://youpi-pg-4n2w.onrender.com/youpi.js"
-          data-currency="INR"
-          data-name="Shoppy"></script>
+  <!-- Existing YouPI PG checkout script -->
+
+  <script
+    src="https://youpi-pg-4n2w.onrender.com/youpi.js"
+    data-currency="INR"
+    data-name="Shoppy"
+  ></script>
 
   <script>
     const USD_TO_INR = 85;
 
-    // YouPI gateway (Render) and the page to show after a successful payment.
-    // Change ORDERS_URL if your "My Orders" page has a different name.
     const GATEWAY_URL = "https://youpi-pg-4n2w.onrender.com";
     const ORDERS_URL = "/orders.html";
 
     const addressContainer = document.getElementById("addressContainer");
-    const addressSummary = document.getElementById("addressSummary");
     const productsContainer = document.getElementById("productsContainer");
     const payButton = document.getElementById("payButton");
     const statusMessage = document.getElementById("statusMessage");
@@ -764,6 +1347,17 @@
       const wrapper = document.createElement("div");
       wrapper.className = "address-card";
 
+      const icon = document.createElement("div");
+      icon.className = "address-icon";
+      icon.setAttribute("aria-hidden", "true");
+
+      icon.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/>
+          <circle cx="12" cy="10" r="2.5"/>
+        </svg>
+      `;
+
       const content = document.createElement("div");
       content.className = "address-content";
 
@@ -771,15 +1365,22 @@
       name.textContent = safeText(address.fullName);
       content.appendChild(name);
 
-      [address.phone, ...addressLines(address)]
-        .filter(Boolean)
-        .forEach(value => {
-          const line = document.createElement("div");
-          line.textContent = value;
-          content.appendChild(line);
-        });
+      const phone = document.createElement("div");
+      phone.className = "address-phone";
+      phone.textContent = safeText(address.phone);
 
-      wrapper.appendChild(content);
+      if (phone.textContent) {
+        content.appendChild(phone);
+      }
+
+      const lines = document.createElement("div");
+      lines.className = "address-lines";
+      lines.textContent = addressLines(address).join(", ");
+
+      content.appendChild(lines);
+
+      wrapper.append(icon, content);
+
       return wrapper;
     }
 
@@ -790,6 +1391,7 @@
       const image = document.createElement("img");
       image.className = "product-image";
       image.alt = safeText(item.title) || "Product";
+
       image.src = safeText(item.thumbnail) ||
         "https://placehold.co/120x120/f7f7f7/777?text=Product";
 
@@ -822,6 +1424,7 @@
       );
 
       row.append(image, info, price);
+
       return row;
     }
 
@@ -850,6 +1453,7 @@
 
     async function loadCart() {
       const data = await apiJSON("/api/cart");
+
       cartItems = Array.isArray(data.items) ? data.items : [];
 
       cartTotalUSD = Number(data.totalPrice);
@@ -878,7 +1482,11 @@
 
     async function loadAddress() {
       const data = await apiJSON("/api/addresses");
-      const addresses = Array.isArray(data.addresses) ? data.addresses : [];
+
+      const addresses = Array.isArray(data.addresses)
+        ? data.addresses
+        : [];
+
       const addressId = getAddressId();
 
       selectedAddress = addressId
@@ -897,12 +1505,13 @@
       sessionStorage.setItem("checkoutAddressId", selectedAddress.id);
 
       addressContainer.replaceChildren(renderAddress(selectedAddress));
-      addressSummary.replaceChildren(renderAddress(selectedAddress));
     }
 
     async function loadExistingOrder(orderId) {
       const data = await apiJSON("/api/orders");
+
       const orders = Array.isArray(data.orders) ? data.orders : [];
+
       const order = orders.find(item => item.orderId === orderId);
 
       if (!order) {
@@ -921,6 +1530,7 @@
       }
 
       currentOrder = order;
+
       sessionStorage.setItem("shoppyPendingOrderId", order.orderId);
 
       document.getElementById("grandTotal").textContent =
@@ -953,13 +1563,12 @@
 
       const url = new URL(location.href);
       url.searchParams.set("orderId", currentOrder.orderId);
+
       history.replaceState({}, "", url);
 
       return currentOrder;
     }
 
-    // Opens the YouPI checkout modal for a payment the SERVER already created.
-    // The amount never comes from the browser.
     function openYoupiCheckout(order, result) {
       if (!window.Youpi || typeof window.Youpi.pay !== "function") {
         throw new Error(
@@ -969,6 +1578,7 @@
 
       const resetButton = () => {
         if (paymentDone) return;
+
         payButton.textContent = "Retry Payment";
         payButton.disabled = false;
       };
@@ -983,10 +1593,11 @@
         successUrl: successUrl,
 
         onSuccess: function () {
-          // UI only. The order becomes PAID when the signed webhook arrives.
           paymentDone = true;
+
           payButton.textContent = "Payment Received";
           payButton.disabled = true;
+
           showStatus(
             "Payment received. We are confirming your order...",
             "success"
@@ -998,6 +1609,7 @@
             "Payment could not be verified. Your order has not been marked as paid.",
             "error"
           );
+
           resetButton();
         },
 
@@ -1006,6 +1618,7 @@
             "This payment is under review. Please contact support before paying again.",
             "error"
           );
+
           payButton.textContent = "Under Review";
           payButton.disabled = true;
         },
@@ -1015,11 +1628,13 @@
             "The payment session expired. You can try again.",
             "error"
           );
+
           resetButton();
         },
 
         onCancelled: function () {
           showStatus("Payment cancelled. You can try again.", "info");
+          resetButton();
         },
 
         onClose: resetButton
@@ -1028,6 +1643,20 @@
 
     async function startPayment() {
       if (busy) return;
+
+      /* Card UI is not connected to a payment processor. */
+
+      const selectedMethod = document.querySelector(
+        'input[name="paymentMethod"]:checked'
+      );
+
+      if (selectedMethod && selectedMethod.value === "card") {
+        showStatus(
+          "Card payments are not available yet. Please select UPI to continue.",
+          "error"
+        );
+        return;
+      }
 
       busy = true;
       payButton.disabled = true;
@@ -1068,8 +1697,6 @@
 
         payButton.textContent = "Connecting to UPI...";
 
-        // The server creates the payment at the gateway using the
-        // server-verified order total and returns a checkout link.
         const result = await apiJSON("/api/checkout/order", {
           method: "POST",
           body: JSON.stringify({
@@ -1079,6 +1706,7 @@
         });
 
         let checkoutOrigin = "";
+
         try {
           checkoutOrigin = new URL(result.checkoutUrl).origin;
         } catch (e) {}
@@ -1094,6 +1722,7 @@
         }
 
         sessionStorage.setItem("shoppyPaymentId", result.paymentId);
+
         sessionStorage.setItem("shoppyPendingOrderId", order.orderId);
 
         showStatus("Opening the secure UPI payment window...", "info");
@@ -1118,6 +1747,45 @@
         busy = false;
       }
     }
+
+    /* UI-only selection: UPI and Card */
+
+    const methodUPI = document.getElementById("methodUPI");
+    const methodCard = document.getElementById("methodCard");
+    const cardFields = document.getElementById("cardFields");
+    const cardDemoNotice = document.getElementById("cardDemoNotice");
+    const upiDetails = document.getElementById("upiDetails");
+
+    function updatePaymentMethodUI() {
+      const isCard = methodCard.checked;
+
+      cardFields.classList.toggle("visible", isCard);
+      cardDemoNotice.classList.toggle("visible", isCard);
+      upiDetails.style.display = isCard ? "none" : "block";
+
+      if (isCard) {
+        payButton.textContent = "Card Payment Unavailable";
+      } else {
+        payButton.textContent = currentOrder
+          ? "Continue to UPI Payment"
+          : "Continue to UPI Payment";
+      }
+
+      payButton.disabled = isCard || busy || paymentDone;
+
+      if (isCard) {
+        showStatus(
+          "Card payment is currently a design preview. Please select UPI to pay.",
+          "info"
+        );
+      } else if (statusMessage.textContent.includes("Card payment")) {
+        statusMessage.className = "status";
+        statusMessage.textContent = "";
+      }
+    }
+
+    methodUPI.addEventListener("change", updatePaymentMethodUI);
+    methodCard.addEventListener("change", updatePaymentMethodUI);
 
     payButton.addEventListener("click", startPayment);
 
@@ -1146,6 +1814,9 @@
 
           payButton.textContent = "Continue to UPI Payment";
           payButton.disabled = false;
+
+          updatePaymentMethodUI();
+
           return;
         }
 
@@ -1160,8 +1831,10 @@
           throw failed.reason;
         }
 
-        payButton.textContent = "Continue to Payment";
+        payButton.textContent = "Continue to UPI Payment";
         payButton.disabled = false;
+
+        updatePaymentMethodUI();
 
       } catch (error) {
         showStatus(
