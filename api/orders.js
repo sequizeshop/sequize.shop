@@ -1,28 +1,61 @@
-
-
-const admin = require("firebase-admin");
 const { getSession } = require("../lib/auth");
+const { getDatabase, syncPayment } = require("../lib/cashfree");
 
-const DATABASE_URL =
-  "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app";
+const SYNC_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // sirf pichhle 7 din ke pending orders
+const MAX_SYNC = 5;
 
-function getDatabase() {
-  if (!admin.apps.length) {
-    const serviceAccountText = process.env.FIREBASE_SERVICE_ACCOUNT;
+async function readOrders(db, uid) {
+  const snapshot = await db
+    .ref("users")
+    .child(uid)
+    .child("orders")
+    .once("value");
 
-    if (!serviceAccountText) {
-      throw new Error("FIREBASE_SERVICE_ACCOUNT is missing.");
+  const saved = snapshot.val();
+
+  const orders =
+    saved && typeof saved === "object" && !Array.isArray(saved)
+      ? Object.entries(saved).map(([key, value]) => ({
+          ...(value && typeof value === "object" ? value : {}),
+          orderId: key
+        }))
+      : [];
+
+  orders.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+
+  return orders;
+}
+
+/*
+ * Pending orders ko Cashfree se verify karo.
+ * Agar paisa aa chuka hai to order PAID ho jata hai (tab band hone ya
+ * webhook late aane par bhi). Error aaye to orders list phir bhi load hoti hai.
+ */
+async function syncPendingOrders(db, orders) {
+  const now = Date.now();
+
+  const pending = orders
+    .filter(
+      o =>
+        o.paymentStatus === "PENDING" &&
+        o.lastPaymentId &&
+        now - Number(o.createdAt || 0) < SYNC_WINDOW_MS
+    )
+    .slice(0, MAX_SYNC);
+
+  if (pending.length === 0) return false;
+
+  const results = await Promise.allSettled(
+    pending.map(o => syncPayment(db, String(o.lastPaymentId)))
+  );
+
+  results.forEach((r, i) => {
+    if (r.status === "rejected") {
+      console.warn("Order sync failed:", pending[i].orderId, r.reason?.message);
     }
+  });
 
-    admin.initializeApp({
-      credential: admin.credential.cert(
-        JSON.parse(serviceAccountText)
-      ),
-      databaseURL: DATABASE_URL
-    });
-  }
-
-  return admin.database();
+  return results.some(r => r.status === "fulfilled" && r.value === "PAID");
 }
 
 module.exports = async function handler(req, res) {
@@ -48,26 +81,16 @@ module.exports = async function handler(req, res) {
     }
 
     const db = getDatabase();
-    const snapshot = await db
-      .ref("users")
-      .child(String(session.uid))
-      .child("orders")
-      .once("value");
+    const uid = String(session.uid);
 
-    const savedOrders = snapshot.val();
+    let orders = await readOrders(db, uid);
 
-    const orders = savedOrders &&
-      typeof savedOrders === "object" &&
-      !Array.isArray(savedOrders)
-      ? Object.entries(savedOrders).map(([key, value]) => ({
-          ...(value && typeof value === "object" ? value : {}),
-          orderId: key
-        }))
-      : [];
-
-    orders.sort((a, b) =>
-      Number(b.createdAt || 0) - Number(a.createdAt || 0)
-    );
+    try {
+      const changed = await syncPendingOrders(db, orders);
+      if (changed) orders = await readOrders(db, uid);
+    } catch (error) {
+      console.warn("Pending order sync skipped:", error.message);
+    }
 
     return res.status(200).json({
       success: true,
