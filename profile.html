@@ -722,34 +722,62 @@
     }
 
     document.getElementById("logoutButton").addEventListener(
-      "click",
-      async () => {
-        const button = document.getElementById("logoutButton");
+  "click",
+  async () => {
 
-        button.disabled = true;
+    const button = document.getElementById("logoutButton");
 
-        try {
-          const response = await fetch("/api/logout", {
-            method: "POST",
-            credentials: "same-origin"
-          });
+    if (button.disabled) {
+      return;
+    }
 
-          const data = await response.json();
+    button.disabled = true;
 
-          if (response.ok && data.success) {
-            window.location.replace(
-              data.redirect || "/login.html"
-            );
-          } else {
-            button.disabled = false;
-            alert(data.message || "Unable to log out.");
-          }
-        } catch {
-          button.disabled = false;
-          alert("Server se connect nahi ho paya.");
-        }
+    try {
+
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          action: "logout"
+        }),
+        cache: "no-store"
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+
+        window.location.replace(
+          data.redirect || "/login.html"
+        );
+
+        return;
       }
-    );
+
+      button.disabled = false;
+
+      alert(
+        data.message || "Unable to log out."
+      );
+
+    } catch (error) {
+
+      button.disabled = false;
+
+      alert(
+        "Server se connect nahi ho paya."
+      );
+
+      console.error("Logout error:", error);
+
+    }
+
+  }
+);
 
     loadProfile();
   </script>
