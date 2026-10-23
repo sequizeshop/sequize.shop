@@ -538,15 +538,45 @@
       *, *::before, *::after { transition-duration: .01ms !important; }
       .skeleton::after { animation: none; }
     }
-  </style>
-  <link rel="stylesheet" href="/global.css">
+  
+/* Shoppy shared Payment-page design system */
+:root{--ink:#17191c;--muted:#737985;--line:#e7eaf0;--blue:#2962ff;--green:#16803c;--header-h:68px;--black:#17191c;--gray:#737985;--border:#e7eaf0;--light:#f7f9fc;--radius:12px}
+html{scroll-behavior:smooth}body{font-family:"DM Sans",Inter,Arial,sans-serif!important;color:var(--ink)!important;background:#fff!important;-webkit-font-smoothing:antialiased}
+.topbar,.navbar{min-height:var(--header-h)!important;height:auto!important;padding:0 max(5%,calc((100% - 1050px)/2))!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important;background:#fff!important;border:0!important;border-bottom:1px solid var(--line)!important;box-shadow:none!important;position:sticky!important;top:0!important;z-index:100!important}
+.brand,.logo{display:inline-flex!important;align-items:center!important;gap:10px!important;color:var(--ink)!important;font-family:Manrope,Arial,sans-serif!important;font-size:23px!important;font-weight:800!important;letter-spacing:-.8px!important;text-decoration:none!important;flex-shrink:0}
+.brand img,.logo img{width:34px!important;height:34px!important;object-fit:contain!important;display:block!important}
+.nav-actions,.nav-links{display:flex!important;align-items:center!important;gap:14px!important}
+.nav-icon,.nav-links>a,.bag-link{width:38px!important;height:38px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;border:0!important;border-radius:9px!important;background:transparent!important;color:#343a46!important;font-size:21px!important;text-decoration:none!important;box-shadow:none!important}
+.nav-icon:hover,.nav-links>a:hover,.bag-link:hover{background:#f2f5ff!important;color:var(--blue)!important;opacity:1!important}
+main,.container,.page-wrapper{width:min(1050px,90%)!important;max-width:1050px!important;margin:32px auto 65px!important;padding-left:0!important;padding-right:0!important}
+.page-heading{margin-bottom:28px!important}.page-heading h1,h1{font-family:Manrope,Arial,sans-serif!important;font-size:clamp(27px,4vw,36px)!important;font-weight:800!important;letter-spacing:-1.2px!important;line-height:1.2!important;color:var(--ink)!important}.page-heading p{margin-top:8px!important;color:var(--muted)!important;font-size:14px!important;line-height:1.7!important}
+h2,h3,.section-title h2,.section-heading h2{font-family:Manrope,Arial,sans-serif!important;font-weight:800!important;letter-spacing:-.4px!important;color:var(--ink)!important}
+p{line-height:1.7}
+button,.btn,.button,.primary-btn,.pay-button{font-family:"DM Sans",Arial,sans-serif!important;font-weight:700!important;border-radius:9px!important;box-shadow:none!important;transition:background .18s,border-color .18s,color .18s!important}
+.btn-primary,.primary-btn,.pay-button,button.primary{background:var(--blue)!important;color:#fff!important;border:1px solid var(--blue)!important}.btn-primary:hover,.primary-btn:hover,.pay-button:hover,button.primary:hover{background:#174de0!important}
+input:not([type=checkbox]):not([type=radio]),select,textarea{font-family:"DM Sans",Arial,sans-serif!important;border:1px solid #dfe3eb!important;border-radius:9px!important;background:#fff!important;color:var(--ink)!important;box-shadow:none!important}input:focus,select:focus,textarea:focus{outline:0!important;border-color:var(--blue)!important;box-shadow:0 0 0 3px rgba(41,98,255,.10)!important}
+a{transition:color .18s}
+/* Flat, divider-based lists: no decorative cards on non-home pages */
+.cart-items,.product-list,.orders-list,.address-list,.order-list,.list-items{display:flex!important;flex-direction:column!important;gap:0!important}
+.cart-item,.product-item,.order-card,.order-item,.address-card,.address-item,.profile-shortcut,.order-row{border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.cart-item,.order-card,.address-card,.address-item{padding:18px 0!important}
+.cart-item:first-child,.product-item:first-child{padding-top:0!important}
+.cart-item:last-child,.product-item:last-child,.order-card:last-child,.address-card:last-child,.address-item:last-child{border-bottom:0!important}
+.card,.panel,.section-card,.content-card{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.section-divider,.divider,.profile-divider{height:1px!important;background:var(--line)!important;border:0!important;margin:25px 0!important}
+.address-option,.payment-option,.select-option,.method-option{border:1px solid #e1e6f0!important;border-radius:12px!important;background:#fff!important;box-shadow:none!important}
+.address-option:has(input:checked),.select-option:has(input:checked),.method-option:has(input:checked){border-color:var(--blue)!important;background:#f8faff!important}
+.notice{border-radius:9px!important}.empty-state,.loading{color:var(--muted)!important;background:transparent!important;border:0!important;border-radius:0!important;padding:20px 0!important}
+@media(max-width:760px){.topbar,.navbar{padding:0 5%!important;min-height:62px!important}.brand,.logo{font-size:21px!important}.nav-actions,.nav-links{gap:8px!important}main,.container,.page-wrapper{width:90%!important;margin:25px auto 48px!important}.page-heading{margin-bottom:23px!important}.cart-item{gap:13px!important}.profile-layout{grid-template-columns:minmax(0,1fr)!important}.cart-layout{grid-template-columns:minmax(0,1fr)!important;gap:28px!important}}
+
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
 </head>
 
 <body>
   <header class="navbar">
-    <a href="/home.html" class="brand" aria-label="Shoppy home">
-      <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo">
-    </a>
+    <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
 
     <form class="search" id="searchForm" role="search">
       <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
