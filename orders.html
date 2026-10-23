@@ -1,128 +1,526 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
-  <title>My Orders | Shoppy</title>
+
+  <title>My Orders — Shoppy</title>
+
+  <link rel="icon" type="image/png"
+    href="https://i.ibb.co/93kQCKxT/202610.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
   <link rel="stylesheet" href="/global.css">
+
   <style>
-  body { background:var(--paper); color:var(--ink); }
-  .navbar { position:fixed; top:0; left:0; right:0; z-index:1000; height:var(--header-h); padding:0 5%; display:flex; align-items:center; justify-content:space-between; gap:20px; background:var(--paper); border-bottom:1px solid var(--line); }
-  .logo { display:flex; align-items:center; text-decoration:none; }
-  .logo img { width:112px; height:auto; max-height:46px; object-fit:contain; }
-  .nav-links { display:flex; align-items:center; gap:25px; }
-  .nav-links a { display:flex; align-items:center; justify-content:center; color:var(--ink); transition:color .2s; }
-  .nav-links a:hover { color:var(--blue); }
-  .nav-links svg { width:21px; height:21px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
-  main { width:min(1050px,90%); margin:34px auto 65px; min-height:55vh; }
-  .heading { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:28px; }
-  h1 { margin:0; font-family:"Manrope",sans-serif; font-size:clamp(27px,4vw,36px); font-weight:800; letter-spacing:-1.2px; }
-  .subheading { color:var(--muted); margin-top:8px; font-size:13px; line-height:1.7; }
-  .refresh-btn,.action-btn,.primary-btn { min-height:43px; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 16px; border:1px solid var(--line); border-radius:10px; background:var(--paper); color:var(--ink); font-size:12px; font-weight:800; transition:background .2s,border-color .2s; }
-  .refresh-btn:hover,.action-btn:hover { background:#f8faff; border-color:#cbd7ff; }
-  .refresh-btn:disabled { opacity:.6; cursor:wait; }
-  .primary-btn { border-color:var(--blue); background:var(--blue); color:#fff; text-decoration:none; }
-  .primary-btn:hover { border-color:var(--blue-dark); background:var(--blue-dark); }
-  #message { padding:15px 0; color:var(--muted); font-size:13px; line-height:1.7; }
-  .order-card { margin-bottom:22px; overflow:hidden; border:1px solid var(--line); border-radius:13px; background:#fff; }
-  .order-top { padding:20px; background:#f8faff; border-bottom:1px solid var(--line); display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:18px; }
-  .meta-label { display:block; margin-bottom:7px; color:var(--muted); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; }
-  .meta-value { font-size:12px; font-weight:700; overflow-wrap:anywhere; }
-  .status-group { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-  .status { display:inline-block; padding:7px 10px; border-radius:7px; background:#fff4d6; color:#805900; font-size:10px; font-weight:800; letter-spacing:.2px; }
-  .status.paid { background:#dcfce7; color:#166534; }
-  .status.failed { background:#fee2e2; color:#991b1b; }
-  .order-body { padding:20px; }
-  .product-row { display:flex; justify-content:space-between; gap:20px; padding:13px 0; border-bottom:1px solid var(--line); line-height:1.6; }
-  .product-row:first-child { padding-top:0; }
-  .product-row:last-child { border-bottom:0; }
-  .product-name { color:var(--ink); font-size:13px; font-weight:700; }
-  .product-info { margin-top:5px; color:var(--muted); font-size:11px; }
-  .product-price { font-size:13px; font-weight:800; white-space:nowrap; }
-  .order-bottom { padding:18px 20px 20px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:18px; border-top:1px solid var(--line); }
-  .total-label { color:var(--muted); font-size:11px; margin-bottom:6px; }
-  .total { font-family:"Manrope",sans-serif; font-size:24px; font-weight:800; letter-spacing:-.6px; }
-  .order-actions { display:flex; gap:10px; flex-wrap:wrap; }
-  .empty-state { text-align:center; padding:55px 20px; border:1px solid var(--line); border-radius:13px; background:#fff; }
-  .empty-state h2 { margin:0 0 10px; font-family:"Manrope",sans-serif; font-size:21px; font-weight:800; }
-  .empty-state p { color:var(--muted); font-size:13px; line-height:1.7; margin:0 0 22px; }
-  .notice { margin:0 0 22px; padding:13px 15px; border:1px solid #dce6ff; border-radius:10px; background:#f5f8ff; color:#34466f; font-size:12px; line-height:1.7; }
-  footer { border-top:1px solid var(--line); padding:24px 20px; text-align:center; color:var(--muted); font-size:11px; }
-  @media(max-width:600px) { .navbar { padding:0 5%; } .logo img { width:95px; } .nav-links { gap:17px; } .nav-links svg { width:19px; height:19px; } main { width:90%; margin-top:25px; } .order-top,.order-body,.order-bottom { padding-left:15px; padding-right:15px; } .order-top { flex-direction:column; } .order-bottom { align-items:stretch; } .order-actions { width:100%; } .order-actions button,.order-actions a { flex:1; } .product-row { gap:12px; } }
-</style>
+    /* =====================================================
+       SHOPPY — MY ORDERS
+       Payment page reference design
+       ===================================================== */
+
+    main {
+      width: min(1050px, 90%);
+      margin: 34px auto 65px;
+      min-height: 55vh;
+    }
+
+    /* PAGE HEADING */
+
+    .page-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .page-heading h1 {
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(27px, 4vw, 36px);
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      margin: 0 0 8px;
+    }
+
+    .page-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* BUTTONS */
+
+    .refresh-btn,
+    .action-btn,
+    .primary-btn {
+      min-height: 43px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      transition:
+        background .2s,
+        border-color .2s,
+        color .2s;
+    }
+
+    .refresh-btn:hover,
+    .action-btn:hover {
+      background: #f8faff;
+      border-color: #cbd7ff;
+    }
+
+    .refresh-btn:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .primary-btn {
+      min-height: 49px;
+      padding: 13px 18px;
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    .primary-btn:hover {
+      border-color: var(--blue-dark);
+      background: var(--blue-dark);
+    }
+
+    .refresh-btn i,
+    .action-btn i,
+    .primary-btn i {
+      font-size: 16px;
+    }
+
+    /* PAGE MESSAGE */
+
+    #message {
+      padding: 0;
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    #message:empty {
+      display: none;
+    }
+
+    .notice {
+      padding: 13px 15px;
+      margin-bottom: 22px;
+      border: 1px solid #dce6ff;
+      border-radius: 10px;
+      background: #f5f8ff;
+      color: #34466f;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    /* ORDER CARD */
+
+    .order-card {
+      margin-bottom: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+    }
+
+    .order-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding: 18px 20px;
+      background: #f8faff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .order-meta {
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .meta-label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+
+    .meta-value {
+      font-size: 12px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+      line-height: 1.7;
+    }
+
+    /* STATUS */
+
+    .status-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      background: #fff4d6;
+      color: #805900;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    .status i {
+      font-size: 13px;
+    }
+
+    .status.paid {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status.failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* ORDER PRODUCTS */
+
+    .order-body {
+      padding: 8px 20px;
+    }
+
+    .product-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--line);
+      line-height: 1.6;
+    }
+
+    .product-row:first-child {
+      padding-top: 12px;
+    }
+
+    .product-row:last-child {
+      border-bottom: 0;
+    }
+
+    .product-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .product-name {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .product-info {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .product-price {
+      flex-shrink: 0;
+      padding-left: 5px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    /* ORDER TOTAL */
+
+    .order-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding: 18px 20px 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .order-total {
+      min-width: 0;
+    }
+
+    .total-label {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .total {
+      font-family: "Manrope", sans-serif;
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -.7px;
+      overflow-wrap: anywhere;
+    }
+
+    /* ACTIONS */
+
+    .order-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* EMPTY STATE */
+
+    .empty-state {
+      padding: 35px 20px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: #edf2ff;
+      color: var(--blue);
+      font-size: 29px;
+    }
+
+    .empty-state h2 {
+      margin: 0 0 10px;
+      font-family: "Manrope", sans-serif;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+    }
+
+    .empty-state p {
+      max-width: 380px;
+      margin: 0 auto 22px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .empty-state .primary-btn {
+      width: auto;
+      min-width: 155px;
+    }
+
+    /* FOOTER */
+
+    footer {
+      padding: 24px 20px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 760px) {
+      main {
+        width: 90%;
+        margin-top: 25px;
+      }
+
+      .page-heading h1 {
+        font-size: 29px;
+      }
+
+      .order-top {
+        gap: 15px;
+      }
+
+      .order-meta {
+        min-width: calc(50% - 10px);
+      }
+
+      .status-group {
+        width: 100%;
+      }
+
+      .order-body {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      .order-top,
+      .order-bottom {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      .order-bottom {
+        align-items: stretch;
+      }
+
+      .order-actions {
+        width: 100%;
+      }
+
+      .order-actions button,
+      .order-actions a {
+        flex: 1;
+      }
+
+      .product-row {
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .page-heading h1 {
+        font-size: 27px;
+      }
+
+      .refresh-btn {
+        width: 100%;
+      }
+
+      .product-name {
+        font-size: 12px;
+      }
+
+      .product-price {
+        font-size: 12px;
+        padding-left: 0;
+      }
+
+      .total {
+        font-size: 23px;
+      }
+
+      .order-actions {
+        flex-direction: column;
+      }
+
+      .order-actions button,
+      .order-actions a {
+        width: 100%;
+        flex: none;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <header class="navbar">
-    <a class="logo" href="/" aria-label="Shoppy home">
-      <img
-        src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
-        alt="Shoppy"
-      >
+
+  <!-- =====================================================
+       SHOPPY TOOLBAR
+       Same reference design as Payment Page
+       ===================================================== -->
+
+  <header class="topbar">
+
+    <a href="/"
+       class="bag-link"
+       aria-label="Continue shopping"
+       title="Continue shopping">
+
+      <i class="ph ph-navigation-arrow"></i>
+
     </a>
 
-    <nav class="nav-links" aria-label="Main navigation">
-      <a href="/" aria-label="Home" title="Home">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m3 10 9-7 9 7"></path>
-          <path d="M5 9v12h14V9M9 21v-7h6v7"></path>
-        </svg>
-      </a>
+    <a href="/" class="brand">Shoppy.</a>
 
-      <a href="/shop.html" aria-label="Shop" title="Shop">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 3h2l2.4 12.1a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"></path>
-          <circle cx="10" cy="21" r="1"></circle>
-          <circle cx="19" cy="21" r="1"></circle>
-        </svg>
-      </a>
-
-      <a href="/cart.html" aria-label="Cart" title="Cart">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 3h2l2.4 12.1a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"></path>
-          <circle cx="10" cy="21" r="1"></circle>
-          <circle cx="19" cy="21" r="1"></circle>
-        </svg>
-      </a>
-
-      <a href="/account.html" aria-label="Account" title="Account">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="8" r="4"></circle>
-          <path d="M4 21a8 8 0 0 1 16 0"></path>
-        </svg>
-      </a>
-    </nav>
   </header>
 
   <main>
-    <div class="heading">
+
+    <!-- PAGE HEADING -->
+
+    <div class="page-heading">
+
       <div>
         <h1>My Orders</h1>
-        <div class="subheading">View your orders and payment status.</div>
+
+        <p>
+          View your orders and payment status.
+        </p>
       </div>
-      <button class="refresh-btn" id="refreshBtn" type="button">
-        Refresh orders
+
+      <button class="refresh-btn"
+              id="refreshBtn"
+              type="button">
+
+        <i class="ph ph-arrows-clockwise"></i>
+
+        <span>Refresh orders</span>
+
       </button>
+
     </div>
 
-    <p class="notice">
+    <!-- PAYMENT INFORMATION -->
+
+    <div class="notice">
+      <i class="ph ph-info"></i>
       Payment status is shown according to the order records available on
       Shoppy. A pending payment is not a confirmed payment.
-    </p>
-
-    <div id="message" role="status" aria-live="polite">
-      Loading your orders...
     </div>
 
-    <section id="ordersList" aria-label="Your orders"></section>
+    <!-- LOADING / ERROR MESSAGE -->
+
+    <div id="message"
+         role="status"
+         aria-live="polite">
+
+      Loading your orders...
+
+    </div>
+
+    <!-- ORDERS LIST -->
+
+    <section id="ordersList"
+             aria-label="Your orders">
+
+    </section>
+
   </main>
 
   <footer>
@@ -130,6 +528,8 @@
   </footer>
 
   <script>
+    "use strict";
+
     const ordersList = document.getElementById("ordersList");
     const message = document.getElementById("message");
     const refreshBtn = document.getElementById("refreshBtn");
@@ -151,7 +551,10 @@
 
     function formatINR(value) {
       const amount = Number(value);
-      if (!Number.isFinite(amount)) return "—";
+
+      if (!Number.isFinite(amount)) {
+        return "—";
+      }
 
       return new Intl.NumberFormat("en-IN", {
         style: "currency",
@@ -167,13 +570,18 @@
 
       let date;
 
-      if (typeof value === "number" || /^\d+$/.test(String(value))) {
+      if (
+        typeof value === "number" ||
+        /^\d+$/.test(String(value))
+      ) {
         date = new Date(Number(value));
       } else {
         date = new Date(value);
       }
 
-      if (Number.isNaN(date.getTime())) return "Date unavailable";
+      if (Number.isNaN(date.getTime())) {
+        return "Date unavailable";
+      }
 
       return date.toLocaleString("en-IN", {
         day: "2-digit",
@@ -194,11 +602,20 @@
     function paymentClass(status) {
       const value = String(status || "").toUpperCase();
 
-      if (value === "PAID" || value === "SUCCESS" || value === "COMPLETED") {
+      if (
+        value === "PAID" ||
+        value === "SUCCESS" ||
+        value === "SUCCESSFUL" ||
+        value === "COMPLETED"
+      ) {
         return "paid";
       }
 
-      if (value === "FAILED" || value === "CANCELLED" || value === "EXPIRED") {
+      if (
+        value === "FAILED" ||
+        value === "CANCELLED" ||
+        value === "EXPIRED"
+      ) {
         return "failed";
       }
 
@@ -207,102 +624,235 @@
 
     function renderOrder(order) {
       const orderId = String(order.orderId || "");
-      const paymentStatus = String(order.paymentStatus || "PENDING");
-      const orderStatus = String(order.orderStatus || "PENDING");
-      const items = Array.isArray(order.items) ? order.items : [];
+
+      const paymentStatus =
+        String(order.paymentStatus || "PENDING");
+
+      const orderStatus =
+        String(order.orderStatus || "PENDING");
+
+      const items = Array.isArray(order.items)
+        ? order.items
+        : [];
 
       const productsHTML = items.length
         ? items.map(item => {
-            const title = escapeHTML(item.title || "Product");
-            const quantity = Math.max(0, Number(item.quantity) || 0);
-            const unitPriceUSD = Number(item.unitPriceUSD);
-            const lineTotalUSD = Number(item.lineTotalUSD);
+
+            const title = escapeHTML(
+              item.title || "Product"
+            );
+
+            const quantity = Math.max(
+              0,
+              Number(item.quantity) || 0
+            );
+
+            const unitPriceUSD =
+              Number(item.unitPriceUSD);
+
+            const lineTotalUSD =
+              Number(item.lineTotalUSD);
 
             let priceText = "";
 
             if (Number.isFinite(lineTotalUSD)) {
+
               priceText = formatINR(
-                lineTotalUSD * (Number(order.exchangeRate) || 85)
+                lineTotalUSD *
+                (Number(order.exchangeRate) || 85)
               );
+
             } else if (Number.isFinite(unitPriceUSD)) {
+
               priceText = formatINR(
-                unitPriceUSD * quantity * (Number(order.exchangeRate) || 85)
+                unitPriceUSD *
+                quantity *
+                (Number(order.exchangeRate) || 85)
               );
+
             }
 
             return `
               <div class="product-row">
-                <div>
-                  <div class="product-name">${title}</div>
-                  <div class="product-info">Quantity: ${quantity}</div>
+
+                <div class="product-details">
+
+                  <div class="product-name">
+                    ${title}
+                  </div>
+
+                  <div class="product-info">
+                    Quantity: ${quantity}
+                  </div>
+
                 </div>
-                <div class="product-price">${priceText || "—"}</div>
+
+                <div class="product-price">
+                  ${priceText || "—"}
+                </div>
+
               </div>
             `;
-          }).join("")
-        : '<p class="subheading">No item details available for this order.</p>';
 
-      const encodedOrderId = encodeURIComponent(orderId);
+          }).join("")
+        : `
+            <div class="empty-state"
+                 style="border:0;padding:20px 0">
+
+              <p style="margin:0">
+                No item details available for this order.
+              </p>
+
+            </div>
+          `;
+
+      const encodedOrderId =
+        encodeURIComponent(orderId);
+
+      const upperPaymentStatus =
+        paymentStatus.toUpperCase();
+
+      const canContinuePayment =
+        upperPaymentStatus === "PENDING" &&
+        orderStatus.toUpperCase() !== "CANCELLED" &&
+        orderStatus.toUpperCase() !== "FAILED" &&
+        orderStatus.toUpperCase() !== "COMPLETED" &&
+        orderStatus.toUpperCase() !== "DELIVERED";
+
+      const paymentIcon =
+        paymentClass(paymentStatus) === "paid"
+          ? "ph-check-circle"
+          : paymentClass(paymentStatus) === "failed"
+            ? "ph-x-circle"
+            : "ph-clock";
 
       return `
         <article class="order-card">
+
+          <!-- ORDER HEADER -->
+
           <div class="order-top">
-            <div>
-              <span class="meta-label">Order ID</span>
-              <div class="meta-value">${escapeHTML(orderId || "Unavailable")}</div>
+
+            <div class="order-meta">
+
+              <span class="meta-label">
+                Order ID
+              </span>
+
+              <div class="meta-value">
+                ${escapeHTML(orderId || "Unavailable")}
+              </div>
+
             </div>
 
-            <div>
-              <span class="meta-label">Order date</span>
-              <div class="meta-value">${escapeHTML(formatDate(order.createdAt))}</div>
+            <div class="order-meta">
+
+              <span class="meta-label">
+                Order date
+              </span>
+
+              <div class="meta-value">
+                ${escapeHTML(formatDate(order.createdAt))}
+              </div>
+
             </div>
 
             <div class="status-group">
+
               <span class="status ${paymentClass(paymentStatus)}">
-                Payment: ${escapeHTML(readableStatus(paymentStatus))}
+
+                <i class="ph ${paymentIcon}"></i>
+
+                Payment:
+                ${escapeHTML(readableStatus(paymentStatus))}
+
               </span>
+
               <span class="status">
+
                 ${escapeHTML(readableStatus(orderStatus))}
+
               </span>
+
             </div>
+
           </div>
+
+          <!-- PRODUCTS -->
 
           <div class="order-body">
+
             ${productsHTML}
+
           </div>
 
+          <!-- ORDER TOTAL AND ACTIONS -->
+
           <div class="order-bottom">
-            <div>
-              <div class="total-label">Order total</div>
-              <div class="total">${formatINR(order.totalINR)}</div>
+
+            <div class="order-total">
+
+              <div class="total-label">
+                Order total
+              </div>
+
+              <div class="total">
+                ${formatINR(order.totalINR)}
+              </div>
+
             </div>
 
             <div class="order-actions">
-              <button class="action-btn" type="button"
+
+              <button
+                class="action-btn"
+                type="button"
                 data-copy-order="${escapeHTML(orderId)}">
-                Copy order ID
+
+                <i class="ph ph-copy"></i>
+
+                <span>Copy order ID</span>
+
               </button>
+
               ${
-                paymentStatus.toUpperCase() === "PENDING"
-                  ? `<button class="primary-btn" type="button"
-                       data-pay-order="${escapeHTML(encodedOrderId)}">
-                       Continue to payment
-                     </button>`
+                canContinuePayment
+                  ? `
+                    <a
+                      class="primary-btn"
+                      href="/payment.html?orderId=${encodedOrderId}">
+
+                      <i class="ph ph-lock-key"></i>
+
+                      <span>Continue to payment</span>
+
+                    </a>
+                  `
                   : ""
               }
+
             </div>
+
           </div>
+
         </article>
       `;
     }
 
     async function loadOrders() {
       refreshBtn.disabled = true;
-      refreshBtn.textContent = "Loading...";
+
+      refreshBtn.innerHTML = `
+        <i class="ph ph-spinner"></i>
+        <span>Loading...</span>
+      `;
+
       ordersList.replaceChildren();
+
       message.textContent = "Loading your orders...";
 
       try {
+
         const response = await fetch("/api/orders", {
           method: "GET",
           credentials: "same-origin",
@@ -315,78 +865,152 @@
         const data = await response.json().catch(() => ({}));
 
         if (response.status === 401) {
-          message.textContent = "Please log in to view your orders.";
+
+          message.textContent =
+            "Please log in to view your orders.";
+
           ordersList.innerHTML = `
             <div class="empty-state">
+
+              <div class="empty-icon">
+                <i class="ph ph-user-circle"></i>
+              </div>
+
               <h2>Login required</h2>
-              <p>Log in to your Shoppy account to see your orders.</p>
-              <a class="primary-btn" href="/login.html">Log in</a>
+
+              <p>
+                Log in to your Shoppy account to see your orders.
+              </p>
+
+              <a class="primary-btn" href="/login.html">
+
+                <i class="ph ph-sign-in"></i>
+
+                Log in
+
+              </a>
+
             </div>
           `;
+
           return;
         }
 
         if (!response.ok || data.success !== true) {
-          throw new Error(data.message || "Unable to load orders.");
+
+          throw new Error(
+            data.message || "Unable to load orders."
+          );
+
         }
 
-        const orders = Array.isArray(data.orders) ? data.orders : [];
+        const orders = Array.isArray(data.orders)
+          ? data.orders
+          : [];
 
         if (orders.length === 0) {
+
           message.textContent = "";
+
           ordersList.innerHTML = `
             <div class="empty-state">
+
+              <div class="empty-icon">
+                <i class="ph ph-shopping-bag-open"></i>
+              </div>
+
               <h2>No orders yet</h2>
-              <p>Your orders will appear here after you place an order.</p>
-              <a class="primary-btn" href="/shop.html">Start shopping</a>
+
+              <p>
+                Your orders will appear here after you place an order.
+              </p>
+
+              <a class="primary-btn" href="/shop.html">
+
+                <i class="ph ph-shopping-bag"></i>
+
+                Start shopping
+
+              </a>
+
             </div>
           `;
+
           return;
         }
 
-        message.textContent = `${orders.length} order${orders.length === 1 ? "" : "s"} found.`;
-        ordersList.innerHTML = orders.map(renderOrder).join("");
+        message.textContent =
+          `${orders.length} order${orders.length === 1 ? "" : "s"} found.`;
+
+        ordersList.innerHTML =
+          orders.map(renderOrder).join("");
 
       } catch (error) {
+
         console.error("Load orders error:", error);
+
         message.textContent =
           "We couldn't load your orders. Please try again.";
+
       } finally {
+
         refreshBtn.disabled = false;
-        refreshBtn.textContent = "Refresh orders";
+
+        refreshBtn.innerHTML = `
+          <i class="ph ph-arrows-clockwise"></i>
+          <span>Refresh orders</span>
+        `;
+
       }
     }
 
     refreshBtn.addEventListener("click", loadOrders);
 
     ordersList.addEventListener("click", async function (event) {
-      const copyButton = event.target.closest("[data-copy-order]");
-      const payButton = event.target.closest("[data-pay-order]");
+
+      const copyButton =
+        event.target.closest("[data-copy-order]");
 
       if (copyButton) {
+
+        const originalHTML = `
+          <i class="ph ph-copy"></i>
+          <span>Copy order ID</span>
+        `;
+
         try {
-          await navigator.clipboard.writeText(copyButton.dataset.copyOrder);
-          copyButton.textContent = "Copied";
+
+          await navigator.clipboard.writeText(
+            copyButton.dataset.copyOrder
+          );
+
+          copyButton.innerHTML = `
+            <i class="ph ph-check"></i>
+            <span>Copied</span>
+          `;
+
           setTimeout(() => {
-            copyButton.textContent = "Copy order ID";
+
+            if (copyButton.isConnected) {
+              copyButton.innerHTML = originalHTML;
+            }
+
           }, 1500);
-        } catch {
+
+        } catch (error) {
+
+          console.error("Copy order ID error:", error);
+
           message.textContent =
             "Copy failed. Please select and copy the order ID manually.";
+
         }
       }
 
-      if (payButton) {
-        /*
-          This is a placeholder until the real payment flow is connected.
-          Do not mark an order paid just because a UPI app opens.
-        */
-        window.location.href =
-          "/payment.html?orderId=" + payButton.dataset.payOrder;
-      }
     });
 
     loadOrders();
   </script>
+
 </body>
 </html>
