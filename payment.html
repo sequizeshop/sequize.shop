@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
 <style>
 :root{--black:#111;--gray:#737373;--border:#e9e9e9;--light:#f7f7f7;--danger:#c62828;--success:#177642;--discount:#177642;--radius:16px}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -19,13 +20,11 @@ a{text-decoration:none;color:inherit}
 button,input{font:inherit}
 button{cursor:pointer}
 button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;outline-offset:3px}
-/* NAVBAR */
 .navbar{min-height:76px;padding:0 7%;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:10}
 .brand img{width:46px;height:46px;object-fit:contain;display:block}
 .nav-actions{display:flex;align-items:center;gap:22px}
 .nav-icon{width:32px;height:36px;display:flex;align-items:center;justify-content:center;font-size:23px}
 .nav-icon:hover{opacity:.6}
-/* MAIN */
 .container{width:86%;max-width:1200px;margin:45px auto 70px}
 .page-heading{margin-bottom:30px}
 .page-heading h1{font-size:clamp(28px,4vw,38px);font-weight:800;letter-spacing:-1.5px}
@@ -39,14 +38,12 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
 .change-address{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .change-address:hover{opacity:.65}
 .content-card{min-width:0;padding:20px;border:1px solid var(--border);border-radius:var(--radius);background:#fff}
-/* ADDRESS */
 .address-card{display:flex;align-items:flex-start;gap:13px;min-width:0}
 .address-icon{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--light);border-radius:10px;font-size:20px}
 .address-content{min-width:0;flex:1;font-size:12px;line-height:1.8;color:#555;overflow-wrap:anywhere;word-break:normal}
 .address-content strong{display:block;margin-bottom:3px;color:var(--black);font-size:13px;font-weight:700;line-height:1.6}
 .address-phone{margin-bottom:3px;color:#333;font-weight:600}
 .address-loading,.empty-message{color:var(--gray);font-size:12px;line-height:1.8}
-/* PRODUCTS */
 .product-list{display:flex;flex-direction:column}
 .product{display:flex;align-items:center;gap:15px;padding:15px 0;border-bottom:1px solid var(--border);min-width:0}
 .product:first-child{padding-top:0}
@@ -56,7 +53,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
 .product-name{font-size:13px;line-height:1.6;font-weight:700;overflow-wrap:anywhere}
 .product-meta{margin-top:5px;color:var(--gray);font-size:11px;line-height:1.6}
 .product-price{flex-shrink:0;font-size:13px;font-weight:800;text-align:right;white-space:nowrap}
-/* PAYMENT METHODS */
 .payment-options{display:flex;flex-direction:column;gap:0}
 .payment-method{display:flex;align-items:center;gap:13px;padding:16px 0;border-bottom:1px solid var(--border);cursor:pointer;min-width:0}
 .payment-method:first-child{padding-top:0}
@@ -83,7 +79,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
 .security-item{display:flex;align-items:center;gap:7px;color:var(--gray);font-size:10px;line-height:1.6}
 .security-item i{font-size:17px}
 .notice{margin-top:17px;padding:12px 13px;border-radius:9px;background:#f7f7f7;color:#555;font-size:11px;line-height:1.8}
-/* SUMMARY */
 .summary-section{position:sticky;top:100px;min-width:0}
 .summary-heading{margin-bottom:14px;font-size:18px;font-weight:800;letter-spacing:-.35px}
 .summary-card{padding:23px;border:1px solid var(--border);border-radius:var(--radius);background:#fff}
@@ -99,7 +94,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
 .discount-line,.discount-line strong{color:var(--discount)}
 .discount-banner{display:flex;align-items:center;gap:9px;margin:0 0 18px;padding:12px;border-radius:9px;background:#e9f7ed;color:#176b39;font-size:12px;font-weight:800;line-height:1.6}
 .discount-banner i{flex-shrink:0;font-size:20px}
-/* BUTTONS */
 .checkout-actions{margin-top:18px}
 .pay-button,.continue-button{width:100%;min-height:47px;display:flex;justify-content:center;align-items:center;gap:9px;padding:14px;border-radius:10px;font-size:12px;font-weight:700}
 .pay-button{border:0;background:var(--black);color:#fff;transition:background .2s,opacity .2s}
@@ -107,15 +101,12 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
 .pay-button:disabled{opacity:.5;cursor:not-allowed}
 .continue-button{margin-top:10px;border:1px solid var(--border);background:#fff;color:var(--black)}
 .continue-button:hover{background:var(--light)}
-/* STATUS */
 .status{display:none;padding:13px;margin-top:14px;border-radius:9px;font-size:12px;line-height:1.8;overflow-wrap:anywhere}
 .status.show{display:block}
 .status.error{color:#a21c1c;background:#fff1f1;border:1px solid #f1cccc}
 .status.info{color:#245b9b;background:#f4f8ff;border:1px solid #d5e4ff}
 .status.success{color:#176b39;background:#effaf2;border:1px solid #ccebd4}
-/* FOOTER */
 .footer{border-top:1px solid var(--border);padding:25px 7%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;color:#888;font-size:11px}
-/* RESPONSIVE */
 @media(max-width:900px){.checkout-layout{grid-template-columns:1fr;gap:30px}.summary-section{position:static}}
 @media(max-width:600px){
 .navbar{min-height:66px;padding:0 5%}
@@ -151,7 +142,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
 <body>
 
 <header class="navbar">
-  <a href="/" class="brand" aria-label="Shoppy home"><img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo"></a>
+  <a href="/" class="brand" aria-label="Shoppy home">
+    <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo">
+  </a>
   <nav class="nav-actions" aria-label="Main navigation">
     <a class="nav-icon" href="/" aria-label="Home" title="Home"><i class="ph ph-house" aria-hidden="true"></i></a>
     <a class="nav-icon" href="/shop.html" aria-label="Shop" title="Shop"><i class="ph ph-shopping-cart" aria-hidden="true"></i></a>
@@ -168,8 +161,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
 
   <div class="checkout-layout">
     <div class="checkout-main">
-
-      <!-- DELIVERY ADDRESS -->
       <section class="checkout-section">
         <div class="section-heading">
           <div><h2>Delivery Address</h2></div>
@@ -182,7 +173,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
         </div>
       </section>
 
-      <!-- ORDER ITEMS -->
       <section class="checkout-section">
         <div class="section-heading">
           <div>
@@ -197,7 +187,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
         </div>
       </section>
 
-      <!-- PAYMENT METHOD -->
       <section class="checkout-section">
         <div class="section-heading">
           <div>
@@ -208,7 +197,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
 
         <div class="content-card">
           <div class="payment-options">
-
             <label class="payment-method selected" id="upiMethod">
               <input type="radio" name="paymentMethod" value="upi" checked>
               <span class="method-icon">UPI</span>
@@ -228,7 +216,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
               </span>
               <span class="method-badge">Not Available</span>
             </label>
-
           </div>
 
           <div id="upiDetails" class="method-extra visible">
@@ -277,10 +264,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
           </a>
         </div>
       </section>
-
     </div>
 
-    <!-- ORDER SUMMARY -->
     <aside class="summary-section">
       <h2 class="summary-heading">Order Summary</h2>
       <div class="summary-card">
@@ -304,20 +289,18 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #555;
   <span>Secure Checkout</span>
 </footer>
 
-<!-- CASHFREE CHECKOUT SDK -->
 <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
 <script>
 "use strict";
 
-/* CONFIGURATION */
 const USD_TO_INR = 85;
 const DISCOUNT_PERCENT = 95;
 const DISCOUNT_MULTIPLIER = (100 - DISCOUNT_PERCENT) / 100;
-const CASHFREE_MODE = "production"; // test ke liye "sandbox"
+const CASHFREE_MODE = "production";
+const ORDER_STATUS_URL = "/order-status.html";
 const ORDERS_URL = "/orders.html";
 
-/* ELEMENTS */
 const $ = id => document.getElementById(id);
 const addressContainer = $("addressContainer");
 const productsContainer = $("productsContainer");
@@ -328,7 +311,6 @@ const cardDetails = $("cardDetails");
 const upiMethod = $("upiMethod");
 const cardMethod = $("cardMethod");
 
-/* STATE */
 let cashfree = null;
 let selectedAddress = null;
 let cartItems = [];
@@ -339,16 +321,16 @@ let paymentDone = false;
 
 $("year").textContent = new Date().getFullYear();
 
-/* HELPERS */
 const money = v => new Intl.NumberFormat("en-IN", {
-  style: "currency", currency: "INR",
-  minimumFractionDigits: 2, maximumFractionDigits: 2
+  style: "currency",
+  currency: "INR",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
 }).format(Number(v) || 0);
 
 const safeText = v => String(v ?? "").trim();
 
 function showStatus(message, type = "info") {
-  if (!statusMessage) return console.error(message);
   statusMessage.className = "status show " + type;
   statusMessage.textContent = message;
 }
@@ -357,12 +339,10 @@ function setPayLabel(text, icon = "ph-arrow-right") {
   payButton.innerHTML = text + ' <i class="ph ' + icon + '" aria-hidden="true"></i>';
 }
 
-/* Order ID sirf URL se aata hai. Purani sessionStorage value ab kabhi use nahi hoti. */
 function getOrderIdFromPage() {
   return (new URLSearchParams(location.search).get("orderId") || "").trim();
 }
 
-/* Purana/galat order ID hatao taaki naya checkout bina error ke chale */
 function dropStaleOrder() {
   sessionStorage.removeItem("shoppyPendingOrderId");
   currentOrder = null;
@@ -378,7 +358,6 @@ function getAddressId() {
     localStorage.getItem("checkoutAddressId") || "").trim();
 }
 
-/* Sirf preview ke liye; asli amount hamesha server tay karta hai */
 const getDiscountedPrice = p =>
   Number((Number(p || 0) * DISCOUNT_MULTIPLIER).toFixed(2));
 
@@ -393,7 +372,6 @@ function renderSummary({ itemCount = 0, originalINR = 0, discountINR = 0, finalI
 const countItems = list =>
   list.reduce((s, i) => s + Number(i.quantity || 0), 0);
 
-/* ADDRESS */
 function addressLines(a) {
   return [
     a.houseNumber, a.building, a.area,
@@ -436,7 +414,6 @@ function renderAddress(address) {
   return wrapper;
 }
 
-/* PRODUCTS */
 function renderProduct(item) {
   const fallback = "https://placehold.co/120x120/f7f7f7/777?text=Product";
 
@@ -490,7 +467,6 @@ function renderProduct(item) {
   return row;
 }
 
-/* API */
 async function apiJSON(url, options = {}) {
   const response = await fetch(url, {
     credentials: "same-origin",
@@ -506,12 +482,15 @@ async function apiJSON(url, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok || data.success !== true) {
-    throw new Error(data.message || "Request failed (" + response.status + ").");
+    const error = new Error(data.message || "Request failed (" + response.status + ").");
+    error.status = response.status;
+    error.code = data.code || "";
+    throw error;
   }
+
   return data;
 }
 
-/* LOAD CART */
 async function loadCart() {
   const data = await apiJSON("/api/cart");
   cartItems = Array.isArray(data.items) ? data.items : [];
@@ -543,12 +522,10 @@ async function loadCart() {
   });
 
   if (cartItems.length === 0) {
-    productsContainer.innerHTML =
-      '<div class="empty-message">Your cart is empty.</div>';
+    productsContainer.innerHTML = '<div class="empty-message">Your cart is empty.</div>';
   }
 }
 
-/* LOAD ADDRESS */
 async function loadAddress() {
   const data = await apiJSON("/api/addresses");
   const addresses = Array.isArray(data.addresses) ? data.addresses : [];
@@ -570,7 +547,6 @@ async function loadAddress() {
   addressContainer.replaceChildren(renderAddress(selectedAddress));
 }
 
-/* LOAD EXISTING ORDER (error.code: NOT_FOUND / PAID) */
 async function loadExistingOrder(orderId) {
   const data = await apiJSON("/api/orders");
   const orders = Array.isArray(data.orders) ? data.orders : [];
@@ -594,13 +570,12 @@ async function loadExistingOrder(orderId) {
 
   currentOrder = order;
 
-  // Existing order: server ki saved amount dikhao, discount dobara mat lagao
   const finalINR = Number(order.totalINR);
-
   let originalINR = Number(
     order.originalTotalINR ??
     (Number(order.totalUSD || 0) * USD_TO_INR / DISCOUNT_MULTIPLIER)
   );
+
   if (!Number.isFinite(originalINR) || originalINR < finalINR) {
     originalINR = finalINR;
   }
@@ -608,6 +583,7 @@ async function loadExistingOrder(orderId) {
   let discountINR = Number(
     order.discountAmountINR ?? Math.max(0, originalINR - finalINR)
   );
+
   if (!Number.isFinite(discountINR) || discountINR < 0) discountINR = 0;
 
   renderSummary({
@@ -621,7 +597,6 @@ async function loadExistingOrder(orderId) {
   payButton.disabled = false;
 }
 
-/* CREATE ORDER */
 async function createOrderOnce() {
   if (currentOrder) return currentOrder;
 
@@ -659,18 +634,29 @@ async function createOrderOnce() {
   return currentOrder;
 }
 
-/* OPEN CASHFREE CHECKOUT */
+/* Payment verification ke baad hi order status page par redirect hoga. */
+function goToOrderStatus(orderId) {
+  location.replace(
+    ORDER_STATUS_URL + "?orderId=" + encodeURIComponent(orderId)
+  );
+}
+
+async function verifyOrderPayment(orderId) {
+  return apiJSON("/api/checkout/order", {
+    method: "POST",
+    body: JSON.stringify({
+      action: "verify-payment",
+      orderId
+    })
+  });
+}
+
 async function openCashfreeCheckout(order, result) {
   if (typeof window.Cashfree !== "function") {
     throw new Error("The payment script could not be loaded. Please refresh and try again.");
   }
-  if (!cashfree) cashfree = Cashfree({ mode: CASHFREE_MODE });
 
-  const resetButton = () => {
-    if (paymentDone) return;
-    setPayLabel("Continue to UPI Payment");
-    payButton.disabled = false;
-  };
+  if (!cashfree) cashfree = Cashfree({ mode: CASHFREE_MODE });
 
   await cashfree.checkout({
     paymentSessionId: result.paymentSessionId,
@@ -678,36 +664,39 @@ async function openCashfreeCheckout(order, result) {
   });
 
   showStatus("Checking your payment status...", "info");
+  setPayLabel("Verifying Payment", "ph-spinner");
+  payButton.disabled = true;
 
-  const check = await apiJSON("/api/checkout/order", {
-    method: "POST",
-    body: JSON.stringify({ action: "verify-payment", orderId: order.orderId })
-  });
-
-  const status = String(check.paymentStatus).toUpperCase();
+  /*
+   * Modal close hone ke baad status verify karein.
+   * Agar Pending ho to order-status page par bhej dein.
+   * Wahan server se dobara status check hoga.
+   */
+  const check = await verifyOrderPayment(order.orderId);
+  const status = String(check.paymentStatus || "").toUpperCase();
 
   if (status === "PAID") {
     paymentDone = true;
     sessionStorage.removeItem("shoppyPendingOrderId");
-    payButton.textContent = "Payment Received";
-    payButton.disabled = true;
-    showStatus("Payment received. Redirecting to your orders...", "success");
-
-    setTimeout(() => {
-      location.href = ORDERS_URL + "?orderId=" + encodeURIComponent(order.orderId);
-    }, 1200);
-
-  } else if (status === "PENDING") {
-    showStatus("Payment is still being processed. Please check My Orders in a few minutes before paying again.", "info");
-    resetButton();
-
-  } else {
-    showStatus("Payment was not completed. Your order has not been marked as paid. You can try again.", "error");
-    resetButton();
+    showStatus("Payment verified. Opening your order status...", "success");
+    goToOrderStatus(order.orderId);
+    return;
   }
+
+  if (status === "PENDING") {
+    showStatus("Your payment is still processing. Opening the order status page...", "info");
+    setTimeout(() => goToOrderStatus(order.orderId), 800);
+    return;
+  }
+
+  showStatus(
+    "Payment has not been confirmed. You can check the latest status before trying again.",
+    "error"
+  );
+  setPayLabel("Check Payment Status", "ph-arrow-clockwise");
+  payButton.disabled = false;
 }
 
-/* PAYMENT METHOD SELECTION */
 function updatePaymentMethod() {
   const selected = document.querySelector('input[name="paymentMethod"]:checked');
   const method = selected ? selected.value : "upi";
@@ -731,9 +720,8 @@ function updatePaymentMethod() {
 document.querySelectorAll('input[name="paymentMethod"]')
   .forEach(i => i.addEventListener("change", updatePaymentMethod));
 
-/* START PAYMENT */
 async function startPayment() {
-  if (busy) return;
+  if (busy || paymentDone) return;
 
   const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
 
@@ -744,7 +732,7 @@ async function startPayment() {
 
   busy = true;
   payButton.disabled = true;
-  payButton.textContent = "Preparing payment...";
+  setPayLabel("Preparing payment...", "ph-spinner");
   showStatus("Checking your order...", "info");
 
   try {
@@ -755,21 +743,40 @@ async function startPayment() {
     } else {
       if (!selectedAddress) throw new Error("Please select a delivery address first.");
       if (!cartItems.length) throw new Error("Your cart is empty.");
-      payButton.textContent = "Creating order...";
+      setPayLabel("Creating order...", "ph-spinner");
       await createOrderOnce();
     }
 
     const order = currentOrder;
-
     if (!order || !order.orderId) throw new Error("Could not identify your order.");
 
-    payButton.textContent = "Connecting to payment...";
+    /*
+     * Server is request par:
+     * - order ownership check karega
+     * - old payment attempt ka status verify karega
+     * - paid/pending old payment hone par duplicate attempt rokega
+     */
+    setPayLabel("Connecting to payment...", "ph-spinner");
 
-    // Server database ke saved total se Cashfree session banata hai
     const result = await apiJSON("/api/checkout/order", {
       method: "POST",
-      body: JSON.stringify({ action: "create-payment", orderId: order.orderId })
+      body: JSON.stringify({
+        action: "create-payment",
+        orderId: order.orderId
+      })
     });
+
+    if (result.paymentStatus === "PAID") {
+      paymentDone = true;
+      goToOrderStatus(order.orderId);
+      return;
+    }
+
+    if (result.paymentStatus === "PENDING" || result.paymentPending === true) {
+      showStatus("An earlier payment is still processing. Opening your order status page...", "info");
+      goToOrderStatus(order.orderId);
+      return;
+    }
 
     if (typeof result.paymentSessionId !== "string" || !result.paymentSessionId) {
       throw new Error("The payment provider returned an invalid payment session.");
@@ -782,15 +789,32 @@ async function startPayment() {
     console.error("Payment setup error:", error);
 
     if (error.code === "PAID") {
-      location.href = ORDERS_URL;
+      const id = getOrderIdFromPage();
+      if (id) goToOrderStatus(id);
+      else location.href = ORDERS_URL;
       return;
     }
 
-    if (error.code === "NOT_FOUND") dropStaleOrder();
+    if (error.code === "NOT_FOUND") {
+      dropStaleOrder();
+    }
+
+    /*
+     * Server agar bataye ki purana payment abhi process ho raha hai,
+     * customer ko dobara payment karne ke liye encourage na karein.
+     */
+    if (error.status === 409 || error.status === 202) {
+      const id = getOrderIdFromPage();
+      if (id) {
+        showStatus("This order has a payment attempt that needs verification. Opening order status...", "info");
+        setTimeout(() => goToOrderStatus(id), 800);
+        return;
+      }
+    }
 
     showStatus(
       (error.message || "Unable to prepare payment.") +
-      " Your order has not been marked as paid.",
+      " Your order has not been marked as paid unless the server verifies it.",
       "error"
     );
 
@@ -800,22 +824,20 @@ async function startPayment() {
   } finally {
     busy = false;
 
-    const selected = document.querySelector('input[name="paymentMethod"]:checked');
-
-    if (selected && selected.value === "card") {
-      payButton.disabled = true;
-    } else if (!paymentDone) {
-      payButton.disabled = false;
+    if (!paymentDone) {
+      const selected = document.querySelector('input[name="paymentMethod"]:checked');
+      if (selected && selected.value === "card") {
+        payButton.disabled = true;
+      }
     }
   }
 }
 
 payButton.addEventListener("click", startPayment);
 
-/* INITIAL LOAD */
 async function init() {
   payButton.disabled = true;
-  payButton.textContent = "Loading order details...";
+  setPayLabel("Loading order details...", "ph-spinner");
 
   try {
     const existingOrderId = getOrderIdFromPage();
@@ -827,11 +849,11 @@ async function init() {
         usedExisting = true;
       } catch (error) {
         if (error.code === "PAID") {
-          location.href = ORDERS_URL + "?orderId=" + encodeURIComponent(existingOrderId);
+          goToOrderStatus(existingOrderId);
           return;
         }
+
         if (error.code === "NOT_FOUND") {
-          // Purana/galat order ID: hatao aur naya checkout cart se shuru karo
           dropStaleOrder();
         } else {
           throw error;
@@ -840,10 +862,12 @@ async function init() {
     }
 
     if (usedExisting) {
-      try { await loadAddress(); }
-      catch (e) { console.warn("Address display unavailable:", e.message); }
+      try {
+        await loadAddress();
+      } catch (e) {
+        console.warn("Address display unavailable:", e.message);
+      }
 
-      // Cart sirf dikhane ke liye; existing order ka total overwrite nahi hota
       try {
         const data = await apiJSON("/api/cart");
         cartItems = Array.isArray(data.items) ? data.items : [];
@@ -873,13 +897,12 @@ async function init() {
 
   } catch (error) {
     showStatus(error.message || "Unable to load checkout details.", "error");
-    payButton.textContent = "Unable to Continue";
+    setPayLabel("Unable to Continue", "ph-warning-circle");
     payButton.disabled = true;
   }
 }
 
 init();
 </script>
-
 </body>
 </html>
