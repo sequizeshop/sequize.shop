@@ -16,17 +16,18 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
 
+  <link rel="stylesheet"
+    href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
   <style>
     :root {
       --ink: #20221f;
       --muted: #797c74;
       --line: #e8e9e3;
-      --paper: #fbfbf8;
-      --white: #ffffff;
       --blue: #1748d1;
+      --blue-dark: #1038aa;
       --green: #15803d;
       --red: #dc2626;
-      --shadow: 0 20px 60px rgba(20,30,50,.09);
     }
 
     * {
@@ -36,201 +37,184 @@
     body {
       margin: 0;
       min-height: 100vh;
-      padding: 22px;
+      background: #ffffff;
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .topbar {
+      height: 72px;
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .bag-link {
       display: grid;
       place-items: center;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 10% 10%, #eaf0ff 0, transparent 35%),
-        radial-gradient(circle at 90% 90%, #e8f8ed 0, transparent 35%),
-        var(--paper);
-      font-family: "DM Sans", sans-serif;
-    }
-
-    .status-card {
-      width: min(480px, 100%);
-      padding: 35px 28px;
-      border-radius: 26px;
-      background: rgba(255,255,255,.92);
-      border: 1px solid rgba(232,233,227,.9);
-      box-shadow: var(--shadow);
-      text-align: center;
-      backdrop-filter: blur(18px);
-      animation: appear .5s ease;
-    }
-
-    @keyframes appear {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .logo {
-      font-family: "Manrope", sans-serif;
-      font-weight: 800;
-      font-size: 25px;
-      letter-spacing: -1px;
-      color: var(--blue);
+      width: 42px;
+      height: 42px;
+      font-size: 26px;
       text-decoration: none;
-      display: inline-block;
-      margin-bottom: 30px;
+      color: var(--ink);
     }
 
-    .icon-circle {
-      width: 94px;
-      height: 94px;
-      border-radius: 50%;
+    .brand {
+      color: var(--blue);
+      font-family: "Manrope", sans-serif;
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      text-decoration: none;
+    }
+
+    main {
+      width: min(500px, 90%);
+      margin: 65px auto;
+      text-align: center;
+    }
+
+    .status-icon {
+      width: 86px;
+      height: 86px;
       display: grid;
       place-items: center;
       margin: 0 auto 24px;
-      font-size: 40px;
-      position: relative;
+      border-radius: 50%;
+      font-size: 39px;
     }
 
-    .icon-circle.pending {
+    .status-icon.pending {
       color: var(--blue);
       background: #edf2ff;
+      animation: pulse 1.6s ease-in-out infinite;
     }
 
-    .icon-circle.success {
+    .status-icon.success {
       color: var(--green);
       background: #dcfce7;
     }
 
-    .icon-circle.failed {
+    .status-icon.failed {
       color: var(--red);
       background: #fee2e2;
     }
 
-    .icon-circle.pending::after {
-      content: "";
-      position: absolute;
-      inset: -6px;
-      border: 2px solid rgba(23,72,209,.15);
-      border-top-color: var(--blue);
-      border-radius: 50%;
-      animation: spin 1.5s linear infinite;
-    }
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
+      50% {
+        transform: scale(1.05);
       }
     }
 
     h1 {
-      margin: 0 0 12px;
       font-family: "Manrope", sans-serif;
-      font-size: clamp(25px, 5vw, 31px);
+      font-size: clamp(27px, 5vw, 34px);
       letter-spacing: -1px;
+      margin: 0 0 13px;
     }
 
     .description {
+      max-width: 380px;
+      margin: 0 auto;
       color: var(--muted);
       font-size: 14px;
       line-height: 1.8;
-      margin: 0 auto;
-      max-width: 340px;
     }
 
-    .order-box {
-      margin-top: 26px;
-      padding: 15px;
-      border: 1px solid var(--line);
-      background: #fcfcfa;
-      border-radius: 14px;
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 21px;
+      padding: 9px 13px;
+      background: #edf2ff;
+      color: var(--blue);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .status-pill.success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-pill.failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .order-reference {
+      margin-top: 27px;
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
       text-align: left;
     }
 
     .order-label {
       color: var(--muted);
-      text-transform: uppercase;
       font-size: 10px;
       font-weight: 800;
+      text-transform: uppercase;
       letter-spacing: .8px;
-      margin-bottom: 7px;
+      margin-bottom: 8px;
     }
 
     .order-id {
       font-size: 12px;
       font-weight: 700;
       overflow-wrap: anywhere;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
-    .status-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      margin-top: 16px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      background: #edf2ff;
-      color: var(--blue);
-    }
-
-    .status-label.success {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .status-label.failed {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .button-group {
+    .actions {
       display: grid;
-      gap: 10px;
+      gap: 11px;
       margin-top: 25px;
     }
 
     .button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-decoration: none;
-      border: 0;
-      border-radius: 13px;
       min-height: 49px;
-      padding: 13px 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 10px;
+      padding: 13px 18px;
       font-size: 13px;
       font-weight: 800;
-      transition: .2s;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      cursor: pointer;
     }
 
     .button.primary {
+      color: #ffffff;
       background: var(--blue);
-      color: white;
+      border-color: var(--blue);
     }
 
     .button.primary:hover {
-      background: #1038aa;
+      background: var(--blue-dark);
     }
 
     .button.secondary {
-      border: 1px solid var(--line);
       color: var(--ink);
-      background: white;
-    }
-
-    .button:disabled {
-      opacity: .55;
-      cursor: not-allowed;
+      background: #ffffff;
     }
 
     .footnote {
-      font-size: 11px;
       color: var(--muted);
-      line-height: 1.7;
+      font-size: 11px;
+      line-height: 1.8;
       margin-top: 22px;
     }
 
@@ -239,207 +223,210 @@
     }
 
     @media (max-width: 480px) {
-      body {
-        padding: 14px;
+      .topbar {
+        height: 64px;
       }
 
-      .status-card {
-        padding: 30px 20px;
-        border-radius: 22px;
+      main {
+        margin-top: 48px;
       }
     }
   </style>
 </head>
 
 <body>
-  <main class="status-card">
-    <a href="/" class="logo">Shoppy.</a>
 
-    <div id="statusIcon" class="icon-circle pending">
-      ⏳
+  <header class="topbar">
+    <a href="/" class="bag-link" aria-label="Continue shopping">
+      <i class="ph ph-bag-simple"></i>
+    </a>
+
+    <a href="/" class="brand">Shoppy.</a>
+  </header>
+
+  <main>
+
+    <div id="statusIcon" class="status-icon pending">
+      <i class="ph ph-hourglass-medium"></i>
     </div>
 
     <h1 id="statusTitle">Checking your payment</h1>
 
     <p id="statusDescription" class="description">
-      Please wait while we securely verify your payment with the payment server.
-      Do not refresh repeatedly or make another payment.
+      Please wait while we verify your payment with the server.
     </p>
 
-    <div id="statusLabel" class="status-label">
-      <span>●</span>
-      <span id="statusLabelText">VERIFYING PAYMENT</span>
+    <div id="statusPill" class="status-pill">
+      <i class="ph ph-circle-notch"></i>
+      <span id="statusLabel">VERIFYING PAYMENT</span>
     </div>
 
-    <div class="order-box">
+    <div class="order-reference">
       <div class="order-label">Order reference</div>
       <div id="orderId" class="order-id">Loading...</div>
     </div>
 
-    <div class="button-group">
-      <a id="ordersButton" class="button primary" href="/orders.html">
-        View my orders
+    <div class="actions">
+
+      <a id="ordersButton"
+         href="/orders.html"
+         class="button primary">
+        <i class="ph ph-package"></i>
+        View my order
       </a>
 
-      <button id="retryButton" class="button secondary" type="button">
-        Check payment status again
+      <button id="retryButton"
+              class="button secondary"
+              type="button">
+        <i class="ph ph-arrow-clockwise"></i>
+        Check payment again
       </button>
 
-      <a id="homeButton" class="button secondary" href="/">
+      <a href="/" class="button secondary">
+        <i class="ph ph-house"></i>
         Continue shopping
       </a>
+
     </div>
 
     <p id="footnote" class="footnote">
-      We are checking the payment status securely. If you have already paid,
-      please wait for the payment provider to confirm the result.
+      Do not make another payment while your current payment is being verified.
     </p>
+
   </main>
 
   <script>
     "use strict";
 
     const API_URL = "/api/checkout/order";
-    const ORDERS_URL = "/orders.html";
-
-    const POLL_INTERVAL = 3000;
-    const MAX_RETRIES = 40;
+    const POLL_INTERVAL = 2000;
+    const MAX_RETRIES = 60;
 
     const params = new URLSearchParams(window.location.search);
     const orderId = params.get("orderId");
 
     const $ = (id) => document.getElementById(id);
 
-    let polling = false;
+    let isVerifying = false;
+    let isFinal = false;
     let retryCount = 0;
     let timer = null;
-    let terminal = false;
 
-    function escapeHTML(value) {
-      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      })[char]);
-    }
+    function setPending(title, description, label = "PAYMENT PENDING") {
+      $("statusIcon").className = "status-icon pending";
 
-    function normalizeStatus(data) {
-      const order =
-        data?.order ||
-        data?.data?.order ||
-        data?.data ||
-        data;
-
-      return String(
-        order?.paymentStatus ||
-        order?.payment_status ||
-        order?.orderStatus ||
-        order?.order_status ||
-        order?.status ||
-        ""
-      ).trim().toUpperCase();
-    }
-
-    function updateOrderReference() {
-      $("orderId").textContent = orderId || "Not available";
-
-      $("ordersButton").href = orderId
-        ? `${ORDERS_URL}?orderId=${encodeURIComponent(orderId)}`
-        : ORDERS_URL;
-    }
-
-    function renderPending(title, description, label = "PAYMENT PENDING") {
-      $("statusIcon").className = "icon-circle pending";
-      $("statusIcon").textContent = "⏳";
+      $("statusIcon").innerHTML =
+        '<i class="ph ph-hourglass-medium"></i>';
 
       $("statusTitle").textContent = title;
       $("statusDescription").textContent = description;
 
-      $("statusLabel").className = "status-label";
-      $("statusLabelText").textContent = label;
-
-      $("footnote").textContent =
-        "Do not make another payment while this transaction is being checked. " +
-        "The result will update when the server confirms it.";
+      $("statusPill").className = "status-pill";
+      $("statusPill").innerHTML = `
+        <i class="ph ph-circle-notch"></i>
+        <span id="statusLabel">${label}</span>
+      `;
 
       $("retryButton").classList.remove("hidden");
-    }
-
-    function renderSuccess() {
-      terminal = true;
-      clearTimeout(timer);
-
-      $("statusIcon").className = "icon-circle success";
-      $("statusIcon").textContent = "✓";
-
-      $("statusTitle").textContent = "Payment successful!";
-      $("statusDescription").textContent =
-        "Your payment has been verified. Thank you for shopping with Shoppy.";
-
-      $("statusLabel").className = "status-label success";
-      $("statusLabelText").textContent = "PAYMENT SUCCESSFUL";
 
       $("footnote").textContent =
-        "Your order is ready to be viewed in My Orders.";
+        "Payment status is being checked securely. If money was deducted, " +
+        "do not immediately attempt another payment.";
+    }
+
+    function setSuccess() {
+      isFinal = true;
+
+      clearTimeout(timer);
+
+      $("statusIcon").className = "status-icon success";
+
+      $("statusIcon").innerHTML =
+        '<i class="ph ph-check-circle"></i>';
+
+      $("statusTitle").textContent = "Payment successful!";
+
+      $("statusDescription").textContent =
+        "Your payment has been confirmed. Thank you for shopping with Shoppy.";
+
+      $("statusPill").className = "status-pill success";
+
+      $("statusPill").innerHTML =
+        '<i class="ph ph-check-circle"></i>' +
+        '<span>PAYMENT SUCCESSFUL</span>';
 
       $("retryButton").classList.add("hidden");
 
-      $("ordersButton").textContent = "View your order";
+      $("ordersButton").innerHTML =
+        '<i class="ph ph-package"></i> View your order';
 
-      // Do not redirect automatically; allow the customer to read the result.
+      $("footnote").textContent =
+        "Your payment has been verified by the server. You can now view your order.";
+
+      // Keep the result visible. No automatic redirect.
     }
 
-    function renderFailure(status) {
-      terminal = true;
+    function setFailed(status) {
+      isFinal = true;
+
       clearTimeout(timer);
 
-      $("statusIcon").className = "icon-circle failed";
-      $("statusIcon").textContent = "✕";
+      $("statusIcon").className = "status-icon failed";
+
+      $("statusIcon").innerHTML =
+        '<i class="ph ph-x-circle"></i>';
 
       $("statusTitle").textContent = "Payment not completed";
 
-      const description = {
-        FAILED:
-          "The payment provider has reported that the payment failed. " +
-          "Please check your order before trying again.",
-        EXPIRED:
-          "This payment session has expired. Please open your order and " +
-          "start a new payment if payment is still required.",
-        TERMINATED:
-          "This payment session was terminated. Please check your order status."
-      };
+      if (status === "EXPIRED") {
+        $("statusDescription").textContent =
+          "This payment session has expired. Please check your order.";
+      } else if (status === "TERMINATED") {
+        $("statusDescription").textContent =
+          "This payment session was terminated. Please check your order.";
+      } else {
+        $("statusDescription").textContent =
+          "The payment provider reported that the payment failed. Please check your order before trying again.";
+      }
 
-      $("statusDescription").textContent =
-        description[status] ||
-        "The payment was not completed. Please check your order details.";
+      $("statusPill").className = "status-pill failed";
 
-      $("statusLabel").className = "status-label failed";
-      $("statusLabelText").textContent = status;
-
-      $("footnote").textContent =
-        "If money was deducted from your account, do not pay again immediately. " +
-        "Check your order and contact support if necessary.";
+      $("statusPill").innerHTML = `
+        <i class="ph ph-x-circle"></i>
+        <span>${status}</span>
+      `;
 
       $("retryButton").classList.add("hidden");
-      $("ordersButton").textContent = "Check your order";
+
+      $("ordersButton").innerHTML =
+        '<i class="ph ph-package"></i> Check your order';
+
+      $("footnote").textContent =
+        "If money was deducted from your account, check the order before trying again. " +
+        "A failed payment should not be paid again until you confirm the current order status.";
     }
 
     async function verifyPayment() {
-      if (!orderId) {
-        terminal = true;
+      if (isVerifying || isFinal) return;
 
-        $("statusIcon").className = "icon-circle failed";
-        $("statusIcon").textContent = "!";
+      if (!orderId) {
+        isFinal = true;
+
+        $("statusIcon").className = "status-icon failed";
+
+        $("statusIcon").innerHTML =
+          '<i class="ph ph-warning-circle"></i>';
 
         $("statusTitle").textContent = "Order ID missing";
 
         $("statusDescription").textContent =
-          "We could not identify your order. Open My Orders to find your order details.";
+          "We could not identify this order. Please open My Orders to find your order.";
 
-        $("statusLabel").className = "status-label failed";
-        $("statusLabelText").textContent = "ORDER NOT IDENTIFIED";
+        $("statusPill").className = "status-pill failed";
+
+        $("statusPill").innerHTML =
+          '<i class="ph ph-warning-circle"></i>' +
+          '<span>ORDER NOT IDENTIFIED</span>';
 
         $("orderId").textContent = "Not available";
         $("retryButton").classList.add("hidden");
@@ -447,12 +434,10 @@
         return;
       }
 
-      if (polling || terminal) return;
-
-      polling = true;
+      isVerifying = true;
 
       $("retryButton").disabled = true;
-      $("retryButton").textContent = "Checking...";
+      $("retryButton").textContent = "Checking payment...";
 
       try {
         const response = await fetch(API_URL, {
@@ -468,25 +453,36 @@
           })
         });
 
-        const text = await response.text();
+        const raw = await response.text();
 
         let data = {};
 
         try {
-          data = text ? JSON.parse(text) : {};
+          data = raw ? JSON.parse(raw) : {};
         } catch {
-          throw new Error("Invalid response from payment server.");
+          throw new Error("Invalid response from the payment server.");
         }
 
-        if (!response.ok) {
+        if (!response.ok || data.success === false) {
           throw new Error(
             data.message ||
             data.error ||
-            `Payment verification failed (${response.status}).`
+            `Verification failed (${response.status})`
           );
         }
 
-        const status = normalizeStatus(data);
+        /*
+         * Preserve the existing API's response format:
+         * data.paymentStatus || data.status
+         */
+        const status = String(
+          data.paymentStatus ||
+          data.payment_status ||
+          data.order?.paymentStatus ||
+          data.order?.payment_status ||
+          data.status ||
+          ""
+        ).toUpperCase();
 
         if (
           status === "PAID" ||
@@ -494,7 +490,7 @@
           status === "SUCCESSFUL" ||
           status === "COMPLETED"
         ) {
-          renderSuccess();
+          setSuccess();
           return;
         }
 
@@ -503,80 +499,80 @@
           status === "EXPIRED" ||
           status === "TERMINATED"
         ) {
-          renderFailure(status);
+          setFailed(status);
           return;
         }
 
-        // Unknown and pending statuses are not considered successful.
         retryCount++;
 
-        renderPending(
+        setPending(
           "Payment is being verified",
-          "Your payment result is not final yet. We will check again automatically.",
+          "Cashfree has not yet returned a final confirmed result. We will check again automatically.",
           status || "PAYMENT PENDING"
         );
 
-        if (retryCount >= MAX_RETRIES) {
-          renderPending(
-            "Payment status is taking longer",
+        if (retryCount < MAX_RETRIES) {
+          timer = setTimeout(verifyPayment, POLL_INTERVAL);
+        } else {
+          setPending(
+            "Payment confirmation is taking longer",
             "We could not confirm the final result yet. You can retry the check or view your order.",
             "AWAITING CONFIRMATION"
           );
 
           $("footnote").textContent =
-            "Please do not pay again until you check your order. " +
-            "If money was deducted, allow the payment provider time to update the result.";
-
-          return;
+            "Automatic checks have paused. Please retry or check My Orders. " +
+            "A pending result does not mean the payment failed.";
         }
-
-        timer = setTimeout(verifyPayment, POLL_INTERVAL);
 
       } catch (error) {
         console.error("Payment verification error:", error);
 
         retryCount++;
 
-        renderPending(
+        setPending(
           "Unable to confirm payment yet",
-          "We could not reach the verification service. Your payment may still be processing. We will try again.",
-          "VERIFICATION RETRY"
+          "The verification service could not confirm the result. Your payment may still be processing.",
+          "RETRYING VERIFICATION"
         );
 
         if (retryCount < MAX_RETRIES) {
           timer = setTimeout(verifyPayment, POLL_INTERVAL);
         } else {
           $("statusDescription").textContent =
-            "Automatic verification has paused. Tap the button below to check again, or open My Orders.";
+            "Automatic checks have paused. Tap Check payment again to retry, or view your order.";
 
           $("footnote").textContent =
-            "A verification error does not mean the payment failed. " +
-            "Please check your order before attempting another payment.";
+            "A verification error does not mean payment failed. Check your order before attempting another payment.";
         }
 
       } finally {
-        polling = false;
+        isVerifying = false;
 
         $("retryButton").disabled = false;
-        $("retryButton").textContent = "Check payment status again";
+
+        $("retryButton").innerHTML =
+          '<i class="ph ph-arrow-clockwise"></i> Check payment again';
       }
     }
 
     $("retryButton").addEventListener("click", () => {
-      if (terminal) return;
+      if (isFinal || isVerifying) return;
 
       clearTimeout(timer);
       retryCount = 0;
+
       verifyPayment();
     });
 
-    updateOrderReference();
+    $("orderId").textContent = orderId || "Not available";
 
-    if (orderId) {
-      verifyPayment();
-    } else {
-      verifyPayment();
-    }
+    $("ordersButton").href = orderId
+      ? `/orders.html?orderId=${encodeURIComponent(orderId)}`
+      : "/orders.html";
+
+    verifyPayment();
   </script>
+
 </body>
 </html>
