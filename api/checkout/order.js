@@ -1,4 +1,5 @@
 const { getSession } = require("../../lib/auth");
+
 const {
   getDatabase,
   cashfreeBase,
@@ -7,11 +8,10 @@ const {
 } = require("../../lib/cashfree");
 
 const ID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
-const PRODUCT_ID_PATTERN = ID_PATTERN;
 
 const USD_TO_INR = 85;
 
-// 95% discount: customer pays only 5% of the original price.
+// 95% discount: customer pays 5% of the original price.
 const DISCOUNT_PERCENT = 95;
 const DISCOUNT_MULTIPLIER = (100 - DISCOUNT_PERCENT) / 100;
 
@@ -23,6 +23,10 @@ function sendError(res, status, message) {
 }
 
 function getVerifiedPrice(product) {
+  if (!product || typeof product !== "object") {
+    throw new Error("Invalid product.");
+  }
+
   const usd = Number(product.originalPriceUSD);
 
   if (
@@ -44,8 +48,7 @@ function getVerifiedPrice(product) {
 }
 
 /*
- * Apply a 95% discount to the original product price.
- * The customer pays only 5% of the original price.
+ * Customer pays only 5% of the original price.
  */
 function getDiscountedPrice(originalPriceUSD) {
   return Number(
@@ -58,10 +61,29 @@ function getSiteUrl(req) {
     .trim()
     .replace(/\/+$/, "");
 
-  return configured || `https://${req.headers.host}`;
+  if (configured) {
+    return configured;
+  }
+
+  const host = String(req.headers.host || "").trim();
+
+  if (!host) {
+    throw new Error("Website host is missing.");
+  }
+
+  // Prevent an unexpected Host header from controlling the webhook URL.
+  if (
+    !/^[a-zA-Z0-9.-]+(?::\d{1,5})?$/.test(host)
+  ) {
+    throw new Error("Invalid website host.");
+  }
+
+  return `https://${host}`;
 }
 
-/* Load the order and make sure it belongs to the signed-in user. */
+/*
+ * Load the order and make sure it belongs to the signed-in user.
+ */
 async function loadOwnOrder(db, uid, orderId) {
   const orderRef = db.ref(`users/${uid}/orders/${orderId}`);
   const snapshot = await orderRef.get();
@@ -76,6 +98,7 @@ async function loadOwnOrder(db, uid, orderId) {
   const order = snapshot.val();
 
   if (
+    !order ||
     order.orderId !== orderId ||
     String(order.userId) !== uid
   ) {
@@ -92,14 +115,10 @@ async function loadOwnOrder(db, uid, orderId) {
 }
 
 /*
- * Create a Cashfree order (payment session) for an existing order.
- * The amount always comes from our database, never from the browser.
- *
- * The database order total already includes the 95% discount.
+ * Create a Cashfree payment session for an existing order.
+ * Amount is taken from the database, not from the browser.
  */
-
-        ) {
-    consasync function createPayment(req, res, session) {
+async function createPayment(req, res, session) {
   const orderId =
     typeof req.body?.orderId === "string"
       ? req.body.orderId.trim()
@@ -112,7 +131,10 @@ async function loadOwnOrder(db, uid, orderId) {
   const db = getDatabase();
   const uid = String(session.uid);
 
-  const { orderRef, order } = await loadOwnOrder(db, uid, orderId);
+  const {
+    orderRef,
+    order
+  } = await loadOwnOrder(db, uid, orderId);
 
   if (!order) {
     return sendError(res, 404, "Order not found.");
@@ -126,6 +148,7 @@ async function loadOwnOrder(db, uid, orderId) {
     return sendError(res, 400, "Invalid order amount.");
   }
 
+  // Already paid: never create another payment session.
   if (order.paymentStatus === "PAID") {
     return res.status(200).json({
       success: true,
@@ -138,27 +161,38 @@ async function loadOwnOrder(db, uid, orderId) {
     order.paymentStatus !== "PENDING" ||
     order.orderStatus !== "PENDING_PAYMENT"
   ) {
-    return sendError(res, 409, "Order is invalid or already processed.");
+    return sendError(
+      res,
+      409,
+      "Order is invalid or already processed."
+    );
   }
 
   /*
-   * Agar pehle Cashfree payment attempt bana tha to uska status
-   * pehle verify karo. Unknown/Pending status par naya attempt mat banao.
+   * If a previous payment attempt exists, verify it first.
+   * Do not create a duplicate attempt while the old one is pending.
    */
   if (order.lastPaymentId) {
     let previousStatus;
 
     try {
-      previousStatus = await syncPayment(db, String(order.lastPaymentId));
+      previousStatus = await syncPayment(
+        db,
+        String(order.lastPaymentId)
+      );
     } catch (error) {
-      console.error("Previous payment verification error:", error.message);
+      console.error(
+        "Previous payment verification error:",
+        error.message
+      );
 
       return res.status(202).json({
         success: true,
         paymentPending: true,
         paymentStatus: "PENDING",
         orderId,
-        message: "The previous payment is being verified. Please check the order status."
+        message:
+          "The previous payment is being verified. Please check the order status."
       });
     }
 
@@ -180,14 +214,15 @@ async function loadOwnOrder(db, uid, orderId) {
       });
     }
 
-    /*
-     * Previous attempt FAILED ho tabhi aage naya attempt banega.
-     * Final order status dobara check karo.
-     */
+    // Verify the order again before creating another attempt.
     const refreshedSnapshot = await orderRef.get();
     const refreshedOrder = refreshedSnapshot.val();
 
-    if (!refreshedOrder || refreshedOrder.paymentStatus === "PAID") {
+    if (!refreshedOrder) {
+      return sendError(res, 404, "Order not found.");
+    }
+
+    if (refreshedOrder.paymentStatus === "PAID") {
       return res.status(200).json({
         success: true,
         paymentStatus: "PAID",
@@ -199,21 +234,30 @@ async function loadOwnOrder(db, uid, orderId) {
       refreshedOrder.paymentStatus !== "PENDING" ||
       refreshedOrder.orderStatus !== "PENDING_PAYMENT"
     ) {
-      return sendError(res, 409, "Order is invalid or already processed.");
+      return sendError(
+        res,
+        409,
+        "Order is invalid or already processed."
+      );
     }
   }
 
-  const amountPaise = Math.round(Number(order.totalINR) * 100);
+  const amountPaise = Math.round(
+    Number(order.totalINR) * 100
+  );
 
   if (!Number.isInteger(amountPaise) || amountPaise <= 0) {
     return sendError(res, 400, "Invalid order amount.");
   }
 
+  // Load the delivery address to obtain the customer's phone number.
   const addressSnap = await db
     .ref(`users/${uid}/addresses/${order.addressId}`)
     .get();
 
-  const phone = String(addressSnap.val()?.phone || "")
+  const address = addressSnap.val();
+
+  const phone = String(address?.phone || "")
     .replace(/\D/g, "")
     .slice(-10);
 
@@ -230,11 +274,18 @@ async function loadOwnOrder(db, uid, orderId) {
 
   const body = {
     order_id: cfOrderId,
-    order_amount: Number((amountPaise / 100).toFixed(2)),
+
+    order_amount: Number(
+      (amountPaise / 100).toFixed(2)
+    ),
+
     order_currency: "INR",
 
     customer_details: {
-      customer_id: uid.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 50),
+      customer_id: uid
+        .replace(/[^A-Za-z0-9_-]/g, "_")
+        .slice(0, 50),
+
       customer_phone: phone
     },
 
@@ -247,48 +298,79 @@ async function loadOwnOrder(db, uid, orderId) {
 
   let response;
   let result = {};
+
   const MAX_ATTEMPTS = 3;
 
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+  for (
+    let attempt = 1;
+    attempt <= MAX_ATTEMPTS;
+    attempt++
+  ) {
     try {
-      response = await fetch(`${cashfreeBase()}/orders`, {
-        method: "POST",
-        headers: cashfreeHeaders(),
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(20000)
-      });
-    } catch (error) {
-      console.error("Cashfree request failed:", error.message);
+      response = await fetch(
+        `${cashfreeBase()}/orders`,
+        {
+          method: "POST",
 
-      return sendError(
-        res,
-        502,
-        "Payment gateway is not reachable. Please try again."
+          headers: cashfreeHeaders(),
+
+          body: JSON.stringify(body),
+
+          signal: AbortSignal.timeout(20000)
+        }
       );
+    } catch (error) {
+      console.error(
+        "Cashfree request failed:",
+        error.message
+      );
+
+      /*
+       * A network timeout can occur after Cashfree has created
+       * an order. Do not assume that the request definitely failed.
+       */
+      return res.status(502).json({
+        success: false,
+        paymentStatus: "PENDING",
+        orderId,
+        message:
+          "Payment gateway response is uncertain. Check the order status before trying again."
+      });
     }
 
     result = await response.json().catch(() => ({}));
 
-    if (response.status < 500 || attempt === MAX_ATTEMPTS) break;
+    if (
+      response.status < 500 ||
+      attempt === MAX_ATTEMPTS
+    ) {
+      break;
+    }
 
-    await new Promise(resolve => setTimeout(resolve, 1200 * attempt));
+    await new Promise(resolve =>
+      setTimeout(resolve, 1200 * attempt)
+    );
   }
 
   if (
+    !response ||
     !response.ok ||
     typeof result.payment_session_id !== "string" ||
     !result.payment_session_id
   ) {
     console.error(
       "Cashfree order creation failed:",
-      response.status,
+      response?.status,
       result.code || "",
       result.message || ""
     );
 
     return sendError(
       res,
-      response.status >= 400 && response.status < 500 ? 400 : 502,
+      response && response.status >= 400 &&
+        response.status < 500
+        ? 400
+        : 502,
       "Unable to start payment. Please try again."
     );
   }
@@ -296,18 +378,20 @@ async function loadOwnOrder(db, uid, orderId) {
   const now = Date.now();
 
   /*
-   * Index record first. If saving this record fails, do not return a
-   * usable payment session to the browser.
+   * Save the payment index before returning the session to the browser.
+   * The webhook and verification endpoint use this index.
    */
-  await db.ref(`paymentIndex/${cfOrderId}`).set({
-    uid,
-    orderId,
-    gatewayOrderId: cfOrderId,
-    amountPaise,
-    status: "INITIATED",
-    createdAt: now,
-    updatedAt: now
-  });
+  await db
+    .ref(`paymentIndex/${cfOrderId}`)
+    .set({
+      uid,
+      orderId,
+      gatewayOrderId: cfOrderId,
+      amountPaise,
+      status: "INITIATED",
+      createdAt: now,
+      updatedAt: now
+    });
 
   await orderRef.update({
     lastPaymentId: cfOrderId,
@@ -324,10 +408,12 @@ async function loadOwnOrder(db, uid, orderId) {
     currency: "INR"
   });
 }
+
 /*
- * Ask Cashfree what really happened, then update our order.
+ * Ask Cashfree for the real payment status.
+ * Never trust a payment-success claim from the browser.
  */
-                async function verifyPayment(req, res, session) {
+async function verifyPayment(req, res, session) {
   const orderId =
     typeof req.body?.orderId === "string"
       ? req.body.orderId.trim()
@@ -340,7 +426,11 @@ async function loadOwnOrder(db, uid, orderId) {
   const db = getDatabase();
   const uid = String(session.uid);
 
-  const { order } = await loadOwnOrder(db, uid, orderId);
+  const { order } = await loadOwnOrder(
+    db,
+    uid,
+    orderId
+  );
 
   if (!order) {
     return sendError(res, 404, "Order not found.");
@@ -354,6 +444,10 @@ async function loadOwnOrder(db, uid, orderId) {
     });
   }
 
+  /*
+   * No payment attempt has been recorded yet.
+   * Keep the status pending rather than falsely claiming failure.
+   */
   if (!order.lastPaymentId) {
     return res.status(200).json({
       success: true,
@@ -368,10 +462,7 @@ async function loadOwnOrder(db, uid, orderId) {
       String(order.lastPaymentId)
     );
 
-    /*
-     * syncPayment ke result ko response dene se pehle order dobara padho.
-     * Isse concurrent webhook update ka result bhi mil sakta hai.
-     */
+    // Read again in case the webhook updated the order concurrently.
     const refreshed = await db
       .ref(`users/${uid}/orders/${orderId}`)
       .get();
@@ -388,16 +479,23 @@ async function loadOwnOrder(db, uid, orderId) {
 
     return res.status(200).json({
       success: true,
+
       paymentStatus:
-        paymentStatus === "PENDING" ? "PENDING" : "FAILED",
+        paymentStatus === "FAILED"
+          ? "FAILED"
+          : "PENDING",
+
       orderId
     });
   } catch (error) {
-    console.error("Payment verification error:", error.message);
+    console.error(
+      "Payment verification error:",
+      error.message
+    );
 
     /*
-     * Cashfree unreachable hone par FAILED mat return karo.
-     * Status abhi unknown hai, isliye PENDING return karo.
+     * If Cashfree is temporarily unavailable, do not mark
+     * a potentially successful payment as failed.
      */
     return res.status(200).json({
       success: true,
@@ -406,4 +504,68 @@ async function loadOwnOrder(db, uid, orderId) {
       message: "Payment status is still being verified."
     });
   }
-                }
+}
+
+/*
+ * Main API handler.
+ */
+async function handler(req, res) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+
+    return res.status(405).json({
+      success: false,
+      message: "Method not allowed."
+    });
+  }
+
+  try {
+    const session = await getSession(req);
+
+    if (!session || !session.uid) {
+      return sendError(
+        res,
+        401,
+        "Please sign in to continue."
+      );
+    }
+
+    const action =
+      typeof req.body?.action === "string"
+        ? req.body.action.trim()
+        : "";
+
+    if (action === "create-payment") {
+      return await createPayment(req, res, session);
+    }
+
+    if (action === "verify-payment") {
+      return await verifyPayment(req, res, session);
+    }
+
+    /*
+     * This endpoint's new-order/cart creation flow is intentionally
+     * not reconstructed here: its exact product/cart schema was not
+     * included in the broken snippet. Do not create an incomplete
+     * order from untrusted browser totals.
+     */
+    return sendError(
+      res,
+      400,
+      "Invalid action. Use create-payment or verify-payment."
+    );
+  } catch (error) {
+    console.error(
+      "Checkout order API error:",
+      error.message
+    );
+
+    return sendError(
+      res,
+      500,
+      "Something went wrong while processing the payment."
+    );
+  }
+}
+
+module.exports = handler;
