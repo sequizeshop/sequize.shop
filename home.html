@@ -10,7 +10,7 @@
   <meta name="description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
   <meta name="robots" content="index, follow">
 
-  <link rel="canonical" href="https://YOUR-DOMAIN/home.html">
+  <link rel="canonical" href="https://shoppingweb-zeta.vercel.app/home.html">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Shoppy">
@@ -36,51 +36,44 @@
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
 
+  <!-- Shared Payment Page Design -->
+  <link rel="stylesheet" href="/global.css">
+
   <style>
     :root {
-      --ink: #17191c;
-      --muted: #737985;
-      --line: #e7eaf0;
+      --ink: #20221f;
+      --muted: #797c74;
+      --line: #e8e9e3;
       --paper: #ffffff;
-      --blue: #2962ff;
-      --blue-dark: #174de0;
-      --blue-light: #f2f5ff;
-      --green: #16803c;
+      --blue: #1748d1;
+      --blue-dark: #1038aa;
+      --blue-light: #f1f5ff;
+      --green: #15803d;
       --red: #dc2626;
-      --header-h: 68px;
-
-      --black: #17191c;
-      --white: #ffffff;
-      --gray: #737985;
-      --border: #e7eaf0;
-      --light: #f7f9fc;
-      --radius: 12px;
-      --success: #16803c;
+      --header-h: 64px;
     }
 
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
     }
 
     html {
       scroll-behavior: smooth;
-      scroll-padding-top: 85px;
+      scroll-padding-top: 140px;
     }
 
     body {
       min-height: 100vh;
-      font-family: "DM Sans", Arial, sans-serif;
+      margin: 0;
+      background: #ffffff;
       color: var(--ink);
-      background: var(--paper);
+      font-family: "DM Sans", Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
     a {
       color: inherit;
       text-decoration: none;
-      transition: color .18s, background .18s;
     }
 
     button,
@@ -103,24 +96,25 @@
       display: none !important;
     }
 
-    /* ========================================
-       PAYMENT PAGE MATCHING TOOLBAR
-    ======================================== */
+    /* =====================================
+       TOP TOOLBAR
+    ===================================== */
 
     .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+
       width: 100%;
       height: var(--header-h);
       min-height: var(--header-h);
-      padding: 0 max(5%, calc((100% - 1050px) / 2));
 
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
 
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      padding: 0 max(5%, calc((100% - 1050px) / 2));
+      gap: 15px;
 
       background: #ffffff;
       border: 0;
@@ -131,112 +125,25 @@
     .header-left {
       display: flex;
       align-items: center;
-      gap: 13px;
+      min-width: 0;
       flex-shrink: 0;
-    }
-
-    .back-link {
-      width: 38px;
-      height: 38px;
-      flex-shrink: 0;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      border: 0;
-      border-radius: 9px;
-      background: transparent;
-      color: #343a46;
-
-      font-size: 22px;
-      transition: background .18s, color .18s;
-    }
-
-    .back-link:hover {
-      background: var(--blue-light);
-      color: var(--blue);
     }
 
     .brand {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
 
       color: var(--blue);
       font-family: "Manrope", Arial, sans-serif;
-      font-size: 23px;
+      font-size: 24px;
       font-weight: 800;
-      letter-spacing: -.8px;
+      letter-spacing: -1px;
       white-space: nowrap;
     }
 
     .brand:hover {
       color: var(--blue-dark);
     }
-
-    /* ========================================
-       SEARCH
-    ======================================== */
-
-    .search {
-      width: min(440px, 48%);
-      height: 42px;
-      min-width: 0;
-
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      padding: 0 13px;
-
-      border: 1px solid #dfe3eb;
-      border-radius: 9px;
-      background: #ffffff;
-
-      transition: border-color .18s, box-shadow .18s;
-    }
-
-    .search:focus-within {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(41, 98, 255, .10);
-    }
-
-    .search > i {
-      flex-shrink: 0;
-      font-size: 19px;
-      color: var(--muted);
-    }
-
-    .search input {
-      width: 100%;
-      min-width: 0;
-      height: 100%;
-
-      padding: 0;
-      border: 0;
-      outline: 0;
-      box-shadow: none;
-
-      background: transparent;
-      color: var(--ink);
-      font-size: 13px;
-    }
-
-    .search input:focus {
-      outline: 0;
-      border: 0;
-      box-shadow: none;
-    }
-
-    .search input::placeholder {
-      color: #9298a3;
-    }
-
-    /* ========================================
-       NAVIGATION ICONS
-    ======================================== */
 
     .nav-actions {
       display: flex;
@@ -259,11 +166,15 @@
 
       border: 0;
       border-radius: 9px;
+
       background: transparent;
       color: #343a46;
 
       font-size: 21px;
-      transition: background .18s, color .18s;
+
+      transition:
+        background .18s,
+        color .18s;
     }
 
     .nav-icon:hover {
@@ -295,12 +206,86 @@
       line-height: 1;
     }
 
-    /* ========================================
-       HERO SECTION
-    ======================================== */
+    /* =====================================
+       SEARCH BAR BELOW TOOLBAR
+    ===================================== */
+
+    .search-bar-wrap {
+      position: sticky;
+      top: var(--header-h);
+      z-index: 90;
+
+      width: 100%;
+      padding: 12px max(5%, calc((100% - 1050px) / 2));
+
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .search {
+      width: 100%;
+      max-width: 1050px;
+      height: 44px;
+      margin: 0 auto;
+
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      padding: 0 14px;
+
+      border: 1px solid #e1e4dc;
+      border-radius: 10px;
+
+      background: #ffffff;
+
+      transition:
+        border-color .18s,
+        box-shadow .18s;
+    }
+
+    .search:focus-within {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(23, 72, 209, .08);
+    }
+
+    .search > i {
+      flex-shrink: 0;
+      color: var(--muted);
+      font-size: 19px;
+    }
+
+    .search input {
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      padding: 0;
+
+      border: 0;
+      outline: 0;
+      box-shadow: none;
+
+      background: transparent;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .search input:focus {
+      outline: 0;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .search input::placeholder {
+      color: #92958d;
+    }
+
+    /* =====================================
+       HERO
+    ===================================== */
 
     .hero-wrap {
-      padding: 30px 5% 0;
+      padding: 28px 5% 0;
     }
 
     .hero-wrap.search-hidden {
@@ -308,38 +293,38 @@
     }
 
     .hero {
+      position: relative;
+      overflow: hidden;
+
       width: 100%;
       max-width: 1050px;
-      min-height: 290px;
+      min-height: 285px;
       margin: 0 auto;
+      padding: 40px 5%;
 
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 25px;
 
-      padding: 42px 5%;
-
-      position: relative;
-      overflow: hidden;
-
-      border: 1px solid #e4eaff;
-      border-radius: 16px;
+      border: 1px solid #e8e9e3;
+      border-radius: 14px;
 
       background:
         radial-gradient(
           circle at 90% 20%,
-          rgba(41, 98, 255, .09),
-          transparent 34%
+          rgba(23, 72, 209, .08),
+          transparent 35%
         ),
-        #f8faff;
+        #fafbf8;
     }
 
     .hero-copy {
-      max-width: 540px;
-      min-width: 0;
       position: relative;
       z-index: 1;
+
+      max-width: 540px;
+      min-width: 0;
     }
 
     .eyebrow {
@@ -347,48 +332,49 @@
       align-items: center;
       gap: 7px;
 
-      margin-bottom: 17px;
+      margin-bottom: 15px;
 
       color: var(--blue);
       font-size: 11px;
       font-weight: 800;
-      letter-spacing: 1.3px;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
     }
 
     .eyebrow i {
-      font-size: 17px;
+      font-size: 16px;
     }
 
     .hero h1 {
       max-width: 500px;
+      margin: 0;
 
       color: var(--ink);
       font-family: "Manrope", Arial, sans-serif;
       font-size: clamp(30px, 4vw, 43px);
       font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -1.6px;
+      line-height: 1.16;
+      letter-spacing: -1.5px;
     }
 
     .hero p {
       max-width: 430px;
-      margin-top: 13px;
+      margin: 13px 0 0;
 
       color: var(--muted);
       font-size: 13px;
       line-height: 1.8;
     }
 
+    /* No icon inside buttons */
     .hero-button {
       min-height: 44px;
       margin-top: 22px;
-      padding: 12px 18px;
+      padding: 12px 20px;
 
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 9px;
 
       border: 1px solid var(--blue);
       border-radius: 9px;
@@ -399,7 +385,9 @@
       font-size: 12px;
       font-weight: 700;
 
-      transition: background .18s, border-color .18s;
+      transition:
+        background .18s,
+        border-color .18s;
     }
 
     .hero-button:hover {
@@ -407,20 +395,16 @@
       border-color: var(--blue-dark);
     }
 
-    .hero-button i {
-      font-size: 17px;
-    }
-
     .hero-art {
-      width: 205px;
-      height: 205px;
+      width: 195px;
+      height: 195px;
       flex-shrink: 0;
 
       display: flex;
       align-items: center;
       justify-content: center;
 
-      border: 1px solid #e5eaff;
+      border: 1px solid #e8e9e3;
       border-radius: 50%;
 
       background: rgba(255, 255, 255, .85);
@@ -432,14 +416,14 @@
       object-fit: contain;
     }
 
-    /* ========================================
+    /* =====================================
        MAIN CONTAINER
-    ======================================== */
+    ===================================== */
 
     .container {
       width: min(1050px, 90%);
       max-width: 1050px;
-      margin: 38px auto 65px;
+      margin: 36px auto 60px;
     }
 
     .section-head {
@@ -448,10 +432,12 @@
       justify-content: space-between;
       gap: 18px;
 
-      margin-bottom: 18px;
+      margin-bottom: 17px;
     }
 
     .section-head h2 {
+      margin: 0;
+
       color: var(--ink);
       font-family: "Manrope", Arial, sans-serif;
       font-size: 21px;
@@ -461,7 +447,8 @@
     }
 
     .section-head p {
-      margin-top: 6px;
+      margin: 6px 0 0;
+
       color: var(--muted);
       font-size: 12px;
       line-height: 1.7;
@@ -469,15 +456,14 @@
 
     .product-count {
       padding-bottom: 2px;
-
       color: var(--muted);
       font-size: 12px;
       white-space: nowrap;
     }
 
-    /* ========================================
+    /* =====================================
        CATEGORY BUTTONS
-    ======================================== */
+    ===================================== */
 
     .categories {
       display: flex;
@@ -492,11 +478,11 @@
       min-height: 36px;
       padding: 9px 14px;
 
-      border: 1px solid #dfe3eb;
+      border: 1px solid #e1e4dc;
       border-radius: 9px;
 
       background: #ffffff;
-      color: #515866;
+      color: #55584f;
 
       font-size: 11px;
       font-weight: 700;
@@ -520,9 +506,9 @@
       color: #ffffff;
     }
 
-    /* ========================================
+    /* =====================================
        PRODUCT GRID
-    ======================================== */
+    ===================================== */
 
     .product-grid {
       display: grid;
@@ -542,7 +528,6 @@
       border-radius: 12px;
 
       background: #ffffff;
-
       cursor: pointer;
 
       transition:
@@ -552,34 +537,35 @@
     }
 
     .product-card:hover {
-      border-color: #cbd7ff;
-      box-shadow: 0 7px 22px rgba(23, 50, 120, .07);
+      border-color: #cbd5f5;
+      box-shadow: 0 6px 20px rgba(32, 34, 31, .06);
       transform: translateY(-2px);
     }
 
     .product-image {
-      height: 205px;
-      padding: 17px;
-
       position: relative;
       overflow: hidden;
+
+      height: 205px;
+      padding: 17px;
 
       display: flex;
       align-items: center;
       justify-content: center;
 
-      background: #f7f9fc;
-      border-bottom: 1px solid #f0f2f6;
+      background: #f8f9f6;
+      border-bottom: 1px solid #f0f1ed;
     }
 
     .product-image img {
+      display: block;
+
       width: 100%;
       height: 100%;
 
-      display: block;
       object-fit: contain;
-
       opacity: 1;
+
       transition: opacity .2s;
     }
 
@@ -589,8 +575,8 @@
 
     .discount {
       position: absolute;
-      top: 11px;
-      left: 11px;
+      top: 10px;
+      left: 10px;
       z-index: 1;
 
       padding: 5px 7px;
@@ -617,13 +603,13 @@
       color: var(--muted);
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: .55px;
+      letter-spacing: .4px;
       text-transform: capitalize;
     }
 
     .product-title {
       min-height: 42px;
-      margin-top: 7px;
+      margin: 7px 0 0;
 
       color: var(--ink);
       font-family: "Manrope", Arial, sans-serif;
@@ -636,7 +622,7 @@
 
     .product-description {
       min-height: 51px;
-      margin-top: 6px;
+      margin: 6px 0 0;
 
       color: var(--muted);
       font-size: 11px;
@@ -656,7 +642,7 @@
 
       margin-top: 10px;
 
-      color: #535a66;
+      color: #53564f;
       font-size: 11px;
     }
 
@@ -687,24 +673,30 @@
       overflow-wrap: anywhere;
     }
 
+    /* Add to Cart: text button without icon */
     .add-button {
-      width: 36px;
-      height: 36px;
+      min-width: 82px;
+      min-height: 35px;
       flex-shrink: 0;
 
       display: inline-flex;
       align-items: center;
       justify-content: center;
 
+      padding: 8px 10px;
+
       border: 1px solid var(--blue);
-      border-radius: 9px;
+      border-radius: 8px;
 
       background: var(--blue);
       color: #ffffff;
 
-      font-size: 19px;
+      font-size: 11px;
+      font-weight: 700;
 
-      transition: background .18s, border-color .18s;
+      transition:
+        background .18s,
+        border-color .18s;
     }
 
     .add-button:hover {
@@ -728,16 +720,15 @@
       cursor: wait;
     }
 
-    /* ========================================
+    /* =====================================
        SKELETON LOADING
-    ======================================== */
+    ===================================== */
 
     .skeleton {
       position: relative;
       overflow: hidden;
-
       border-radius: 7px;
-      background: #edf0f5;
+      background: #edf0e9;
     }
 
     .skeleton::after {
@@ -806,19 +797,18 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-
       margin-top: 15px;
     }
 
     .skeleton-circle {
-      width: 36px;
-      height: 36px;
-      border-radius: 9px;
+      width: 82px;
+      height: 35px;
+      border-radius: 8px;
     }
 
-    /* ========================================
-       SEARCH RESULTS - LIST VIEW
-    ======================================== */
+    /* =====================================
+       SEARCH RESULTS LIST VIEW
+    ===================================== */
 
     .product-grid.list-view {
       display: flex;
@@ -839,7 +829,7 @@
     }
 
     .product-grid.list-view .product-card:hover {
-      border-bottom-color: #cbd7ff;
+      border-bottom-color: #cbd5f5;
       box-shadow: none;
       transform: none;
     }
@@ -857,7 +847,6 @@
     .product-grid.list-view .product-info {
       min-width: 0;
       padding: 12px 15px;
-
       justify-content: center;
     }
 
@@ -871,21 +860,20 @@
       padding-top: 0;
     }
 
-    /* ========================================
+    /* =====================================
        LOAD MORE
-    ======================================== */
+    ===================================== */
 
     .load-more-wrap {
       display: flex;
       align-items: center;
       justify-content: center;
-
       margin-top: 30px;
     }
 
     .load-more-button {
       min-width: 175px;
-      min-height: 45px;
+      min-height: 44px;
       padding: 12px 20px;
 
       border: 1px solid var(--blue);
@@ -897,7 +885,9 @@
       font-size: 12px;
       font-weight: 700;
 
-      transition: background .18s, border-color .18s;
+      transition:
+        background .18s,
+        border-color .18s;
     }
 
     .load-more-button:hover {
@@ -910,14 +900,13 @@
       cursor: wait;
     }
 
-    /* ========================================
+    /* =====================================
        EMPTY / ERROR STATUS
-    ======================================== */
+    ===================================== */
 
     .status {
       grid-column: 1 / -1;
       width: 100%;
-
       padding: 35px 20px;
 
       border: 1px solid var(--line);
@@ -952,9 +941,9 @@
       background: var(--blue-dark);
     }
 
-    /* ========================================
+    /* =====================================
        TOAST
-    ======================================== */
+    ===================================== */
 
     .toast {
       position: fixed;
@@ -967,13 +956,13 @@
 
       transform: translate(-50%, 20px);
 
-      border: 1px solid #e7eaf0;
+      border: 1px solid var(--line);
       border-radius: 10px;
 
       background: #ffffff;
       color: var(--ink);
 
-      box-shadow: 0 8px 30px rgba(20, 30, 55, .12);
+      box-shadow: 0 8px 30px rgba(20, 30, 55, .10);
 
       font-size: 12px;
       font-weight: 700;
@@ -982,7 +971,9 @@
       opacity: 0;
       pointer-events: none;
 
-      transition: opacity .2s, transform .2s;
+      transition:
+        opacity .2s,
+        transform .2s;
     }
 
     .toast.show {
@@ -990,9 +981,9 @@
       transform: translate(-50%, 0);
     }
 
-    /* ========================================
+    /* =====================================
        FOOTER
-    ======================================== */
+    ===================================== */
 
     .footer {
       min-height: 65px;
@@ -1013,9 +1004,9 @@
       font-size: 11px;
     }
 
-    /* ========================================
-       RESPONSIVE TABLET
-    ======================================== */
+    /* =====================================
+       TABLET
+    ===================================== */
 
     @media (max-width: 1050px) {
       .product-grid:not(.list-view) {
@@ -1033,13 +1024,14 @@
       }
     }
 
-    /* ========================================
-       RESPONSIVE MOBILE
-    ======================================== */
+    /* =====================================
+       MOBILE
+       Exactly 2 products per row
+    ===================================== */
 
     @media (max-width: 700px) {
       :root {
-        --header-h: 62px;
+        --header-h: 60px;
       }
 
       .navbar {
@@ -1048,42 +1040,20 @@
       }
 
       .header-left {
-        gap: 5px;
-      }
-
-      .back-link {
-        width: 33px;
-        height: 36px;
-        font-size: 21px;
+        gap: 0;
       }
 
       .brand {
-        font-size: 20px;
-        letter-spacing: -.7px;
-      }
-
-      .search {
-        width: auto;
-        flex: 1;
-        height: 38px;
-        gap: 7px;
-        padding: 0 9px;
-      }
-
-      .search > i {
-        font-size: 17px;
-      }
-
-      .search input {
-        font-size: 11px;
+        font-size: 22px;
+        letter-spacing: -.8px;
       }
 
       .nav-actions {
-        gap: 3px;
+        gap: 4px;
       }
 
       .nav-icon {
-        width: 32px;
+        width: 34px;
         height: 36px;
         font-size: 20px;
       }
@@ -1093,43 +1063,62 @@
         right: -1px;
       }
 
+      /* Search is directly below toolbar */
+      .search-bar-wrap {
+        padding: 10px 4%;
+      }
+
+      .search {
+        height: 42px;
+        gap: 8px;
+        padding: 0 12px;
+      }
+
+      .search > i {
+        font-size: 18px;
+      }
+
+      .search input {
+        font-size: 12px;
+      }
+
       .hero-wrap {
         padding: 20px 5% 0;
       }
 
       .hero {
-        min-height: 240px;
-        padding: 27px 22px;
+        min-height: 230px;
+        padding: 25px 21px;
         gap: 12px;
-        border-radius: 13px;
+        border-radius: 12px;
       }
 
       .eyebrow {
-        margin-bottom: 12px;
+        margin-bottom: 11px;
         font-size: 9px;
-        letter-spacing: 1px;
+        letter-spacing: .8px;
       }
 
       .hero h1 {
-        font-size: 30px;
-        letter-spacing: -1.1px;
+        font-size: 29px;
+        letter-spacing: -1px;
       }
 
       .hero p {
-        margin-top: 10px;
+        margin-top: 9px;
         font-size: 11px;
       }
 
       .hero-button {
-        min-height: 40px;
-        margin-top: 17px;
-        padding: 10px 13px;
+        min-height: 39px;
+        margin-top: 16px;
+        padding: 10px 15px;
         font-size: 11px;
       }
 
       .hero-art {
-        width: 105px;
-        height: 105px;
+        width: 100px;
+        height: 100px;
       }
 
       .hero-art img {
@@ -1138,14 +1127,14 @@
       }
 
       .container {
-        width: 90%;
-        margin: 30px auto 45px;
+        width: 92%;
+        margin: 28px auto 42px;
       }
 
       .section-head {
         align-items: flex-end;
-        gap: 10px;
-        margin-bottom: 15px;
+        gap: 8px;
+        margin-bottom: 14px;
       }
 
       .section-head h2 {
@@ -1163,7 +1152,7 @@
 
       .categories {
         gap: 7px;
-        margin-bottom: 27px;
+        margin-bottom: 25px;
       }
 
       .category-btn {
@@ -1172,70 +1161,114 @@
         font-size: 10px;
       }
 
-      .product-grid {
+      /* Two full cards across the available width */
+      .product-grid:not(.list-view) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
+        width: 100%;
+      }
+
+      .product-card {
+        min-width: 0;
+        width: 100%;
       }
 
       .product-image,
       .skeleton-image {
-        height: 155px;
+        height: clamp(125px, 35vw, 175px);
       }
 
       .product-image {
-        padding: 11px;
+        padding: 10px;
       }
 
       .product-info {
-        padding: 11px;
+        min-width: 0;
+        padding: 10px;
+      }
+
+      .product-category {
+        font-size: 9px;
+        letter-spacing: .2px;
       }
 
       .product-title {
         min-height: 36px;
+        margin-top: 6px;
         font-size: 12px;
+        line-height: 1.45;
       }
 
       .product-description {
-        min-height: 47px;
+        min-height: 44px;
+        margin-top: 5px;
         font-size: 10px;
-      }
-
-      .product-price {
-        font-size: 14px;
+        line-height: 1.55;
+        -webkit-line-clamp: 3;
       }
 
       .product-rating {
+        gap: 4px;
+        margin-top: 8px;
         font-size: 10px;
       }
 
+      .product-rating i {
+        font-size: 12px;
+      }
+
+      .product-bottom {
+        align-items: center;
+        gap: 5px;
+        padding-top: 11px;
+      }
+
+      .product-price {
+        font-size: clamp(11px, 3.4vw, 14px);
+        letter-spacing: -.2px;
+      }
+
       .add-button {
-        width: 32px;
-        height: 32px;
-        font-size: 17px;
+        min-width: 66px;
+        min-height: 32px;
+        padding: 7px 8px;
+        border-radius: 7px;
+        font-size: 10px;
+      }
+
+      /* Keep list results readable on mobile */
+      .product-grid.list-view .product-card {
+        width: 100%;
       }
 
       .product-grid.list-view .product-image {
-        width: 112px;
-        min-width: 112px;
-        height: 135px;
+        width: 105px;
+        min-width: 105px;
+        height: 130px;
         padding: 8px;
       }
 
       .product-grid.list-view .product-info {
-        padding: 10px;
+        padding: 9px 10px;
       }
 
       .product-grid.list-view .product-title {
+        min-height: 0;
         font-size: 12px;
       }
 
       .product-grid.list-view .product-description {
+        min-height: 0;
         font-size: 10px;
         -webkit-line-clamp: 2;
       }
 
       .product-grid.list-view .product-price {
-        font-size: 13px;
+        font-size: 12px;
+      }
+
+      .product-grid.list-view .add-button {
+        min-width: 66px;
       }
 
       .footer {
@@ -1244,40 +1277,27 @@
       }
     }
 
-    @media (max-width: 390px) {
+    @media (max-width: 360px) {
       .navbar {
         padding: 0 3%;
         gap: 5px;
       }
 
-      .header-left {
-        gap: 2px;
-      }
-
-      .back-link {
-        width: 29px;
-      }
-
       .brand {
-        font-size: 18px;
-      }
-
-      .search {
-        gap: 5px;
-        padding: 0 7px;
-      }
-
-      .search input {
-        font-size: 10px;
+        font-size: 20px;
       }
 
       .nav-actions {
-        gap: 0;
+        gap: 1px;
       }
 
       .nav-icon {
-        width: 29px;
+        width: 31px;
         font-size: 19px;
+      }
+
+      .search-bar-wrap {
+        padding: 9px 3%;
       }
 
       .hero-art {
@@ -1285,54 +1305,48 @@
       }
 
       .hero h1 {
-        font-size: 29px;
+        font-size: 28px;
       }
 
-      .product-grid {
+      .product-grid:not(.list-view) {
         gap: 9px;
       }
 
       .product-image,
       .skeleton-image {
-        height: 140px;
+        height: 125px;
       }
 
       .product-info {
-        padding: 9px;
+        padding: 8px;
       }
 
       .product-title {
         font-size: 11px;
       }
 
+      .product-description {
+        font-size: 9px;
+      }
+
       .product-price {
-        font-size: 13px;
+        font-size: 11px;
+      }
+
+      .add-button {
+        min-width: 59px;
+        padding: 6px;
+        font-size: 9px;
       }
 
       .product-grid.list-view .product-image {
-        width: 92px;
-        min-width: 92px;
-        height: 125px;
+        width: 88px;
+        min-width: 88px;
+        height: 120px;
       }
 
       .product-grid.list-view .product-info {
         padding: 8px;
-      }
-
-      .product-grid.list-view .product-category {
-        font-size: 9px;
-      }
-
-      .product-grid.list-view .product-title {
-        font-size: 11px;
-      }
-
-      .product-grid.list-view .product-rating {
-        margin-top: 6px;
-      }
-
-      .product-grid.list-view .product-bottom {
-        padding-top: 7px;
       }
     }
 
@@ -1356,22 +1370,53 @@
 
 <body>
 
-  <!-- PAYMENT PAGE MATCHING HEADER -->
+  <!-- HOME TOOLBAR -->
   <header class="navbar">
 
     <div class="header-left">
-      <a
-        href="/"
-        class="back-link"
-        aria-label="Go back"
-        title="Go back"
-        id="backButton"
-      >
-        <i class="ph ph-navigation-arrow" aria-hidden="true"></i>
+      <a href="/home.html" class="brand" aria-label="Shoppy home">
+        Shoppy.
       </a>
     </div>
 
+    <nav class="nav-actions" aria-label="Main navigation">
+
+      <a
+        class="nav-icon"
+        href="/home.html"
+        aria-label="Home"
+        title="Home"
+      >
+        <i class="ph ph-house" aria-hidden="true"></i>
+      </a>
+
+      <a
+        class="nav-icon"
+        href="/cart.html"
+        aria-label="Cart"
+        title="Shopping cart"
+      >
+        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+        <span class="cart-count" id="cartCount" hidden>0</span>
+      </a>
+
+      <a
+        class="nav-icon"
+        href="/profile.html"
+        aria-label="My profile"
+        title="My profile"
+      >
+        <i class="ph ph-user-circle" aria-hidden="true"></i>
+      </a>
+
+    </nav>
+
+  </header>
+
+  <!-- SEARCH BAR BELOW TOOLBAR -->
+  <div class="search-bar-wrap">
     <form class="search" id="searchForm" role="search">
+
       <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
 
       <input
@@ -1382,16 +1427,13 @@
         autocomplete="off"
         maxlength="100"
       >
+
     </form>
-
-    <a href="/home.html" class="brand" aria-label="Shoppy home">
-      Shoppy.
-    </a>
-
-  </header>
+  </div>
 
   <!-- HERO -->
   <section class="hero-wrap" id="heroWrap">
+
     <div class="hero">
 
       <div class="hero-copy">
@@ -1410,7 +1452,6 @@
 
         <button class="hero-button" id="shopNow" type="button">
           Explore Products
-          <i class="ph ph-arrow-right" aria-hidden="true"></i>
         </button>
 
       </div>
@@ -1423,19 +1464,23 @@
       </div>
 
     </div>
+
   </section>
 
   <!-- PRODUCTS -->
   <main class="container" id="productsSection">
 
     <div class="section-head" id="categoriesHeading">
+
       <div>
         <h2>Shop by Category</h2>
         <p>Find what you need, all in one place.</p>
       </div>
+
     </div>
 
     <div id="categories" class="categories">
+
       <button
         class="category-btn active"
         data-category=""
@@ -1443,15 +1488,18 @@
       >
         All Products
       </button>
+
     </div>
 
     <div class="section-head">
+
       <div>
         <h2 id="productsHeading">Popular Products</h2>
         <p id="productsSubtitle">Discover something you'll love.</p>
       </div>
 
       <span id="productCount" class="product-count"></span>
+
     </div>
 
     <div
@@ -1462,6 +1510,7 @@
     ></div>
 
     <div class="load-more-wrap">
+
       <button
         id="loadMoreButton"
         class="load-more-button"
@@ -1470,6 +1519,7 @@
       >
         Load More Products
       </button>
+
     </div>
 
   </main>
@@ -1480,7 +1530,12 @@
     <span>Your shopping, all in one place.</span>
   </footer>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+  ></div>
 
   <script>
     "use strict";
@@ -1496,7 +1551,7 @@
     const heroWrap = document.getElementById("heroWrap");
     const loadMoreButton = document.getElementById("loadMoreButton");
     const toast = document.getElementById("toast");
-    const cartCount = document.createElement("span");
+    const actualCartCount = document.getElementById("cartCount");
 
     const PAGE_SIZE = 24;
     const CART_STORAGE_KEY = "shoppy_cart";
@@ -1514,36 +1569,6 @@
 
     document.getElementById("year").textContent =
       new Date().getFullYear();
-
-    /*
-     * Add the cart badge to the matching toolbar.
-     * The cart remains directly accessible through /cart.html.
-     */
-    const navActions = document.createElement("nav");
-    navActions.className = "nav-actions";
-    navActions.setAttribute("aria-label", "Main navigation");
-
-    navActions.innerHTML = `
-      <a class="nav-icon" href="/home.html"
-        aria-label="Home" title="Home">
-        <i class="ph ph-house" aria-hidden="true"></i>
-      </a>
-
-      <a class="nav-icon" href="/cart.html"
-        aria-label="Cart" title="Shopping cart">
-        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
-        <span class="cart-count" id="cartCount" hidden>0</span>
-      </a>
-
-      <a class="nav-icon" href="/profile.html"
-        aria-label="My profile" title="My profile">
-        <i class="ph ph-user-circle" aria-hidden="true"></i>
-      </a>
-    `;
-
-    document.querySelector(".navbar").appendChild(navActions);
-
-    const actualCartCount = document.getElementById("cartCount");
 
     function isValidProductId(id) {
       return typeof id === "string" &&
@@ -1647,15 +1672,19 @@
       actualCartCount.hidden = total <= 0;
     }
 
+    /*
+     * Text-only Add to Cart button.
+     * No icon is inserted into any product button.
+     */
     function updateCartButton(button, product) {
       const id = normalizeProductId(product.id);
       const isAdded = Boolean(id) && cartProductIds.has(id);
 
       button.classList.toggle("added", isAdded);
 
-      button.innerHTML = isAdded
-        ? '<i class="ph ph-check" aria-hidden="true"></i>'
-        : '<i class="ph ph-plus" aria-hidden="true"></i>';
+      button.textContent = isAdded
+        ? "Added"
+        : "Add to Cart";
 
       button.setAttribute(
         "aria-label",
@@ -1975,6 +2004,7 @@
               loading="lazy"
               data-product-image
             >
+
           </div>
 
           <div class="product-info">
@@ -2017,16 +2047,10 @@
                 title="${
                   isAdded ? "Already in cart" : "Add to cart"
                 }"
-              >
-                <i
-                  class="ph ${
-                    isAdded ? "ph-check" : "ph-plus"
-                  }"
-                  aria-hidden="true"
-                ></i>
-              </button>
+              >${isAdded ? "Added" : "Add to Cart"}</button>
 
             </div>
+
           </div>
         </article>
       `;
@@ -2359,7 +2383,7 @@
 
     /*
      * Clicking a product card opens its detail page.
-     * The Add to Cart button does not navigate.
+     * Add to Cart does not navigate.
      */
     productGrid.addEventListener("click", event => {
       if (event.target.closest(".add-button")) {
@@ -2463,19 +2487,6 @@
           .scrollIntoView({
             behavior: "smooth"
           });
-      });
-
-    /*
-     * Keep the back/navigation icon working.
-     * If there is no previous in-site page, go to home.
-     */
-    document
-      .getElementById("backButton")
-      .addEventListener("click", event => {
-        if (window.history.length > 1) {
-          event.preventDefault();
-          window.history.back();
-        }
       });
 
     document.addEventListener(
