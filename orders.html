@@ -9,342 +9,55 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="/global.css">
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      background: #fff;
-      color: #111;
-      font-family: Inter, Arial, sans-serif;
-      font-size: 14px;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button {
-      font: inherit;
-      cursor: pointer;
-    }
-
-    .navbar {
-      height: 76px;
-      padding: 0 6%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #eee;
-      gap: 20px;
-    }
-
-    .logo img {
-      width: 118px;
-      height: auto;
-      max-height: 48px;
-      object-fit: contain;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 26px;
-    }
-
-    .nav-links a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #222;
-    }
-
-    .nav-links svg {
-      width: 21px;
-      height: 21px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.7;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    main {
-      width: min(100% - 40px, 1000px);
-      margin: 42px auto 70px;
-      min-height: 55vh;
-    }
-
-    .heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.8px;
-    }
-
-    .subheading {
-      color: #777;
-      margin-top: 8px;
-      line-height: 1.6;
-    }
-
-    .refresh-btn,
-    .action-btn {
-      padding: 11px 16px;
-      background: #fff;
-      color: #111;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-weight: 700;
-    }
-
-    .refresh-btn:hover,
-    .action-btn:hover {
-      background: #f7f7f7;
-    }
-
-    #message {
-      padding: 18px 0;
-      color: #666;
-      line-height: 1.7;
-    }
-
-    .order-card {
-      border: 1px solid #e7e7e7;
-      border-radius: 5px;
-      margin-bottom: 22px;
-      overflow: hidden;
-    }
-
-    .order-top {
-      padding: 20px;
-      background: #fafafa;
-      border-bottom: 1px solid #e7e7e7;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 18px;
-    }
-
-    .meta-label {
-      display: block;
-      color: #777;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      margin-bottom: 7px;
-    }
-
-    .meta-value {
-      font-weight: 600;
-      overflow-wrap: anywhere;
-    }
-
-    .status-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .status {
-      display: inline-block;
-      border-radius: 3px;
-      padding: 7px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .2px;
-      background: #fff5d9;
-      color: #805900;
-    }
-
-    .status.paid {
-      background: #e7f7ed;
-      color: #176b37;
-    }
-
-    .status.failed {
-      background: #fdeaea;
-      color: #a32121;
-    }
-
-    .order-body {
-      padding: 22px 20px;
-    }
-
-    .product-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      padding: 13px 0;
-      border-bottom: 1px solid #eee;
-      line-height: 1.6;
-    }
-
-    .product-row:first-child {
-      padding-top: 0;
-    }
-
-    .product-name {
-      font-weight: 600;
-    }
-
-    .product-info {
-      margin-top: 5px;
-      color: #777;
-      font-size: 12px;
-    }
-
-    .product-price {
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .order-bottom {
-      padding: 18px 20px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      flex-wrap: wrap;
-      gap: 18px;
-    }
-
-    .total-label {
-      color: #777;
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-
-    .total {
-      font-size: 22px;
-      font-weight: 700;
-    }
-
-    .order-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .primary-btn {
-      padding: 12px 17px;
-      background: #111;
-      color: #fff;
-      border: 1px solid #111;
-      border-radius: 4px;
-      font-weight: 700;
-    }
-
-    .primary-btn:hover {
-      background: #333;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 65px 20px;
-      border: 1px solid #eee;
-      border-radius: 5px;
-    }
-
-    .empty-state h2 {
-      margin: 0 0 10px;
-      font-size: 21px;
-    }
-
-    .empty-state p {
-      color: #777;
-      line-height: 1.7;
-      margin-bottom: 22px;
-    }
-
-    footer {
-      border-top: 1px solid #eee;
-      padding: 24px 20px;
-      text-align: center;
-      color: #777;
-      font-size: 12px;
-    }
-
-    .notice {
-      margin: 0 0 22px;
-      padding: 13px 15px;
-      background: #fafafa;
-      border: 1px solid #eee;
-      color: #555;
-      line-height: 1.7;
-    }
-
-    @media (max-width: 600px) {
-      .navbar {
-        height: 65px;
-        padding: 0 18px;
-      }
-
-      .logo img {
-        width: 100px;
-      }
-
-      .nav-links {
-        gap: 18px;
-      }
-
-      .nav-links svg {
-        width: 20px;
-        height: 20px;
-      }
-
-      main {
-        width: calc(100% - 30px);
-        margin-top: 30px;
-      }
-
-      h1 {
-        font-size: 25px;
-      }
-
-      .order-top,
-      .order-body,
-      .order-bottom {
-        padding-left: 15px;
-        padding-right: 15px;
-      }
-
-      .order-top {
-        flex-direction: column;
-      }
-
-      .order-bottom {
-        align-items: stretch;
-      }
-
-      .order-actions {
-        width: 100%;
-      }
-
-      .order-actions button {
-        flex: 1;
-      }
-
-      .product-row {
-        gap: 12px;
-      }
-    }
-  </style>
+  body { background:var(--paper); color:var(--ink); }
+  .navbar { position:fixed; top:0; left:0; right:0; z-index:1000; height:var(--header-h); padding:0 5%; display:flex; align-items:center; justify-content:space-between; gap:20px; background:var(--paper); border-bottom:1px solid var(--line); }
+  .logo { display:flex; align-items:center; text-decoration:none; }
+  .logo img { width:112px; height:auto; max-height:46px; object-fit:contain; }
+  .nav-links { display:flex; align-items:center; gap:25px; }
+  .nav-links a { display:flex; align-items:center; justify-content:center; color:var(--ink); transition:color .2s; }
+  .nav-links a:hover { color:var(--blue); }
+  .nav-links svg { width:21px; height:21px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  main { width:min(1050px,90%); margin:34px auto 65px; min-height:55vh; }
+  .heading { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:28px; }
+  h1 { margin:0; font-family:"Manrope",sans-serif; font-size:clamp(27px,4vw,36px); font-weight:800; letter-spacing:-1.2px; }
+  .subheading { color:var(--muted); margin-top:8px; font-size:13px; line-height:1.7; }
+  .refresh-btn,.action-btn,.primary-btn { min-height:43px; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 16px; border:1px solid var(--line); border-radius:10px; background:var(--paper); color:var(--ink); font-size:12px; font-weight:800; transition:background .2s,border-color .2s; }
+  .refresh-btn:hover,.action-btn:hover { background:#f8faff; border-color:#cbd7ff; }
+  .refresh-btn:disabled { opacity:.6; cursor:wait; }
+  .primary-btn { border-color:var(--blue); background:var(--blue); color:#fff; text-decoration:none; }
+  .primary-btn:hover { border-color:var(--blue-dark); background:var(--blue-dark); }
+  #message { padding:15px 0; color:var(--muted); font-size:13px; line-height:1.7; }
+  .order-card { margin-bottom:22px; overflow:hidden; border:1px solid var(--line); border-radius:13px; background:#fff; }
+  .order-top { padding:20px; background:#f8faff; border-bottom:1px solid var(--line); display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:18px; }
+  .meta-label { display:block; margin-bottom:7px; color:var(--muted); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; }
+  .meta-value { font-size:12px; font-weight:700; overflow-wrap:anywhere; }
+  .status-group { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .status { display:inline-block; padding:7px 10px; border-radius:7px; background:#fff4d6; color:#805900; font-size:10px; font-weight:800; letter-spacing:.2px; }
+  .status.paid { background:#dcfce7; color:#166534; }
+  .status.failed { background:#fee2e2; color:#991b1b; }
+  .order-body { padding:20px; }
+  .product-row { display:flex; justify-content:space-between; gap:20px; padding:13px 0; border-bottom:1px solid var(--line); line-height:1.6; }
+  .product-row:first-child { padding-top:0; }
+  .product-row:last-child { border-bottom:0; }
+  .product-name { color:var(--ink); font-size:13px; font-weight:700; }
+  .product-info { margin-top:5px; color:var(--muted); font-size:11px; }
+  .product-price { font-size:13px; font-weight:800; white-space:nowrap; }
+  .order-bottom { padding:18px 20px 20px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:18px; border-top:1px solid var(--line); }
+  .total-label { color:var(--muted); font-size:11px; margin-bottom:6px; }
+  .total { font-family:"Manrope",sans-serif; font-size:24px; font-weight:800; letter-spacing:-.6px; }
+  .order-actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .empty-state { text-align:center; padding:55px 20px; border:1px solid var(--line); border-radius:13px; background:#fff; }
+  .empty-state h2 { margin:0 0 10px; font-family:"Manrope",sans-serif; font-size:21px; font-weight:800; }
+  .empty-state p { color:var(--muted); font-size:13px; line-height:1.7; margin:0 0 22px; }
+  .notice { margin:0 0 22px; padding:13px 15px; border:1px solid #dce6ff; border-radius:10px; background:#f5f8ff; color:#34466f; font-size:12px; line-height:1.7; }
+  footer { border-top:1px solid var(--line); padding:24px 20px; text-align:center; color:var(--muted); font-size:11px; }
+  @media(max-width:600px) { .navbar { padding:0 5%; } .logo img { width:95px; } .nav-links { gap:17px; } .nav-links svg { width:19px; height:19px; } main { width:90%; margin-top:25px; } .order-top,.order-body,.order-bottom { padding-left:15px; padding-right:15px; } .order-top { flex-direction:column; } .order-bottom { align-items:stretch; } .order-actions { width:100%; } .order-actions button,.order-actions a { flex:1; } .product-row { gap:12px; } }
+</style>
 </head>
 
 <body>
