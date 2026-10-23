@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
 
-  <title>Payment — Shoppy</title>
+  <title>Order Status — Shoppy</title>
 
   <link rel="icon" type="image/png"
     href="https://i.ibb.co/93kQCKxT/202610.png">
@@ -16,437 +16,219 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
 
-  <!-- Phosphor Regular Icons -->
   <link rel="stylesheet"
     href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
 
-  <!-- Cashfree Payment SDK -->
-  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
-
-  <!-- Global design -->
-  <link rel="stylesheet" href="/global.css">
-
   <style>
-    /* Sirf is page ka layout. Baaki sab global.css se aata hai */
-
-    main {
-      width: min(1050px, 90%);
-      margin: 34px auto 65px;
+    :root {
+      --ink: #20221f;
+      --muted: #797c74;
+      --line: #e8e9e3;
+      --blue: #1748d1;
+      --blue-dark: #1038aa;
+      --green: #15803d;
+      --red: #dc2626;
     }
 
-    .page-heading {
-      margin-bottom: 28px;
+    * {
+      box-sizing: border-box;
     }
 
-    .page-heading h1 {
-      font-family: "Manrope", sans-serif;
-      font-size: clamp(27px, 4vw, 36px);
-      font-weight: 800;
-      letter-spacing: -1.2px;
-      margin: 0 0 8px;
-    }
-
-    .page-heading p {
+    body {
       margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .checkout-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(300px, .8fr);
-      gap: 58px;
-      align-items: start;
-    }
-
-    .checkout-section {
-      padding: 0;
-      margin: 0;
-      background: transparent;
-      border: 0;
-      border-radius: 0;
-      box-shadow: none;
-    }
-
-    .section-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin: 0 0 19px;
-    }
-
-    .section-heading h2 {
-      font-family: "Manrope", sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -.4px;
-      margin: 0;
-    }
-
-    .section-number {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      margin-right: 7px;
-    }
-
-    .section-divider {
-      height: 1px;
-      background: var(--line);
-      margin: 27px 0;
-    }
-
-    /* ADDRESS OPTIONS */
-
-    .address-list {
-      display: grid;
-      gap: 11px;
-    }
-
-    .address-option {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 15px;
-      cursor: pointer;
-      transition: border-color .2s, background .2s;
-    }
-
-    .address-option:hover {
-      border-color: #b9c8fa;
-    }
-
-    .address-option:has(input:checked) {
-      border-color: var(--blue);
-      background: #f8faff;
-    }
-
-    .address-option input {
-      accent-color: var(--blue);
-      margin-top: 4px;
-      flex-shrink: 0;
-    }
-
-    .address-content {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .address-name {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-
-    .address-text {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
-      overflow-wrap: anywhere;
-    }
-
-    .address-phone {
-      display: block;
-      margin-top: 5px;
+      min-height: 100vh;
+      background: #ffffff;
       color: var(--ink);
-      font-size: 12px;
+      font-family: "DM Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .address-tag {
-      display: inline-block;
-      padding: 5px 8px;
-      margin-top: 8px;
-      border-radius: 5px;
-      background: #edf2ff;
-      color: var(--blue);
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    /* PAYMENT METHOD */
-
-    .payment-option {
+    .topbar {
+      height: 72px;
+      padding: 0 5%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 15px;
-      border: 1px solid var(--blue);
-      background: #f8faff;
-      border-radius: 12px;
-    }
-
-    .payment-method-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .payment-icon {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      background: #edf2ff;
-      border-radius: 10px;
-      color: var(--blue);
-      font-size: 23px;
-      flex-shrink: 0;
-    }
-
-    .payment-method-title {
-      display: block;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .payment-method-description {
-      margin-top: 5px;
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .secure-badge {
-      color: var(--green);
-      font-size: 10px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    /* PRODUCT LIST */
-
-    .product-list {
-      display: grid;
-    }
-
-    .product-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 13px;
-      padding: 15px 0;
       border-bottom: 1px solid var(--line);
     }
 
-    .product-item:first-child {
-      padding-top: 0;
-    }
-
-    .product-item:last-child {
-      border-bottom: 0;
-    }
-
-    .product-image-wrap {
-      position: relative;
-      flex-shrink: 0;
-      width: 76px;
-      height: 88px;
-      overflow: hidden;
-      border-radius: 9px;
-      background: #f5f5f2;
-    }
-
-    .product-image {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: center;
-    }
-
-    .product-details {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .product-name {
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1.6;
-      overflow-wrap: anywhere;
-    }
-
-    .product-meta {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 5px;
-    }
-
-    .product-discount {
-      display: inline-block;
-      margin-top: 7px;
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--green);
-    }
-
-    .product-pricing {
-      text-align: right;
-      flex-shrink: 0;
-      padding-left: 5px;
-    }
-
-    .product-final-price {
-      display: block;
-      font-size: 13px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .product-original-price {
-      display: block;
-      margin-top: 5px;
-      font-size: 11px;
-      color: #969991;
-      text-decoration: line-through;
-      white-space: nowrap;
-    }
-
-    /* SUMMARY */
-
-    .summary-heading {
-      margin-bottom: 20px;
-    }
-
-    .price-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-      margin: 15px 0;
-      font-size: 13px;
-      color: #666960;
-    }
-
-    .price-row strong {
+    .bag-link {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      font-size: 26px;
+      text-decoration: none;
       color: var(--ink);
-      font-weight: 700;
-      text-align: right;
-      white-space: nowrap;
     }
 
-    .discount-row strong {
-      color: var(--green);
-    }
-
-    .total-row {
-      padding-top: 18px;
-      margin-top: 18px;
-      border-top: 1px solid var(--line);
-      align-items: center;
-      color: var(--ink);
-      font-size: 15px;
-      font-weight: 800;
-    }
-
-    .total-row strong {
+    .brand {
+      color: var(--blue);
       font-family: "Manrope", sans-serif;
       font-size: 25px;
       font-weight: 800;
-      letter-spacing: -.7px;
+      letter-spacing: -1px;
+      text-decoration: none;
     }
 
-    .savings-box {
-      padding: 12px 14px;
-      margin: 18px 0;
-      border-radius: 9px;
-      background: #ecfdf3;
+    main {
+      width: min(500px, 90%);
+      margin: 65px auto;
+      text-align: center;
+    }
+
+    .status-icon {
+      width: 86px;
+      height: 86px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 24px;
+      border-radius: 50%;
+      font-size: 39px;
+    }
+
+    .status-icon.pending {
+      color: var(--blue);
+      background: #edf2ff;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    .status-icon.success {
+      color: var(--green);
+      background: #dcfce7;
+    }
+
+    .status-icon.failed {
+      color: var(--red);
+      background: #fee2e2;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    h1 {
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(27px, 5vw, 34px);
+      letter-spacing: -1px;
+      margin: 0 0 13px;
+    }
+
+    .description {
+      max-width: 380px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 21px;
+      padding: 9px 13px;
+      background: #edf2ff;
+      color: var(--blue);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .status-pill.success {
+      background: #dcfce7;
       color: #166534;
-      font-size: 12px;
-      font-weight: 700;
-      line-height: 1.6;
+    }
+
+    .status-pill.failed {
+      background: #fee2e2;
+      color: #991b1b;
     }
 
     .order-reference {
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.7;
-      overflow-wrap: anywhere;
-      text-align: center;
-      margin-top: 12px;
+      margin-top: 27px;
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      text-align: left;
     }
 
-    .payment-footnote {
+    .order-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 8px;
+    }
+
+    .order-id {
+      font-size: 12px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+      line-height: 1.7;
+    }
+
+    .actions {
+      display: grid;
+      gap: 11px;
+      margin-top: 25px;
+    }
+
+    .button {
+      min-height: 49px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 10px;
+      padding: 13px 18px;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      cursor: pointer;
+    }
+
+    .button.primary {
+      color: #ffffff;
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .button.primary:hover {
+      background: var(--blue-dark);
+    }
+
+    .button.secondary {
+      color: var(--ink);
+      background: #ffffff;
+    }
+
+    .footnote {
       color: var(--muted);
       font-size: 11px;
       line-height: 1.8;
-      text-align: center;
-      margin-top: 15px;
+      margin-top: 22px;
     }
 
-    .orders-link {
-      display: block;
-      margin-top: 17px;
-      color: var(--blue);
-      font-size: 12px;
-      font-weight: 700;
-      text-decoration: none;
-      text-align: center;
+    .hidden {
+      display: none !important;
     }
 
-    .orders-link:hover {
-      text-decoration: underline;
-    }
+    @media (max-width: 480px) {
+      .topbar {
+        height: 64px;
+      }
 
-    @media (max-width: 760px) {
       main {
-        width: 90%;
-        margin-top: 25px;
-      }
-
-      .checkout-layout {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 30px;
-      }
-
-      .summary-column {
-        order: -1;
-      }
-
-      .section-divider {
-        margin: 24px 0;
-      }
-
-      .product-image-wrap {
-        width: 70px;
-        height: 82px;
-      }
-
-      .page-heading h1 {
-        font-size: 29px;
-      }
-    }
-
-    @media (min-width: 761px) {
-      .summary-column {
-        position: sticky;
-        /* fixed header ke neeche */
-        top: calc(var(--header-h) + 25px);
-      }
-    }
-
-    @media (max-width: 380px) {
-      .product-image-wrap {
-        width: 60px;
-        height: 74px;
-      }
-
-      .product-name {
-        font-size: 12px;
-      }
-
-      .product-final-price {
-        font-size: 12px;
-      }
-
-      .product-pricing {
-        padding-left: 0;
+        margin-top: 48px;
       }
     }
   </style>
@@ -455,721 +237,252 @@
 <body>
 
   <header class="topbar">
-
-    <!-- Navigation icon -->
-    <a href="/"
-       class="bag-link"
-       aria-label="Continue shopping"
-       title="Continue shopping">
+    <a href="/" class="bag-link" aria-label="Continue shopping">
       <i class="ph ph-bag-simple"></i>
     </a>
 
     <a href="/" class="brand">Shoppy.</a>
-
   </header>
 
   <main>
 
-    <div class="page-heading">
-      <h1>Complete your order</h1>
-      <p>Review your order details and complete your secure payment.</p>
+    <div id="statusIcon" class="status-icon pending">
+      <i class="ph ph-hourglass-medium"></i>
     </div>
 
-    <div id="pageNotice" class="notice"></div>
+    <h1 id="statusTitle">Checking your payment</h1>
 
-    <div class="checkout-layout">
+    <p id="statusDescription" class="description">
+      Please wait while we verify your payment with the server.
+    </p>
 
-      <!-- LEFT SIDE -->
-      <section class="checkout-main">
+    <div id="statusPill" class="status-pill">
+      <i class="ph ph-circle-notch"></i>
+      <span id="statusLabel">VERIFYING PAYMENT</span>
+    </div>
 
-        <!-- ADDRESS SECTION -->
-        <section class="checkout-section">
+    <div class="order-reference">
+      <div class="order-label">Order reference</div>
+      <div id="orderId" class="order-id">Loading...</div>
+    </div>
 
-          <div class="section-heading">
-            <h2>
-              <span class="section-number">01</span>
-              Delivery address
-            </h2>
-          </div>
+    <div class="actions">
 
-          <div id="addressLoading" class="loading">
-            Loading saved addresses...
-          </div>
+      <a id="ordersButton"
+         href="/orders.html"
+         class="button primary">
+        <i class="ph ph-package"></i>
+        View my order
+      </a>
 
-          <div id="addressList" class="address-list"></div>
+      <button id="retryButton"
+              class="button secondary"
+              type="button">
+        <i class="ph ph-arrow-clockwise"></i>
+        Check payment again
+      </button>
 
-          <div id="addressEmpty" class="empty-state" hidden>
-            No saved delivery address was found.
-          </div>
-
-          <a href="/user/account/redirect?mode=checkout"
-             class="text-link">
-            <i class="ph ph-plus-circle"></i>
-            Manage delivery addresses
-          </a>
-
-        </section>
-
-        <div class="section-divider"></div>
-
-        <!-- PAYMENT METHOD SECTION -->
-        <section class="checkout-section">
-
-          <div class="section-heading">
-            <h2>
-              <span class="section-number">02</span>
-              Payment method
-            </h2>
-          </div>
-
-          <div class="payment-option">
-
-            <div class="payment-method-left">
-
-              <div class="payment-icon">
-                <i class="ph ph-shield-check"></i>
-              </div>
-
-              <div>
-                <span class="payment-method-title">
-                  Cashfree Payments
-                </span>
-
-                <div class="payment-method-description">
-                  Secure online payment using the methods available at checkout.
-                </div>
-              </div>
-
-            </div>
-
-            <span class="secure-badge">SECURE</span>
-
-          </div>
-
-        </section>
-
-      </section>
-
-      <!-- RIGHT SIDE -->
-      <aside class="summary-column">
-
-        <section class="checkout-section">
-
-          <div class="section-heading summary-heading">
-            <h2>
-              <span class="section-number">03</span>
-              Order summary
-            </h2>
-          </div>
-
-          <div id="cartLoading" class="loading">
-            Loading your products...
-          </div>
-
-          <div id="cartItems" class="product-list"></div>
-
-          <div class="section-divider"></div>
-
-          <div class="price-row">
-            <span>Original price</span>
-            <strong id="originalPrice">₹0.00</strong>
-          </div>
-
-          <div class="price-row discount-row">
-            <span>Discount (95% OFF)</span>
-            <strong id="discountAmount">−₹0.00</strong>
-          </div>
-
-          <div class="price-row">
-            <span>Delivery</span>
-            <strong>FREE</strong>
-          </div>
-
-          <div class="price-row total-row">
-            <span>Total to pay</span>
-            <strong id="totalPrice">₹0.00</strong>
-          </div>
-
-          <div id="savingsText" class="savings-box">
-            You save 95% on this order.
-          </div>
-
-          <button id="payButton" class="pay-button" disabled>
-            <i class="ph ph-lock-key"></i>
-            <span>Loading checkout...</span>
-          </button>
-
-          <div id="orderReference" class="order-reference"></div>
-
-          <a href="/orders.html" class="orders-link">
-            View my orders
-          </a>
-
-          <p class="payment-footnote">
-            Your payment is processed securely by Cashfree.
-            Payment confirmation is verified by our server.
-          </p>
-
-        </section>
-
-      </aside>
+      <a href="/" class="button secondary">
+        <i class="ph ph-house"></i>
+        Continue shopping
+      </a>
 
     </div>
+
+    <p id="footnote" class="footnote">
+      Do not make another payment while your current payment is being verified.
+    </p>
 
   </main>
 
   <script>
     "use strict";
 
-    const USD_TO_INR = 85;
-    const DISCOUNT_PERCENT = 95;
-    const CASHFREE_MODE = "production";
+    const API_URL = "/api/checkout/order";
+    const POLL_INTERVAL = 2000;
+    const MAX_RETRIES = 60;
 
-    const ORDER_STATUS_URL = "/order-status.html";
-
-    const API = {
-      cart: "/api/cart",
-      addresses: "/api/addresses",
-      checkout: "/api/checkout/order"
-    };
-
-    let cartItems = [];
-    let addresses = [];
-    let selectedAddressId = null;
-    let currentOrder = null;
-
-    let checkoutStarted = false;
-    let loadingData = true;
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("orderId");
 
     const $ = (id) => document.getElementById(id);
 
-    function money(value) {
-      return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(Number(value) || 0);
-    }
-
-    function escapeHTML(value) {
-      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      })[char]);
-    }
-
-    function showNotice(message, type = "info") {
-      const notice = $("pageNotice");
-
-      notice.textContent = message;
-      notice.className = `notice show ${type}`;
-    }
-
-    function hideNotice() {
-      $("pageNotice").className = "notice";
-      $("pageNotice").textContent = "";
-    }
-
-    async function apiRequest(url, options = {}) {
-      const response = await fetch(url, {
-        credentials: "same-origin",
-        cache: "no-store",
-        ...options,
-        headers: {
-          "Content-Type": "application/json",
-          ...(options.headers || {})
-        }
-      });
-
-      const raw = await response.text();
-
-      let data;
-
-      try {
-        data = raw ? JSON.parse(raw) : {};
-      } catch {
-        throw new Error("The server returned an invalid response.");
-      }
-
-      if (!response.ok || data.success === false) {
-        const error = new Error(
-          data.message ||
-          data.error ||
-          `Request failed (${response.status})`
-        );
-
-        error.status = response.status;
-        error.data = data;
-
-        throw error;
-      }
-
-      return data;
-    }
-
-    function getOrderId(order) {
-      return order?.orderId ||
-        order?.order_id ||
-        order?.id ||
-        order?.order?.orderId ||
-        order?.order?.order_id ||
-        null;
-    }
-
-    function getPaymentStatus(data) {
-      return String(
-        data?.paymentStatus ||
-        data?.payment_status ||
-        data?.order?.paymentStatus ||
-        data?.order?.payment_status ||
-        data?.status ||
-        ""
-      ).toUpperCase();
-    }
-
-    function redirectToOrderStatus(orderId) {
-      if (!orderId) {
-        showNotice(
-          "The order ID is missing. Please check My Orders before trying again.",
-          "error"
-        );
-
-        return;
-      }
-
-      window.location.assign(
-        `${ORDER_STATUS_URL}?orderId=${encodeURIComponent(orderId)}`
-      );
-    }
-
-    /*
-     * PRODUCT DATA
-     *
-     * Uses the cart item's thumbnail first, preserving the original
-     * product-image field. Additional image fields are fallbacks.
-     */
-
-    function getProductName(item) {
-      return item?.name ||
-        item?.title ||
-        item?.productName ||
-        item?.product?.name ||
-        "Product";
-    }
-
-    function getProductThumbnail(item) {
-      return item?.thumbnail ||
-        item?.product?.thumbnail ||
-        item?.image ||
-        item?.imageUrl ||
-        item?.image_url ||
-        item?.product?.image ||
-        "";
-    }
-
-    function getQuantity(item) {
-      const quantity = Number(
-        item?.quantity ??
-        item?.qty ??
-        1
-      );
-
-      return Number.isFinite(quantity) && quantity > 0
-        ? quantity
-        : 1;
-    }
-
-    function getProductPrice(item) {
-      const price = Number(
-        item?.price ??
-        item?.product?.price ??
-        item?.unitPrice ??
-        item?.unit_price ??
-        0
-      );
-
-      return Number.isFinite(price) && price > 0 ? price : 0;
-    }
-
-    function getOriginalUnitPrice(item) {
-      const price = getProductPrice(item);
-
-      const currency = String(
-        item?.currency ||
-        item?.product?.currency ||
-        "INR"
-      ).toUpperCase();
-
-      return currency === "USD"
-        ? price * USD_TO_INR
-        : price;
-    }
-
-    function getTotals() {
-      let original = 0;
-
-      for (const item of cartItems) {
-        original +=
-          getOriginalUnitPrice(item) * getQuantity(item);
-      }
-
-      const discount = original * DISCOUNT_PERCENT / 100;
-
-      return {
-        original,
-        discount,
-        total: Math.max(0, original - discount)
-      };
-    }
-
-    function renderCart() {
-      $("cartLoading").hidden = true;
-
-      const container = $("cartItems");
-
-      if (!cartItems.length) {
-        container.innerHTML = `
-          <div class="empty-state">
-            Your cart is empty.
-            <br>
-            <a href="/" class="text-link">
-              Continue shopping
-            </a>
-          </div>
-        `;
-
-        renderTotals();
-        updatePayButton();
-        return;
-      }
-
-      container.innerHTML = cartItems.map((item) => {
-        const name = getProductName(item);
-        const thumbnail = getProductThumbnail(item);
-        const quantity = getQuantity(item);
-
-        const originalUnit = getOriginalUnitPrice(item);
-        const discountedUnit =
-          originalUnit * (1 - DISCOUNT_PERCENT / 100);
-
-        const originalTotal = originalUnit * quantity;
-        const discountedTotal = discountedUnit * quantity;
-
-        const imageMarkup = thumbnail
-          ? `
-            <img
-              class="product-image"
-              src="${escapeHTML(thumbnail)}"
-              alt="${escapeHTML(name)}"
-              loading="lazy"
-              onerror="
-                this.onerror=null;
-                this.style.display='none';
-                this.parentElement.innerHTML='<div style=&quot;width:100%;height:100%;display:grid;place-items:center;color:#9ca3af;font-size:25px&quot;><i class=&quot;ph ph-image&quot;></i></div>';
-              "
-            >
-          `
-          : `
-            <div style="
-              width:100%;
-              height:100%;
-              display:grid;
-              place-items:center;
-              color:#9ca3af;
-              font-size:25px;
-            ">
-              <i class="ph ph-image"></i>
-            </div>
-          `;
-
-        return `
-          <article class="product-item">
-
-            <div class="product-image-wrap">
-              ${imageMarkup}
-            </div>
-
-            <div class="product-details">
-
-              <div class="product-name">
-                ${escapeHTML(name)}
-              </div>
-
-              <div class="product-meta">
-                Quantity: ${quantity}
-              </div>
-
-              <span class="product-discount">
-                95% OFF
-              </span>
-
-            </div>
-
-            <div class="product-pricing">
-
-              <span class="product-final-price">
-                ${money(discountedTotal)}
-              </span>
-
-              <span class="product-original-price">
-                ${money(originalTotal)}
-              </span>
-
-            </div>
-
-          </article>
-        `;
-      }).join("");
-
-      renderTotals();
-      updatePayButton();
-    }
-
-    function renderTotals() {
-      const totals = getTotals();
-
-      $("originalPrice").textContent = money(totals.original);
-      $("discountAmount").textContent = `−${money(totals.discount)}`;
-      $("totalPrice").textContent = money(totals.total);
-
-      $("savingsText").textContent =
-        `You save ${DISCOUNT_PERCENT}% (${money(totals.discount)}) on this order.`;
-    }
-
-    function getAddressId(address) {
-      return address?.addressId ||
-        address?.address_id ||
-        address?.id ||
-        address?.key ||
-        null;
-    }
-
-    function normalizeAddresses(data) {
-      if (Array.isArray(data)) return data;
-
-      if (Array.isArray(data.addresses)) return data.addresses;
-
-      if (Array.isArray(data.data)) return data.data;
-
-      return [];
-    }
-
-    function getAddressLine(address) {
-      return [
-        address?.addressLine1 || address?.address1 || address?.street,
-        address?.addressLine2 || address?.address2,
-        address?.landmark,
-        address?.city,
-        address?.state,
-        address?.pincode || address?.postalCode || address?.zip,
-        address?.country
-      ].filter(Boolean).join(", ") ||
-        address?.address ||
-        "";
-    }
-
-    function renderAddresses() {
-      $("addressLoading").hidden = true;
-
-      const container = $("addressList");
-      const empty = $("addressEmpty");
-
-      if (!addresses.length) {
-        container.innerHTML = "";
-        empty.hidden = false;
-        updatePayButton();
-        return;
-      }
-
-      empty.hidden = true;
-
-      if (!selectedAddressId) {
-        const defaultAddress = addresses.find((address) =>
-          address.default === true ||
-          address.isDefault === true ||
-          address.is_default === true
-        );
-
-        selectedAddressId = getAddressId(
-          defaultAddress || addresses[0]
-        );
-      }
-
-      container.innerHTML = addresses.map((address) => {
-        const id = getAddressId(address);
-
-        const name =
-          address.name ||
-          address.fullName ||
-          address.full_name ||
-          address.recipient ||
-          "Delivery address";
-
-        const phone =
-          address.phone ||
-          address.mobile ||
-          address.phoneNumber ||
-          "";
-
-        const selected =
-          String(id) === String(selectedAddressId);
-
-        const defaultAddress =
-          address.default === true ||
-          address.isDefault === true ||
-          address.is_default === true;
-
-        return `
-          <label class="address-option">
-
-            <input
-              type="radio"
-              name="selectedAddress"
-              value="${escapeHTML(id || "")}"
-              ${selected ? "checked" : ""}
-              ${id ? "" : "disabled"}
-            >
-
-            <div class="address-content">
-
-              <span class="address-name">
-                ${escapeHTML(name)}
-              </span>
-
-              <div class="address-text">
-                ${escapeHTML(getAddressLine(address))}
-              </div>
-
-              ${
-                phone
-                  ? `<span class="address-phone">${escapeHTML(phone)}</span>`
-                  : ""
-              }
-
-              ${
-                defaultAddress
-                  ? `<span class="address-tag">DEFAULT ADDRESS</span>`
-                  : ""
-              }
-
-            </div>
-
-          </label>
-        `;
-      }).join("");
-
-      container.querySelectorAll(
-        'input[name="selectedAddress"]'
-      ).forEach((radio) => {
-        radio.addEventListener("change", () => {
-          selectedAddressId = radio.value;
-          updatePayButton();
-        });
-      });
-
-      updatePayButton();
-    }
-
-    function setButton(text, disabled, icon = "ph-lock-key") {
-      const button = $("payButton");
-
-      button.disabled = disabled;
-
-      button.innerHTML = `
-        <i class="ph ${icon}"></i>
-        <span>${escapeHTML(text)}</span>
+    let isVerifying = false;
+    let isFinal = false;
+    let retryCount = 0;
+    let timer = null;
+
+    function setPending(title, description, label = "PAYMENT PENDING") {
+      $("statusIcon").className = "status-icon pending";
+
+      $("statusIcon").innerHTML =
+        '<i class="ph ph-hourglass-medium"></i>';
+
+      $("statusTitle").textContent = title;
+      $("statusDescription").textContent = description;
+
+      $("statusPill").className = "status-pill";
+      $("statusPill").innerHTML = `
+        <i class="ph ph-circle-notch"></i>
+        <span id="statusLabel">${label}</span>
       `;
+
+      $("retryButton").classList.remove("hidden");
+
+      $("footnote").textContent =
+        "Payment status is being checked securely. If money was deducted, " +
+        "do not immediately attempt another payment.";
     }
 
-    function updatePayButton() {
-      if (checkoutStarted) {
-        setButton("Opening Cashfree checkout...", true, "ph-spinner");
-        return;
-      }
+    function setSuccess() {
+      isFinal = true;
 
-      if (loadingData) {
-        setButton("Loading checkout...", true);
-        return;
-      }
+      clearTimeout(timer);
 
-      if (!cartItems.length && !currentOrder) {
-        setButton("Your cart is empty", true, "ph-shopping-bag");
-        return;
-      }
+      $("statusIcon").className = "status-icon success";
 
-      if (!currentOrder && !selectedAddressId) {
-        setButton("Select delivery address", true, "ph-map-pin");
-        return;
-      }
+      $("statusIcon").innerHTML =
+        '<i class="ph ph-check-circle"></i>';
 
-      const existingOrderId = getOrderId(currentOrder);
+      $("statusTitle").textContent = "Payment successful!";
 
-      if (existingOrderId) {
-        setButton("Continue to payment", false, "ph-lock-key");
-        return;
-      }
+      $("statusDescription").textContent =
+        "Your payment has been confirmed. Thank you for shopping with Shoppy.";
 
-      setButton(
-        `Pay ${$("totalPrice").textContent}`,
-        false,
-        "ph-lock-key"
-      );
+      $("statusPill").className = "status-pill success";
+
+      $("statusPill").innerHTML =
+        '<i class="ph ph-check-circle"></i>' +
+        '<span>PAYMENT SUCCESSFUL</span>';
+
+      $("retryButton").classList.add("hidden");
+
+      $("ordersButton").innerHTML =
+        '<i class="ph ph-package"></i> View your order';
+
+      $("footnote").textContent =
+        "Your payment has been verified by the server. You can now view your order.";
+
+      // Keep the result visible. No automatic redirect.
     }
 
-    async function loadCart() {
-      const data = await apiRequest(API.cart);
+    function setFailed(status) {
+      isFinal = true;
 
-      /*
-       * Preserve the original cart API response:
-       * { success, items, totalPrice }
-       */
-      cartItems = Array.isArray(data.items)
-        ? data.items
-        : Array.isArray(data.cart)
-          ? data.cart
-          : Array.isArray(data.products)
-            ? data.products
-            : Array.isArray(data.data)
-              ? data.data
-              : Array.isArray(data)
-                ? data
-                : [];
+      clearTimeout(timer);
 
-      renderCart();
+      $("statusIcon").className = "status-icon failed";
+
+      $("statusIcon").innerHTML =
+        '<i class="ph ph-x-circle"></i>';
+
+      $("statusTitle").textContent = "Payment not completed";
+
+      if (status === "EXPIRED") {
+        $("statusDescription").textContent =
+          "This payment session has expired. Please check your order.";
+      } else if (status === "TERMINATED") {
+        $("statusDescription").textContent =
+          "This payment session was terminated. Please check your order.";
+      } else {
+        $("statusDescription").textContent =
+          "The payment provider reported that the payment failed. Please check your order before trying again.";
+      }
+
+      $("statusPill").className = "status-pill failed";
+
+      $("statusPill").innerHTML = `
+        <i class="ph ph-x-circle"></i>
+        <span>${status}</span>
+      `;
+
+      $("retryButton").classList.add("hidden");
+
+      $("ordersButton").innerHTML =
+        '<i class="ph ph-package"></i> Check your order';
+
+      $("footnote").textContent =
+        "If money was deducted from your account, check the order before trying again. " +
+        "A failed payment should not be paid again until you confirm the current order status.";
     }
 
-    async function loadAddresses() {
-      const data = await apiRequest(API.addresses);
+    async function verifyPayment() {
+      if (isVerifying || isFinal) return;
 
-      addresses = normalizeAddresses(data);
+      if (!orderId) {
+        isFinal = true;
 
-      renderAddresses();
-    }
+        $("statusIcon").className = "status-icon failed";
 
-    async function loadExistingOrder() {
-      const params = new URLSearchParams(window.location.search);
-      const orderId = params.get("orderId");
+        $("statusIcon").innerHTML =
+          '<i class="ph ph-warning-circle"></i>';
 
-      if (!orderId) return;
+        $("statusTitle").textContent = "Order ID missing";
 
-      /*
-       * If a specific order was requested, load its current status.
-       * Do not navigate away merely because an orderId is present.
-       */
+        $("statusDescription").textContent =
+          "We could not identify this order. Please open My Orders to find your order.";
+
+        $("statusPill").className = "status-pill failed";
+
+        $("statusPill").innerHTML =
+          '<i class="ph ph-warning-circle"></i>' +
+          '<span>ORDER NOT IDENTIFIED</span>';
+
+        $("orderId").textContent = "Not available";
+        $("retryButton").classList.add("hidden");
+
+        return;
+      }
+
+      isVerifying = true;
+
+      $("retryButton").disabled = true;
+      $("retryButton").textContent = "Checking payment...";
+
       try {
-        const data = await apiRequest(API.checkout, {
+        const response = await fetch(API_URL, {
           method: "POST",
+          credentials: "same-origin",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             action: "verify-payment",
             orderId
           })
         });
 
-        const status = getPaymentStatus(data);
+        const raw = await response.text();
+
+        let data = {};
+
+        try {
+          data = raw ? JSON.parse(raw) : {};
+        } catch {
+          throw new Error("Invalid response from the payment server.");
+        }
+
+        if (!response.ok || data.success === false) {
+          throw new Error(
+            data.message ||
+            data.error ||
+            `Verification failed (${response.status})`
+          );
+        }
+
+        /*
+         * Preserve the existing API's response format:
+         * data.paymentStatus || data.status
+         */
+        const status = String(
+          data.paymentStatus ||
+          data.payment_status ||
+          data.order?.paymentStatus ||
+          data.order?.payment_status ||
+          data.status ||
+          ""
+        ).toUpperCase();
 
         if (
           status === "PAID" ||
@@ -1177,306 +490,88 @@
           status === "SUCCESSFUL" ||
           status === "COMPLETED"
         ) {
-          redirectToOrderStatus(orderId);
+          setSuccess();
           return;
         }
 
-        currentOrder = {
-          orderId,
-          paymentStatus: status
-        };
-
-        $("orderReference").textContent = `Order ID: ${orderId}`;
-
-      } catch (error) {
-        console.error("Existing order verification failed:", error);
-
-        /*
-         * Don't redirect automatically if verification fails.
-         * The user can retry through the Pay button.
-         */
-        showNotice(
-          "We could not verify the existing order. Please try again.",
-          "info"
-        );
-      }
-    }
-
-    async function createOrderOnce() {
-      if (currentOrder && getOrderId(currentOrder)) {
-        return currentOrder;
-      }
-
-      const data = await apiRequest(API.checkout, {
-        method: "POST",
-        body: JSON.stringify({
-          addressId: selectedAddressId
-        })
-      });
-
-      /*
-       * The checkout API returns the created order.
-       * Expected fields include orderId, totalINR, items and discount data.
-       */
-      const order = data.order || data.data?.order || data;
-      const orderId = getOrderId(order);
-
-      if (!orderId) {
-        throw new Error(
-          data.message ||
-          "The server did not return an order ID."
-        );
-      }
-
-      currentOrder = {
-        ...order,
-        orderId
-      };
-
-      $("orderReference").textContent = `Order ID: ${orderId}`;
-
-      return currentOrder;
-    }
-
-    async function createCashfreePaymentSession(orderId) {
-      const data = await apiRequest(API.checkout, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "create-payment",
-          orderId
-        })
-      });
-
-      const paymentSessionId =
-        data.paymentSessionId ||
-        data.payment_session_id ||
-        data.paymentSession?.paymentSessionId ||
-        data.payment_session?.payment_session_id ||
-        data.data?.paymentSessionId ||
-        data.data?.payment_session_id;
-
-      if (!paymentSessionId) {
-        throw new Error(
-          data.message ||
-          data.error ||
-          "Cashfree did not return a payment session."
-        );
-      }
-
-      return paymentSessionId;
-    }
-
-    async function verifyPaymentOnServer(orderId) {
-      return apiRequest(API.checkout, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "verify-payment",
-          orderId
-        })
-      });
-    }
-
-    async function openCashfreeGateway(paymentSessionId) {
-      if (typeof window.Cashfree !== "function") {
-        throw new Error(
-          "Cashfree SDK did not load. Please refresh the page and try again."
-        );
-      }
-
-      const cashfree = window.Cashfree({
-        mode: CASHFREE_MODE
-      });
-
-      /*
-       * IMPORTANT:
-       *
-       * Cashfree is opened FIRST.
-       * We wait for its checkout promise to resolve or reject.
-       * Only after that does the caller verify the result and navigate.
-       *
-       * Do not redirect to order-status before this promise settles.
-       */
-      return cashfree.checkout({
-        paymentSessionId,
-        redirectTarget: "_modal"
-      });
-    }
-
-    async function handlePayClick() {
-      if (checkoutStarted) return;
-
-      hideNotice();
-
-      if (!currentOrder && !selectedAddressId) {
-        showNotice("Please select a delivery address first.", "error");
-        return;
-      }
-
-      if (!currentOrder && !cartItems.length) {
-        showNotice("Your cart is empty.", "error");
-        return;
-      }
-
-      checkoutStarted = true;
-      updatePayButton();
-
-      let orderId = null;
-      let gatewayReturned = false;
-
-      try {
-        /*
-         * STEP 1: Create or reuse the order.
-         */
-        const order = await createOrderOnce();
-
-        orderId = getOrderId(order);
-
-        if (!orderId) {
-          throw new Error("Order ID was not returned.");
-        }
-
-        /*
-         * STEP 2: Ask the server to create the Cashfree payment session.
-         */
-        const paymentSessionId =
-          await createCashfreePaymentSession(orderId);
-
-        /*
-         * STEP 3: Open Cashfree Gateway.
-         * This MUST happen before navigating to order-status.
-         */
-        try {
-          const checkoutResult =
-            await openCashfreeGateway(paymentSessionId);
-
-          gatewayReturned = true;
-
-          console.log(
-            "Cashfree checkout returned:",
-            checkoutResult
-          );
-
-        } catch (gatewayError) {
-          /*
-           * Cashfree can reject its checkout promise when the user
-           * closes the modal or when checkout encounters an error.
-           *
-           * Still verify with the server: the payment could have
-           * succeeded before the modal closed or an error occurred.
-           */
-          gatewayReturned = true;
-
-          console.warn(
-            "Cashfree checkout closed or returned an error:",
-            gatewayError
-          );
-        }
-
-        /*
-         * STEP 4: Only after Cashfree returns, verify on the server.
-         * Never trust only a frontend success response.
-         */
-        if (gatewayReturned) {
-          try {
-            const verification =
-              await verifyPaymentOnServer(orderId);
-
-            console.log(
-              "Server payment verification:",
-              verification
-            );
-
-          } catch (verificationError) {
-            /*
-             * A verification network error is not proof of payment
-             * failure. The status page will retry verification.
-             */
-            console.error(
-              "Payment verification request failed:",
-              verificationError
-            );
-          }
-
-          /*
-           * STEP 5: Open Order Status Page AFTER the Cashfree result.
-           */
-          redirectToOrderStatus(orderId);
+        if (
+          status === "FAILED" ||
+          status === "EXPIRED" ||
+          status === "TERMINATED"
+        ) {
+          setFailed(status);
           return;
         }
 
-      } catch (error) {
-        console.error("Checkout initialization failed:", error);
+        retryCount++;
 
-        /*
-         * If we have an order ID but failed before Cashfree opened,
-         * do NOT redirect straight to the status page.
-         * Show the error so the customer can retry.
-         */
-        showNotice(
-          error.message ||
-          "Unable to start Cashfree checkout. Please try again.",
-          "error"
+        setPending(
+          "Payment is being verified",
+          "Cashfree has not yet returned a final confirmed result. We will check again automatically.",
+          status || "PAYMENT PENDING"
         );
 
-        checkoutStarted = false;
-        updatePayButton();
-      }
-    }
-
-    $("payButton").addEventListener("click", handlePayClick);
-
-    async function init() {
-      try {
-        /*
-         * Load data before enabling Pay Now.
-         */
-        const results = await Promise.allSettled([
-          loadCart(),
-          loadAddresses()
-        ]);
-
-        const cartResult = results[0];
-        const addressResult = results[1];
-
-        if (cartResult.status === "rejected") {
-          console.error("Cart loading error:", cartResult.reason);
-
-          showNotice(
-            "Unable to load your cart. Please refresh and try again.",
-            "error"
-          );
-        }
-
-        if (addressResult.status === "rejected") {
-          console.error(
-            "Address loading error:",
-            addressResult.reason
+        if (retryCount < MAX_RETRIES) {
+          timer = setTimeout(verifyPayment, POLL_INTERVAL);
+        } else {
+          setPending(
+            "Payment confirmation is taking longer",
+            "We could not confirm the final result yet. You can retry the check or view your order.",
+            "AWAITING CONFIRMATION"
           );
 
-          $("addressLoading").hidden = true;
-          $("addressEmpty").hidden = false;
-
-          $("addressEmpty").textContent =
-            "Unable to load saved addresses. Please sign in and try again.";
+          $("footnote").textContent =
+            "Automatic checks have paused. Please retry or check My Orders. " +
+            "A pending result does not mean the payment failed.";
         }
-
-        await loadExistingOrder();
 
       } catch (error) {
-        console.error("Checkout initialization error:", error);
+        console.error("Payment verification error:", error);
 
-        showNotice(
-          "Unable to load checkout information. Please refresh the page.",
-          "error"
+        retryCount++;
+
+        setPending(
+          "Unable to confirm payment yet",
+          "The verification service could not confirm the result. Your payment may still be processing.",
+          "RETRYING VERIFICATION"
         );
+
+        if (retryCount < MAX_RETRIES) {
+          timer = setTimeout(verifyPayment, POLL_INTERVAL);
+        } else {
+          $("statusDescription").textContent =
+            "Automatic checks have paused. Tap Check payment again to retry, or view your order.";
+
+          $("footnote").textContent =
+            "A verification error does not mean payment failed. Check your order before attempting another payment.";
+        }
 
       } finally {
-        loadingData = false;
-        updatePayButton();
+        isVerifying = false;
+
+        $("retryButton").disabled = false;
+
+        $("retryButton").innerHTML =
+          '<i class="ph ph-arrow-clockwise"></i> Check payment again';
       }
     }
 
-    init();
+    $("retryButton").addEventListener("click", () => {
+      if (isFinal || isVerifying) return;
+
+      clearTimeout(timer);
+      retryCount = 0;
+
+      verifyPayment();
+    });
+
+    $("orderId").textContent = orderId || "Not available";
+
+    $("ordersButton").href = orderId
+      ? `/orders.html?orderId=${encodeURIComponent(orderId)}`
+      : "/orders.html";
+
+    verifyPayment();
   </script>
 
 </body>
