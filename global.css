@@ -1,0 +1,288 @@
+/* ==========================================================
+   SHOPPY — GLOBAL DESIGN SYSTEM
+   Is file ko har page me <head> ke andar link karna hai:
+   <link rel="stylesheet" href="/global.css">
+   (Phosphor Regular icons aur Google Fonts ka link bhi har page me rahega)
+   ========================================================== */
+
+:root {
+  --ink: #20221f;
+  --muted: #797c74;
+  --line: #e8e9e3;
+  --paper: #ffffff;
+  --blue: #1748d1;
+  --blue-dark: #1038aa;
+  --green: #15803d;
+  --red: #dc2626;
+
+  --header-h: 72px;
+}
+
+@media (max-width: 480px) {
+  :root {
+    --header-h: 64px;
+  }
+}
+
+/* ---------- BASE ---------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  /* fixed header ke neeche content na chhupe */
+  padding-top: var(--header-h);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Phosphor icons ka sahi rendering (icon text jaisa na dikhe) */
+.ph {
+  display: inline-block;
+  line-height: 1;
+}
+
+/* ---------- HEADER / TOOLBAR (FIXED) ---------- */
+/* Left: navigation icon  |  Right: Shoppy brand */
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: var(--header-h);
+  padding: 0 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.bag-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  color: var(--ink);
+  font-size: 26px;
+  text-decoration: none;
+}
+
+.bag-link i {
+  display: block;
+}
+
+.brand {
+  color: var(--blue);
+  font-family: "Manrope", sans-serif;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-decoration: none;
+}
+
+/* ---------- BUTTONS (Order Status page ka design) ----------
+   Primary + Secondary. Button ke andar kabhi icon nahi aayega. */
+
+.button,
+.pay-button {
+  width: 100%;
+  min-height: 49px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  color: var(--ink);
+  background: var(--paper);
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+
+/* Primary */
+.button.primary,
+.pay-button {
+  color: #ffffff;
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+.button.primary:hover,
+.pay-button:hover:not(:disabled) {
+  background: var(--blue-dark);
+  border-color: var(--blue-dark);
+}
+
+/* Secondary */
+.button.secondary {
+  color: var(--ink);
+  background: var(--paper);
+  border-color: var(--line);
+}
+
+.button:disabled,
+.pay-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* Buttons me icon hamesha hidden */
+.button i,
+.pay-button i {
+  display: none !important;
+}
+
+/* ---------- COMMON UI PIECES ---------- */
+
+.loading {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 12px 0;
+}
+
+.empty-state {
+  padding: 20px 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 13px;
+  color: var(--blue);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
+
+.notice {
+  display: none;
+  padding: 13px 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.notice.show {
+  display: block;
+}
+
+.notice.error {
+  color: #b91c1c;
+  background: #fff0f0;
+}
+
+.notice.info {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.notice.success {
+  color: #166534;
+  background: #ecfdf3;
+}
+
+/* Status icon circle (Phosphor Regular icon yahin aata hai) */
+.status-icon {
+  width: 86px;
+  height: 86px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  font-size: 39px;
+}
+
+.status-icon i {
+  display: block;
+  line-height: 1;
+}
+
+.status-icon.pending {
+  color: var(--blue);
+  background: #edf2ff;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.status-icon.success {
+  color: var(--green);
+  background: #dcfce7;
+}
+
+.status-icon.failed {
+  color: var(--red);
+  background: #fee2e2;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Status pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 21px;
+  padding: 9px 13px;
+  background: #edf2ff;
+  color: var(--blue);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.status-pill.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-pill.failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
