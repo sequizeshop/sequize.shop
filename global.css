@@ -2,7 +2,6 @@
    SHOPPY — GLOBAL DESIGN SYSTEM
    Is file ko har page me <head> ke andar link karna hai:
    <link rel="stylesheet" href="/global.css">
-   (Phosphor Regular icons aur Google Fonts ka link bhi har page me rahega)
    ========================================================== */
 
 :root {
@@ -24,8 +23,6 @@
   }
 }
 
-/* ---------- BASE ---------- */
-
 * {
   box-sizing: border-box;
 }
@@ -37,7 +34,6 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  /* fixed header ke neeche content na chhupe */
   padding-top: var(--header-h);
   background: var(--paper);
   color: var(--ink);
@@ -64,14 +60,10 @@ a {
   display: none !important;
 }
 
-/* Phosphor icons ka sahi rendering (icon text jaisa na dikhe) */
 .ph {
   display: inline-block;
   line-height: 1;
 }
-
-/* ---------- HEADER / TOOLBAR (FIXED) ---------- */
-/* Left: navigation icon  |  Right: Shoppy brand */
 
 .topbar {
   position: fixed;
@@ -112,9 +104,6 @@ a {
   text-decoration: none;
 }
 
-/* ---------- BUTTONS (Order Status page ka design) ----------
-   Primary + Secondary. Button ke andar kabhi icon nahi aayega. */
-
 .button,
 .pay-button {
   width: 100%;
@@ -135,7 +124,6 @@ a {
   transition: background .2s, border-color .2s;
 }
 
-/* Primary */
 .button.primary,
 .pay-button {
   color: #ffffff;
@@ -149,7 +137,6 @@ a {
   border-color: var(--blue-dark);
 }
 
-/* Secondary */
 .button.secondary {
   color: var(--ink);
   background: var(--paper);
@@ -162,13 +149,10 @@ a {
   cursor: not-allowed;
 }
 
-/* Buttons me icon hamesha hidden */
 .button i,
 .pay-button i {
   display: none !important;
 }
-
-/* ---------- COMMON UI PIECES ---------- */
 
 .loading {
   color: var(--muted);
@@ -226,7 +210,6 @@ a {
   background: #ecfdf3;
 }
 
-/* Status icon circle (Phosphor Regular icon yahin aata hai) */
 .status-icon {
   width: 86px;
   height: 86px;
@@ -263,7 +246,6 @@ a {
   50% { transform: scale(1.05); }
 }
 
-/* Status pill */
 .status-pill {
   display: inline-flex;
   align-items: center;
