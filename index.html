@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
 
   <title>Shoppy — Discover Products</title>
@@ -37,6 +37,32 @@
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
 
   <link rel="stylesheet" href="/global.css">
+
+  <script>
+  /* Early navigation state: apply iOS skin or a still-valid verified membership cache before first paint. */
+  (function () {
+    const ua = navigator.userAgent || "";
+    const apple = /iPhone|iPad|iPod/i.test(ua) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    window.__appnetickAppleDevice = apple;
+    window.__appnetickMembershipCacheKey = "shoppy_verified_premium_cache_v2";
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem(window.__appnetickMembershipCacheKey) || "null"); } catch (e) {}
+    const expiry = cached ? (Number(cached.expiresAt) || Date.parse(cached.expiresAt || "")) : 0;
+    const cacheValid = !!(cached && cached.active === true && Number.isFinite(expiry) && expiry > Date.now());
+    if (!cacheValid && cached) { try { localStorage.removeItem(window.__appnetickMembershipCacheKey); } catch (e) {} }
+    window.__appnetickCachedPremium = cacheValid;
+    if (apple || cacheValid) {
+      document.documentElement.classList.add("premium-skin-early");
+      const apply = function () {
+        if (!document.body) return;
+        document.body.classList.add("app-premium-navigation");
+        document.body.classList.remove("app-basic-navigation", "nav-pending");
+      };
+      if (document.body) apply(); else document.addEventListener("DOMContentLoaded", apply, { once: true });
+    }
+  })();
+  </script>
 
   <style>
     :root {
@@ -1854,6 +1880,40 @@
       body.app-premium-navigation .nav-actions { display:none !important; }
       body.app-premium-navigation .desktop-drawer { display:flex; }
     }
+    /* Desktop Premium uses the same floating glass navigation language as iOS. */
+    @media (min-width:761px) {
+      body.app-premium-navigation { padding-bottom: 112px; }
+      body.app-premium-navigation .topbar {
+        width: min(calc(100% - 64px), 1320px); margin: 18px auto 14px; padding: 0 18px;
+        border: 1px solid rgba(255,255,255,.62); border-radius: 100px;
+        background: linear-gradient(180deg,rgba(41,98,255,.16),rgba(41,98,255,.07));
+        -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%);
+        box-shadow: 0 12px 32px rgba(41,98,255,.14), 0 2px 8px rgba(0,0,0,.06), inset 0 1px 1px rgba(255,255,255,.8);
+      }
+      body.app-premium-navigation .topbar::before { content:""; position:absolute; inset:0; z-index:0; border-radius:inherit; pointer-events:none; background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 65%); }
+      body.app-premium-navigation .topbar > * { position:relative; z-index:1; }
+      body.app-premium-navigation .bottom-nav {
+        position:fixed; left:50%; right:auto; bottom:24px; z-index:1500;
+        width:min(calc(100% - 48px),560px); min-height:72px; height:72px; padding:8px;
+        display:flex; align-items:center; justify-content:space-between; gap:5px; overflow:hidden;
+        transform:translateX(-50%); border:1px solid rgba(255,255,255,.68); border-radius:100px;
+        background:linear-gradient(180deg,rgba(41,98,255,.17),rgba(41,98,255,.08));
+        -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%);
+        box-shadow:0 14px 38px rgba(41,98,255,.2),0 3px 10px rgba(0,0,0,.08),inset 0 1px 1px rgba(255,255,255,.85);
+      }
+      body.app-premium-navigation .bottom-nav::before { content:""; position:absolute; inset:0; z-index:0; border-radius:inherit; pointer-events:none; background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 68%); }
+      body.app-premium-navigation .bottom-nav-item { flex:1; height:56px; min-height:56px; border-radius:100px; gap:3px; }
+      body.app-premium-navigation .bottom-nav-item > span:not(.nav-item-icon) { display:block !important; font-size:11px; }
+      body.app-premium-navigation .nav-indicator { top:8px; height:56px !important; }
+      body.app-premium-navigation .desktop-drawer, body.app-premium-navigation .desktop-drawer-overlay, body.app-premium-navigation .desktop-nav-toggle { display:none !important; }
+    }
+    /* Keep the page scrolling behind the device's bottom safe-area while the web nav stays in place. */
+    @media (max-width:760px) {
+      html { background:transparent; }
+      body.app-premium-navigation { padding-bottom:calc(var(--bottom-nav-height) + 28px + env(safe-area-inset-bottom,0px)); }
+      body.app-premium-navigation .bottom-nav { bottom:calc(14px + env(safe-area-inset-bottom,0px)); }
+    }
+
     @media (max-width:760px) {
       body.app-premium-navigation .premium-toolbar-control.location-chip { display:inline-flex !important; }
       body.app-premium-navigation .desktop-drawer,
@@ -1865,6 +1925,7 @@
 </head>
 
 <body class="nav-pending">
+  <script>if(window.__appnetickAppleDevice || window.__appnetickCachedPremium){document.body.classList.add("app-premium-navigation");document.body.classList.remove("nav-pending");}</script>
 
   <!-- HEADER -->
 
@@ -4066,49 +4127,82 @@
     });
 
     /* AUTH STATE: browsing is public; cart, wishlist and product detail actions require login. */
+    const PREMIUM_CACHE_KEY = window.__appnetickMembershipCacheKey || "shoppy_verified_premium_cache_v2";
+    const isAppleDevice = !!window.__appnetickAppleDevice;
+    let lastVerifiedMembership = null;
+
+    function expiryTimestamp(value) {
+      const n = Number(value);
+      if (Number.isFinite(n) && n > 0) return n;
+      const parsed = Date.parse(value || "");
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function setPremiumPresentation(membership, verified) {
+      const expiry = membership ? expiryTimestamp(membership.expiresAt) : 0;
+      const active = !!(verified && membership && membership.active === true && expiry > Date.now());
+      if (active) {
+        lastVerifiedMembership = { active: true, expiresAt: expiry, checkedAt: Date.now() };
+        try { localStorage.setItem(PREMIUM_CACHE_KEY, JSON.stringify(lastVerifiedMembership)); } catch (e) {}
+      } else if (verified) {
+        lastVerifiedMembership = null;
+        try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {}
+      }
+      // iOS/Apple gets the Premium visual skin, but this never grants paid membership entitlements.
+      document.body.classList.toggle("app-premium-navigation", isAppleDevice || active);
+      document.body.classList.toggle("app-basic-navigation", !isAppleDevice && !active);
+      updateBrowserThemeColor(isAppleDevice || active);
+      return active;
+    }
+
+    function updateBrowserThemeColor(usePremiumTheme) {
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (!meta) return;
+      let color = "#ffffff";
+      if (usePremiumTheme) {
+        const primary = getComputedStyle(document.documentElement).getPropertyValue("--primary").trim();
+        color = /^#[0-9a-f]{3,8}$/i.test(primary) ? primary : "#2962FF";
+      }
+      meta.setAttribute("content", color);
+      meta.removeAttribute("media");
+    }
+
     async function checkShoppyAuth() {
+      let verified = false;
       try {
         const response = await fetch("/api/profile", {
           method: "GET", credentials: "same-origin", cache: "no-store",
           headers: { Accept: "application/json" }
         });
         const data = await response.json().catch(() => ({}));
-        authStatus = response.ok && data.success === true && data.user
-          ? "logged-in" : "guest";
+        verified = true;
+        authStatus = response.ok && data.success === true && data.user ? "logged-in" : "guest";
         const membership = data.membership && typeof data.membership === "object" ? data.membership : {};
-        const expiryRaw = membership.expiresAt;
-        const expiryTime = (Number(expiryRaw) || Date.parse(expiryRaw || ""));
-        const premiumActive = authStatus === "logged-in" && membership.active === true &&
-          Number.isFinite(expiryTime) && expiryTime > Date.now();
-        document.body.classList.toggle("app-premium-navigation", premiumActive);
+        setPremiumPresentation(membership, true);
       } catch (error) {
-        // Fail closed for write actions if the session cannot be verified.
+        // Keep a not-yet-expired verified cache on temporary network failure; do not trust it for API permissions.
         authStatus = "guest";
-        document.body.classList.remove("app-premium-navigation");
+        let cache = null;
+        try { cache = JSON.parse(localStorage.getItem(PREMIUM_CACHE_KEY) || "null"); } catch (e) {}
+        const expiry = cache ? expiryTimestamp(cache.expiresAt) : 0;
+        const cacheValid = !!(cache && cache.active === true && expiry > Date.now());
+        if (!cacheValid) { try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {} }
+        document.body.classList.toggle("app-premium-navigation", isAppleDevice || cacheValid);
+        document.body.classList.toggle("app-basic-navigation", !isAppleDevice && !cacheValid);
+        updateBrowserThemeColor(isAppleDevice || cacheValid);
       }
-      // Restore the last selected tab before revealing the toolbar/navigation, preventing a Home-tab flash.
+
       let savedTab = "home";
       try {
         const candidate = localStorage.getItem(ACTIVE_NAV_STORAGE_KEY);
         if (["home", "search", "explore", "cart", "account"].includes(candidate)) savedTab = candidate;
-      } catch (error) { /* storage may be unavailable */ }
+      } catch (error) {}
       if (savedTab !== "home") handleNavigation(savedTab);
       else updateNavigationState("home");
 
       document.body.classList.remove("nav-pending");
       document.body.classList.toggle("guest-mode", authStatus !== "logged-in");
-      requestAnimationFrame(() => {
-        const nav = document.getElementById("bottomNav");
-        const indicator = document.getElementById("navIndicator");
-        const active = nav && nav.querySelector("[data-bottom-nav].active");
-        if (nav && indicator && active && document.body.classList.contains("app-premium-navigation")) {
-          const nr = nav.getBoundingClientRect(), ar = active.getBoundingClientRect();
-          const width = Math.min(Math.max(0, ar.width), nav.clientWidth);
-          const x = Math.max(0, Math.min(nav.clientWidth - width, ar.left - nr.left - nav.clientLeft));
-          indicator.style.width = width + "px";
-          indicator.style.transform = "translate3d(" + x + "px,0,0)";
-        }
-      });
+      requestAnimationFrame(() => positionNavIndicator(true));
       const guest = authStatus !== "logged-in";
       document.getElementById("guestCartPanel").hidden = !guest;
       document.getElementById("appCartLayout").hidden = guest;
@@ -4118,6 +4212,17 @@
         document.getElementById("appProfileLayout").hidden = true;
       }
     }
+
+    // Revalidate membership quietly in the background. If the server confirms expiry/revocation, clear the cache.
+    let membershipCheckInFlight = false;
+    async function refreshMembershipInBackground() {
+      if (membershipCheckInFlight) return;
+      membershipCheckInFlight = true;
+      try { await checkShoppyAuth(); } finally { membershipCheckInFlight = false; }
+    }
+    setInterval(() => { if (!document.hidden) refreshMembershipInBackground(); }, 60000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshMembershipInBackground(); });
+    window.addEventListener("pageshow", () => { refreshMembershipInBackground(); });
 
 
     const navIndicator = document.getElementById("navIndicator");
@@ -4639,6 +4744,7 @@
     }
 
     initializeHomePage();
+    updateBrowserThemeColor(isAppleDevice || window.__appnetickCachedPremium);
 
 
     /* IN-PAGE CART: preserves /api/cart endpoints and checkout route */
@@ -4668,13 +4774,13 @@
       function formatMembershipDate(value){const time=Number(value);if(!Number.isFinite(time)||time<=0)return"Not available";return new Date(time).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});}
       function renderMembership(membership){
         const m=membership&&typeof membership==="object"?membership:{};
-        const isActive=m.active===true&&Number(m.expiresAt)>Date.now();
+        const isActive=m.active===true&&expiryTimestamp(m.expiresAt)>Date.now();
         const badge=document.getElementById("appMembershipBadge");
         const summary=document.getElementById("appMembershipSummary");
         const profileLayout=document.getElementById("appProfileLayout");
         const rowTitle=document.getElementById("appMembershipRowTitle");
         const rowDescription=document.getElementById("appMembershipRowDescription");
-        document.body.classList.toggle("app-premium-navigation", isActive);
+        setPremiumPresentation(m, true);
         if(isActive){
           profileLayout.classList.add("app-premium-active");
           badge.classList.add("app-premium-badge");
