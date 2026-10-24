@@ -40,7 +40,6 @@
 
   <style>
     :root {
-      /* Shoppy design tokens */
       --primary: #2962FF;
       --primary-hover: #0059D7;
       --primary-soft: #EDF2FF;
@@ -68,6 +67,7 @@
       --radius-lg: 12px;
 
       --header-h: 64px;
+      --bottom-nav-height: 66px;
     }
 
     * {
@@ -84,6 +84,7 @@
       min-height: 100vh;
       margin: 0;
       padding: 0;
+      padding-bottom: 0;
       background: var(--background);
       color: var(--text-primary);
       font-family: var(--font-body);
@@ -126,9 +127,7 @@
       display: none !important;
     }
 
-    /* =====================================
-       HEADER
-    ===================================== */
+    /* HEADER */
 
     .topbar {
       position: sticky;
@@ -149,7 +148,6 @@
 
       background: var(--background);
       border-bottom: 1px solid var(--border);
-      box-shadow: none;
     }
 
     .nav-actions {
@@ -164,6 +162,7 @@
       align-items: center;
       justify-content: center;
       padding: 8px;
+      border: 0;
       border-radius: var(--radius-md);
       background: transparent;
       color: var(--text-primary);
@@ -184,21 +183,16 @@
       position: absolute;
       top: 0;
       right: 0;
-
       min-width: 18px;
       height: 18px;
       padding: 0 4px;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       border: 2px solid var(--background);
       border-radius: 999px;
-
       background: var(--primary);
       color: #ffffff;
-
       font-size: 10px;
       font-weight: 700;
       line-height: 1;
@@ -214,9 +208,7 @@
       white-space: nowrap;
     }
 
-    /* =====================================
-       SEARCH
-    ===================================== */
+    /* SEARCH */
 
     .search-bar-wrap {
       width: min(1050px, 90%);
@@ -227,17 +219,13 @@
       width: 100%;
       height: 48px;
       margin: 0;
-
       display: flex;
       align-items: center;
       gap: 10px;
-
       padding: 0 15px;
-
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       background: var(--surface);
-
       transition: border-color .18s, box-shadow .18s;
     }
 
@@ -257,52 +245,75 @@
       min-width: 0;
       height: 100%;
       padding: 0;
-
       border: 0;
       outline: 0;
-      box-shadow: none;
-
       background: transparent;
       color: var(--text-primary);
       font-size: 14px;
-    }
-
-    .search input:focus {
-      outline: 0;
-      border: 0;
-      box-shadow: none;
     }
 
     .search input::placeholder {
       color: var(--text-muted);
     }
 
-    /* =====================================
-       HERO
-    ===================================== */
+    /* DEDICATED SEARCH VIEW */
+
+    .search-page {
+      width: min(1050px, 90%);
+      min-height: 65vh;
+      margin: 24px auto 40px;
+    }
+
+    .search-page-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .search-back {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--text-primary);
+      font-size: 22px;
+    }
+
+    .search-page-head h2 {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .search-page .search-bar-wrap {
+      width: 100%;
+      margin: 0 0 24px;
+    }
+
+    /* HERO */
 
     .hero-wrap {
       width: min(1050px, 90%);
       margin: 28px auto 0;
     }
 
-    .hero-wrap.search-hidden {
-      display: none;
-    }
-
     .hero {
       position: relative;
       overflow: hidden;
-
       width: 100%;
       min-height: 260px;
       padding: 34px 5%;
-
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 24px;
-
       border-radius: var(--radius-lg);
       background: var(--surface-secondary);
     }
@@ -317,7 +328,6 @@
       align-items: center;
       gap: 6px;
       margin-bottom: 8px;
-
       color: var(--primary);
       font-size: 12px;
       font-weight: 700;
@@ -332,7 +342,6 @@
     .hero h1 {
       max-width: 500px;
       margin: 0;
-
       color: var(--text-primary);
       font-family: var(--font-heading);
       font-size: clamp(27px, 4vw, 36px);
@@ -344,7 +353,6 @@
     .hero p {
       max-width: 430px;
       margin: 8px 0 0;
-
       color: var(--text-secondary);
       font-size: 14px;
       line-height: 1.7;
@@ -354,20 +362,15 @@
       min-height: 48px;
       margin-top: 24px;
       padding: 12px 24px;
-
       display: inline-flex;
       align-items: center;
       justify-content: center;
-
       border: 1px solid var(--primary);
       border-radius: var(--radius-lg);
-
       background: var(--primary);
       color: #ffffff;
-
       font-size: 14px;
       font-weight: 700;
-
       transition: background .2s, border-color .2s;
     }
 
@@ -380,11 +383,9 @@
       width: 180px;
       height: 180px;
       flex-shrink: 0;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       border-radius: 50%;
       background: var(--surface);
     }
@@ -395,9 +396,61 @@
       object-fit: contain;
     }
 
-    /* =====================================
-       MAIN CONTAINER
-    ===================================== */
+    /* OFFERS */
+
+    .offers-wrap {
+      width: min(1050px, 90%);
+      margin: 24px auto 0;
+    }
+
+    .offers-heading {
+      margin: 0 0 12px;
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.35;
+      letter-spacing: -.7px;
+    }
+
+    .offers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .offer-card {
+      min-width: 0;
+      min-height: 86px;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+      text-align: center;
+      cursor: default;
+    }
+
+    .offer-value {
+      color: var(--primary);
+      font-family: var(--font-heading);
+      font-size: clamp(19px, 4vw, 26px);
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .offer-label {
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    /* MAIN CONTAINER */
 
     .container {
       width: min(1050px, 90%);
@@ -416,7 +469,6 @@
 
     .section-head h2 {
       margin: 0;
-
       color: var(--text-primary);
       font-family: var(--font-heading);
       font-size: 22px;
@@ -439,32 +491,71 @@
       white-space: nowrap;
     }
 
-    /* =====================================
-       CATEGORIES
-    ===================================== */
+    /* CATEGORY SELECTOR */
 
     .categories {
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 27px;
     }
 
-    .category-btn {
-      min-height: 38px;
-      padding: 8px 16px;
+    .category-current {
+      width: 100%;
+      min-height: 48px;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      color: var(--text-primary);
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+    }
 
+    .category-current:hover {
+      border-color: var(--primary);
+      background: var(--primary-selected);
+    }
+
+    .category-current-left {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-current-left > i {
+      color: var(--primary);
+      font-size: 21px;
+    }
+
+    .category-current-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .category-chevron {
+      flex-shrink: 0;
+      color: var(--text-secondary);
+      font-size: 20px;
+    }
+
+    .category-btn {
+      min-height: 44px;
+      padding: 10px 14px;
       border: 1px solid var(--border);
       border-radius: 999px;
-
       background: var(--surface);
       color: var(--text-secondary);
-
       font-size: 13px;
       font-weight: 600;
       text-transform: capitalize;
-
       transition: color .2s, background .2s, border-color .2s;
     }
 
@@ -480,9 +571,152 @@
       color: #ffffff;
     }
 
-    /* =====================================
-       PRODUCT GRID (no outer cards)
-    ===================================== */
+    /* CATEGORY BOTTOM SHEET */
+
+    .sheet-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(0, 0, 0, .38);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .22s, visibility .22s;
+    }
+
+    .sheet-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .category-sheet {
+      width: 100%;
+      max-width: 600px;
+      max-height: 82vh;
+      max-height: 82dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 24px 24px 0 0;
+      background: var(--surface);
+      transform: translateY(100%);
+      transition: transform .28s ease;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .sheet-overlay.open .category-sheet {
+      transform: translateY(0);
+    }
+
+    .sheet-handle-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 12px 0 5px;
+    }
+
+    .sheet-handle {
+      width: 38px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--border);
+    }
+
+    .sheet-header {
+      padding: 12px 20px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .sheet-header h2 {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .sheet-header p {
+      margin: 2px 0 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .sheet-close {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--text-primary);
+      font-size: 21px;
+    }
+
+    .sheet-categories {
+      padding: 10px 16px 20px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .sheet-category {
+      width: 100%;
+      min-height: 54px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 0;
+      border-radius: var(--radius-lg);
+      background: transparent;
+      color: var(--text-primary);
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .sheet-category:hover {
+      background: var(--primary-soft);
+    }
+
+    .sheet-category.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .sheet-category-name {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .sheet-category-name i {
+      flex-shrink: 0;
+      font-size: 21px;
+    }
+
+    .sheet-category-name span {
+      overflow-wrap: anywhere;
+    }
+
+    .sheet-category-check {
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+
+    body.sheet-open {
+      overflow: hidden;
+    }
+
+    /* PRODUCT GRID */
 
     .product-grid {
       display: grid;
@@ -493,10 +727,8 @@
 
     .product-card {
       min-width: 0;
-
       display: flex;
       flex-direction: column;
-
       background: transparent;
       cursor: pointer;
     }
@@ -504,18 +736,14 @@
     .product-image {
       position: relative;
       overflow: hidden;
-
       width: 100%;
       aspect-ratio: 1 / 1;
       padding: 16px;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       border-radius: var(--radius-md);
       background: var(--surface-secondary);
-
       transition: background .2s;
     }
 
@@ -541,13 +769,10 @@
       top: 10px;
       left: 10px;
       z-index: 1;
-
       padding: 2px 8px;
-
       border-radius: var(--radius-sm);
       background: var(--success-bg);
       color: var(--success);
-
       font-size: 12px;
       font-weight: 700;
     }
@@ -555,10 +780,8 @@
     .product-info {
       min-width: 0;
       flex: 1;
-
       display: flex;
       flex-direction: column;
-
       padding: 12px 0 0;
     }
 
@@ -572,13 +795,11 @@
     .product-title {
       min-height: 42px;
       margin: 2px 0 0;
-
       color: var(--text-primary);
       font-family: var(--font-heading);
       font-size: 14px;
       font-weight: 700;
       line-height: 1.5;
-
       overflow-wrap: anywhere;
     }
 
@@ -589,15 +810,12 @@
     .product-description {
       min-height: 48px;
       margin: 4px 0 0;
-
       color: var(--text-secondary);
       font-size: 13px;
       line-height: 1.6;
-
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
-
       overflow: hidden;
     }
 
@@ -606,7 +824,6 @@
       align-items: center;
       gap: 5px;
       margin-top: 8px;
-
       color: var(--text-secondary);
       font-size: 13px;
     }
@@ -621,48 +838,37 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-
       margin-top: auto;
       padding-top: 12px;
     }
 
     .product-price {
       min-width: 0;
-
       color: var(--text-primary);
       font-family: var(--font-heading);
       font-size: 16px;
       font-weight: 800;
       letter-spacing: -.35px;
-
       overflow-wrap: anywhere;
     }
 
-    /* =====================================
-       ADD TO CART (text only)
-    ===================================== */
+    /* ADD TO CART */
 
     .add-button {
       min-width: 56px;
       height: 36px;
       flex-shrink: 0;
-
       display: inline-flex;
       align-items: center;
       justify-content: center;
-
       padding: 0 14px;
-
       border: 1px solid var(--primary);
       border-radius: var(--radius-lg);
-
       background: var(--primary);
       color: #ffffff;
-
       font-size: 13px;
       font-weight: 700;
       line-height: 1;
-
       transition: background .2s, border-color .2s;
     }
 
@@ -686,9 +892,7 @@
       cursor: wait;
     }
 
-    /* =====================================
-       SKELETON
-    ===================================== */
+    /* SKELETON */
 
     .skeleton {
       position: relative;
@@ -707,7 +911,9 @@
     }
 
     @keyframes shimmer {
-      100% { transform: translateX(100%); }
+      100% {
+        transform: translateX(100%);
+      }
     }
 
     .skeleton-card {
@@ -726,10 +932,22 @@
       margin-top: 12px;
     }
 
-    .skeleton-line.short { width: 35%; }
-    .skeleton-line.medium { width: 65%; }
-    .skeleton-line.long { width: 95%; }
-    .skeleton-line.price { width: 38%; height: 17px; }
+    .skeleton-line.short {
+      width: 35%;
+    }
+
+    .skeleton-line.medium {
+      width: 65%;
+    }
+
+    .skeleton-line.long {
+      width: 95%;
+    }
+
+    .skeleton-line.price {
+      width: 38%;
+      height: 17px;
+    }
 
     .skeleton-row {
       display: flex;
@@ -745,9 +963,7 @@
       border-radius: var(--radius-lg);
     }
 
-    /* =====================================
-       SEARCH RESULTS LIST VIEW (dividers)
-    ===================================== */
+    /* SEARCH LIST VIEW */
 
     .product-grid.list-view {
       display: flex;
@@ -760,7 +976,6 @@
       flex-direction: row;
       align-items: stretch;
       gap: 15px;
-
       padding: 15px 0;
       border-bottom: 1px solid var(--divider);
     }
@@ -797,9 +1012,7 @@
       padding-top: 0;
     }
 
-    /* =====================================
-       LOAD MORE
-    ===================================== */
+    /* LOAD MORE */
 
     .load-more-wrap {
       display: flex;
@@ -812,16 +1025,12 @@
       min-width: 190px;
       min-height: 48px;
       padding: 12px 24px;
-
       border: 1px solid var(--primary);
       border-radius: var(--radius-lg);
-
       background: var(--primary);
       color: #ffffff;
-
       font-size: 14px;
       font-weight: 700;
-
       transition: background .2s, border-color .2s;
     }
 
@@ -834,18 +1043,14 @@
       cursor: wait;
     }
 
-    /* =====================================
-       STATUS
-    ===================================== */
+    /* STATUS */
 
     .status {
       grid-column: 1 / -1;
       width: 100%;
       padding: 40px 0;
-
       color: var(--text-secondary);
       background: transparent;
-
       text-align: center;
       font-size: 14px;
       line-height: 1.7;
@@ -854,16 +1059,12 @@
     .status button {
       min-height: 48px;
       display: block;
-
       margin: 18px auto 0;
       padding: 12px 24px;
-
       border: 1px solid var(--primary);
       border-radius: var(--radius-lg);
-
       background: var(--primary);
       color: #ffffff;
-
       font-size: 14px;
       font-weight: 700;
     }
@@ -873,33 +1074,24 @@
       border-color: var(--primary-hover);
     }
 
-    /* =====================================
-       TOAST
-    ===================================== */
+    /* TOAST */
 
     .toast {
       position: fixed;
       bottom: 24px;
       left: 50%;
-      z-index: 2000;
-
+      z-index: 4000;
       max-width: calc(100% - 30px);
       padding: 12px 18px;
-
       transform: translate(-50%, 15px);
-
       border-radius: var(--radius-lg);
-
       background: var(--text-primary);
       color: #ffffff;
-
       font-size: 13px;
       font-weight: 600;
       text-align: center;
-
       opacity: 0;
       pointer-events: none;
-
       transition: opacity .2s, transform .2s;
     }
 
@@ -908,31 +1100,206 @@
       transform: translate(-50%, 0);
     }
 
-    /* =====================================
-       FOOTER
-    ===================================== */
+    /* FOOTER */
 
     .footer {
       width: 100%;
       margin-top: 0;
       padding: 24px 5%;
-
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 12px;
-
       border-top: 1px solid var(--divider);
       background: var(--background);
-
       color: var(--text-muted);
       font-size: 12px;
     }
 
-    /* =====================================
-       RESPONSIVE
-    ===================================== */
+    /* MOBILE BOTTOM NAVIGATION */
+
+    .bottom-nav {
+      display: none;
+    }
+
+    .bottom-nav-item {
+      min-width: 0;
+      flex: 1;
+      min-height: 60px;
+      padding: 7px 2px 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1.3;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .bottom-nav-item .nav-item-icon {
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 23px;
+      line-height: 1;
+    }
+
+    .bottom-nav-item .nav-item-icon i {
+      display: block;
+    }
+
+    .bottom-nav-item.active {
+      color: var(--primary);
+    }
+
+    .bottom-nav-item.active .nav-item-icon {
+      color: var(--primary);
+    }
+
+    /* DESKTOP EXPANDABLE NAVIGATION */
+
+    .desktop-nav-toggle {
+      display: none;
+    }
+
+    .desktop-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2500;
+      background: rgba(0, 0, 0, .25);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s, visibility .2s;
+    }
+
+    .desktop-drawer-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .desktop-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 2501;
+      width: 76px;
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      box-shadow: none;
+      transition: width .24s ease, transform .24s ease;
+    }
+
+    .desktop-drawer.expanded {
+      width: 245px;
+    }
+
+    .desktop-drawer-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 48px;
+      padding: 0 4px 12px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .desktop-drawer-head .brand {
+      display: none;
+      font-size: 21px;
+    }
+
+    .desktop-drawer.expanded .desktop-drawer-head .brand {
+      display: block;
+    }
+
+    .desktop-drawer-toggle {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-lg);
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 23px;
+    }
+
+    .desktop-drawer-toggle:hover,
+    .desktop-nav-link:hover {
+      background: var(--surface-secondary);
+    }
+
+    .desktop-nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .desktop-nav-link {
+      min-height: 48px;
+      width: 100%;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      overflow: hidden;
+      border: 0;
+      border-radius: var(--radius-lg);
+      background: transparent;
+      color: var(--text-secondary);
+      text-align: left;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .desktop-nav-link > i {
+      width: 28px;
+      flex-shrink: 0;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    .desktop-nav-link span {
+      display: none;
+    }
+
+    .desktop-drawer.expanded .desktop-nav-link span {
+      display: inline;
+    }
+
+    .desktop-nav-link.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .desktop-nav-link.active > i {
+      color: var(--primary);
+    }
+
+    .desktop-drawer-bottom {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--divider);
+    }
+
+    /* RESPONSIVE */
 
     @media (max-width: 1050px) {
       .product-grid:not(.list-view) {
@@ -941,9 +1308,19 @@
     }
 
     @media (max-width: 760px) {
+      body {
+        padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+      }
+
+      .topbar {
+        padding: 0 5%;
+      }
+
       .search-bar-wrap,
       .hero-wrap,
-      .container {
+      .container,
+      .offers-wrap,
+      .search-page {
         width: 90%;
       }
 
@@ -979,8 +1356,29 @@
         height: 84%;
       }
 
+      .offers-wrap {
+        margin-top: 20px;
+      }
+
+      .offers-heading {
+        font-size: 21px;
+      }
+
+      .offers-grid {
+        gap: 9px;
+      }
+
+      .offer-card {
+        min-height: 78px;
+        padding: 10px 4px;
+      }
+
+      .offer-label {
+        font-size: 11px;
+      }
+
       .container {
-        margin: 25px auto 65px;
+        margin: 25px auto 35px;
       }
 
       .section-head h2 {
@@ -1026,6 +1424,36 @@
       .product-grid.list-view .product-description {
         -webkit-line-clamp: 2;
       }
+
+      .bottom-nav {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1500;
+        min-height: var(--bottom-nav-height);
+        padding: 3px 4px env(safe-area-inset-bottom, 0px);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        gap: 0;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+      }
+
+      .desktop-nav-toggle,
+      .desktop-drawer-overlay,
+      .desktop-drawer {
+        display: none !important;
+      }
+
+      .toast {
+        bottom: calc(var(--bottom-nav-height) + 15px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .footer {
+        margin-bottom: 0;
+      }
     }
 
     @media (max-width: 380px) {
@@ -1050,6 +1478,45 @@
         min-width: 88px;
         height: 120px;
       }
+
+      .bottom-nav-item {
+        font-size: 9px;
+      }
+
+      .bottom-nav-item .nav-item-icon {
+        font-size: 22px;
+      }
+    }
+
+    @media (min-width: 761px) {
+      .desktop-nav-toggle {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: var(--radius-md);
+        background: transparent;
+        color: var(--text-primary);
+        font-size: 24px;
+      }
+
+      .desktop-nav-toggle:hover {
+        background: var(--surface-secondary);
+      }
+
+      .desktop-drawer-overlay {
+        display: block;
+      }
+
+      .topbar {
+        padding-left: 5%;
+      }
+
+      body.desktop-drawer-open .topbar {
+        padding-left: 5%;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1073,35 +1540,32 @@
 <body>
 
   <!-- HEADER -->
+
   <header class="topbar">
 
     <nav class="nav-actions" aria-label="Main navigation">
 
-      <a
-        class="nav-icon"
-        href="/home.html"
-        aria-label="Home"
-        title="Home"
+      <button
+        class="desktop-nav-toggle"
+        id="desktopNavToggle"
+        type="button"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        hidden
       >
+        <i class="ph ph-list" aria-hidden="true"></i>
+      </button>
+
+      <a class="nav-icon" href="/home.html" aria-label="Home" title="Home">
         <i class="ph ph-house" aria-hidden="true"></i>
       </a>
 
-      <a
-        class="nav-icon"
-        href="/cart.html"
-        aria-label="Cart"
-        title="Shopping cart"
-      >
+      <a class="nav-icon" href="/cart.html" aria-label="Cart" title="Shopping cart">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
         <span class="cart-count" id="cartCount" hidden>0</span>
       </a>
 
-      <a
-        class="nav-icon"
-        href="/profile.html"
-        aria-label="My profile"
-        title="My profile"
-      >
+      <a class="nav-icon" href="/profile.html" aria-label="My profile" title="My profile">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </a>
 
@@ -1113,106 +1577,283 @@
 
   </header>
 
-  <!-- SEARCH BAR -->
-  <div class="search-bar-wrap">
-    <form class="search" id="searchForm" role="search">
+  <!-- DESKTOP EXPANDABLE NAVIGATION -->
 
-      <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+  <div class="desktop-drawer-overlay" id="desktopDrawerOverlay"></div>
 
-      <input
-        id="searchInput"
-        type="search"
-        placeholder="Search products..."
-        aria-label="Search products"
-        autocomplete="off"
-        maxlength="100"
+  <aside class="desktop-drawer" id="desktopDrawer" aria-label="Desktop navigation">
+
+    <div class="desktop-drawer-head">
+
+      <button
+        class="desktop-drawer-toggle"
+        id="desktopDrawerToggle"
+        type="button"
+        aria-label="Expand navigation"
+        aria-expanded="false"
       >
+        <i class="ph ph-list" aria-hidden="true"></i>
+      </button>
 
-    </form>
-  </div>
+      <a href="/home.html" class="brand">Shoppy.</a>
 
-  <!-- HERO -->
-  <section class="hero-wrap" id="heroWrap">
+    </div>
 
-    <div class="hero">
+    <nav class="desktop-nav-links">
 
-      <div class="hero-copy">
+      <button class="desktop-nav-link active" type="button" data-desktop-nav="home">
+        <i class="ph-fill ph-house" aria-hidden="true"></i>
+        <span>Home</span>
+      </button>
 
-        <div class="eyebrow">
-          <i class="ph ph-sparkle" aria-hidden="true"></i>
-          Welcome to Shoppy
+      <button class="desktop-nav-link" type="button" data-desktop-nav="search">
+        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+        <span>Search</span>
+      </button>
+
+      <button class="desktop-nav-link" type="button" data-desktop-nav="explore">
+        <i class="ph ph-compass" aria-hidden="true"></i>
+        <span>Explore</span>
+      </button>
+
+    </nav>
+
+    <div class="desktop-drawer-bottom">
+
+      <button class="desktop-nav-link" type="button" data-desktop-nav="cart">
+        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+        <span>My Cart</span>
+      </button>
+
+      <button class="desktop-nav-link" type="button" data-desktop-nav="account">
+        <i class="ph ph-user-circle" aria-hidden="true"></i>
+        <span>Account</span>
+      </button>
+
+    </div>
+
+  </aside>
+
+  <!-- HOME CONTENT -->
+
+  <div id="homeContent">
+
+    <!-- HOME SEARCH -->
+
+    <div class="search-bar-wrap" id="homeSearchWrap">
+
+      <form class="search" id="searchForm" role="search">
+
+        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search products..."
+          aria-label="Search products"
+          autocomplete="off"
+          maxlength="100"
+        >
+
+      </form>
+
+    </div>
+
+    <!-- HERO -->
+
+    <section class="hero-wrap" id="heroWrap">
+
+      <div class="hero">
+
+        <div class="hero-copy">
+
+          <div class="eyebrow">
+            <i class="ph ph-sparkle" aria-hidden="true"></i>
+            Welcome to Shoppy
+          </div>
+
+          <h1>Find your next favorite thing.</h1>
+
+          <p>
+            Explore everyday essentials, discover new arrivals and find
+            products you'll love.
+          </p>
+
+          <button class="hero-button" id="shopNow" type="button">
+            Explore Products
+          </button>
+
         </div>
 
-        <h1>Find your next favorite thing.</h1>
+        <div class="hero-art" aria-hidden="true">
 
-        <p>
-          Explore everyday essentials, discover new arrivals and find
-          products you'll love.
-        </p>
+          <img
+            src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+            alt=""
+          >
 
-        <button class="hero-button" id="shopNow" type="button">
-          Explore Products
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- DISCOUNT OFFERS -->
+
+    <section class="offers-wrap" id="offersSection" aria-label="Discount offers">
+
+      <h2 class="offers-heading">Special Offers</h2>
+
+      <div class="offers-grid">
+
+        <div class="offer-card">
+          <span class="offer-value">30% OFF</span>
+          <span class="offer-label">Special Discount</span>
+        </div>
+
+        <div class="offer-card">
+          <span class="offer-value">40% OFF</span>
+          <span class="offer-label">Special Discount</span>
+        </div>
+
+        <div class="offer-card">
+          <span class="offer-value">50% OFF</span>
+          <span class="offer-label">Special Discount</span>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- PRODUCTS -->
+
+    <main class="container" id="productsSection">
+
+      <div class="section-head" id="categoriesHeading">
+
+        <div>
+          <h2>Shop by Category</h2>
+          <p>Find what you need, all in one place.</p>
+        </div>
+
+      </div>
+
+      <div id="categories" class="categories">
+
+        <button
+          class="category-current"
+          id="categorySelector"
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+        >
+          <span class="category-current-left">
+            <i class="ph ph-squares-four" aria-hidden="true"></i>
+            <span class="category-current-label" id="selectedCategoryLabel">
+              All Products
+            </span>
+          </span>
+
+          <i class="ph ph-caret-down category-chevron" aria-hidden="true"></i>
         </button>
 
       </div>
 
-      <div class="hero-art" aria-hidden="true">
-        <img
-          src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
-          alt=""
+      <div class="section-head">
+
+        <div>
+          <h2 id="productsHeading">Popular Products</h2>
+          <p id="productsSubtitle">Discover something you'll love.</p>
+        </div>
+
+        <span id="productCount" class="product-count"></span>
+
+      </div>
+
+      <div
+        id="productGrid"
+        class="product-grid"
+        aria-live="polite"
+        aria-busy="true"
+      ></div>
+
+      <div class="load-more-wrap">
+
+        <button
+          id="loadMoreButton"
+          class="load-more-button"
+          type="button"
+          hidden
         >
+          Load More Products
+        </button>
+
       </div>
 
-    </div>
+    </main>
 
-  </section>
+  </div>
 
-  <!-- PRODUCTS -->
-  <main class="container" id="productsSection">
+  <!-- DEDICATED SEARCH PAGE -->
 
-    <div class="section-head" id="categoriesHeading">
+  <section id="searchPage" class="search-page" hidden>
 
-      <div>
-        <h2>Shop by Category</h2>
-        <p>Find what you need, all in one place.</p>
-      </div>
-
-    </div>
-
-    <div id="categories" class="categories">
+    <div class="search-page-head">
 
       <button
-        class="category-btn active"
-        data-category=""
         type="button"
+        class="search-back"
+        id="searchBackButton"
+        aria-label="Back to home"
       >
-        All Products
+        <i class="ph ph-arrow-left" aria-hidden="true"></i>
       </button>
+
+      <h2>Search Products</h2>
+
+    </div>
+
+    <div class="search-bar-wrap">
+
+      <form class="search" id="dedicatedSearchForm" role="search">
+
+        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+
+        <input
+          id="dedicatedSearchInput"
+          type="search"
+          placeholder="Search products..."
+          aria-label="Search products"
+          autocomplete="off"
+          maxlength="100"
+        >
+
+      </form>
 
     </div>
 
     <div class="section-head">
 
       <div>
-        <h2 id="productsHeading">Popular Products</h2>
-        <p id="productsSubtitle">Discover something you'll love.</p>
+        <h2 id="searchResultsHeading">Search Results</h2>
+        <p id="searchResultsSubtitle">Find the products you love.</p>
       </div>
 
-      <span id="productCount" class="product-count"></span>
+      <span id="searchProductCount" class="product-count"></span>
 
     </div>
 
     <div
-      id="productGrid"
-      class="product-grid"
+      id="searchProductGrid"
+      class="product-grid list-view"
       aria-live="polite"
-      aria-busy="true"
+      aria-busy="false"
     ></div>
 
     <div class="load-more-wrap">
 
       <button
-        id="loadMoreButton"
+        id="searchLoadMoreButton"
         class="load-more-button"
         type="button"
         hidden
@@ -1222,12 +1863,136 @@
 
     </div>
 
-  </main>
+  </section>
+
+  <!-- CATEGORY BOTTOM SHEET -->
+
+  <div
+    class="sheet-overlay"
+    id="categorySheetOverlay"
+    aria-hidden="true"
+  >
+
+    <section
+      class="category-sheet"
+      id="categorySheet"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="categorySheetTitle"
+    >
+
+      <div class="sheet-handle-wrap">
+        <div class="sheet-handle"></div>
+      </div>
+
+      <div class="sheet-header">
+
+        <div>
+          <h2 id="categorySheetTitle">Choose Category</h2>
+          <p>Select a category to explore products.</p>
+        </div>
+
+        <button
+          type="button"
+          class="sheet-close"
+          id="categorySheetClose"
+          aria-label="Close categories"
+        >
+          <i class="ph ph-x" aria-hidden="true"></i>
+        </button>
+
+      </div>
+
+      <div class="sheet-categories" id="sheetCategories">
+
+        <button
+          type="button"
+          class="sheet-category active"
+          data-category=""
+        >
+          <span class="sheet-category-name">
+            <i class="ph ph-squares-four" aria-hidden="true"></i>
+            <span>All Products</span>
+          </span>
+
+          <i class="ph-fill ph-check-circle sheet-category-check" aria-hidden="true"></i>
+        </button>
+
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+
+  <nav class="bottom-nav" id="bottomNav" aria-label="Bottom navigation">
+
+    <button
+      type="button"
+      class="bottom-nav-item active"
+      data-bottom-nav="home"
+      aria-current="page"
+    >
+      <span class="nav-item-icon">
+        <i class="ph-fill ph-house" aria-hidden="true"></i>
+      </span>
+      <span>Home</span>
+    </button>
+
+    <button
+      type="button"
+      class="bottom-nav-item"
+      data-bottom-nav="search"
+    >
+      <span class="nav-item-icon">
+        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+      </span>
+      <span>Search</span>
+    </button>
+
+    <button
+      type="button"
+      class="bottom-nav-item"
+      data-bottom-nav="explore"
+    >
+      <span class="nav-item-icon">
+        <i class="ph ph-compass" aria-hidden="true"></i>
+      </span>
+      <span>Explore</span>
+    </button>
+
+    <button
+      type="button"
+      class="bottom-nav-item"
+      data-bottom-nav="cart"
+    >
+      <span class="nav-item-icon">
+        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+      </span>
+      <span>My Cart</span>
+    </button>
+
+    <button
+      type="button"
+      class="bottom-nav-item"
+      data-bottom-nav="account"
+    >
+      <span class="nav-item-icon">
+        <i class="ph ph-user-circle" aria-hidden="true"></i>
+      </span>
+      <span>Account</span>
+    </button>
+
+  </nav>
 
   <!-- FOOTER -->
-  <footer class="footer">
+
+  <footer class="footer" id="pageFooter">
+
     <span>© <span id="year"></span> Shoppy</span>
     <span>Your shopping, all in one place.</span>
+
   </footer>
 
   <div
@@ -1246,12 +2011,37 @@
     const productCount = document.getElementById("productCount");
     const productsHeading = document.getElementById("productsHeading");
     const productsSubtitle = document.getElementById("productsSubtitle");
+
     const searchInput = document.getElementById("searchInput");
     const searchForm = document.getElementById("searchForm");
+
     const heroWrap = document.getElementById("heroWrap");
     const loadMoreButton = document.getElementById("loadMoreButton");
     const toast = document.getElementById("toast");
     const actualCartCount = document.getElementById("cartCount");
+
+    const categorySelector = document.getElementById("categorySelector");
+    const selectedCategoryLabel = document.getElementById("selectedCategoryLabel");
+    const categorySheetOverlay = document.getElementById("categorySheetOverlay");
+    const categorySheetClose = document.getElementById("categorySheetClose");
+    const sheetCategories = document.getElementById("sheetCategories");
+
+    const homeContent = document.getElementById("homeContent");
+    const searchPage = document.getElementById("searchPage");
+    const dedicatedSearchForm = document.getElementById("dedicatedSearchForm");
+    const dedicatedSearchInput = document.getElementById("dedicatedSearchInput");
+    const searchBackButton = document.getElementById("searchBackButton");
+    const searchProductGrid = document.getElementById("searchProductGrid");
+    const searchProductCount = document.getElementById("searchProductCount");
+    const searchResultsHeading = document.getElementById("searchResultsHeading");
+    const searchResultsSubtitle = document.getElementById("searchResultsSubtitle");
+    const searchLoadMoreButton = document.getElementById("searchLoadMoreButton");
+
+    const bottomNav = document.getElementById("bottomNav");
+    const desktopDrawer = document.getElementById("desktopDrawer");
+    const desktopDrawerOverlay = document.getElementById("desktopDrawerOverlay");
+    const desktopDrawerToggle = document.getElementById("desktopDrawerToggle");
+    const desktopNavToggle = document.getElementById("desktopNavToggle");
 
     const PAGE_SIZE = 24;
     const CART_STORAGE_KEY = "shoppy_cart";
@@ -1261,11 +2051,24 @@
     let currentSearch = "";
     let allProducts = [];
     let displayedCount = 0;
+
+    let searchProducts = [];
+    let searchDisplayedCount = 0;
+
     let toastTimer = null;
     let requestController = null;
     let requestNumber = 0;
+
+    let searchRequestController = null;
+    let searchRequestNumber = 0;
+
     let cartProductIds = new Set();
     let cartIsLoaded = false;
+
+    let allCategories = [];
+    let currentView = "home";
+    let searchPreviousView = "home";
+    let searchMode = false;
 
     document.getElementById("year").textContent =
       new Date().getFullYear();
@@ -1370,15 +2173,11 @@
       actualCartCount.hidden = total <= 0;
     }
 
-    /*
-     * Add to Cart is a text-only button.
-     */
     function updateCartButton(button, product) {
       const id = normalizeProductId(product.id);
       const isAdded = Boolean(id) && cartProductIds.has(id);
 
       button.classList.toggle("added", isAdded);
-
       button.textContent = isAdded ? "Added" : "Add";
 
       button.setAttribute(
@@ -1394,13 +2193,13 @@
     }
 
     function refreshVisibleCartButtons() {
-      productGrid.querySelectorAll(".add-button").forEach(button => {
+      document.querySelectorAll(".add-button").forEach(button => {
         const buttonId =
           normalizeProductId(button.dataset.productId);
 
         if (!buttonId) return;
 
-        const product = allProducts.find(item =>
+        const product = [...allProducts, ...searchProducts].find(item =>
           normalizeProductId(item.id) === buttonId
         );
 
@@ -1472,9 +2271,7 @@
       const productId = normalizeProductId(product.id);
 
       if (!productId) {
-        showToast(
-          "Invalid product ID. Please refresh the page."
-        );
+        showToast("Invalid product ID. Please refresh the page.");
         return;
       }
 
@@ -1578,7 +2375,7 @@
         });
 
         updateCartBadge(readCart());
-        updateCartButton(button, product);
+        refreshVisibleCartButtons();
 
         showToast("Product added to cart!");
 
@@ -1595,10 +2392,122 @@
       }
     }
 
-    function renderSkeletons(count = 8) {
-      productGrid.setAttribute("aria-busy", "true");
+    /* CATEGORY BOTTOM SHEET */
 
-      productGrid.innerHTML = Array.from(
+    function openCategorySheet() {
+      renderSheetCategories();
+
+      categorySheetOverlay.classList.add("open");
+      categorySheetOverlay.setAttribute("aria-hidden", "false");
+
+      categorySelector.setAttribute("aria-expanded", "true");
+
+      document.body.classList.add("sheet-open");
+
+      categorySheetClose.focus();
+    }
+
+    function closeCategorySheet() {
+      categorySheetOverlay.classList.remove("open");
+      categorySheetOverlay.setAttribute("aria-hidden", "true");
+
+      categorySelector.setAttribute("aria-expanded", "false");
+
+      document.body.classList.remove("sheet-open");
+
+      categorySelector.focus();
+    }
+
+    function renderSheetCategories() {
+      const categories = [
+        {
+          value: "",
+          label: "All Products",
+          icon: "ph-squares-four"
+        },
+        ...allCategories.map(category => ({
+          value: category,
+          label: category.replace(/-/g, " "),
+          icon: "ph-tag"
+        }))
+      ];
+
+      sheetCategories.innerHTML = categories.map(category => {
+        const active = currentCategory === category.value;
+
+        return `
+          <button
+            type="button"
+            class="sheet-category ${active ? "active" : ""}"
+            data-category="${escapeHTML(category.value)}"
+            aria-pressed="${active}"
+          >
+            <span class="sheet-category-name">
+              <i class="ph ${category.icon}" aria-hidden="true"></i>
+              <span>${escapeHTML(category.label)}</span>
+            </span>
+
+            ${
+              active
+                ? '<i class="ph-fill ph-check-circle sheet-category-check" aria-hidden="true"></i>'
+                : ""
+            }
+          </button>
+        `;
+      }).join("");
+
+      sheetCategories
+        .querySelectorAll(".sheet-category")
+        .forEach(button => {
+          button.addEventListener("click", () => {
+            currentCategory = button.dataset.category || "";
+
+            currentSearch = "";
+            searchInput.value = "";
+
+            selectedCategoryLabel.textContent =
+              currentCategory
+                ? currentCategory.replace(/-/g, " ")
+                : "All Products";
+
+            closeCategorySheet();
+            loadProducts();
+          });
+        });
+    }
+
+    categorySelector.addEventListener(
+      "click",
+      openCategorySheet
+    );
+
+    categorySheetClose.addEventListener(
+      "click",
+      closeCategorySheet
+    );
+
+    categorySheetOverlay.addEventListener("click", event => {
+      if (event.target === categorySheetOverlay) {
+        closeCategorySheet();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        if (categorySheetOverlay.classList.contains("open")) {
+          closeCategorySheet();
+        } else if (desktopDrawer.classList.contains("expanded")) {
+          closeDesktopDrawer();
+        } else if (currentView === "search") {
+          showHomeView();
+        }
+      }
+    });
+
+    function renderSkeletons(container, count = 8) {
+      container.setAttribute("aria-busy", "true");
+
+      container.innerHTML = Array.from(
         { length: count },
         () => `
           <article
@@ -1624,24 +2533,22 @@
       ).join("");
     }
 
-    function showError(message) {
-      productGrid.setAttribute("aria-busy", "false");
-      productCount.textContent = "";
-      loadMoreButton.hidden = true;
+    function showError(container, message, retryFunction) {
+      container.setAttribute("aria-busy", "false");
 
-      productGrid.innerHTML = `
+      container.innerHTML = `
         <div class="status">
           ${escapeHTML(message)}
 
-          <button type="button" id="retryButton">
+          <button type="button" class="retry-button">
             Try Again
           </button>
         </div>
       `;
 
-      document
-        .getElementById("retryButton")
-        .addEventListener("click", loadProducts);
+      container
+        .querySelector(".retry-button")
+        .addEventListener("click", retryFunction);
     }
 
     function createProductCard(product) {
@@ -1753,7 +2660,6 @@
       container
         .querySelectorAll("[data-product-image]")
         .forEach(img => {
-
           const finishLoading = () => {
             img.classList.remove("is-loading");
           };
@@ -1786,10 +2692,7 @@
 
     function attachCartHandlers(container) {
       container.querySelectorAll(".add-button").forEach(button => {
-
-        if (
-          button.dataset.cartHandlerAttached === "true"
-        ) {
+        if (button.dataset.cartHandlerAttached === "true") {
           return;
         }
 
@@ -1802,14 +2705,11 @@
             normalizeProductId(button.dataset.productId);
 
           if (!buttonId) {
-            showToast(
-              "Invalid product ID. Please refresh the page."
-            );
-
+            showToast("Invalid product ID. Please refresh the page.");
             return;
           }
 
-          const product = allProducts.find(item =>
+          const product = [...allProducts, ...searchProducts].find(item =>
             normalizeProductId(item.id) === buttonId
           );
 
@@ -1818,6 +2718,11 @@
           }
         });
       });
+    }
+
+    function attachProductHandlers(container) {
+      attachCartHandlers(container);
+      attachImageHandlers(container);
     }
 
     function updateProductCount() {
@@ -1832,9 +2737,22 @@
         shown >= total || total === 0;
 
       loadMoreButton.disabled = false;
+      loadMoreButton.textContent = "Load More Products";
+    }
 
-      loadMoreButton.textContent =
-        "Load More Products";
+    function updateSearchProductCount() {
+      const total = searchProducts.length;
+      const shown = Math.min(searchDisplayedCount, total);
+
+      searchProductCount.textContent =
+        `${total} product${total === 1 ? "" : "s"}` +
+        (shown < total ? ` · Showing ${shown}` : "");
+
+      searchLoadMoreButton.hidden =
+        shown >= total || total === 0;
+
+      searchLoadMoreButton.disabled = false;
+      searchLoadMoreButton.textContent = "Load More Products";
     }
 
     function renderNextBatch() {
@@ -1860,10 +2778,35 @@
 
       displayedCount = end;
 
-      attachCartHandlers(productGrid);
-      attachImageHandlers(productGrid);
-
+      attachProductHandlers(productGrid);
       updateProductCount();
+    }
+
+    function renderNextSearchBatch() {
+      const start = searchDisplayedCount;
+
+      const end = Math.min(
+        start + PAGE_SIZE,
+        searchProducts.length
+      );
+
+      if (start >= end) {
+        updateSearchProductCount();
+        return;
+      }
+
+      searchProductGrid.insertAdjacentHTML(
+        "beforeend",
+        searchProducts
+          .slice(start, end)
+          .map(createProductCard)
+          .join("")
+      );
+
+      searchDisplayedCount = end;
+
+      attachProductHandlers(searchProductGrid);
+      updateSearchProductCount();
     }
 
     function renderProducts(products) {
@@ -1889,8 +2832,31 @@
       renderNextBatch();
     }
 
+    function renderSearchProducts(products) {
+      searchProducts = products;
+      searchDisplayedCount = 0;
+
+      searchProductGrid.setAttribute("aria-busy", "false");
+      searchProductGrid.innerHTML = "";
+
+      if (!products.length) {
+        searchProductCount.textContent = "";
+        searchLoadMoreButton.hidden = true;
+
+        searchProductGrid.innerHTML = `
+          <div class="status">
+            No products found. Try another search.
+          </div>
+        `;
+
+        return;
+      }
+
+      renderNextSearchBatch();
+    }
+
     function renderCategories(products) {
-      const categories = [
+      allCategories = [
         ...new Set(
           products
             .map(product => product.category)
@@ -1898,44 +2864,19 @@
         )
       ].sort();
 
-      categoriesEl.innerHTML = `
-        <button
-          class="category-btn ${
-            currentCategory ? "" : "active"
-          }"
-          data-category=""
-          type="button"
-        >
-          All Products
-        </button>
+      if (
+        currentCategory &&
+        !allCategories.includes(currentCategory)
+      ) {
+        allCategories.push(currentCategory);
+      }
 
-        ${categories.map(category => `
-          <button
-            class="category-btn ${
-              currentCategory === category ? "active" : ""
-            }"
-            data-category="${escapeHTML(category)}"
-            type="button"
-          >
-            ${escapeHTML(category.replace(/-/g, " "))}
-          </button>
-        `).join("")}
-      `;
+      selectedCategoryLabel.textContent =
+        currentCategory
+          ? currentCategory.replace(/-/g, " ")
+          : "All Products";
 
-      categoriesEl
-        .querySelectorAll(".category-btn")
-        .forEach(button => {
-
-          button.addEventListener("click", () => {
-            currentCategory =
-              button.dataset.category || "";
-
-            currentSearch = "";
-            searchInput.value = "";
-
-            loadProducts();
-          });
-        });
+      renderSheetCategories();
     }
 
     function updatePageLayout() {
@@ -1988,8 +2929,7 @@
       const thisRequest = ++requestNumber;
 
       updatePageLayout();
-
-      renderSkeletons(8);
+      renderSkeletons(productGrid, 8);
 
       productCount.textContent = "";
       loadMoreButton.hidden = true;
@@ -2009,11 +2949,9 @@
           `/api/products?${params.toString()}`,
           {
             method: "GET",
-
             headers: {
               Accept: "application/json"
             },
-
             credentials: "same-origin",
             cache: "no-store",
             signal
@@ -2066,13 +3004,301 @@
         console.error("Products loading error:", error);
 
         showError(
+          productGrid,
           error.message ||
-          "Products load nahi ho paaye. Dobara try karein."
+          "Products load nahi ho paaye. Dobara try karein.",
+          loadProducts
         );
+
+        productCount.textContent = "";
+        loadMoreButton.hidden = true;
       }
     }
 
-    productGrid.addEventListener("click", event => {
+    /* DEDICATED SEARCH */
+
+    async function loadSearchProducts() {
+      const query = dedicatedSearchInput.value.trim();
+
+      if (searchRequestController) {
+        searchRequestController.abort();
+      }
+
+      searchRequestController = new AbortController();
+
+      const signal = searchRequestController.signal;
+      const thisRequest = ++searchRequestNumber;
+
+      searchResultsHeading.textContent = "Search Results";
+
+      searchResultsSubtitle.textContent = query
+        ? `Products matching "${query}"`
+        : "Discover something you'll love.";
+
+      searchProductCount.textContent = "";
+      searchLoadMoreButton.hidden = true;
+
+      renderSkeletons(searchProductGrid, 6);
+
+      const params = new URLSearchParams();
+
+      if (query) {
+        params.set("search", query);
+      }
+
+      try {
+        const response = await fetch(
+          `/api/products?${params.toString()}`,
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json"
+            },
+            credentials: "same-origin",
+            cache: "no-store",
+            signal
+          }
+        );
+
+        const contentType =
+          response.headers.get("content-type") || "";
+
+        if (!contentType.includes("application/json")) {
+          throw new Error(
+            `Search API response invalid hai (HTTP ${response.status}).`
+          );
+        }
+
+        const data = await response.json();
+
+        if (
+          signal.aborted ||
+          thisRequest !== searchRequestNumber
+        ) {
+          return;
+        }
+
+        if (
+          !response.ok ||
+          data.success !== true ||
+          !Array.isArray(data.products)
+        ) {
+          throw new Error(
+            data.message ||
+            `Search failed (HTTP ${response.status}).`
+          );
+        }
+
+        renderSearchProducts(data.products);
+
+      } catch (error) {
+        if (
+          error.name === "AbortError" ||
+          thisRequest !== searchRequestNumber
+        ) {
+          return;
+        }
+
+        console.error("Search loading error:", error);
+
+        showError(
+          searchProductGrid,
+          error.message || "Search failed. Please try again.",
+          loadSearchProducts
+        );
+
+        searchProductCount.textContent = "";
+        searchLoadMoreButton.hidden = true;
+      }
+    }
+
+    function showHomeView() {
+      currentView = "home";
+      searchMode = false;
+
+      homeContent.hidden = false;
+      searchPage.hidden = true;
+
+      document.getElementById("pageFooter").hidden = false;
+
+      updateNavigationState("home");
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+    function showSearchView() {
+      if (currentView !== "search") {
+        searchPreviousView = currentView;
+      }
+
+      currentView = "search";
+      searchMode = true;
+
+      homeContent.hidden = true;
+      searchPage.hidden = false;
+
+      document.getElementById("pageFooter").hidden = true;
+
+      updateNavigationState("search");
+
+      if (dedicatedSearchInput.value.trim()) {
+        loadSearchProducts();
+      } else {
+        searchResultsHeading.textContent = "Popular Products";
+        searchResultsSubtitle.textContent =
+          "Discover something you'll love.";
+
+        loadSearchProducts();
+      }
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+      setTimeout(() => {
+        dedicatedSearchInput.focus();
+      }, 80);
+    }
+
+    function updateNavigationState(active) {
+      document.querySelectorAll("[data-bottom-nav]").forEach(button => {
+        const isActive = button.dataset.bottomNav === active;
+
+        button.classList.toggle("active", isActive);
+
+        button.removeAttribute("aria-current");
+
+        const icon = button.querySelector(".nav-item-icon i");
+
+        const iconNames = {
+          home: "house",
+          search: "magnifying-glass",
+          explore: "compass",
+          cart: "shopping-cart",
+          account: "user-circle"
+        };
+
+        if (icon) {
+          icon.className =
+            `ph${isActive ? "-fill" : ""} ph-${iconNames[active === button.dataset.bottomNav ? active : button.dataset.bottomNav]}`;
+          icon.setAttribute("aria-hidden", "true");
+        }
+
+        if (isActive) {
+          button.setAttribute("aria-current", "page");
+        }
+      });
+
+      document.querySelectorAll("[data-desktop-nav]").forEach(button => {
+        const isActive = button.dataset.desktopNav === active;
+
+        button.classList.toggle("active", isActive);
+
+        const iconNames = {
+          home: "house",
+          search: "magnifying-glass",
+          explore: "compass",
+          cart: "shopping-cart",
+          account: "user-circle"
+        };
+
+        const icon = button.querySelector("i");
+
+        if (icon) {
+          icon.className =
+            `ph${isActive ? "-fill" : ""} ph-${iconNames[button.dataset.desktopNav]}`;
+          icon.setAttribute("aria-hidden", "true");
+        }
+      });
+    }
+
+    function handleNavigation(action) {
+      if (action === "home") {
+        showHomeView();
+        return;
+      }
+
+      if (action === "search") {
+        showSearchView();
+        return;
+      }
+
+      if (action === "explore") {
+        showHomeView();
+
+        document.getElementById("productsSection").scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+        return;
+      }
+
+      if (action === "cart") {
+        window.location.href = "/cart.html";
+        return;
+      }
+
+      if (action === "account") {
+        window.location.href = "/profile.html";
+      }
+    }
+
+    bottomNav.querySelectorAll("[data-bottom-nav]").forEach(button => {
+      button.addEventListener("click", () => {
+        handleNavigation(button.dataset.bottomNav);
+      });
+    });
+
+    document.querySelectorAll("[data-desktop-nav]").forEach(button => {
+      button.addEventListener("click", () => {
+        handleNavigation(button.dataset.desktopNav);
+        closeDesktopDrawer();
+      });
+    });
+
+    searchBackButton.addEventListener("click", () => {
+      showHomeView();
+    });
+
+    dedicatedSearchForm.addEventListener("submit", event => {
+      event.preventDefault();
+      loadSearchProducts();
+    });
+
+    searchForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      dedicatedSearchInput.value = searchInput.value.trim();
+
+      showSearchView();
+
+      loadSearchProducts();
+    });
+
+    dedicatedSearchInput.addEventListener("search", () => {
+      loadSearchProducts();
+    });
+
+    searchLoadMoreButton.addEventListener("click", () => {
+      if (searchDisplayedCount >= searchProducts.length) {
+        searchLoadMoreButton.hidden = true;
+        return;
+      }
+
+      searchLoadMoreButton.disabled = true;
+      searchLoadMoreButton.textContent = "Loading...";
+
+      requestAnimationFrame(renderNextSearchBatch);
+    });
+
+    /* PRODUCT CARD NAVIGATION */
+
+    function handleProductGridClick(event) {
       if (event.target.closest(".add-button")) {
         return;
       }
@@ -2083,17 +3309,15 @@
 
       if (!card) return;
 
-      const id = normalizeProductId(
-        card.dataset.productId
-      );
+      const id = normalizeProductId(card.dataset.productId);
 
       if (id) {
         window.location.href =
           `/product.html?id=${encodeURIComponent(id)}`;
       }
-    });
+    }
 
-    productGrid.addEventListener("keydown", event => {
+    function handleProductGridKeydown(event) {
       if (
         event.key !== "Enter" &&
         event.key !== " "
@@ -2113,15 +3337,21 @@
 
       event.preventDefault();
 
-      const id = normalizeProductId(
-        card.dataset.productId
-      );
+      const id = normalizeProductId(card.dataset.productId);
 
       if (id) {
         window.location.href =
           `/product.html?id=${encodeURIComponent(id)}`;
       }
-    });
+    }
+
+    productGrid.addEventListener("click", handleProductGridClick);
+    productGrid.addEventListener("keydown", handleProductGridKeydown);
+
+    searchProductGrid.addEventListener("click", handleProductGridClick);
+    searchProductGrid.addEventListener("keydown", handleProductGridKeydown);
+
+    /* LOAD MORE */
 
     loadMoreButton.addEventListener("click", () => {
       if (displayedCount >= allProducts.length) {
@@ -2135,14 +3365,7 @@
       requestAnimationFrame(renderNextBatch);
     });
 
-    searchForm.addEventListener("submit", event => {
-      event.preventDefault();
-
-      currentSearch = searchInput.value.trim();
-      currentCategory = "";
-
-      loadProducts();
-    });
+    /* HOME SEARCH CLEAR */
 
     function clearSearchIfEmpty() {
       if (
@@ -2152,44 +3375,89 @@
         currentSearch = "";
         currentCategory = "";
 
+        selectedCategoryLabel.textContent = "All Products";
+
         loadProducts();
       }
     }
 
-    searchInput.addEventListener(
-      "search",
-      clearSearchIfEmpty
-    );
+    searchInput.addEventListener("search", clearSearchIfEmpty);
+    searchInput.addEventListener("input", clearSearchIfEmpty);
 
-    searchInput.addEventListener(
-      "input",
-      clearSearchIfEmpty
-    );
+    /* HERO BUTTON */
 
-    document
-      .getElementById("shopNow")
-      .addEventListener("click", () => {
-        document
-          .getElementById("productsSection")
-          .scrollIntoView({
-            behavior: "smooth"
-          });
+    document.getElementById("shopNow").addEventListener("click", () => {
+      document.getElementById("productsSection").scrollIntoView({
+        behavior: "smooth"
       });
+    });
 
-    document.addEventListener(
-      "visibilitychange",
-      () => {
-        if (!document.hidden) {
-          loadCart();
-        }
+    /* DESKTOP DRAWER */
+
+    function openDesktopDrawer() {
+      if (window.innerWidth <= 760) return;
+
+      desktopDrawer.classList.add("expanded");
+      desktopDrawerOverlay.classList.add("open");
+
+      desktopDrawerToggle.setAttribute("aria-expanded", "true");
+      desktopDrawerToggle.setAttribute("aria-label", "Collapse navigation");
+
+      desktopNavToggle.setAttribute("aria-expanded", "true");
+    }
+
+    function closeDesktopDrawer() {
+      desktopDrawer.classList.remove("expanded");
+      desktopDrawerOverlay.classList.remove("open");
+
+      desktopDrawerToggle.setAttribute("aria-expanded", "false");
+      desktopDrawerToggle.setAttribute("aria-label", "Expand navigation");
+
+      desktopNavToggle.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleDesktopDrawer() {
+      if (desktopDrawer.classList.contains("expanded")) {
+        closeDesktopDrawer();
+      } else {
+        openDesktopDrawer();
       }
-    );
+    }
+
+    desktopDrawerToggle.addEventListener("click", toggleDesktopDrawer);
+    desktopNavToggle.addEventListener("click", toggleDesktopDrawer);
+
+    desktopDrawerOverlay.addEventListener("click", closeDesktopDrawer);
+
+    function updateResponsiveNavigation() {
+      const desktop = window.innerWidth > 760;
+
+      desktopNavToggle.hidden = !desktop;
+
+      if (!desktop) {
+        closeDesktopDrawer();
+      }
+    }
+
+    window.addEventListener("resize", updateResponsiveNavigation);
+
+    /* CART REFRESH */
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        loadCart();
+      }
+    });
 
     window.addEventListener("pageshow", () => {
       loadCart();
     });
 
+    /* INITIALIZATION */
+
     async function initializeHomePage() {
+      updateResponsiveNavigation();
+
       await loadCart();
       await loadProducts();
     }
