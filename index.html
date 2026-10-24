@@ -2029,6 +2029,7 @@
 
       <button class="nav-icon premium-toolbar-control" id="notifButton" type="button" aria-label="Notifications" title="Notifications">
         <i class="ph ph-bell" aria-hidden="true"></i>
+        <span class="notif-count-badge" id="notifCountBadge" hidden>0</span>
       </button>
 
     </nav>
@@ -2090,6 +2091,7 @@
       <button class="desktop-nav-link premium-drawer-control" type="button" id="drawerNotifButton" title="Notifications">
         <i class="ph ph-bell" aria-hidden="true"></i>
         <span>Notifications</span>
+        <span class="notif-count-badge drawer-notif-count-badge" id="drawerNotifCountBadge" hidden>0</span>
       </button>
 
       <button class="desktop-nav-link" type="button" data-desktop-nav="cart">
@@ -4650,105 +4652,176 @@
       }
     });
 
-    /* NOTIFICATIONS */
+    /* NOTIFICATIONS: temporary in-memory cache only; never stored in localStorage/sessionStorage. */
+    const notificationMemoryCache = { items: [], unreadCount: 0, fetchedAt: 0 };
+    const NOTIFICATION_CACHE_TTL = 15000;
+    const NOTIFICATION_POLL_INTERVAL = 10000;
+    let notificationLoadInFlight = null;
+    let notificationLastRenderAt = 0;
+
+    function notificationDate(item) {
+      const raw = item && (item.createdAt || item.created_at || item.timestamp || item.time || item.date || item.sentAt || item.updatedAt);
+      if (raw == null || raw === '') return null;
+      if (typeof raw === 'number' || /^\d+$/.test(String(raw))) {
+        let n = Number(raw);
+        if (n > 0 && n < 1000000000000) n *= 1000;
+        const d = new Date(n);
+        return Number.isNaN(d.getTime()) ? null : d;
+      }
+      const d = new Date(raw);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
 
     function formatNotificationTime(value) {
-      const date = new Date(value);
+      const d = value instanceof Date ? value : new Date(value);
+      if (!value || Number.isNaN(d.getTime())) return '';
+      const seconds = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+      if (seconds < 45) return 'just now';
+      if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+      if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+      if (seconds < 604800) return Math.floor(seconds / 86400) + 'd ago';
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    }
 
-      if (!value || Number.isNaN(date.getTime())) return "";
+    function notificationIsUnread(item) {
+      if (!item || typeof item !== 'object') return false;
+      if (item.unread === true || item.isUnread === true || item.is_unread === true) return true;
+      if (item.read === false || item.isRead === false || item.is_read === false) return true;
+      const status = String(item.status || '').toLowerCase();
+      if (status === 'unread') return true;
+      if (item.read === true || item.isRead === true || item.is_read === true || item.unread === false || item.isUnread === false) return false;
+      return !(item.readAt || item.read_at || item.seen === true || item.seenAt || item.seen_at);
+    }
 
-      return date.toLocaleString("en-IN", {
-        day: "numeric",
-        month: "short",
-        hour: "numeric",
-        minute: "2-digit"
+    function notificationIcon(item) {
+      const category = String(item && (item.category || item.type || item.notificationType || item.kind) || 'general').toLowerCase().replace(/[\s-]+/g, '_');
+      const map = {
+        general:'ph-bell', notification:'ph-bell', orders:'ph-package', order:'ph-package', order_status:'ph-package', payments:'ph-credit-card', payment:'ph-credit-card', shipping:'ph-truck', delivery:'ph-truck', cancellations:'ph-x-circle', cancellation:'ph-x-circle', returns:'ph-arrow-u-up-left', return:'ph-arrow-u-up-left', refunds:'ph-wallet', refund:'ph-wallet', products:'ph-t-shirt', product:'ph-t-shirt', stock:'ph-package', offers:'ph-tag', offer:'ph-tag', discounts:'ph-percent', discount:'ph-percent', promotions:'ph-sparkle', promotion:'ph-sparkle', coupons:'ph-ticket', coupon:'ph-ticket', wishlist:'ph-heart', cart:'ph-shopping-cart', account:'ph-user-circle', security:'ph-shield-check', support:'ph-headset', reviews:'ph-star', review:'ph-star', loyalty:'ph-gift', system:'ph-info', message:'ph-chat-circle', messages:'ph-chat-circle'
+      };
+      return 'ph ' + (map[category] || 'ph-bell');
+    }
+
+    function updateNotificationBadges(count) {
+      const n = Math.max(0, Number(count) || 0);
+      ['notifCountBadge', 'drawerNotifCountBadge'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = n > 99 ? '99+' : String(n);
+        el.hidden = n <= 0;
       });
+      const button = document.getElementById('notifButton');
+      if (button) button.setAttribute('aria-label', n > 0 ? 'Notifications, ' + n + ' unread' : 'Notifications');
     }
 
     function renderNotificationsEmpty(message) {
       notifList.innerHTML = `
-        <div class="notif-empty">
-          <i class="ph ph-bell-slash" aria-hidden="true"></i>
-          ${escapeHTML(message)}
-        </div>
-        <a class="notif-all" href="/notifications.html">View all notifications</a>
-      `;
+        <div class="notif-empty"><i class="ph ph-bell-slash" aria-hidden="true"></i>${escapeHTML(message)}</div>
+        <a class="notif-all" href="/notifications.html">View all notifications</a>`;
     }
 
-    async function loadNotifications() {
-      if (authStatus !== "logged-in") {
-        notifList.innerHTML = `
-          <div class="notif-empty">
-            <i class="ph ph-bell-slash" aria-hidden="true"></i>
-            Login to see your notifications.
-          </div>
-          <a class="notif-all" href="/login.html">Login</a>
-        `;
+    function notificationUnreadCount(data, items) {
+      const direct = data && (data.unreadCount ?? data.totalUnread ?? data.unread_count ?? data.unread);
+      if (direct !== undefined && direct !== null && direct !== '' && Number.isFinite(Number(direct))) return Math.max(0, Number(direct));
+      return items.filter(notificationIsUnread).length;
+    }
+
+    function renderNotifications(items) {
+      const latest = (Array.isArray(items) ? items.slice() : []).sort((a, b) => {
+        const da = notificationDate(a), db = notificationDate(b);
+        return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+      }).slice(0, 5);
+      if (!latest.length) {
+        renderNotificationsEmpty("You're all caught up. No new notifications.");
         return;
       }
-
-      notifList.innerHTML = '<div class="notif-empty">Loading...</div>';
-
-      try {
-        const response = await fetch("/api/notifications", {
-          method: "GET",
-          headers: { Accept: "application/json" },
-          credentials: "same-origin",
-          cache: "no-store"
-        });
-
-        const contentType = response.headers.get("content-type") || "";
-
-        if (!response.ok || !contentType.includes("application/json")) {
-          throw new Error("Notifications unavailable");
-        }
-
-        const data = await response.json();
-
-        const items = Array.isArray(data)
-          ? data
-          : (data.notifications || data.items || []);
-
-        if (!Array.isArray(items) || !items.length) {
-          renderNotificationsEmpty("You're all caught up. No new notifications.");
-          return;
-        }
-
-        notifList.innerHTML = items.slice(0, 20).map(item => {
-          const title = escapeHTML(item.title || item.heading || "Notification");
-          const message = escapeHTML(item.message || item.body || item.text || "");
-          const time = escapeHTML(
-            formatNotificationTime(item.createdAt || item.time || item.date)
-          );
-
-          return `
-            <div class="notif-item">
-              <i class="ph ph-bell" aria-hidden="true"></i>
-              <div>
-                <strong>${title}</strong>
-                ${message ? `<p>${message}</p>` : ""}
-                ${time ? `<small>${time}</small>` : ""}
-              </div>
-            </div>
-          `;
-        }).join("") +
-          '<a class="notif-all" href="/notifications.html">View all notifications</a>';
-
-      } catch (error) {
-        renderNotificationsEmpty("No new notifications right now.");
-      }
+      notifList.innerHTML = latest.map(item => {
+        const title = escapeHTML(item.title || item.heading || item.subject || 'Notification');
+        const message = escapeHTML(item.message || item.body || item.text || item.description || '');
+        const date = notificationDate(item);
+        const relative = date ? formatNotificationTime(date) : '';
+        const unread = notificationIsUnread(item);
+        return `<div class="notif-item${unread ? ' notif-unread' : ''}">
+          <i class="${notificationIcon(item)}" aria-hidden="true"></i>
+          <div class="notif-item-content">
+            <div class="notif-title-line"><strong>${title}</strong>${relative ? `<span class="notif-relative-time">• ${escapeHTML(relative)}</span>` : ''}</div>
+            ${message ? `<p>${message}</p>` : ''}
+          </div>${unread ? '<span class="notif-unread-dot" aria-label="Unread"></span>' : ''}
+        </div>`;
+      }).join('') + '<a class="notif-all" href="/notifications.html">View all notifications</a>';
+      notificationLastRenderAt = Date.now();
     }
 
-    document.getElementById("notifButton").addEventListener("click", () => {
+    async function loadNotifications(forceRefresh) {
+      if (authStatus !== 'logged-in') {
+        updateNotificationBadges(0);
+        notifList.innerHTML = `<div class="notif-empty"><i class="ph ph-bell-slash" aria-hidden="true"></i>Login to see your notifications.</div><a class="notif-all" href="/login.html">Login</a>`;
+        return;
+      }
+      const fresh = notificationMemoryCache.fetchedAt && (Date.now() - notificationMemoryCache.fetchedAt < NOTIFICATION_CACHE_TTL);
+      if (!forceRefresh && fresh) {
+        updateNotificationBadges(notificationMemoryCache.unreadCount);
+        renderNotifications(notificationMemoryCache.items);
+        return;
+      }
+      if (notificationLoadInFlight) return notificationLoadInFlight;
+      notificationLoadInFlight = (async () => {
+        try {
+          const response = await fetch('/api/notifications', {
+            method: 'GET', headers: { Accept: 'application/json' },
+            credentials: 'same-origin', cache: 'no-store'
+          });
+          if (response.status === 401) {
+            notificationMemoryCache.items = []; notificationMemoryCache.unreadCount = 0; notificationMemoryCache.fetchedAt = 0;
+            updateNotificationBadges(0);
+            renderNotificationsEmpty('Please log in to view notifications.');
+            return;
+          }
+          const contentType = response.headers.get('content-type') || '';
+          if (!response.ok || !contentType.includes('application/json')) throw new Error('Notifications unavailable');
+          const data = await response.json();
+          const items = Array.isArray(data) ? data : (data.notifications || data.items || data.data || []);
+          if (!Array.isArray(items)) throw new Error('Invalid notifications response');
+          notificationMemoryCache.items = items;
+          notificationMemoryCache.unreadCount = notificationUnreadCount(Array.isArray(data) ? null : data, items);
+          notificationMemoryCache.fetchedAt = Date.now();
+          updateNotificationBadges(notificationMemoryCache.unreadCount);
+          renderNotifications(items);
+        } catch (error) {
+          if (notificationMemoryCache.fetchedAt && notificationMemoryCache.items.length) {
+            updateNotificationBadges(notificationMemoryCache.unreadCount);
+            renderNotifications(notificationMemoryCache.items);
+          } else {
+            renderNotificationsEmpty('Unable to load notifications. Please try again.');
+          }
+        } finally {
+          notificationLoadInFlight = null;
+        }
+      })();
+      return notificationLoadInFlight;
+    }
+
+    document.getElementById('notifButton').addEventListener('click', () => {
       openSheetOverlay(notifSheetOverlay);
-      loadNotifications();
+      loadNotifications(true);
     });
-    const drawerNotifButton = document.getElementById("drawerNotifButton");
-    if (drawerNotifButton) drawerNotifButton.addEventListener("click", () => {
+    const drawerNotifButton = document.getElementById('drawerNotifButton');
+    if (drawerNotifButton) drawerNotifButton.addEventListener('click', () => {
       openSheetOverlay(notifSheetOverlay);
-      loadNotifications();
+      loadNotifications(true);
       closeDesktopDrawer();
     });
+
+    // Keep unread badge current while the page is open; cache exists only in this page's memory.
+    setInterval(() => {
+      if (document.visibilityState === 'visible' && authStatus === 'logged-in') loadNotifications(true);
+    }, NOTIFICATION_POLL_INTERVAL);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && authStatus === 'logged-in') loadNotifications(true);
+    });
+    setInterval(() => {
+      if (document.visibilityState !== 'visible' || !notificationMemoryCache.fetchedAt) return;
+      if (Date.now() - notificationLastRenderAt >= 30000 && notifSheetOverlay.classList.contains('active')) renderNotifications(notificationMemoryCache.items);
+    }, 30000);
 
     document.getElementById("notifSheetClose").addEventListener("click", () => {
       closeSheetOverlay(notifSheetOverlay);
