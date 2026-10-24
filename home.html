@@ -1534,6 +1534,70 @@
         animation: none;
       }
     }
+
+
+    /* IN-PAGE CART AND ACCOUNT VIEWS */
+    .app-view { width:min(1050px,90%); max-width:1050px; margin:34px auto 65px; min-height:60vh; }
+    .app-page-heading { margin:0 0 28px; }
+    .app-page-heading h1 { font-family:var(--font-heading); font-size:clamp(27px,4vw,36px); font-weight:800; line-height:1.25; letter-spacing:-1.2px; margin-bottom:8px; }
+    .app-page-heading p { color:var(--text-secondary); }
+    .app-cart-layout { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(260px,.8fr); gap:42px; align-items:start; }
+    .app-cart-items { display:flex; flex-direction:column; min-width:0; }
+    .app-cart-item { display:flex; align-items:center; gap:15px; padding:15px 0; border-bottom:1px solid var(--divider); }
+    .app-cart-item:first-child { padding-top:0; }
+    .app-cart-image { width:90px; height:90px; flex-shrink:0; padding:8px; display:flex; align-items:center; justify-content:center; border-radius:var(--radius-md); background:var(--surface-secondary); }
+    .app-cart-image img { width:100%; height:100%; object-fit:contain; }
+    .app-cart-info { min-width:0; flex:1; }
+    .app-cart-title { font-family:var(--font-heading); font-weight:700; line-height:1.5; overflow-wrap:anywhere; }
+    .app-cart-price { color:var(--text-secondary); font-size:13px; }
+    .app-cart-controls { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:10px; }
+    .app-qty { display:inline-flex; align-items:center; gap:10px; padding:4px; border:1px solid var(--border); border-radius:var(--radius-lg); }
+    .app-qty button { width:28px; height:28px; border:0; border-radius:var(--radius-md); background:var(--surface-secondary); color:var(--text-primary); }
+    .app-remove { border:0; background:transparent; color:var(--error); font-size:13px; font-weight:600; }
+    .app-cart-total { min-width:85px; text-align:right; font-family:var(--font-heading); font-weight:800; white-space:nowrap; }
+    .app-summary { min-width:0; position:sticky; top:calc(var(--header-h) + 24px); }
+    .app-summary h2,.app-section-heading { font-family:var(--font-heading); font-size:22px; font-weight:800; margin-bottom:18px; }
+    .app-summary-line,.app-summary-total { display:flex; justify-content:space-between; gap:12px; margin:12px 0; color:var(--text-secondary); }
+    .app-summary-line strong,.app-summary-total strong { color:var(--text-primary); text-align:right; }
+    .app-summary-total { margin-top:18px; padding-top:18px; border-top:1px solid var(--divider); color:var(--text-primary); font-family:var(--font-heading); font-size:17px; font-weight:800; }
+    .app-primary-button,.app-secondary-button,.app-danger-button { width:100%; min-height:48px; margin-top:12px; padding:12px 16px; display:flex; align-items:center; justify-content:center; border-radius:var(--radius-lg); font-weight:700; }
+    .app-primary-button { border:1px solid var(--primary); background:var(--primary); color:#fff; }
+    .app-primary-button:hover { background:var(--primary-hover); }
+    .app-secondary-button { border:1px solid var(--primary-soft); background:var(--primary-soft); color:var(--primary); }
+    .app-danger-button { border:1px solid var(--border); background:var(--surface); color:var(--error); }
+    .app-status { padding:45px 0; text-align:center; color:var(--text-secondary); }
+    .app-status i { display:block; margin-bottom:12px; font-size:42px; color:var(--text-muted); }
+    .app-profile-layout { display:grid; grid-template-columns:minmax(250px,.8fr) minmax(0,1.3fr); gap:42px; align-items:start; }
+    .app-profile-aside { min-width:0; }
+    .app-avatar { width:88px; height:88px; margin-bottom:18px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:30px; font-weight:800; }
+    .app-profile-name { font-family:var(--font-heading); font-size:22px; font-weight:800; overflow-wrap:anywhere; }
+    .app-profile-email { color:var(--text-secondary); overflow-wrap:anywhere; }
+    .app-member-badge { display:inline-flex; margin-top:14px; padding:4px 12px; border-radius:999px; background:var(--success-bg); color:var(--success); font-size:12px; font-weight:700; }
+    .app-profile-row { min-height:60px; padding:14px 0; display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--divider); }
+    .app-profile-row > i { color:var(--primary); font-size:22px; }
+    .app-profile-row > span { min-width:0; flex:1; }
+    .app-profile-row strong { display:block; font-weight:600; }
+    .app-profile-row small { display:block; margin-top:2px; color:var(--text-secondary); font-size:13px; line-height:1.5; }
+    .app-profile-row .ph-caret-right { color:var(--text-muted); font-size:17px; }
+    .app-logout { width:100%; margin-top:24px; padding:12px 16px; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--surface); color:var(--error); text-align:left; font-weight:700; }
+    .explore-filter-row { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 18px; }
+    .explore-filter-button { min-height:42px; padding:9px 14px; display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:999px; background:var(--surface); color:var(--text-primary); font-size:13px; font-weight:600; }
+    .explore-filter-button.active { border-color:var(--primary); background:var(--primary-soft); color:var(--primary); }
+    .filter-options { padding:10px 16px 20px; overflow-y:auto; }
+    .filter-option { width:100%; min-height:50px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; border:0; border-radius:var(--radius-lg); background:transparent; text-align:left; color:var(--text-primary); font-weight:600; }
+    .filter-option:hover,.filter-option.active { background:var(--primary-soft); color:var(--primary); }
+    body.explore-mode #homeSearchWrap, body.explore-mode #heroWrap, body.explore-mode #offersSection { display:none; }
+    body.explore-mode #productsSection { margin-top:24px; }
+    body.explore-mode #categories { display:none; }
+    @media(max-width:760px) {
+      .app-view { width:90%; margin:25px auto 35px; }
+      .app-cart-layout,.app-profile-layout { grid-template-columns:minmax(0,1fr); gap:28px; }
+      .app-summary { position:static; order:-1; }
+      .app-cart-item { flex-wrap:wrap; }
+      .app-cart-total { width:100%; text-align:right; }
+      .app-profile-aside { padding-bottom:8px; }
+    }
+
   </style>
 </head>
 
@@ -1556,18 +1620,18 @@
         <i class="ph ph-list" aria-hidden="true"></i>
       </button>
 
-      <a class="nav-icon" href="/home.html" aria-label="Home" title="Home">
+      <button class="nav-icon" type="button" data-top-nav="home" aria-label="Home" title="Home">
         <i class="ph ph-house" aria-hidden="true"></i>
-      </a>
+      </button>
 
-      <a class="nav-icon" href="/cart.html" aria-label="Cart" title="Shopping cart">
+      <button class="nav-icon" type="button" data-top-nav="cart" aria-label="Cart" title="Shopping cart">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
         <span class="cart-count" id="cartCount" hidden>0</span>
-      </a>
+      </button>
 
-      <a class="nav-icon" href="/profile.html" aria-label="My profile" title="My profile">
+      <button class="nav-icon" type="button" data-top-nav="account" aria-label="My profile" title="My profile">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
-      </a>
+      </button>
 
     </nav>
 
@@ -1738,6 +1802,12 @@
 
       </div>
 
+      <div class="explore-filter-row" id="exploreFilterRow" hidden>
+        <button class="explore-filter-button" type="button" data-filter="category"><i class="ph ph-squares-four"></i><span id="exploreCategoryLabel">Category</span><i class="ph ph-caret-down"></i></button>
+        <button class="explore-filter-button" type="button" data-filter="price"><i class="ph ph-currency-inr"></i><span id="explorePriceLabel">Price</span><i class="ph ph-caret-down"></i></button>
+        <button class="explore-filter-button" type="button" data-filter="rating"><i class="ph ph-star"></i><span id="exploreRatingLabel">Rating</span><i class="ph ph-caret-down"></i></button>
+      </div>
+
       <div id="categories" class="categories">
 
         <button
@@ -1864,6 +1934,67 @@
     </div>
 
   </section>
+
+
+  <!-- IN-PAGE CART VIEW -->
+  <main id="cartPage" class="app-view" hidden>
+    <div class="app-page-heading"><h1>My Shopping Cart</h1><p>Your selected products, all in one place.</p></div>
+    <div class="app-cart-layout">
+      <section id="appCartItems" class="app-cart-items" aria-live="polite" aria-busy="true"></section>
+      <aside class="app-summary">
+        <h2>Order Summary</h2>
+        <div class="app-summary-line"><span>Items</span><strong id="appSummaryQuantity">0</strong></div>
+        <div class="app-summary-line"><span>Subtotal</span><strong id="appSummarySubtotal">₹0.00</strong></div>
+        <div class="app-summary-line"><span>Shipping</span><strong>Calculated at checkout</strong></div>
+        <div class="app-summary-total"><span>Total</span><strong id="appSummaryTotal">₹0.00</strong></div>
+        <button id="appCheckoutButton" class="app-primary-button" type="button" disabled>Continue to Checkout</button>
+        <button id="appContinueShopping" class="app-secondary-button" type="button">Continue Shopping</button>
+        <button id="appClearCartButton" class="app-danger-button" type="button" hidden>Clear Cart</button>
+      </aside>
+    </div>
+  </main>
+
+  <!-- IN-PAGE ACCOUNT VIEW -->
+  <main id="accountPage" class="app-view" hidden>
+    <div class="app-page-heading"><h1>My Account</h1><p>Manage your profile, orders and preferences.</p></div>
+    <div id="appProfileLoading" class="app-status">Loading your profile...</div>
+    <div id="appProfileLayout" class="app-profile-layout" hidden>
+      <aside class="app-profile-aside">
+        <div id="appAvatar" class="app-avatar">U</div>
+        <h2 id="appUserName" class="app-profile-name">User</h2>
+        <p id="appUserEmail" class="app-profile-email"></p>
+        <div class="app-member-badge">✓ &nbsp; SHOPPING MEMBER</div>
+        <div style="height:1px;background:var(--divider);margin:24px 0 0"></div>
+        <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong></span><i class="ph ph-caret-right"></i></a>
+        <a href="/wishlist.html" class="app-profile-row"><i class="ph ph-heart"></i><span><strong>My Wishlist</strong></span><i class="ph ph-caret-right"></i></a>
+        <button type="button" class="app-profile-row" id="appProfileCartShortcut" style="width:100%;border-top:0;border-left:0;border-right:0;background:transparent;text-align:left"><i class="ph ph-shopping-cart"></i><span><strong>My Cart</strong></span><i class="ph ph-caret-right"></i></button>
+      </aside>
+      <section>
+        <h2 class="app-section-heading">Your Shopping</h2>
+        <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong><small>View orders, track shipments and check delivery status.</small></span><i class="ph ph-caret-right"></i></a>
+        <a href="/home.html" class="app-profile-row" id="appBuyAgain"><i class="ph ph-arrow-clockwise"></i><span><strong>Buy Again</strong><small>Quickly find products you purchased before.</small></span><i class="ph ph-caret-right"></i></a>
+        <a href="/wishlist.html" class="app-profile-row"><i class="ph ph-heart"></i><span><strong>My Wishlist</strong><small>Products you saved for later.</small></span><i class="ph ph-caret-right"></i></a>
+        <button type="button" class="app-profile-row" id="appProfileCartRow" style="width:100%;border-top:0;border-left:0;border-right:0;background:transparent;text-align:left"><i class="ph ph-shopping-cart"></i><span><strong>My Cart</strong><small>Review your cart and continue shopping.</small></span><i class="ph ph-caret-right"></i></button>
+        <a href="/addresses.html" class="app-profile-row"><i class="ph ph-map-pin"></i><span><strong>Saved Addresses</strong><small>Manage your delivery addresses.</small></span><i class="ph ph-caret-right"></i></a>
+        <a href="/payments.html" class="app-profile-row"><i class="ph ph-credit-card"></i><span><strong>My Payments</strong><small>View available payment options.</small></span><i class="ph ph-caret-right"></i></a>
+        <a href="/coupons.html" class="app-profile-row"><i class="ph ph-ticket"></i><span><strong>Coupons & Offers</strong><small>Discover deals and available discounts.</small></span><i class="ph ph-caret-right"></i></a>
+        <a href="/notifications.html" class="app-profile-row"><i class="ph ph-bell"></i><span><strong>Notifications</strong><small>Stay updated on orders and offers.</small></span><i class="ph ph-caret-right"></i></a>
+        <a href="/support.html" class="app-profile-row"><i class="ph ph-headset"></i><span><strong>Help & Support</strong><small>Get help with orders and your account.</small></span><i class="ph ph-caret-right"></i></a>
+        <a href="/privacy.html" class="app-profile-row"><i class="ph ph-shield-check"></i><span><strong>Privacy & Security</strong><small>Learn how your account information is protected.</small></span><i class="ph ph-caret-right"></i></a>
+        <a href="/about.html" class="app-profile-row"><i class="ph ph-info"></i><span><strong>About Us</strong><small>Learn more about our shopping store.</small></span><i class="ph ph-caret-right"></i></a>
+        <button id="appLogoutButton" class="app-logout" type="button">Logout <small style="display:block;margin-top:3px;color:var(--text-secondary);font-weight:400">Sign out of your account securely.</small></button>
+      </section>
+    </div>
+  </main>
+
+  <!-- EXPLORE FILTERS BOTTOM SHEET -->
+  <div class="sheet-overlay" id="filterSheetOverlay" aria-hidden="true">
+    <section class="category-sheet" role="dialog" aria-modal="true" aria-labelledby="filterSheetTitle">
+      <div class="sheet-handle-wrap"><div class="sheet-handle"></div></div>
+      <div class="sheet-header"><div><h2 id="filterSheetTitle">Filter products</h2><p id="filterSheetSubtitle">Choose an option.</p></div><button type="button" class="sheet-close" id="filterSheetClose" aria-label="Close filters"><i class="ph ph-x"></i></button></div>
+      <div class="filter-options" id="filterSheetOptions"></div>
+    </section>
+  </div>
 
   <!-- CATEGORY BOTTOM SHEET -->
 
@@ -2050,6 +2181,7 @@
     let currentCategory = "";
     let currentSearch = "";
     let allProducts = [];
+    let exploreBaseProducts = [];
     let displayedCount = 0;
 
     let searchProducts = [];
@@ -2991,7 +3123,9 @@
           renderCategories(data.products);
         }
 
+        exploreBaseProducts = data.products.slice();
         renderProducts(data.products);
+        if (activePriceFilter || activeRatingFilter) applyExploreClientFilters();
 
       } catch (error) {
         if (
@@ -3118,7 +3252,10 @@
 
       homeContent.hidden = false;
       searchPage.hidden = true;
-
+      document.getElementById("cartPage").hidden = true;
+      document.getElementById("accountPage").hidden = true;
+      document.body.classList.remove("explore-mode");
+      document.getElementById("exploreFilterRow").hidden = true;
       document.getElementById("pageFooter").hidden = false;
 
       updateNavigationState("home");
@@ -3139,6 +3276,10 @@
 
       homeContent.hidden = true;
       searchPage.hidden = false;
+      document.getElementById("cartPage").hidden = true;
+      document.getElementById("accountPage").hidden = true;
+      document.body.classList.remove("explore-mode");
+      document.getElementById("exploreFilterRow").hidden = true;
 
       document.getElementById("pageFooter").hidden = true;
 
@@ -3228,23 +3369,47 @@
       }
 
       if (action === "explore") {
-        showHomeView();
-
-        document.getElementById("productsSection").scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-
+        currentView = "explore";
+        searchMode = false;
+        homeContent.hidden = false;
+        searchPage.hidden = true;
+        document.getElementById("cartPage").hidden = true;
+        document.getElementById("accountPage").hidden = true;
+        document.getElementById("pageFooter").hidden = true;
+        document.body.classList.add("explore-mode");
+        document.getElementById("exploreFilterRow").hidden = false;
+        updateNavigationState("explore");
+        window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
 
       if (action === "cart") {
-        window.location.href = "/cart.html";
+        currentView = "cart";
+        homeContent.hidden = true;
+        searchPage.hidden = true;
+        document.getElementById("cartPage").hidden = false;
+        document.getElementById("accountPage").hidden = true;
+        document.getElementById("pageFooter").hidden = true;
+        document.body.classList.remove("explore-mode");
+        document.getElementById("exploreFilterRow").hidden = true;
+        updateNavigationState("cart");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.ShoppyInPageCart && window.ShoppyInPageCart.load();
         return;
       }
 
       if (action === "account") {
-        window.location.href = "/profile.html";
+        currentView = "account";
+        homeContent.hidden = true;
+        searchPage.hidden = true;
+        document.getElementById("cartPage").hidden = true;
+        document.getElementById("accountPage").hidden = false;
+        document.getElementById("pageFooter").hidden = true;
+        document.body.classList.remove("explore-mode");
+        document.getElementById("exploreFilterRow").hidden = true;
+        updateNavigationState("account");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.ShoppyInPageProfile && window.ShoppyInPageProfile.load();
       }
     }
 
@@ -3260,6 +3425,9 @@
         closeDesktopDrawer();
       });
     });
+
+    document.querySelectorAll("[data-top-nav]").forEach(button => button.addEventListener("click", () => handleNavigation(button.dataset.topNav)));
+    window.ShoppyInPageCartBadge = () => loadCart();
 
     searchBackButton.addEventListener("click", () => {
       showHomeView();
@@ -3295,6 +3463,54 @@
 
       requestAnimationFrame(renderNextSearchBatch);
     });
+
+
+    /* EXPLORE FILTER SHEETS */
+    const filterSheetOverlay = document.getElementById("filterSheetOverlay");
+    const filterSheetOptions = document.getElementById("filterSheetOptions");
+    let activePriceFilter = "";
+    let activeRatingFilter = "";
+    let filterSheetKind = "";
+
+    function openFilterSheet(kind) {
+      filterSheetKind = kind;
+      const titles = { category: ["Choose Category", "Select a category."], price: ["Price Range", "Choose a price range."], rating: ["Customer Rating", "Choose a rating filter."] };
+      document.getElementById("filterSheetTitle").textContent = titles[kind][0];
+      document.getElementById("filterSheetSubtitle").textContent = titles[kind][1];
+      let options = [];
+      if (kind === "category") options = [{value:"",label:"All Products"}, ...allCategories.map(c=>({value:c,label:c.replace(/-/g," ").replace(/\b\w/g,x=>x.toUpperCase())}))];
+      if (kind === "price") options = [{value:"",label:"Any price"},{value:"100-1000",label:"₹100 – ₹1,000"},{value:"1000-5000",label:"₹1,000 – ₹5,000"}];
+      if (kind === "rating") options = [{value:"",label:"All ratings"},{value:"high",label:"Most rated (4 stars and above)"},{value:"low",label:"Low rated (below 3 stars)"}];
+      const selected = kind === "category" ? currentCategory : kind === "price" ? activePriceFilter : activeRatingFilter;
+      filterSheetOptions.innerHTML = options.map(o=>`<button type="button" class="filter-option ${String(o.value)===String(selected)?"active":""}" data-filter-value="${escapeHTML(o.value)}"><span>${escapeHTML(o.label)}</span>${String(o.value)===String(selected)?'<i class="ph-fill ph-check-circle"></i>':''}</button>`).join("");
+      filterSheetOverlay.classList.add("open");
+      filterSheetOverlay.setAttribute("aria-hidden","false");
+      document.body.classList.add("sheet-open");
+    }
+    function closeFilterSheet() {
+      filterSheetOverlay.classList.remove("open");
+      filterSheetOverlay.setAttribute("aria-hidden","true");
+      document.body.classList.remove("sheet-open");
+    }
+    document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>openFilterSheet(b.dataset.filter)));
+    document.getElementById("filterSheetClose").addEventListener("click",closeFilterSheet);
+    filterSheetOverlay.addEventListener("click",e=>{if(e.target===filterSheetOverlay)closeFilterSheet();});
+    filterSheetOptions.addEventListener("click",e=>{
+      const option=e.target.closest("[data-filter-value]"); if(!option)return;
+      const value=option.dataset.filterValue;
+      if(filterSheetKind==="category") { currentCategory=value; selectedCategoryLabel.textContent=value?value.replace(/-/g," "):"All Products"; document.getElementById("exploreCategoryLabel").textContent=value?value.replace(/-/g," "):"Category"; loadProducts(); }
+      if(filterSheetKind==="price") { activePriceFilter=value; document.getElementById("explorePriceLabel").textContent=value?option.querySelector("span").textContent:"Price"; applyExploreClientFilters(); }
+      if(filterSheetKind==="rating") { activeRatingFilter=value; document.getElementById("exploreRatingLabel").textContent=value?option.querySelector("span").textContent:"Rating"; applyExploreClientFilters(); }
+      document.querySelectorAll("[data-filter]").forEach(b=>b.classList.toggle("active",(b.dataset.filter==="category"&&!!currentCategory)||(b.dataset.filter==="price"&&!!activePriceFilter)||(b.dataset.filter==="rating"&&!!activeRatingFilter)));
+      closeFilterSheet();
+    });
+    function applyExploreClientFilters() {
+      let filtered=exploreBaseProducts.slice();
+      if(activePriceFilter) { const [min,max]=activePriceFilter.split("-").map(Number); filtered=filtered.filter(p=>{const price=(Number(p.price)||0)*85;return price>=min&&price<=max;}); }
+      if(activeRatingFilter==="high") filtered=filtered.filter(p=>Number(p.rating?.rate ?? p.rating ?? 0)>=4);
+      if(activeRatingFilter==="low") filtered=filtered.filter(p=>Number(p.rating?.rate ?? p.rating ?? 0)<3);
+      renderProducts(filtered);
+    }
 
     /* PRODUCT CARD NAVIGATION */
 
@@ -3463,6 +3679,38 @@
     }
 
     initializeHomePage();
+
+
+    /* IN-PAGE CART: preserves /api/cart endpoints and checkout route */
+    (function(){
+      const root=document.getElementById("cartPage"); if(!root)return;
+      const itemsEl=document.getElementById("appCartItems"), qtyEl=document.getElementById("appSummaryQuantity"), subEl=document.getElementById("appSummarySubtotal"), totalEl=document.getElementById("appSummaryTotal"), checkout=document.getElementById("appCheckoutButton"), clear=document.getElementById("appClearCartButton");
+      let items=[],busy=false,loaded=false;
+      const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+      const price=v=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",minimumFractionDigits:2,maximumFractionDigits:2}).format((Number(v)||0)*85);
+      async function request(method,body){const o={method,headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"};if(body!==undefined){o.headers["Content-Type"]="application/json";o.body=JSON.stringify(body);}const r=await fetch("/api/cart",o);const t=await r.text();let d;try{d=JSON.parse(t)}catch{throw Error(`Cart API response invalid (HTTP ${r.status}).`)}if(r.status===401){location.href="/login.html";throw Error("Login required.")}if(!r.ok||d.success!==true)throw Error(d.message||"Cart request failed.");return d;}
+      function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);qtyEl.textContent=count;subEl.textContent=price(subtotal);totalEl.textContent=price(subtotal);checkout.disabled=!items.length||busy;clear.hidden=!items.length;clear.disabled=busy;
+        if(!items.length){itemsEl.innerHTML='<div class="app-status"><i class="ph ph-shopping-cart"></i><h2>Your cart is empty</h2><p>Looks like you haven\'t added any products yet.</p><button type="button" class="app-primary-button" id="appStartShopping">Start Shopping</button></div>';document.getElementById("appStartShopping").onclick=()=>handleNavigation("home");return;}
+        itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),title=esc(x.title||"Product"),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="app-cart-item"><div class="app-cart-image"><img src="${img}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="app-cart-info"><h3 class="app-cart-title">${title}</h3><p class="app-cart-price">${price(p)} each</p><div class="app-cart-controls"><div class="app-qty"><button type="button" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div><button class="app-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div></div><div class="app-cart-total">${price(p*q)}</div></article>`}).join("");
+        itemsEl.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>act(b.dataset.action,b.dataset.id));
+      }
+      async function load(){if(!root||root.hidden&&loaded)return;loaded=true;itemsEl.setAttribute("aria-busy","true");itemsEl.innerHTML='<div class="app-status">Loading your cart...</div>';try{const d=await request("GET");items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items))}catch{}render();}catch(e){if(e.message==="Login required.")return;itemsEl.innerHTML=`<div class="app-status"><i class="ph ph-warning-circle"></i><h2>Unable to load cart</h2><p>${esc(e.message)}</p><button class="app-primary-button" id="appRetryCart" type="button">Try Again</button></div>`;document.getElementById("appRetryCart").onclick=()=>{loaded=false;load()};}finally{itemsEl.setAttribute("aria-busy","false")}}
+      async function act(action,id){if(busy)return;const item=items.find(x=>String(x.id)===String(id));if(!item)return;busy=true;render();try{let d;if(action==="increase"||action==="decrease"){let q=Number(item.quantity)||1;q=action==="increase"?Math.min(99,q+1):Math.max(1,q-1);d=await request("PATCH",{id,quantity:q});}else d=await request("DELETE",{id});items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items))}catch{}if(window.ShoppyInPageCartBadge)window.ShoppyInPageCartBadge();}catch(e){if(e.message!=="Login required.")alert(e.message||"Cart update failed.")}finally{busy=false;render()}}
+      clear.onclick=async()=>{if(busy||!items.length||!confirm("Kya aap apne cart ke saare products remove karna chahte hain?"))return;busy=true;render();try{const d=await request("DELETE",{clear:true});items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items))}catch{}if(window.ShoppyInPageCartBadge)window.ShoppyInPageCartBadge();}catch(e){if(e.message!=="Login required.")alert(e.message||"Cart clear failed.")}finally{busy=false;render()}};
+      checkout.onclick=()=>{if(items.length&&!busy)location.href="/addresses.html?mode=checkout"};document.getElementById("appContinueShopping").onclick=()=>handleNavigation("home");
+      window.ShoppyInPageCart={load};
+    })();
+
+    /* IN-PAGE ACCOUNT: preserves /api/profile and /api/logout */
+    (function(){
+      const loading=document.getElementById("appProfileLoading"),layout=document.getElementById("appProfileLayout");let loaded=false;
+      function initials(name){const w=String(name||"").trim().split(/\s+/).filter(Boolean);if(!w.length)return"U";if(w.length===1)return Array.from(w[0]).slice(0,2).join("").toUpperCase();return(Array.from(w[0])[0]+Array.from(w[1])[0]).toUpperCase();}
+      async function load(){if(loaded)return;loaded=true;loading.textContent="Loading your profile...";try{const r=await fetch("/api/profile",{method:"GET",credentials:"same-origin",cache:"no-store"});const d=await r.json();if(r.status===401){location.replace("/login.html");return;}if(!r.ok||!d.success||!d.user)throw Error(d.message||"Unable to load profile");const u=d.user;document.getElementById("appUserName").textContent=u.name||"User";document.getElementById("appUserEmail").textContent=u.email||"";document.getElementById("appAvatar").textContent=initials(u.name);loading.hidden=true;layout.hidden=false;}catch(e){loaded=false;loading.textContent="Unable to load your profile.";const b=document.createElement("button");b.className="app-primary-button";b.textContent="Try Again";b.onclick=load;loading.appendChild(b);}}
+      async function logout(){const b=document.getElementById("appLogoutButton");if(b.disabled)return;b.disabled=true;try{const r=await fetch("/api/logout",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"logout"}),cache:"no-store"});const d=await r.json();if(r.ok&&d.success){location.replace(d.redirect||"/login.html");return;}b.disabled=false;alert(d.message||"Unable to log out.");}catch(e){b.disabled=false;alert("Server se connect nahi ho paya.");console.error("Logout error:",e);}}
+      document.getElementById("appLogoutButton").addEventListener("click",logout);document.getElementById("appProfileCartShortcut").onclick=()=>handleNavigation("cart");document.getElementById("appProfileCartRow").onclick=()=>handleNavigation("cart");
+      window.ShoppyInPageProfile={load};
+    })();
+
   </script>
 
 </body>
