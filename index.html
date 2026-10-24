@@ -1880,31 +1880,52 @@
       body.app-premium-navigation .nav-actions { display:none !important; }
       body.app-premium-navigation .desktop-drawer { display:flex; }
     }
-    /* Desktop Premium uses the same floating glass navigation language as iOS. */
+    /* Desktop Premium: compact right toolbar + icon-only vertical floating navigation on the left. */
     @media (min-width:761px) {
-      body.app-premium-navigation { padding-bottom: 112px; }
+      body.app-premium-navigation { padding-bottom:36px; padding-left:92px; }
       body.app-premium-navigation .topbar {
-        width: min(calc(100% - 64px), 1320px); margin: 18px auto 14px; padding: 0 18px;
-        border: 1px solid rgba(255,255,255,.62); border-radius: 100px;
-        background: linear-gradient(180deg,rgba(41,98,255,.16),rgba(41,98,255,.07));
-        -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%);
-        box-shadow: 0 12px 32px rgba(41,98,255,.14), 0 2px 8px rgba(0,0,0,.06), inset 0 1px 1px rgba(255,255,255,.8);
+        box-sizing:border-box; width:calc(100% - 64px); max-width:none; margin:18px 24px 14px 40px;
+        padding:8px 10px 8px 16px; min-height:58px; height:auto; display:flex; align-items:center;
+        justify-content:flex-end; gap:10px; border:0; border-radius:0; background:transparent; box-shadow:none; overflow:visible;
       }
-      body.app-premium-navigation .topbar::before { content:""; position:absolute; inset:0; z-index:0; border-radius:inherit; pointer-events:none; background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 65%); }
-      body.app-premium-navigation .topbar > * { position:relative; z-index:1; }
+      body.app-premium-navigation .topbar::before { display:none; }
+      body.app-premium-navigation .topbar .brand {
+        order:1; position:static; display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;
+        width:auto; min-width:0; padding:9px 13px; margin:0; border:1px solid rgba(255,255,255,.7); border-radius:100px;
+        background:linear-gradient(180deg,rgba(41,98,255,.17),rgba(41,98,255,.08));
+        -webkit-backdrop-filter:blur(22px) saturate(180%); backdrop-filter:blur(22px) saturate(180%);
+        box-shadow:0 6px 18px rgba(41,98,255,.12),inset 0 1px 1px rgba(255,255,255,.8);
+      }
+      body.app-premium-navigation .topbar .nav-actions {
+        order:2; display:flex !important; align-items:center; justify-content:flex-end; gap:10px;
+        width:auto; margin:0; padding:0; flex:0 0 auto;
+      }
+      body.app-premium-navigation .topbar .premium-toolbar-control {
+        box-sizing:border-box; flex:0 0 auto; width:auto; max-width:170px; min-width:0; height:42px;
+        border:1px solid rgba(255,255,255,.7); border-radius:100px;
+        background:linear-gradient(180deg,rgba(41,98,255,.17),rgba(41,98,255,.08));
+        -webkit-backdrop-filter:blur(22px) saturate(180%); backdrop-filter:blur(22px) saturate(180%);
+        box-shadow:0 6px 18px rgba(41,98,255,.12),inset 0 1px 1px rgba(255,255,255,.8);
+      }
+      body.app-premium-navigation .topbar #headerLocationButton { order:1; }
+      body.app-premium-navigation .topbar #notifButton { order:2; width:42px; min-width:42px; padding:0; justify-content:center; }
+      body.app-premium-navigation .topbar #notifButton i { font-size:21px; }
+      body.app-premium-navigation .topbar .location-chip { padding:0 13px; gap:7px; }
+      body.app-premium-navigation .topbar .location-chip span { max-width:125px; }
       body.app-premium-navigation .bottom-nav {
-        position:fixed; left:50%; right:auto; bottom:24px; z-index:1500;
-        width:min(calc(100% - 48px),560px); min-height:72px; height:72px; padding:8px;
-        display:flex; align-items:center; justify-content:space-between; gap:5px; overflow:hidden;
-        transform:translateX(-50%); border:1px solid rgba(255,255,255,.68); border-radius:100px;
+        position:fixed; top:22px; left:16px; right:auto; bottom:22px; z-index:1500; box-sizing:border-box;
+        width:64px; height:auto; min-height:0; padding:8px 6px; display:flex; flex-direction:column;
+        align-items:stretch; justify-content:flex-start; gap:8px; overflow:hidden; transform:none;
+        border:1px solid rgba(255,255,255,.68); border-radius:34px;
         background:linear-gradient(180deg,rgba(41,98,255,.17),rgba(41,98,255,.08));
         -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%);
         box-shadow:0 14px 38px rgba(41,98,255,.2),0 3px 10px rgba(0,0,0,.08),inset 0 1px 1px rgba(255,255,255,.85);
       }
       body.app-premium-navigation .bottom-nav::before { content:""; position:absolute; inset:0; z-index:0; border-radius:inherit; pointer-events:none; background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 68%); }
-      body.app-premium-navigation .bottom-nav-item { flex:1; height:56px; min-height:56px; border-radius:100px; gap:3px; }
-      body.app-premium-navigation .bottom-nav-item > span:not(.nav-item-icon) { display:block !important; font-size:11px; }
-      body.app-premium-navigation .nav-indicator { top:8px; height:56px !important; }
+      body.app-premium-navigation .bottom-nav-item { flex:0 0 52px; width:100%; height:52px; min-height:52px; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; border-radius:26px; }
+      body.app-premium-navigation .bottom-nav-item > span:not(.nav-item-icon) { display:none !important; }
+      body.app-premium-navigation .bottom-nav-item .nav-item-icon { width:100%; height:24px; font-size:24px; }
+      body.app-premium-navigation .nav-indicator { top:8px; left:6px; width:50px; height:52px !important; border-radius:26px; transition:transform .5s cubic-bezier(.34,1.36,.5,1),height .5s cubic-bezier(.34,1.36,.5,1); }
       body.app-premium-navigation .desktop-drawer, body.app-premium-navigation .desktop-drawer-overlay, body.app-premium-navigation .desktop-nav-toggle { display:none !important; }
     }
     /* Keep the page scrolling behind the device's bottom safe-area while the web nav stays in place. */
@@ -3767,10 +3788,18 @@
       if (premiumIndicator && premiumNav && premiumActive && document.body.classList.contains("app-premium-navigation")) {
         const navRect = premiumNav.getBoundingClientRect();
         const itemRect = premiumActive.getBoundingClientRect();
-        const width = Math.min(Math.max(0, itemRect.width), premiumNav.clientWidth);
-        const x = Math.max(0, Math.min(premiumNav.clientWidth - width, itemRect.left - navRect.left - premiumNav.clientLeft));
-        premiumIndicator.style.width = width + "px";
-        premiumIndicator.style.transform = "translate3d(" + x + "px,0,0)";
+        if (window.innerWidth > 760) {
+          const h = Math.min(itemRect.height, premiumNav.clientHeight - 16);
+          const y = Math.max(0, Math.min(premiumNav.clientHeight - h, itemRect.top - navRect.top - premiumNav.clientTop));
+          premiumIndicator.style.width = Math.min(itemRect.width, premiumNav.clientWidth - 12) + "px";
+          premiumIndicator.style.height = h + "px";
+          premiumIndicator.style.transform = "translate3d(0," + y + "px,0)";
+        } else {
+          const width = Math.min(Math.max(0, itemRect.width), premiumNav.clientWidth);
+          const x = Math.max(0, Math.min(premiumNav.clientWidth - width, itemRect.left - navRect.left - premiumNav.clientLeft));
+          premiumIndicator.style.width = width + "px";
+          premiumIndicator.style.transform = "translate3d(" + x + "px,0,0)";
+        }
       }
 
       document.querySelectorAll("[data-desktop-nav]").forEach(button => {
@@ -4148,10 +4177,15 @@
         lastVerifiedMembership = null;
         try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {}
       }
-      // iOS/Apple gets the Premium visual skin, but this never grants paid membership entitlements.
-      document.body.classList.toggle("app-premium-navigation", isAppleDevice || active);
-      document.body.classList.toggle("app-basic-navigation", !isAppleDevice && !active);
-      updateBrowserThemeColor(isAppleDevice || active);
+      // Apple devices get the Premium visual skin only; paid membership entitlements remain server-controlled.
+      const usePremiumSkin = isAppleDevice || active;
+      const hadPremiumSkin = document.body.classList.contains("app-premium-navigation");
+      if (hadPremiumSkin !== usePremiumSkin) {
+        document.body.classList.toggle("app-premium-navigation", usePremiumSkin);
+        requestAnimationFrame(() => positionNavIndicator(true));
+      }
+      document.body.classList.toggle("app-basic-navigation", !usePremiumSkin);
+      updateBrowserThemeColor(usePremiumSkin);
       return active;
     }
 
@@ -4213,12 +4247,21 @@
       }
     }
 
-    // Revalidate membership quietly in the background. If the server confirms expiry/revocation, clear the cache.
+    // Membership-only silent recheck: never rerun auth/navigation initialization in the background.
     let membershipCheckInFlight = false;
     async function refreshMembershipInBackground() {
       if (membershipCheckInFlight) return;
       membershipCheckInFlight = true;
-      try { await checkShoppyAuth(); } finally { membershipCheckInFlight = false; }
+      try {
+        const response = await fetch("/api/profile", { method:"GET", credentials:"same-origin", cache:"no-store", headers:{Accept:"application/json"} });
+        if (!response.ok) return; // temporary server errors must not flicker UI or erase a valid cache
+        const data = await response.json().catch(() => null);
+        if (!data || data.success !== true || !data.user) return;
+        const membership = data.membership && typeof data.membership === "object" ? data.membership : {};
+        setPremiumPresentation(membership, true);
+      } catch (error) {
+        // Preserve an unexpired verified cache while offline; no navigation/layout changes.
+      } finally { membershipCheckInFlight = false; }
     }
     setInterval(() => { if (!document.hidden) refreshMembershipInBackground(); }, 60000);
     document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshMembershipInBackground(); });
@@ -4231,13 +4274,22 @@
       if (!navIndicator || !activeItem || !activeItem.offsetWidth) return;
       if (instant) navIndicator.classList.add("no-anim");
       const navWidth = bottomNav.clientWidth;
-      const width = Math.min(activeItem.getBoundingClientRect().width, navWidth);
       const navRect = bottomNav.getBoundingClientRect();
       const itemRect = activeItem.getBoundingClientRect();
-      const x = Math.max(0, Math.min(navWidth - width, itemRect.left - navRect.left - bottomNav.clientLeft));
-      navIndicator.style.width = width + "px";
-      navIndicator.style.height = Math.min(activeItem.offsetHeight, bottomNav.clientHeight - 12) + "px";
-      navIndicator.style.transform = "translate3d(" + x + "px,0,0)";
+      const verticalDesktop = window.innerWidth > 760 && document.body.classList.contains("app-premium-navigation");
+      if (verticalDesktop) {
+        const h = Math.min(activeItem.offsetHeight, bottomNav.clientHeight - 16);
+        const y = Math.max(0, Math.min(bottomNav.clientHeight - h, itemRect.top - navRect.top - bottomNav.clientTop));
+        navIndicator.style.width = Math.min(activeItem.offsetWidth, navWidth - 12) + "px";
+        navIndicator.style.height = h + "px";
+        navIndicator.style.transform = "translate3d(0," + y + "px,0)";
+      } else {
+        const width = Math.min(itemRect.width, navWidth);
+        const x = Math.max(0, Math.min(navWidth - width, itemRect.left - navRect.left - bottomNav.clientLeft));
+        navIndicator.style.width = width + "px";
+        navIndicator.style.height = Math.min(activeItem.offsetHeight, bottomNav.clientHeight - 12) + "px";
+        navIndicator.style.transform = "translate3d(" + x + "px,0,0)";
+      }
       if (instant) {
         void navIndicator.offsetWidth;
         navIndicator.classList.remove("no-anim");
@@ -4593,38 +4645,33 @@
       const getItems = () =>
         [...bottomNav.querySelectorAll(".bottom-nav-item")];
 
-      function moveBubble(clientX) {
+      function moveBubble(clientX, clientY) {
         const items = getItems();
         const first = items[0];
-        const last = items[items.length - 1];
         const rect = bottomNav.getBoundingClientRect();
-
-        const bubbleWidth = navIndicator.offsetWidth || first.offsetWidth;
-        // Pointer indicates the bubble center. Clamp the complete bubble to the nav's inner width.
-        let x = clientX - rect.left - bottomNav.clientLeft - bubbleWidth / 2;
-        const maxX = Math.max(0, bottomNav.clientWidth - bubbleWidth);
-        x = Math.max(0, Math.min(maxX, x));
-
-        // No scale transform: the selection bubble must never grow outside the navigation bar.
-        navIndicator.style.transform = `translate3d(${x}px, 0, 0)`;
-
+        const verticalDesktop = window.innerWidth > 760;
+        let bubbleCenter;
+        if (verticalDesktop) {
+          const bubbleHeight = navIndicator.offsetHeight || first.offsetHeight;
+          let y = clientY - rect.top - bottomNav.clientTop - bubbleHeight / 2;
+          y = Math.max(0, Math.min(Math.max(0, bottomNav.clientHeight - bubbleHeight), y));
+          navIndicator.style.transform = `translate3d(0, ${y}px, 0)`;
+          bubbleCenter = y + bubbleHeight / 2;
+        } else {
+          const bubbleWidth = navIndicator.offsetWidth || first.offsetWidth;
+          let x = clientX - rect.left - bottomNav.clientLeft - bubbleWidth / 2;
+          x = Math.max(0, Math.min(Math.max(0, bottomNav.clientWidth - bubbleWidth), x));
+          navIndicator.style.transform = `translate3d(${x}px, 0, 0)`;
+          bubbleCenter = x + bubbleWidth / 2;
+        }
         let nearest = first;
         let best = Infinity;
-        const bubbleCenter = x + bubbleWidth / 2;
-
         items.forEach(item => {
-          const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+          const itemCenter = verticalDesktop ? item.offsetTop + item.offsetHeight / 2 : item.offsetLeft + item.offsetWidth / 2;
           const distance = Math.abs(itemCenter - bubbleCenter);
-          if (distance < best) {
-            best = distance;
-            nearest = item;
-          }
+          if (distance < best) { best = distance; nearest = item; }
         });
-
-        items.forEach(item => {
-          item.classList.toggle("drag-over", item === nearest);
-        });
-
+        items.forEach(item => item.classList.toggle("drag-over", item === nearest));
         state.target = nearest;
       }
 
@@ -4645,7 +4692,7 @@
           try { navigator.vibrate(12); } catch (error) { /* ignore */ }
         }
 
-        moveBubble(state.x);
+        moveBubble(state.x, state.y);
       }
 
       function endDrag(commit) {
@@ -4690,6 +4737,8 @@
           id: event.pointerId,
           startX: event.clientX,
           x: event.clientX,
+          y: event.clientY,
+          startY: event.clientY,
           dragging: false,
           target: null
         };
@@ -4702,11 +4751,12 @@
         if (!state || event.pointerId !== state.id) return;
 
         state.x = event.clientX;
+        state.y = event.clientY;
 
         if (state.dragging) {
           event.preventDefault();
-          moveBubble(event.clientX);
-        } else if (Math.abs(event.clientX - state.startX) > 10) {
+          moveBubble(event.clientX, event.clientY);
+        } else if (Math.abs(event.clientX - state.startX) > 10 || Math.abs(event.clientY - state.startY) > 10) {
           clearTimeout(holdTimer);
           state = null;
         }
