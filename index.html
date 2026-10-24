@@ -1566,10 +1566,18 @@
     .app-profile-name { font-family:var(--font-heading); font-size:22px; font-weight:800; overflow-wrap:anywhere; }
     .app-profile-email { color:var(--text-secondary); overflow-wrap:anywhere; }
     .app-member-badge { display:inline-flex; margin-top:14px; padding:4px 12px; border-radius:999px; background:var(--success-bg); color:var(--success); font-size:12px; font-weight:700; }
-    .app-member-badge.app-premium-badge { background:var(--primary-soft); color:var(--primary); }
-    .app-membership-summary { margin-top:14px; padding:14px; border:1px solid var(--primary-soft); border-radius:var(--radius-lg); background:var(--surface); }
-    .app-membership-summary strong { display:block; color:var(--primary); font-family:var(--font-heading); font-size:14px; font-weight:800; }
-    .app-membership-summary small { display:block; margin-top:5px; color:var(--text-secondary); font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
+    .app-member-badge.app-premium-badge { background:#FFF3C4; color:#855B00; border:1px solid #F3D36B; padding:6px 12px; letter-spacing:.35px; }
+    .app-profile-layout.app-premium-active .app-profile-aside { padding:22px; border:1px solid #E8C65B; border-radius:22px; background:linear-gradient(145deg,#FFFDF5 0%,#FFF5CF 48%,#FFFFFF 100%); box-shadow:0 12px 32px rgba(133,91,0,.09); }
+    .app-profile-layout.app-premium-active .app-avatar { outline:4px solid #F3D36B; outline-offset:4px; box-shadow:0 0 0 8px rgba(243,211,107,.18); }
+    .app-membership-summary { position:relative; overflow:hidden; margin-top:16px; padding:19px 17px; border:1px solid #E7C65E; border-radius:18px; background:linear-gradient(135deg,#173D8F 0%,#2962FF 58%,#7C5CDB 100%); box-shadow:0 10px 24px rgba(41,98,255,.18); }
+    .app-membership-summary:after { content:"✦"; position:absolute; right:14px; top:8px; color:rgba(255,255,255,.22); font-size:54px; line-height:1; }
+    .app-membership-summary strong { position:relative; z-index:1; display:block; padding-right:22px; color:#FFFFFF; font-family:var(--font-heading); font-size:16px; font-weight:800; }
+    .app-membership-summary small { position:relative; z-index:1; display:block; margin-top:7px; color:rgba(255,255,255,.91); font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
+    .app-profile-layout.app-premium-active #appMembershipRow { margin:8px 0 5px; padding:15px 14px; border:1px solid #E7C65E; border-radius:15px; background:linear-gradient(110deg,#FFF9E5,#FFFFFF); }
+    .app-profile-layout.app-premium-active #appMembershipRow > i:first-child { color:#A87500; }
+    .app-profile-layout.app-premium-active #appMembershipRow strong { color:#855B00; }
+    .app-profile-layout.app-premium-active #appMembershipRowDescription { color:#795F20; }
+    @media (max-width:760px) { .app-profile-layout.app-premium-active .app-profile-aside { padding:18px; } }
     .app-profile-row { min-height:60px; padding:14px 0; display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--divider); }
     .app-profile-row > i { color:var(--primary); font-size:22px; }
     .app-profile-row > span { min-width:0; flex:1; }
@@ -3768,9 +3776,11 @@
         const isActive=m.active===true&&Number(m.expiresAt)>Date.now();
         const badge=document.getElementById("appMembershipBadge");
         const summary=document.getElementById("appMembershipSummary");
+        const profileLayout=document.getElementById("appProfileLayout");
         const rowTitle=document.getElementById("appMembershipRowTitle");
         const rowDescription=document.getElementById("appMembershipRowDescription");
         if(isActive){
+          profileLayout.classList.add("app-premium-active");
           badge.classList.add("app-premium-badge");
           badge.textContent="★  SHOPPY PREMIUM";
           summary.hidden=false;
@@ -3780,6 +3790,7 @@
           rowTitle.textContent="Manage Premium Membership";
           rowDescription.textContent=(m.planName||m.plan||"Premium")+" is active until "+formatMembershipDate(m.expiresAt)+".";
         }else{
+          profileLayout.classList.remove("app-premium-active");
           badge.classList.remove("app-premium-badge");
           badge.textContent="✓  SHOPPING MEMBER";
           summary.hidden=true;
