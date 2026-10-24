@@ -129,16 +129,18 @@
 
     /* HEADER */
 
+    /* Floating header: transparent track, only the glass elements inside are visible
+       (desktop = floating search pill, mobile = floating glass toolbar pill) */
     .topbar {
       position: sticky;
       position: -webkit-sticky;
-      top: 0;
+      top: 12px;
       z-index: 1000;
 
       width: 100%;
-      height: var(--header-h);
-      min-height: var(--header-h);
-      margin: 0;
+      height: 48px;
+      min-height: 48px;
+      margin: 12px 0 8px;
       padding: 0 5%;
 
       display: flex;
@@ -146,8 +148,13 @@
       justify-content: space-between;
       gap: 12px;
 
-      background: var(--background);
-      border-bottom: 1px solid var(--border);
+      background: transparent;
+      border: 0;
+      pointer-events: none;
+    }
+
+    .topbar > * {
+      pointer-events: auto;
     }
 
     .nav-actions {
@@ -1122,7 +1129,7 @@
 
     .bottom-nav-item {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       min-width: 0;
       flex: 1;
       height: 52px;
@@ -1157,15 +1164,36 @@
     }
 
     .bottom-nav-item.active {
-      background: var(--primary);
       color: #ffffff;
-      box-shadow:
-        0 4px 14px rgba(41, 98, 255, .38),
-        inset 0 1px 1px rgba(255, 255, 255, .38);
     }
 
     .bottom-nav-item.active .nav-item-icon {
       color: #ffffff;
+    }
+
+    /* Sliding selected-tab background: glides to the active tab */
+    .nav-indicator {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      width: 0;
+      height: 52px;
+      border-radius: 100px;
+      background: var(--primary);
+      box-shadow:
+        0 4px 14px rgba(41, 98, 255, .38),
+        inset 0 1px 1px rgba(255, 255, 255, .38);
+      transform: translate3d(0, 0, 0);
+      transition:
+        transform .5s cubic-bezier(.34, 1.36, .5, 1),
+        width .5s cubic-bezier(.34, 1.36, .5, 1);
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .nav-indicator.no-anim {
+      transition: none;
     }
 
     /* DESKTOP EXPANDABLE NAVIGATION — floating liquid glass drawer */
@@ -1399,8 +1427,57 @@
         padding-bottom: calc(var(--bottom-nav-height) + 30px + env(safe-area-inset-bottom, 0px));
       }
 
+      /* iOS liquid glass floating header toolbar */
       .topbar {
-        padding: 0 5%;
+        top: 10px;
+        width: calc(100% - 32px);
+        height: 56px;
+        min-height: 56px;
+        margin: 10px auto 8px;
+        padding: 0 10px 0 16px;
+        overflow: hidden;
+        pointer-events: auto;
+        border-radius: 100px;
+        border: 1px solid rgba(255, 255, 255, .6);
+        background:
+          linear-gradient(180deg, rgba(41, 98, 255, .18), rgba(41, 98, 255, .08));
+        -webkit-backdrop-filter: blur(22px) saturate(180%);
+        backdrop-filter: blur(22px) saturate(180%);
+        box-shadow:
+          0 12px 32px rgba(41, 98, 255, .2),
+          0 2px 8px rgba(0, 0, 0, .08),
+          inset 0 1px 1px rgba(255, 255, 255, .85),
+          inset 0 -1px 1px rgba(255, 255, 255, .25);
+      }
+
+      /* glass reflection / specular sheen */
+      .topbar::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        border-radius: inherit;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, .1) 40%, rgba(255, 255, 255, 0) 62%),
+          radial-gradient(110% 90% at 8% 0%, rgba(255, 255, 255, .38), transparent 55%);
+        pointer-events: none;
+      }
+
+      .topbar > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .topbar .nav-icon {
+        border-radius: 100px;
+      }
+
+      .topbar .nav-icon:hover {
+        background: rgba(41, 98, 255, .1);
+      }
+
+      .topbar .cart-count {
+        border-color: transparent;
       }
 
       .search-bar-wrap,
@@ -1622,22 +1699,67 @@
         padding-left: max(5%, 104px);
       }
 
+      /* Desktop toolbar = only a floating liquid-glass search pill (brand lives in the drawer) */
       .guest-header-brand {
-        order: 1;
+        display: none !important;
+      }
+
+      .topbar > .brand {
+        display: none;
       }
 
       .header-search {
+        position: relative;
         display: flex;
         order: 2;
         flex: 1 1 auto;
         max-width: 520px;
-        height: 42px;
+        height: 48px;
         margin: 0 auto;
+        padding: 0 18px;
+        border-radius: 100px;
+        border: 1px solid rgba(255, 255, 255, .6);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, .55) 0%, rgba(255, 255, 255, .12) 45%, rgba(255, 255, 255, 0) 70%),
+          linear-gradient(180deg, rgba(41, 98, 255, .16), rgba(41, 98, 255, .08));
+        -webkit-backdrop-filter: blur(22px) saturate(180%);
+        backdrop-filter: blur(22px) saturate(180%);
+        box-shadow:
+          0 12px 32px rgba(41, 98, 255, .18),
+          0 2px 8px rgba(0, 0, 0, .08),
+          inset 0 1px 1px rgba(255, 255, 255, .85),
+          inset 0 -1px 1px rgba(255, 255, 255, .25);
       }
 
-      .topbar > .brand,
+      .header-search:focus-within {
+        border-color: var(--primary);
+        box-shadow:
+          0 12px 32px rgba(41, 98, 255, .22),
+          0 0 0 3px rgba(41, 98, 255, .18),
+          inset 0 1px 1px rgba(255, 255, 255, .85);
+      }
+
+      .header-search > i {
+        color: var(--text-secondary);
+      }
+
+      .header-search input::placeholder {
+        color: var(--text-secondary);
+      }
+
+      /* guests: Login / Sign Up become a small floating glass pill on the right */
       .guest-header-actions {
         order: 3;
+        padding: 5px;
+        border-radius: 100px;
+        border: 1px solid rgba(255, 255, 255, .6);
+        background:
+          linear-gradient(180deg, rgba(41, 98, 255, .16), rgba(41, 98, 255, .08));
+        -webkit-backdrop-filter: blur(22px) saturate(180%);
+        backdrop-filter: blur(22px) saturate(180%);
+        box-shadow:
+          0 12px 32px rgba(41, 98, 255, .18),
+          inset 0 1px 1px rgba(255, 255, 255, .85);
       }
 
       #homeSearchWrap {
@@ -2279,6 +2401,8 @@
   <!-- MOBILE BOTTOM NAVIGATION (iOS liquid glass floating pill, icons only) -->
 
   <nav class="bottom-nav" id="bottomNav" aria-label="Bottom navigation">
+
+    <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
 
     <button
       type="button"
@@ -3537,6 +3661,37 @@
 
     }
 
+    /* Slide the selected-tab background to the active bottom-nav tab */
+    const navIndicator = document.getElementById("navIndicator");
+
+    function positionNavIndicator(instant) {
+      const activeItem = bottomNav.querySelector(".bottom-nav-item.active");
+
+      if (!navIndicator || !activeItem || !activeItem.offsetWidth) return;
+
+      if (instant) navIndicator.classList.add("no-anim");
+
+      navIndicator.style.top = `${activeItem.offsetTop}px`;
+      navIndicator.style.height = `${activeItem.offsetHeight}px`;
+      navIndicator.style.width = `${activeItem.offsetWidth}px`;
+      navIndicator.style.transform =
+        `translate3d(${activeItem.offsetLeft}px, 0, 0)`;
+
+      if (instant) {
+        void navIndicator.offsetWidth;
+        navIndicator.classList.remove("no-anim");
+      }
+    }
+
+    window.addEventListener("resize", () => positionNavIndicator(true));
+    window.addEventListener("load", () => positionNavIndicator(true));
+
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(() => positionNavIndicator(true)).observe(bottomNav);
+    }
+
+    positionNavIndicator(true);
+
     function updateNavigationState(active) {
       document.querySelectorAll("[data-bottom-nav]").forEach(button => {
         const isActive = button.dataset.bottomNav === active;
@@ -3565,6 +3720,8 @@
           button.setAttribute("aria-current", "page");
         }
       });
+
+      positionNavIndicator();
 
       document.querySelectorAll("[data-desktop-nav]").forEach(button => {
         const isActive = button.dataset.desktopNav === active;
