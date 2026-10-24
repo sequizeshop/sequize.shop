@@ -1892,6 +1892,10 @@
     body.app-premium-navigation .notif-item.notif-unread { background:color-mix(in srgb, var(--primary-soft) 48%, transparent); }
     body.app-premium-navigation .notif-copy { min-width:0;flex:1; }
     body.app-premium-navigation .notif-time { color:var(--text-muted);font-size:12px;font-weight:500;white-space:nowrap; }
+    .shoppy-notification-badge { position:absolute; top:-5px; right:-6px; min-width:17px; height:17px; padding:0 4px; display:none; align-items:center; justify-content:center; border:2px solid var(--surface, #fff); border-radius:999px; background:#e53935; color:#fff; font-size:10px; font-weight:800; line-height:1; z-index:3; }
+    #notifButton { position:relative; }
+    #drawerNotifButton { position:relative; }
+    #drawerNotifButton .shoppy-notification-badge { position:static; margin-left:auto; border-color:transparent; }
 
     body.app-premium-navigation .notif-empty { padding:36px 12px;text-align:center;color:var(--text-secondary);font-size:14px; }
     body.app-premium-navigation .notif-empty i { display:block;margin-bottom:10px;color:var(--text-muted);font-size:40px; }
@@ -2033,6 +2037,7 @@
 
       <button class="nav-icon premium-toolbar-control" id="notifButton" type="button" aria-label="Notifications" title="Notifications">
         <i class="ph ph-bell" aria-hidden="true"></i>
+        <span class="shoppy-notification-badge" id="notifBadge" aria-label="Unread notifications">0</span>
       </button>
 
     </nav>
@@ -2094,6 +2099,7 @@
       <button class="desktop-nav-link premium-drawer-control" type="button" id="drawerNotifButton" title="Notifications">
         <i class="ph ph-bell" aria-hidden="true"></i>
         <span>Notifications</span>
+        <span class="shoppy-notification-badge" id="drawerNotifBadge" aria-label="Unread notifications">0</span>
       </button>
 
       <button class="desktop-nav-link" type="button" data-desktop-nav="cart">
@@ -4654,156 +4660,203 @@
       }
     });
 
-    /* NOTIFICATIONS */
+    /* NOTIFICATIONS: cached rendering + background refresh + server-side read receipts */
 
     function formatNotificationTime(value) {
       if (value === null || value === undefined || value === "") return "";
-
       let timestamp = value;
-      if (typeof timestamp === "number" && timestamp > 0 && timestamp < 1e12) {
-        timestamp *= 1000;
-      }
-
+      if (typeof timestamp === "number" && timestamp > 0 && timestamp < 1e12) timestamp *= 1000;
       const date = new Date(timestamp);
       if (Number.isNaN(date.getTime())) return "";
-
       const seconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
       if (seconds < 60) return "just now";
-
       const minutes = Math.floor(seconds / 60);
       if (minutes < 60) return `${minutes}m ago`;
-
       const hours = Math.floor(minutes / 60);
       if (hours < 24) return `${hours}h ago`;
-
       const days = Math.floor(hours / 24);
       if (days < 7) return `${days}d ago`;
-
-      return date.toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short"
-      });
+      return date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
     }
 
     function notificationIcon(category, type) {
       const key = String(category || type || "system").toLowerCase();
-      const icons = {
-        orders: "ph-package",
-        order: "ph-package",
-        payments: "ph-credit-card",
-        payment: "ph-credit-card",
-        shipping: "ph-truck",
-        delivery: "ph-check-circle",
-        returns: "ph-arrow-counter-clockwise",
-        refunds: "ph-currency-inr",
-        cancellations: "ph-x-circle",
-        discounts: "ph-tag",
-        promotions: "ph-confetti",
-        cart: "ph-shopping-cart",
-        wishlist: "ph-heart",
-        account: "ph-user-circle",
-        security: "ph-shield-check",
-        support: "ph-headset",
-        system: "ph-bell"
-      };
+      const icons = { orders:"ph-package", order:"ph-package", payments:"ph-credit-card", payment:"ph-credit-card", shipping:"ph-truck", delivery:"ph-check-circle", returns:"ph-arrow-counter-clockwise", refunds:"ph-currency-inr", cancellations:"ph-x-circle", discounts:"ph-tag", promotions:"ph-confetti", cart:"ph-shopping-cart", wishlist:"ph-heart", account:"ph-user-circle", security:"ph-shield-check", support:"ph-headset", system:"ph-bell" };
       return icons[key] || "ph-bell";
     }
 
+    const NOTIFICATION_CACHE_TTL = 5 * 60 * 1000;
+    const NOTIFICATION_POLL_VISIBLE = 15000;
+    const NOTIFICATION_POLL_HIDDEN = 60000;
+    let customerNotifications = [];
+    let notificationRefreshInFlight = false;
+    let notificationPollTimer = null;
+    const notificationReadInFlight = new Set();
+
+    function notificationCacheKey() {
+      let email = "guest";
+      try {
+        const profile = JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY) || "null");
+        email = String(profile && profile.user && profile.user.email || "guest").trim().toLowerCase();
+      } catch (e) {}
+      return `shoppy_notifications_cache_v1:${email || "guest"}`;
+    }
+
+    function saveNotificationCache() {
+      try { localStorage.setItem(notificationCacheKey(), JSON.stringify({ items: customerNotifications, savedAt: Date.now() })); } catch (e) {}
+    }
+
+    function readNotificationCache() {
+      try {
+        const cached = JSON.parse(localStorage.getItem(notificationCacheKey()) || "null");
+        if (!cached || !Array.isArray(cached.items)) return false;
+        customerNotifications = cached.items;
+        updateNotificationBadge();
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function updateNotificationBadge() {
+      const unreadCount = customerNotifications.reduce((count, item) => count + (item && item.read !== true ? 1 : 0), 0);
+      [document.getElementById("notifBadge"), document.getElementById("drawerNotifBadge")].forEach(badge => {
+        if (!badge) return;
+        badge.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+        badge.style.display = unreadCount > 0 ? "inline-flex" : "none";
+      });
+      const button = document.getElementById("notifButton");
+      if (button) { button.setAttribute("aria-label", unreadCount ? `Notifications, ${unreadCount} unread` : "Notifications"); button.title = unreadCount ? `${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}` : "Notifications"; }
+    }
+
     function renderNotificationsEmpty(message) {
-      notifList.innerHTML = `
-        <div class="notif-empty">
-          <i class="ph ph-bell-slash" aria-hidden="true"></i>
-          ${escapeHTML(message)}
-        </div>
-        <a class="notif-all" href="/notifications.html">View all notifications</a>
-      `;
+      notifList.innerHTML = `<div class="notif-empty"><i class="ph ph-bell-slash" aria-hidden="true"></i>${escapeHTML(message)}</div><a class="notif-all" href="/notifications.html">View all notifications</a>`;
+    }
+
+    function renderNotifications() {
+      updateNotificationBadge();
+      if (!customerNotifications.length) {
+        renderNotificationsEmpty("You're all caught up. No new notifications.");
+        return;
+      }
+      notifList.innerHTML = customerNotifications.slice(0, 20).map(item => {
+        const titleText = item.title || item.heading || "Notification";
+        const messageText = item.message || item.body || item.text || "";
+        const timeText = formatNotificationTime(item.createdAt || item.time || item.date);
+        const title = escapeHTML(titleText), message = escapeHTML(messageText), time = escapeHTML(timeText);
+        const icon = escapeHTML(notificationIcon(item.category, item.type));
+        const unread = item.read === true ? "" : " notif-unread";
+        const id = escapeHTML(String(item.id || item.notificationId || ""));
+        return `<div class="notif-item${unread}" data-notification-id="${id}" role="button" tabindex="0" aria-label="${escapeHTML(titleText)}${item.read === true ? ", read" : ", unread"}"><i class="ph ${icon}" aria-hidden="true"></i><div class="notif-copy"><strong>${title}${time ? `<span class="notif-time"> • ${time}</span>` : ""}</strong>${message ? `<p>${message}</p>` : ""}</div></div>`;
+      }).join("") + '<a class="notif-all" href="/notifications.html">View all notifications</a>';
+    }
+
+    async function requestNotificationAction(action, extra = {}) {
+      const response = await fetch("/api/profile", { method:"POST", credentials:"same-origin", cache:"no-store", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify({ action, ...extra }) });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.success !== true) throw new Error(data.message || `Notification request failed (HTTP ${response.status}).`);
+      return data;
+    }
+
+    async function markNotificationRead(item) {
+      if (!item || item.read === true) return;
+      const id = String(item.id || item.notificationId || "");
+      if (!id) return;
+      const token = `${id}:${String(item.source || "")}`;
+      if (notificationReadInFlight.has(token)) return;
+      item.read = true;
+      updateNotificationBadge();
+      saveNotificationCache();
+      if (notifList.querySelector(`[data-notification-id="${CSS.escape(id)}"]`)) renderNotifications();
+      notificationReadInFlight.add(token);
+      try {
+        await requestNotificationAction("mark-notification-read", { notificationId:id, source:item.source || "", id });
+      } catch (error) {
+        // Keep the optimistic local state; next successful server refresh reconciles it.
+        console.warn("Could not sync notification read receipt:", error.message);
+      } finally { notificationReadInFlight.delete(token); }
+    }
+
+    async function markVisibleNotificationsRead() {
+      const visible = customerNotifications.slice(0, 20).filter(item => item && item.read !== true);
+      if (!visible.length) return;
+      // markNotificationRead applies the optimistic read state and syncs it to the server.
+      await Promise.allSettled(visible.map(markNotificationRead));
+    }
+
+    async function refreshNotifications({ render = false } = {}) {
+      if (authStatus !== "logged-in" || notificationRefreshInFlight) return;
+      notificationRefreshInFlight = true;
+      try {
+        const data = await requestNotificationAction("list-notifications");
+        const items = Array.isArray(data.notifications) ? data.notifications : (Array.isArray(data.items) ? data.items : []);
+        // The server remains authoritative for read status and broadcast read receipts.
+        customerNotifications = items.map(item => ({ ...item, read: item.read === true }));
+        saveNotificationCache();
+        updateNotificationBadge();
+        if (render || notifSheetOverlay.classList.contains("open")) {
+          renderNotifications();
+          // If the sheet is open, the newly rendered notifications have been seen.
+          if (notifSheetOverlay.classList.contains("open")) {
+            const unseen = customerNotifications.slice(0, 20).filter(item => item.read !== true);
+            unseen.forEach(item => { item.read = true; });
+            if (unseen.length) { saveNotificationCache(); renderNotifications(); await Promise.allSettled(unseen.map(item => { item.read = false; return markNotificationRead(item); })); }
+          }
+        }
+      } catch (error) {
+        // Cached notifications remain visible when the network is temporarily unavailable.
+        if (render && !customerNotifications.length) renderNotificationsEmpty("Notifications couldn't be loaded right now. Please try again.");
+        console.warn("Notifications refresh failed:", error.message);
+      } finally {
+        notificationRefreshInFlight = false;
+      }
+    }
+
+    function scheduleNotificationPoll() {
+      if (notificationPollTimer) clearTimeout(notificationPollTimer);
+      notificationPollTimer = setTimeout(async () => {
+        await refreshNotifications();
+        scheduleNotificationPoll();
+      }, document.hidden ? NOTIFICATION_POLL_HIDDEN : NOTIFICATION_POLL_VISIBLE);
+    }
+
+    function startNotificationUpdates() {
+      readNotificationCache();
+      if (authStatus === "logged-in") refreshNotifications();
+      scheduleNotificationPoll();
     }
 
     async function loadNotifications() {
       if (authStatus !== "logged-in") {
-        notifList.innerHTML = `
-          <div class="notif-empty">
-            <i class="ph ph-bell-slash" aria-hidden="true"></i>
-            Login to see your notifications.
-          </div>
-          <a class="notif-all" href="/login.html">Login</a>
-        `;
+        renderNotificationsEmpty("Login to see your notifications.");
+        notifList.insertAdjacentHTML("beforeend", '<a class="notif-all" href="/login.html">Login</a>');
         return;
       }
-
-      notifList.innerHTML = '<div class="notif-empty">Loading notifications...</div>';
-
-      try {
-        /*
-         * Same-origin profile endpoint validates the customer's session.
-         * The server then calls the notification admin API using its
-         * server-only ADMIN_API_KEY. Never expose that key in this HTML.
-         */
-        const response = await fetch("/api/profile", {
-          method: "POST",
-          credentials: "same-origin",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json"
-          },
-          body: JSON.stringify({ action: "list-notifications" })
-        });
-
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok || data.success !== true) {
-          throw new Error(data.message || "Notifications unavailable");
-        }
-
-        const items = Array.isArray(data.notifications)
-          ? data.notifications
-          : (Array.isArray(data.items) ? data.items : []);
-
-        if (!items.length) {
-          renderNotificationsEmpty("You're all caught up. No new notifications.");
-          return;
-        }
-
-        notifList.innerHTML = items.slice(0, 20).map(item => {
-          const titleText = item.title || item.heading || "Notification";
-          const messageText = item.message || item.body || item.text || "";
-          const timeText = formatNotificationTime(
-            item.createdAt || item.time || item.date
-          );
-          const title = escapeHTML(titleText);
-          const message = escapeHTML(messageText);
-          const time = escapeHTML(timeText);
-          const icon = escapeHTML(notificationIcon(item.category, item.type));
-          const unread = item.read === true ? "" : " notif-unread";
-
-          return `
-            <div class="notif-item${unread}">
-              <i class="ph ${icon}" aria-hidden="true"></i>
-              <div class="notif-copy">
-                <strong>${title}${time ? `<span class="notif-time"> • ${time}</span>` : ""}</strong>
-                ${message ? `<p>${message}</p>` : ""}
-              </div>
-            </div>
-          `;
-        }).join("") +
-          '<a class="notif-all" href="/notifications.html">View all notifications</a>';
-
-      } catch (error) {
-        renderNotificationsEmpty("Notifications couldn't be loaded right now. Please try again.");
-      }
+      // Render cached data immediately, then refresh from the server in the background.
+      readNotificationCache();
+      renderNotifications();
+      refreshNotifications({ render:true });
+      // Opening the sheet marks the notifications the customer can see as read.
+      await markVisibleNotificationsRead();
     }
 
-    document.getElementById("notifButton").addEventListener("click", () => {
-      openSheetOverlay(notifSheetOverlay);
-      loadNotifications();
-    });
+    function handleNotificationClick(event) {
+      const row = event.target.closest("[data-notification-id]");
+      if (!row) return;
+      const id = row.getAttribute("data-notification-id");
+      const item = customerNotifications.find(n => String(n.id || n.notificationId || "") === id);
+      if (item) markNotificationRead(item);
+    }
+    notifList.addEventListener("click", handleNotificationClick);
+    notifList.addEventListener("keydown", event => { if ((event.key === "Enter" || event.key === " ") && event.target.closest("[data-notification-id]")) { event.preventDefault(); handleNotificationClick(event); } });
+
+    document.getElementById("notifButton").addEventListener("click", () => { openSheetOverlay(notifSheetOverlay); loadNotifications(); });
     const drawerNotifButton = document.getElementById("drawerNotifButton");
-    if (drawerNotifButton) drawerNotifButton.addEventListener("click", () => {
-      openSheetOverlay(notifSheetOverlay);
-      loadNotifications();
-      closeDesktopDrawer();
+    if (drawerNotifButton) drawerNotifButton.addEventListener("click", () => { openSheetOverlay(notifSheetOverlay); loadNotifications(); closeDesktopDrawer(); });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) { refreshNotifications({ render:notifSheetOverlay.classList.contains("open") }); scheduleNotificationPoll(); }
+      else scheduleNotificationPoll();
     });
+    window.addEventListener("focus", () => { refreshNotifications({ render:notifSheetOverlay.classList.contains("open") }); });
 
     document.getElementById("notifSheetClose").addEventListener("click", () => {
       closeSheetOverlay(notifSheetOverlay);
@@ -4979,6 +5032,7 @@
       updateResponsiveNavigation();
       initLocation();
       await checkShoppyAuth();
+      startNotificationUpdates();
       await loadCart();
       await loadProducts();
     }
