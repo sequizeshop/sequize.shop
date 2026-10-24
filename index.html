@@ -1798,6 +1798,7 @@
     body:not(.app-premium-navigation) .premium-drawer-control {
       display: none !important;
     }
+    body.nav-pending .topbar,
     body.nav-pending .topbar .nav-actions,
     body.nav-pending .bottom-nav,
     body.nav-pending .desktop-drawer,
@@ -3665,7 +3666,12 @@
 
     }
 
+    const ACTIVE_NAV_STORAGE_KEY = "shoppy_home_active_tab_v1";
+
     function updateNavigationState(active) {
+      if (["home", "search", "explore", "cart", "account"].includes(active)) {
+        try { localStorage.setItem(ACTIVE_NAV_STORAGE_KEY, active); } catch (error) { /* storage may be unavailable */ }
+      }
       document.querySelectorAll("[data-bottom-nav]").forEach(button => {
         const isActive = button.dataset.bottomNav === active;
 
@@ -3700,8 +3706,10 @@
       if (premiumIndicator && premiumNav && premiumActive && document.body.classList.contains("app-premium-navigation")) {
         const navRect = premiumNav.getBoundingClientRect();
         const itemRect = premiumActive.getBoundingClientRect();
-        premiumIndicator.style.width = Math.max(0, itemRect.width) + "px";
-        premiumIndicator.style.transform = "translate3d(" + (itemRect.left - navRect.left) + "px,0,0)";
+        const width = Math.min(Math.max(0, itemRect.width), premiumNav.clientWidth);
+        const x = Math.max(0, Math.min(premiumNav.clientWidth - width, itemRect.left - navRect.left - premiumNav.clientLeft));
+        premiumIndicator.style.width = width + "px";
+        premiumIndicator.style.transform = "translate3d(" + x + "px,0,0)";
       }
 
       document.querySelectorAll("[data-desktop-nav]").forEach(button => {
@@ -4037,8 +4045,10 @@
         const indicator = document.getElementById("navIndicator");
         if (nav && indicator && document.body.classList.contains("app-premium-navigation")) {
           const nr = nav.getBoundingClientRect(), ar = active.getBoundingClientRect();
-          indicator.style.width = ar.width + "px";
-          indicator.style.transform = "translate3d(" + (ar.left - nr.left) + "px,0,0)";
+          const width = Math.min(Math.max(0, ar.width), nav.clientWidth);
+          const x = Math.max(0, Math.min(nav.clientWidth - width, ar.left - nr.left - nav.clientLeft));
+          indicator.style.width = width + "px";
+          indicator.style.transform = "translate3d(" + x + "px,0,0)";
         }
       }
     });
@@ -4076,6 +4086,15 @@
         authStatus = "guest";
         document.body.classList.remove("app-premium-navigation");
       }
+      // Restore the last selected tab before revealing the toolbar/navigation, preventing a Home-tab flash.
+      let savedTab = "home";
+      try {
+        const candidate = localStorage.getItem(ACTIVE_NAV_STORAGE_KEY);
+        if (["home", "search", "explore", "cart", "account"].includes(candidate)) savedTab = candidate;
+      } catch (error) { /* storage may be unavailable */ }
+      if (savedTab !== "home") handleNavigation(savedTab);
+      else updateNavigationState("home");
+
       document.body.classList.remove("nav-pending");
       document.body.classList.toggle("guest-mode", authStatus !== "logged-in");
       requestAnimationFrame(() => {
@@ -4084,8 +4103,10 @@
         const active = nav && nav.querySelector("[data-bottom-nav].active");
         if (nav && indicator && active && document.body.classList.contains("app-premium-navigation")) {
           const nr = nav.getBoundingClientRect(), ar = active.getBoundingClientRect();
-          indicator.style.width = ar.width + "px";
-          indicator.style.transform = "translate3d(" + (ar.left - nr.left) + "px,0,0)";
+          const width = Math.min(Math.max(0, ar.width), nav.clientWidth);
+          const x = Math.max(0, Math.min(nav.clientWidth - width, ar.left - nr.left - nav.clientLeft));
+          indicator.style.width = width + "px";
+          indicator.style.transform = "translate3d(" + x + "px,0,0)";
         }
       });
       const guest = authStatus !== "logged-in";
@@ -4104,9 +4125,14 @@
       const activeItem = bottomNav && bottomNav.querySelector(".bottom-nav-item.active");
       if (!navIndicator || !activeItem || !activeItem.offsetWidth) return;
       if (instant) navIndicator.classList.add("no-anim");
-      navIndicator.style.width = activeItem.offsetWidth + "px";
-      navIndicator.style.height = activeItem.offsetHeight + "px";
-      navIndicator.style.transform = "translate3d(" + activeItem.offsetLeft + "px,0,0)";
+      const navWidth = bottomNav.clientWidth;
+      const width = Math.min(activeItem.getBoundingClientRect().width, navWidth);
+      const navRect = bottomNav.getBoundingClientRect();
+      const itemRect = activeItem.getBoundingClientRect();
+      const x = Math.max(0, Math.min(navWidth - width, itemRect.left - navRect.left - bottomNav.clientLeft));
+      navIndicator.style.width = width + "px";
+      navIndicator.style.height = Math.min(activeItem.offsetHeight, bottomNav.clientHeight - 12) + "px";
+      navIndicator.style.transform = "translate3d(" + x + "px,0,0)";
       if (instant) {
         void navIndicator.offsetWidth;
         navIndicator.classList.remove("no-anim");
@@ -4468,19 +4494,22 @@
         const last = items[items.length - 1];
         const rect = bottomNav.getBoundingClientRect();
 
-        let x = clientX - rect.left - bottomNav.clientLeft - first.offsetWidth / 2;
+        const bubbleWidth = navIndicator.offsetWidth || first.offsetWidth;
+        // Pointer indicates the bubble center. Clamp the complete bubble to the nav's inner width.
+        let x = clientX - rect.left - bottomNav.clientLeft - bubbleWidth / 2;
+        const maxX = Math.max(0, bottomNav.clientWidth - bubbleWidth);
+        x = Math.max(0, Math.min(maxX, x));
 
-        x = Math.max(first.offsetLeft - 4, Math.min(last.offsetLeft + 4, x));
-
-        navIndicator.style.transform =
-          `translate3d(${x}px, 0, 0) scale(1.14)`;
+        // No scale transform: the selection bubble must never grow outside the navigation bar.
+        navIndicator.style.transform = `translate3d(${x}px, 0, 0)`;
 
         let nearest = first;
         let best = Infinity;
+        const bubbleCenter = x + bubbleWidth / 2;
 
         items.forEach(item => {
-          const distance = Math.abs(item.offsetLeft - x);
-
+          const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+          const distance = Math.abs(itemCenter - bubbleCenter);
           if (distance < best) {
             best = distance;
             nearest = item;
