@@ -67,7 +67,7 @@
       --radius-lg: 12px;
 
       --header-h: 64px;
-      --bottom-nav-height: 66px;
+      --bottom-nav-height: 64px;
     }
 
     * {
@@ -254,6 +254,12 @@
 
     .search input::placeholder {
       color: var(--text-muted);
+    }
+
+    /* HEADER SEARCH (desktop only, shown in the media query below) */
+
+    .header-search {
+      display: none;
     }
 
     /* DEDICATED SEARCH VIEW */
@@ -1108,39 +1114,41 @@
       font-size: 12px;
     }
 
-    /* MOBILE BOTTOM NAVIGATION */
+    /* MOBILE BOTTOM NAVIGATION — iOS liquid glass floating pill */
 
     .bottom-nav {
       display: none;
     }
 
     .bottom-nav-item {
+      position: relative;
+      z-index: 1;
       min-width: 0;
       flex: 1;
-      min-height: 60px;
-      padding: 7px 2px 5px;
+      height: 52px;
+      min-height: 0;
+      padding: 0;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
       border: 0;
-      border-radius: 0;
+      border-radius: 100px;
       background: transparent;
-      color: var(--text-secondary);
-      font-family: var(--font-body);
-      font-size: 10px;
-      font-weight: 600;
-      line-height: 1.3;
+      color: var(--text-primary);
       -webkit-tap-highlight-color: transparent;
+      transition: background .28s ease, color .28s ease, box-shadow .28s ease, transform .15s ease;
+    }
+
+    .bottom-nav-item:active {
+      transform: scale(.94);
     }
 
     .bottom-nav-item .nav-item-icon {
-      height: 25px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 23px;
+      font-size: 24px;
       line-height: 1;
     }
 
@@ -1149,14 +1157,18 @@
     }
 
     .bottom-nav-item.active {
-      color: var(--primary);
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow:
+        0 4px 14px rgba(41, 98, 255, .38),
+        inset 0 1px 1px rgba(255, 255, 255, .38);
     }
 
     .bottom-nav-item.active .nav-item-icon {
-      color: var(--primary);
+      color: #ffffff;
     }
 
-    /* DESKTOP EXPANDABLE NAVIGATION */
+    /* DESKTOP EXPANDABLE NAVIGATION — floating liquid glass drawer */
 
     .desktop-nav-toggle {
       display: none;
@@ -1166,7 +1178,7 @@
       position: fixed;
       inset: 0;
       z-index: 2500;
-      background: rgba(0, 0, 0, .25);
+      background: rgba(20, 30, 60, .16);
       opacity: 0;
       visibility: hidden;
       transition: opacity .2s, visibility .2s;
@@ -1179,33 +1191,59 @@
 
     .desktop-drawer {
       position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
+      top: 12px;
+      left: 12px;
+      bottom: 12px;
       z-index: 2501;
-      width: 76px;
-      padding: 16px 10px;
+      width: 68px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
       overflow: hidden;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      box-shadow: none;
-      transition: width .24s ease, transform .24s ease;
+      border-radius: 34px;
+      border: 1px solid rgba(255, 255, 255, .6);
+      background:
+        linear-gradient(180deg, rgba(41, 98, 255, .16), rgba(41, 98, 255, .07));
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      backdrop-filter: blur(24px) saturate(180%);
+      box-shadow:
+        0 18px 48px rgba(41, 98, 255, .18),
+        0 2px 10px rgba(0, 0, 0, .08),
+        inset 0 1px 1px rgba(255, 255, 255, .85),
+        inset 0 -1px 1px rgba(255, 255, 255, .25);
+      transition: width .3s cubic-bezier(.3, .9, .3, 1);
+    }
+
+    /* glass reflection / specular sheen */
+    .desktop-drawer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        linear-gradient(160deg, rgba(255, 255, 255, .55) 0%, rgba(255, 255, 255, .12) 28%, rgba(255, 255, 255, 0) 55%),
+        radial-gradient(120% 60% at 0% 0%, rgba(255, 255, 255, .35), transparent 60%);
+      pointer-events: none;
+    }
+
+    .desktop-drawer > * {
+      position: relative;
+      z-index: 1;
     }
 
     .desktop-drawer.expanded {
-      width: 245px;
+      width: 252px;
     }
 
     .desktop-drawer-head {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       min-height: 48px;
-      padding: 0 4px 12px;
-      border-bottom: 1px solid var(--divider);
+      padding: 0 0 8px;
+      border-bottom: 1px solid rgba(41, 98, 255, .14);
+      flex-shrink: 0;
     }
 
     .desktop-drawer-head .brand {
@@ -1218,14 +1256,14 @@
     }
 
     .desktop-drawer-toggle {
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       border: 0;
-      border-radius: var(--radius-lg);
+      border-radius: 100px;
       background: transparent;
       color: var(--text-primary);
       font-size: 23px;
@@ -1233,31 +1271,50 @@
 
     .desktop-drawer-toggle:hover,
     .desktop-nav-link:hover {
-      background: var(--surface-secondary);
+      background: rgba(41, 98, 255, .1);
     }
 
     .desktop-nav-links {
+      flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: none;
+    }
+
+    .desktop-nav-links::-webkit-scrollbar {
+      display: none;
+    }
+
+    .desktop-nav-divider {
+      height: 1px;
+      margin: 6px 12px;
+      flex-shrink: 0;
+      background: rgba(41, 98, 255, .14);
     }
 
     .desktop-nav-link {
+      position: relative;
       min-height: 48px;
       width: 100%;
-      padding: 0 12px;
+      padding: 0 10px;
       display: flex;
       align-items: center;
       gap: 16px;
+      flex-shrink: 0;
       overflow: hidden;
       border: 0;
-      border-radius: var(--radius-lg);
+      border-radius: 100px;
       background: transparent;
-      color: var(--text-secondary);
+      color: var(--text-primary);
       text-align: left;
       white-space: nowrap;
       font-size: 14px;
       font-weight: 600;
+      transition: background .24s ease, color .24s ease, box-shadow .24s ease;
     }
 
     .desktop-nav-link > i {
@@ -1276,18 +1333,57 @@
     }
 
     .desktop-nav-link.active {
-      background: var(--primary-soft);
-      color: var(--primary);
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow:
+        0 4px 14px rgba(41, 98, 255, .38),
+        inset 0 1px 1px rgba(255, 255, 255, .38);
     }
 
     .desktop-nav-link.active > i {
+      color: #ffffff;
+    }
+
+    .drawer-badge {
+      position: absolute;
+      top: 6px;
+      left: 31px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ffffff;
+      border-radius: 999px;
+      background: var(--primary);
+      color: #ffffff;
+      font-style: normal;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .desktop-drawer.expanded .drawer-badge {
+      position: static;
+      margin-left: auto;
+      border-color: transparent;
+    }
+
+    .desktop-nav-link.active .drawer-badge {
+      background: #ffffff;
       color: var(--primary);
+      border-color: var(--primary);
     }
 
     .desktop-drawer-bottom {
-      margin-top: auto;
-      padding-top: 12px;
-      border-top: 1px solid var(--divider);
+      margin-top: 0;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(41, 98, 255, .14);
     }
 
     /* RESPONSIVE */
@@ -1300,7 +1396,7 @@
 
     @media (max-width: 760px) {
       body {
-        padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(var(--bottom-nav-height) + 30px + env(safe-area-inset-bottom, 0px));
       }
 
       .topbar {
@@ -1416,20 +1512,53 @@
         -webkit-line-clamp: 2;
       }
 
+      /* iOS liquid glass floating bottom navigation */
       .bottom-nav {
         position: fixed;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        left: 50%;
+        right: auto;
+        bottom: calc(14px + env(safe-area-inset-bottom, 0px));
         z-index: 1500;
-        min-height: var(--bottom-nav-height);
-        padding: 3px 4px env(safe-area-inset-bottom, 0px);
+        width: min(calc(100% - 32px), 400px);
+        height: var(--bottom-nav-height);
+        min-height: 0;
+        padding: 6px;
         display: flex;
         align-items: center;
-        justify-content: space-around;
-        gap: 0;
-        background: var(--surface);
-        border-top: 1px solid var(--border);
+        justify-content: space-between;
+        gap: 2px;
+        overflow: hidden;
+        transform: translateX(-50%);
+        border-radius: 100px;
+        border: 1px solid rgba(255, 255, 255, .6);
+        background:
+          linear-gradient(180deg, rgba(41, 98, 255, .18), rgba(41, 98, 255, .08));
+        -webkit-backdrop-filter: blur(22px) saturate(180%);
+        backdrop-filter: blur(22px) saturate(180%);
+        box-shadow:
+          0 12px 32px rgba(41, 98, 255, .22),
+          0 2px 8px rgba(0, 0, 0, .08),
+          inset 0 1px 1px rgba(255, 255, 255, .85),
+          inset 0 -1px 1px rgba(255, 255, 255, .25);
+      }
+
+      /* glass reflection / specular sheen (content scrolling underneath is refracted by the blur) */
+      .bottom-nav::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        border-radius: inherit;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, .1) 40%, rgba(255, 255, 255, 0) 62%),
+          radial-gradient(110% 90% at 8% 0%, rgba(255, 255, 255, .38), transparent 55%);
+        pointer-events: none;
+      }
+
+      @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+        .bottom-nav {
+          background: rgba(232, 238, 255, .95);
+        }
       }
 
       .desktop-nav-toggle,
@@ -1439,7 +1568,7 @@
       }
 
       .toast {
-        bottom: calc(var(--bottom-nav-height) + 15px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(var(--bottom-nav-height) + 30px + env(safe-area-inset-bottom, 0px));
       }
 
       .footer {
@@ -1470,43 +1599,49 @@
         height: 120px;
       }
 
-      .bottom-nav-item {
-        font-size: 9px;
-      }
-
       .bottom-nav-item .nav-item-icon {
         font-size: 22px;
       }
     }
 
     @media (min-width: 761px) {
-      .desktop-nav-toggle {
-        width: 42px;
-        height: 42px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 0;
-        border-radius: var(--radius-md);
-        background: transparent;
-        color: var(--text-primary);
-        font-size: 24px;
-      }
-
-      .desktop-nav-toggle:hover {
-        background: var(--surface-secondary);
-      }
-
       .desktop-drawer-overlay {
         display: block;
       }
 
+      /* Header: icons move into the drawer, search bar lives here instead */
+      .nav-actions {
+        display: none;
+      }
+
       .topbar {
-        padding-left: 5%;
+        padding-left: max(5%, 104px);
       }
 
       body.desktop-drawer-open .topbar {
-        padding-left: 5%;
+        padding-left: max(5%, 104px);
+      }
+
+      .guest-header-brand {
+        order: 1;
+      }
+
+      .header-search {
+        display: flex;
+        order: 2;
+        flex: 1 1 auto;
+        max-width: 520px;
+        height: 42px;
+        margin: 0 auto;
+      }
+
+      .topbar > .brand,
+      .guest-header-actions {
+        order: 3;
+      }
+
+      #homeSearchWrap {
+        display: none;
       }
     }
 
@@ -1652,13 +1787,30 @@
 
     </nav>
 
+    <!-- HEADER SEARCH (desktop only) -->
+
+    <form class="search header-search" id="headerSearchForm" role="search">
+
+      <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+
+      <input
+        id="headerSearchInput"
+        type="search"
+        placeholder="Search products..."
+        aria-label="Search products"
+        autocomplete="off"
+        maxlength="100"
+      >
+
+    </form>
+
     <a href="/home.html" class="brand" aria-label="Shoppy home">
       Shoppy.
     </a>
 
   </header>
 
-  <!-- DESKTOP EXPANDABLE NAVIGATION -->
+  <!-- DESKTOP FLOATING GLASS DRAWER -->
 
   <div class="desktop-drawer-overlay" id="desktopDrawerOverlay"></div>
 
@@ -1682,31 +1834,83 @@
 
     <nav class="desktop-nav-links">
 
-      <button class="desktop-nav-link active" type="button" data-desktop-nav="home">
+      <button class="desktop-nav-link active" type="button" data-desktop-nav="home" title="Home">
         <i class="ph-fill ph-house" aria-hidden="true"></i>
         <span>Home</span>
       </button>
 
-      <button class="desktop-nav-link" type="button" data-desktop-nav="search">
+      <button class="desktop-nav-link" type="button" data-desktop-nav="search" title="Search">
         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
         <span>Search</span>
       </button>
 
-      <button class="desktop-nav-link" type="button" data-desktop-nav="explore">
+      <button class="desktop-nav-link" type="button" data-desktop-nav="explore" title="Explore">
         <i class="ph ph-compass" aria-hidden="true"></i>
         <span>Explore</span>
       </button>
+
+      <div class="desktop-nav-divider" aria-hidden="true"></div>
+
+      <a class="desktop-nav-link" href="/wishlist.html" title="My Wishlist">
+        <i class="ph ph-heart" aria-hidden="true"></i>
+        <span>My Wishlist</span>
+      </a>
+
+      <a class="desktop-nav-link" href="/orders.html" title="My Orders">
+        <i class="ph ph-package" aria-hidden="true"></i>
+        <span>My Orders</span>
+      </a>
+
+      <a class="desktop-nav-link" href="/coupons.html" title="Coupons & Offers">
+        <i class="ph ph-ticket" aria-hidden="true"></i>
+        <span>Coupons & Offers</span>
+      </a>
+
+      <a class="desktop-nav-link" href="/notifications.html" title="Notifications">
+        <i class="ph ph-bell" aria-hidden="true"></i>
+        <span>Notifications</span>
+      </a>
+
+      <div class="desktop-nav-divider" aria-hidden="true"></div>
+
+      <a class="desktop-nav-link" href="/addresses.html" title="Saved Addresses">
+        <i class="ph ph-map-pin" aria-hidden="true"></i>
+        <span>Saved Addresses</span>
+      </a>
+
+      <a class="desktop-nav-link" href="/payments.html" title="My Payments">
+        <i class="ph ph-credit-card" aria-hidden="true"></i>
+        <span>My Payments</span>
+      </a>
+
+      <div class="desktop-nav-divider" aria-hidden="true"></div>
+
+      <a class="desktop-nav-link" href="/support.html" title="Help & Support">
+        <i class="ph ph-headset" aria-hidden="true"></i>
+        <span>Help & Support</span>
+      </a>
+
+      <a class="desktop-nav-link" href="/privacy.html" title="Privacy & Security">
+        <i class="ph ph-shield-check" aria-hidden="true"></i>
+        <span>Privacy & Security</span>
+      </a>
+
+      <a class="desktop-nav-link" href="/about.html" title="About Us">
+        <i class="ph ph-info" aria-hidden="true"></i>
+        <span>About Us</span>
+      </a>
 
     </nav>
 
     <div class="desktop-drawer-bottom">
 
-      <button class="desktop-nav-link" type="button" data-desktop-nav="cart">
+      <button class="desktop-nav-link" type="button" data-desktop-nav="cart" title="My Cart">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
         <span>My Cart</span>
+        <em class="drawer-badge" id="drawerCartCount" hidden>0</em>
       </button>
 
-      <button class="desktop-nav-link" type="button" data-desktop-nav="account">
+      <button class="desktop-nav-link" type="button" data-desktop-nav="account" title="Account">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
         <span>Account</span>
       </button>
@@ -2072,7 +2276,7 @@
 
   </div>
 
-  <!-- MOBILE BOTTOM NAVIGATION -->
+  <!-- MOBILE BOTTOM NAVIGATION (iOS liquid glass floating pill, icons only) -->
 
   <nav class="bottom-nav" id="bottomNav" aria-label="Bottom navigation">
 
@@ -2080,56 +2284,56 @@
       type="button"
       class="bottom-nav-item active"
       data-bottom-nav="home"
+      aria-label="Home"
       aria-current="page"
     >
       <span class="nav-item-icon">
         <i class="ph-fill ph-house" aria-hidden="true"></i>
       </span>
-      <span>Home</span>
     </button>
 
     <button
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="search"
+      aria-label="Search"
     >
       <span class="nav-item-icon">
         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
       </span>
-      <span>Search</span>
     </button>
 
     <button
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="explore"
+      aria-label="Explore"
     >
       <span class="nav-item-icon">
         <i class="ph ph-compass" aria-hidden="true"></i>
       </span>
-      <span>Explore</span>
     </button>
 
     <button
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="cart"
+      aria-label="My Cart"
     >
       <span class="nav-item-icon">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
       </span>
-      <span>My Cart</span>
     </button>
 
     <button
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="account"
+      aria-label="Account"
     >
       <span class="nav-item-icon">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </span>
-      <span>Account</span>
     </button>
 
   </nav>
@@ -2162,6 +2366,10 @@
 
     const searchInput = document.getElementById("searchInput");
     const searchForm = document.getElementById("searchForm");
+
+    const headerSearchForm = document.getElementById("headerSearchForm");
+    const headerSearchInput = document.getElementById("headerSearchInput");
+    const drawerCartCount = document.getElementById("drawerCartCount");
 
     const heroWrap = document.getElementById("heroWrap");
     const loadMoreButton = document.getElementById("loadMoreButton");
@@ -2320,6 +2528,11 @@
         total > 99 ? "99+" : String(total);
 
       actualCartCount.hidden = total <= 0;
+
+      drawerCartCount.textContent =
+        total > 99 ? "99+" : String(total);
+
+      drawerCartCount.hidden = total <= 0;
     }
 
     function updateCartButton(button, product) {
@@ -2375,6 +2588,7 @@
           cartIsLoaded = false;
           cartProductIds = new Set();
           actualCartCount.hidden = true;
+          drawerCartCount.hidden = true;
 
           refreshVisibleCartButtons();
 
@@ -3462,6 +3676,16 @@
       loadSearchProducts();
     });
 
+    /* HEADER SEARCH (desktop) */
+
+    headerSearchForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      dedicatedSearchInput.value = headerSearchInput.value.trim();
+
+      showSearchView();
+    });
+
     dedicatedSearchInput.addEventListener("search", () => {
       loadSearchProducts();
     });
@@ -3762,4 +3986,3 @@
 
 </body>
 </html>
-
