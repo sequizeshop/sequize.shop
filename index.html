@@ -1621,6 +1621,166 @@
     body.guest-mode .add-button { display:none !important; }
     @media (max-width:420px) { .guest-auth-button { padding:7px 11px; font-size:12px; } .guest-header-brand { font-size:20px; } .guest-header-actions { gap:6px; } }
 
+  
+    /* PREMIUM-ONLY NAVIGATION SKIN.
+       Basic members keep the original toolbar and bottom navigation unchanged. */
+    body.app-premium-navigation .topbar {
+      position: sticky;
+      position: -webkit-sticky;
+      top: 12px;
+      height: 48px;
+      min-height: 48px;
+      margin: 12px 0 8px;
+      background: transparent;
+      border: 0;
+      pointer-events: none;
+    }
+    body.app-premium-navigation .topbar > * { pointer-events: auto; }
+    body.app-premium-navigation .nav-icon {
+      border: 0;
+      border-radius: 100px;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 24px;
+    }
+    body.app-premium-navigation .nav-icon:hover { background: var(--surface-secondary); }
+    body.app-premium-navigation .brand {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.7px;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+    body.app-premium-navigation .nav-indicator { display: none; }
+    body.app-premium-navigation .bottom-nav-item {
+      position: relative;
+      z-index: 2;
+      height: 52px;
+      min-height: 0;
+      padding: 0;
+      border-radius: 100px;
+      justify-content: center;
+      transition: background .28s ease, color .28s ease, box-shadow .28s ease, transform .15s ease;
+    }
+    body.app-premium-navigation .bottom-nav-item:active { transform: scale(.94); }
+    body.app-premium-navigation .bottom-nav-item .nav-item-icon {
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      line-height: 1;
+    }
+    body.app-premium-navigation .bottom-nav-item.active,
+    body.app-premium-navigation .bottom-nav-item.active .nav-item-icon { color: #fff; }
+    body.app-premium-navigation .nav-indicator {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      z-index: 1;
+      display: block;
+      width: 0;
+      height: 52px;
+      border-radius: 100px;
+      background: var(--primary);
+      box-shadow: 0 4px 14px rgba(41,98,255,.38), inset 0 1px 1px rgba(255,255,255,.38);
+      transform: translate3d(0,0,0);
+      transition: transform .5s cubic-bezier(.34,1.36,.5,1), width .5s cubic-bezier(.34,1.36,.5,1);
+      pointer-events: none;
+      will-change: transform;
+    }
+    body.app-premium-navigation .nav-indicator.no-anim { transition: none; }
+    body.app-premium-navigation .bottom-nav .cart-count {
+      top: -7px; right: -11px; min-width: 17px; height: 17px;
+    }
+    body.app-premium-navigation .bottom-nav-item.active .cart-count {
+      background: #fff; color: var(--primary); border-color: var(--primary);
+    }
+
+    @media (max-width:760px) {
+      body.app-premium-navigation .topbar {
+        top: 10px;
+        width: calc(100% - 32px);
+        height: 56px;
+        min-height: 56px;
+        margin: 10px auto 8px;
+        padding: 0 10px 0 16px;
+        overflow: hidden;
+        pointer-events: auto;
+        border-radius: 100px;
+        border: 1px solid rgba(255,255,255,.6);
+        background: linear-gradient(180deg,rgba(41,98,255,.18),rgba(41,98,255,.08));
+        -webkit-backdrop-filter: blur(22px) saturate(180%);
+        backdrop-filter: blur(22px) saturate(180%);
+        box-shadow: 0 12px 32px rgba(41,98,255,.2), 0 2px 8px rgba(0,0,0,.08),
+          inset 0 1px 1px rgba(255,255,255,.85), inset 0 -1px 1px rgba(255,255,255,.25);
+      }
+      body.app-premium-navigation .topbar::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        border-radius: inherit;
+        background: linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.1) 40%,rgba(255,255,255,0) 62%),
+          radial-gradient(110% 90% at 8% 0%,rgba(255,255,255,.38),transparent 55%);
+        pointer-events: none;
+      }
+      body.app-premium-navigation .topbar > * { position: relative; z-index: 1; }
+      body.app-premium-navigation .topbar .nav-icon { border-radius: 100px; }
+      body.app-premium-navigation .topbar .nav-icon:hover { background: rgba(41,98,255,.1); }
+      body.app-premium-navigation .topbar .cart-count { border-color: transparent; }
+
+      body.app-premium-navigation .bottom-nav {
+        position: fixed;
+        left: 50%;
+        right: auto;
+        bottom: calc(14px + env(safe-area-inset-bottom,0px));
+        z-index: 1500;
+        width: min(calc(100% - 32px),400px);
+        height: var(--bottom-nav-height);
+        min-height: 0;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2px;
+        overflow: hidden;
+        transform: translateX(-50%);
+        border-radius: 100px;
+        border: 1px solid rgba(255,255,255,.6);
+        background: linear-gradient(180deg,rgba(41,98,255,.18),rgba(41,98,255,.08));
+        -webkit-backdrop-filter: blur(22px) saturate(180%);
+        backdrop-filter: blur(22px) saturate(180%);
+        box-shadow: 0 12px 32px rgba(41,98,255,.22), 0 2px 8px rgba(0,0,0,.08),
+          inset 0 1px 1px rgba(255,255,255,.85), inset 0 -1px 1px rgba(255,255,255,.25);
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+      body.app-premium-navigation .bottom-nav::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        border-radius: inherit;
+        background: linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.1) 40%,rgba(255,255,255,0) 62%),
+          radial-gradient(110% 90% at 8% 0%,rgba(255,255,255,.38),transparent 55%);
+        pointer-events: none;
+      }
+      body.app-premium-navigation .bottom-nav-item > span:not(.nav-item-icon) { display: none !important; }
+      body.app-premium-navigation .bottom-nav-item { flex: 1; }
+      body.app-premium-navigation .nav-indicator { top: 6px; left: 0; }
+      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active,
+      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active .nav-item-icon { color: var(--text-primary); }
+      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over,
+      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over .nav-item-icon { color: #fff; }
+      @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+        body.app-premium-navigation .bottom-nav { background: rgba(232,238,255,.95); }
+      }
+    }
+
   </style>
 </head>
 
@@ -2093,6 +2253,8 @@
   <!-- MOBILE BOTTOM NAVIGATION -->
 
   <nav class="bottom-nav" id="bottomNav" aria-label="Bottom navigation">
+
+    <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
 
     <button
       type="button"
@@ -3370,6 +3532,16 @@
         }
       });
 
+      const premiumIndicator = document.getElementById("navIndicator");
+      const premiumNav = document.getElementById("bottomNav");
+      const premiumActive = premiumNav && premiumNav.querySelector("[data-bottom-nav].active");
+      if (premiumIndicator && premiumNav && premiumActive && document.body.classList.contains("app-premium-navigation")) {
+        const navRect = premiumNav.getBoundingClientRect();
+        const itemRect = premiumActive.getBoundingClientRect();
+        premiumIndicator.style.width = Math.max(0, itemRect.width) + "px";
+        premiumIndicator.style.transform = "translate3d(" + (itemRect.left - navRect.left) + "px,0,0)";
+      }
+
       document.querySelectorAll("[data-desktop-nav]").forEach(button => {
         const isActive = button.dataset.desktopNav === active;
 
@@ -3696,6 +3868,18 @@
     }
 
     window.addEventListener("resize", updateResponsiveNavigation);
+    window.addEventListener("resize", () => {
+      const active = document.querySelector("[data-bottom-nav].active");
+      if (active) {
+        const nav = document.getElementById("bottomNav");
+        const indicator = document.getElementById("navIndicator");
+        if (nav && indicator && document.body.classList.contains("app-premium-navigation")) {
+          const nr = nav.getBoundingClientRect(), ar = active.getBoundingClientRect();
+          indicator.style.width = ar.width + "px";
+          indicator.style.transform = "translate3d(" + (ar.left - nr.left) + "px,0,0)";
+        }
+      }
+    });
 
     /* CART REFRESH */
 
@@ -3719,11 +3903,26 @@
         const data = await response.json().catch(() => ({}));
         authStatus = response.ok && data.success === true && data.user
           ? "logged-in" : "guest";
+        const membership = data.membership && typeof data.membership === "object" ? data.membership : {};
+        const premiumActive = authStatus === "logged-in" && membership.active === true &&
+          Number(membership.expiresAt) > Date.now();
+        document.body.classList.toggle("app-premium-navigation", premiumActive);
       } catch (error) {
         // Fail closed for write actions if the session cannot be verified.
         authStatus = "guest";
+        document.body.classList.remove("app-premium-navigation");
       }
       document.body.classList.toggle("guest-mode", authStatus !== "logged-in");
+      requestAnimationFrame(() => {
+        const nav = document.getElementById("bottomNav");
+        const indicator = document.getElementById("navIndicator");
+        const active = nav && nav.querySelector("[data-bottom-nav].active");
+        if (nav && indicator && active && document.body.classList.contains("app-premium-navigation")) {
+          const nr = nav.getBoundingClientRect(), ar = active.getBoundingClientRect();
+          indicator.style.width = ar.width + "px";
+          indicator.style.transform = "translate3d(" + (ar.left - nr.left) + "px,0,0)";
+        }
+      });
       const guest = authStatus !== "logged-in";
       document.getElementById("guestCartPanel").hidden = !guest;
       document.getElementById("appCartLayout").hidden = guest;
@@ -3779,6 +3978,7 @@
         const profileLayout=document.getElementById("appProfileLayout");
         const rowTitle=document.getElementById("appMembershipRowTitle");
         const rowDescription=document.getElementById("appMembershipRowDescription");
+        document.body.classList.toggle("app-premium-navigation", isActive);
         if(isActive){
           profileLayout.classList.add("app-premium-active");
           badge.classList.add("app-premium-badge");
