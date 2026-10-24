@@ -1781,10 +1781,89 @@
       }
     }
 
+  
+    /* Premium-only location/notification controls; basic navigation remains unchanged. */
+    .premium-toolbar-control,
+    .premium-drawer-control { display: none !important; }
+
+    body.app-premium-navigation .premium-toolbar-control {
+      display: inline-flex !important;
+    }
+    body.app-premium-navigation .nav-actions [data-top-nav] {
+      display: none !important;
+    }
+    body.app-premium-navigation .premium-drawer-control {
+      display: flex !important;
+    }
+    body:not(.app-premium-navigation) .premium-drawer-control {
+      display: none !important;
+    }
+    body.nav-pending .topbar .nav-actions,
+    body.nav-pending .bottom-nav,
+    body.nav-pending .desktop-drawer,
+    body.nav-pending .desktop-nav-toggle {
+      visibility: hidden !important;
+    }
+    body.app-premium-navigation .location-chip {
+      max-width: 150px;
+      min-width: 0;
+      height: 38px;
+      padding: 0 12px;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255,255,255,.75);
+      border-radius: 100px;
+      background: rgba(255,255,255,.55);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    body.app-premium-navigation .location-chip i {
+      flex-shrink: 0;
+      color: var(--primary);
+      font-size: 17px;
+    }
+    body.app-premium-navigation .location-chip span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    body.app-premium-navigation .bottom-nav { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    body.app-premium-navigation .nav-indicator.dragging {
+      transition: none;
+      box-shadow: 0 8px 22px rgba(41,98,255,.5), inset 0 1px 1px rgba(255,255,255,.5);
+    }
+    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active,
+    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active .nav-item-icon { color: var(--text-primary); }
+    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over,
+    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over .nav-item-icon { color: #fff; }
+    body.app-premium-navigation .notif-list { padding: 10px 16px 20px; overflow-y: auto; overscroll-behavior: contain; }
+    body.app-premium-navigation .notif-item { padding: 12px 14px; display:flex; align-items:flex-start; gap:12px; border-radius:var(--radius-lg); }
+    body.app-premium-navigation .notif-item:hover { background:var(--primary-soft); }
+    body.app-premium-navigation .notif-item > i { width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--primary-soft);color:var(--primary);font-size:20px; }
+    body.app-premium-navigation .notif-item strong { display:block;font-size:14px;font-weight:700;line-height:1.4; }
+    body.app-premium-navigation .notif-item p { margin:2px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.5; }
+    body.app-premium-navigation .notif-item small { display:block;margin-top:4px;color:var(--text-muted);font-size:12px; }
+    body.app-premium-navigation .notif-empty { padding:36px 12px;text-align:center;color:var(--text-secondary);font-size:14px; }
+    body.app-premium-navigation .notif-empty i { display:block;margin-bottom:10px;color:var(--text-muted);font-size:40px; }
+    body.app-premium-navigation .notif-all { width:100%;min-height:48px;margin-top:8px;padding:12px 16px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-lg);background:var(--primary-soft);color:var(--primary);font-weight:700; }
+    @media (min-width:761px) {
+      body.app-premium-navigation .nav-actions { display:none !important; }
+      body.app-premium-navigation .desktop-drawer { display:flex; }
+    }
+    @media (max-width:760px) {
+      body.app-premium-navigation .premium-toolbar-control.location-chip { display:inline-flex !important; }
+      body.app-premium-navigation .desktop-drawer,
+      body.app-premium-navigation .desktop-drawer-overlay,
+      body.app-premium-navigation .desktop-nav-toggle { display:none !important; }
+    }
+
   </style>
 </head>
 
-<body>
+<body class="nav-pending">
 
   <!-- HEADER -->
 
@@ -1820,6 +1899,15 @@
 
       <button class="nav-icon" type="button" data-top-nav="account" aria-label="My profile" title="My profile">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
+      </button>
+
+      <button class="location-chip premium-toolbar-control" id="headerLocationButton" type="button" data-open-location aria-label="Change location" title="Change location">
+        <i class="ph-fill ph-map-pin" aria-hidden="true"></i>
+        <span id="headerLocationLabel">Select state</span>
+      </button>
+
+      <button class="nav-icon premium-toolbar-control" id="notifButton" type="button" aria-label="Notifications" title="Notifications">
+        <i class="ph ph-bell" aria-hidden="true"></i>
       </button>
 
     </nav>
@@ -1872,6 +1960,16 @@
     </nav>
 
     <div class="desktop-drawer-bottom">
+
+      <button class="desktop-nav-link premium-drawer-control" type="button" id="drawerLocationButton" data-open-location title="Change location">
+        <i class="ph ph-map-pin" aria-hidden="true"></i>
+        <span id="drawerLocationLabel">Select state</span>
+      </button>
+
+      <button class="desktop-nav-link premium-drawer-control" type="button" id="drawerNotifButton" title="Notifications">
+        <i class="ph ph-bell" aria-hidden="true"></i>
+        <span>Notifications</span>
+      </button>
 
       <button class="desktop-nav-link" type="button" data-desktop-nav="cart">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
@@ -2250,6 +2348,65 @@
 
   </div>
 
+  <!-- NOTIFICATIONS BOTTOM SHEET -->
+
+  <div class="sheet-overlay" id="notifSheetOverlay" aria-hidden="true">
+
+    <section class="category-sheet" role="dialog" aria-modal="true" aria-labelledby="notifSheetTitle">
+
+      <div class="sheet-handle-wrap">
+        <div class="sheet-handle"></div>
+      </div>
+
+      <div class="sheet-header">
+
+        <div>
+          <h2 id="notifSheetTitle">Notifications</h2>
+          <p>Stay updated on orders and offers.</p>
+        </div>
+
+        <button type="button" class="sheet-close" id="notifSheetClose" aria-label="Close notifications">
+          <i class="ph ph-x" aria-hidden="true"></i>
+        </button>
+
+      </div>
+
+      <div class="notif-list" id="notifList"></div>
+
+    </section>
+
+  </div>
+
+  <!-- LOCATION (STATE) BOTTOM SHEET -->
+
+  <div class="sheet-overlay" id="locationSheetOverlay" aria-hidden="true">
+
+    <section class="category-sheet" role="dialog" aria-modal="true" aria-labelledby="locationSheetTitle">
+
+      <div class="sheet-handle-wrap">
+        <div class="sheet-handle"></div>
+      </div>
+
+      <div class="sheet-header">
+
+        <div>
+          <h2 id="locationSheetTitle">Choose Location</h2>
+          <p>Select your state.</p>
+        </div>
+
+        <button type="button" class="sheet-close" id="locationSheetClose" aria-label="Close locations">
+          <i class="ph ph-x" aria-hidden="true"></i>
+        </button>
+
+      </div>
+
+      <div class="sheet-categories" id="locationList"></div>
+
+    </section>
+
+  </div>
+
+
   <!-- MOBILE BOTTOM NAVIGATION -->
 
   <nav class="bottom-nav" id="bottomNav" aria-label="Bottom navigation">
@@ -2260,6 +2417,7 @@
       type="button"
       class="bottom-nav-item active"
       data-bottom-nav="home"
+      aria-label="Home"
       aria-current="page"
     >
       <span class="nav-item-icon">
@@ -2272,6 +2430,7 @@
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="search"
+      aria-label="Search"
     >
       <span class="nav-item-icon">
         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
@@ -2283,6 +2442,7 @@
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="explore"
+      aria-label="Explore"
     >
       <span class="nav-item-icon">
         <i class="ph ph-compass" aria-hidden="true"></i>
@@ -2294,6 +2454,7 @@
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="cart"
+      aria-label="My Cart"
     >
       <span class="nav-item-icon">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
@@ -2305,6 +2466,7 @@
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="account"
+      aria-label="Account"
     >
       <span class="nav-item-icon">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
@@ -3904,14 +4066,17 @@
         authStatus = response.ok && data.success === true && data.user
           ? "logged-in" : "guest";
         const membership = data.membership && typeof data.membership === "object" ? data.membership : {};
+        const expiryRaw = membership.expiresAt;
+        const expiryTime = (Number(expiryRaw) || Date.parse(expiryRaw || ""));
         const premiumActive = authStatus === "logged-in" && membership.active === true &&
-          Number(membership.expiresAt) > Date.now();
+          Number.isFinite(expiryTime) && expiryTime > Date.now();
         document.body.classList.toggle("app-premium-navigation", premiumActive);
       } catch (error) {
         // Fail closed for write actions if the session cannot be verified.
         authStatus = "guest";
         document.body.classList.remove("app-premium-navigation");
       }
+      document.body.classList.remove("nav-pending");
       document.body.classList.toggle("guest-mode", authStatus !== "logged-in");
       requestAnimationFrame(() => {
         const nav = document.getElementById("bottomNav");
@@ -3933,10 +4098,512 @@
       }
     }
 
+
+    const navIndicator = document.getElementById("navIndicator");
+    function positionNavIndicator(instant) {
+      const activeItem = bottomNav && bottomNav.querySelector(".bottom-nav-item.active");
+      if (!navIndicator || !activeItem || !activeItem.offsetWidth) return;
+      if (instant) navIndicator.classList.add("no-anim");
+      navIndicator.style.width = activeItem.offsetWidth + "px";
+      navIndicator.style.height = activeItem.offsetHeight + "px";
+      navIndicator.style.transform = "translate3d(" + activeItem.offsetLeft + "px,0,0)";
+      if (instant) {
+        void navIndicator.offsetWidth;
+        navIndicator.classList.remove("no-anim");
+      }
+    }
+    window.addEventListener("resize", () => positionNavIndicator(true));
+    window.addEventListener("load", () => positionNavIndicator(true));
+    positionNavIndicator(true);
+
+    /* LOCATION (STATE) + NOTIFICATION BOTTOM SHEETS */
+
+    const LOCATION_KEY = "shoppy_location_state";
+
+    const INDIAN_STATES = [
+      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+      "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+      "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+      "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+      "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+      "Andaman and Nicobar Islands", "Chandigarh",
+      "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir",
+      "Ladakh", "Lakshadweep", "Puducherry"
+    ];
+
+    const locationSheetOverlay = document.getElementById("locationSheetOverlay");
+    const locationList = document.getElementById("locationList");
+    const notifSheetOverlay = document.getElementById("notifSheetOverlay");
+    const notifList = document.getElementById("notifList");
+    const headerLocationLabel = document.getElementById("headerLocationLabel");
+    const drawerLocationLabel = document.getElementById("drawerLocationLabel");
+
+    let currentLocation = "";
+
+    function openSheetOverlay(overlay) {
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("sheet-open");
+    }
+
+    function closeSheetOverlay(overlay) {
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
+
+      if (!document.querySelector(".sheet-overlay.open")) {
+        document.body.classList.remove("sheet-open");
+      }
+    }
+
+    function normalizeStateName(name) {
+      return String(name || "").toLowerCase().replace(/[^a-z]/g, "");
+    }
+
+    function matchState(name) {
+      const wanted = normalizeStateName(name);
+
+      if (!wanted) return "";
+
+      if (wanted.includes("delhi")) return "Delhi";
+      if (wanted === "orissa") return "Odisha";
+
+      return INDIAN_STATES.find(state =>
+        normalizeStateName(state) === wanted
+      ) || INDIAN_STATES.find(state => {
+        const normalized = normalizeStateName(state);
+        return normalized.includes(wanted) || wanted.includes(normalized);
+      }) || "";
+    }
+
+    function setLocation(state, persist = true) {
+      currentLocation = state || "";
+
+      const label = currentLocation || "Select state";
+
+      headerLocationLabel.textContent = label;
+      drawerLocationLabel.textContent = label;
+
+      document.getElementById("headerLocationButton").title =
+        currentLocation ? `Location: ${currentLocation}` : "Change location";
+
+      document.getElementById("drawerLocationButton").title =
+        currentLocation ? `Location: ${currentLocation}` : "Change location";
+
+      if (persist && currentLocation) {
+        try {
+          localStorage.setItem(LOCATION_KEY, currentLocation);
+        } catch (error) {
+          console.warn("Could not save location:", error);
+        }
+      }
+    }
+
+    function renderLocationList() {
+      locationList.innerHTML = `
+        <button type="button" class="sheet-category" data-detect-location>
+          <span class="sheet-category-name">
+            <i class="ph ph-crosshair" aria-hidden="true"></i>
+            <span>Use my current location</span>
+          </span>
+        </button>
+      ` + INDIAN_STATES.map(state => {
+        const active = state === currentLocation;
+
+        return `
+          <button
+            type="button"
+            class="sheet-category ${active ? "active" : ""}"
+            data-state="${escapeHTML(state)}"
+            aria-pressed="${active}"
+          >
+            <span class="sheet-category-name">
+              <i class="ph ph-map-pin" aria-hidden="true"></i>
+              <span>${escapeHTML(state)}</span>
+            </span>
+
+            ${
+              active
+                ? '<i class="ph-fill ph-check-circle sheet-category-check" aria-hidden="true"></i>'
+                : ""
+            }
+          </button>
+        `;
+      }).join("");
+    }
+
+    function openLocationSheet() {
+      renderLocationList();
+      openSheetOverlay(locationSheetOverlay);
+      closeDesktopDrawer();
+    }
+
+    function detectLocation(silent) {
+      if (!navigator.geolocation) {
+        if (!silent) showToast("Location is not supported on this device.");
+        return;
+      }
+
+      if (!silent) showToast("Detecting your location...");
+
+      navigator.geolocation.getCurrentPosition(async position => {
+        try {
+          const url =
+            "https://api.bigdatacloud.net/data/reverse-geocode-client" +
+            `?latitude=${encodeURIComponent(position.coords.latitude)}` +
+            `&longitude=${encodeURIComponent(position.coords.longitude)}` +
+            "&localityLanguage=en";
+
+          const response = await fetch(url, { cache: "no-store" });
+          const data = await response.json();
+          const match = matchState(data.principalSubdivision);
+
+          if (data.countryCode === "IN" && match) {
+            setLocation(match);
+            if (!silent) showToast(`Location set to ${match}`);
+          } else if (!silent) {
+            showToast("Could not detect your state. Please choose it.");
+          }
+        } catch (error) {
+          if (!silent) showToast("Could not detect your state. Please choose it.");
+        }
+      }, () => {
+        if (!silent) showToast("Location permission denied. Please choose your state.");
+      }, {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 600000
+      });
+    }
+
+    async function initLocation() {
+      let saved = "";
+
+      try {
+        saved = localStorage.getItem(LOCATION_KEY) || "";
+      } catch (error) {
+        saved = "";
+      }
+
+      if (saved) {
+        setLocation(saved, false);
+        return;
+      }
+
+      setLocation("", false);
+
+      // Only auto-detect silently when the browser already has permission.
+      try {
+        const permission = await navigator.permissions.query({ name: "geolocation" });
+
+        if (permission.state === "granted") {
+          detectLocation(true);
+        }
+      } catch (error) {
+        /* permissions API unavailable: user picks a state manually */
+      }
+    }
+
+    document.querySelectorAll("[data-open-location]").forEach(button => {
+      button.addEventListener("click", openLocationSheet);
+    });
+
+    locationList.addEventListener("click", event => {
+      if (event.target.closest("[data-detect-location]")) {
+        closeSheetOverlay(locationSheetOverlay);
+        detectLocation(false);
+        return;
+      }
+
+      const option = event.target.closest("[data-state]");
+
+      if (!option) return;
+
+      setLocation(option.dataset.state);
+      closeSheetOverlay(locationSheetOverlay);
+    });
+
+    document.getElementById("locationSheetClose").addEventListener("click", () => {
+      closeSheetOverlay(locationSheetOverlay);
+    });
+
+    locationSheetOverlay.addEventListener("click", event => {
+      if (event.target === locationSheetOverlay) {
+        closeSheetOverlay(locationSheetOverlay);
+      }
+    });
+
+    /* NOTIFICATIONS */
+
+    function formatNotificationTime(value) {
+      const date = new Date(value);
+
+      if (!value || Number.isNaN(date.getTime())) return "";
+
+      return date.toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function renderNotificationsEmpty(message) {
+      notifList.innerHTML = `
+        <div class="notif-empty">
+          <i class="ph ph-bell-slash" aria-hidden="true"></i>
+          ${escapeHTML(message)}
+        </div>
+        <a class="notif-all" href="/notifications.html">View all notifications</a>
+      `;
+    }
+
+    async function loadNotifications() {
+      if (authStatus !== "logged-in") {
+        notifList.innerHTML = `
+          <div class="notif-empty">
+            <i class="ph ph-bell-slash" aria-hidden="true"></i>
+            Login to see your notifications.
+          </div>
+          <a class="notif-all" href="/login.html">Login</a>
+        `;
+        return;
+      }
+
+      notifList.innerHTML = '<div class="notif-empty">Loading...</div>';
+
+      try {
+        const response = await fetch("/api/notifications", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          credentials: "same-origin",
+          cache: "no-store"
+        });
+
+        const contentType = response.headers.get("content-type") || "";
+
+        if (!response.ok || !contentType.includes("application/json")) {
+          throw new Error("Notifications unavailable");
+        }
+
+        const data = await response.json();
+
+        const items = Array.isArray(data)
+          ? data
+          : (data.notifications || data.items || []);
+
+        if (!Array.isArray(items) || !items.length) {
+          renderNotificationsEmpty("You're all caught up. No new notifications.");
+          return;
+        }
+
+        notifList.innerHTML = items.slice(0, 20).map(item => {
+          const title = escapeHTML(item.title || item.heading || "Notification");
+          const message = escapeHTML(item.message || item.body || item.text || "");
+          const time = escapeHTML(
+            formatNotificationTime(item.createdAt || item.time || item.date)
+          );
+
+          return `
+            <div class="notif-item">
+              <i class="ph ph-bell" aria-hidden="true"></i>
+              <div>
+                <strong>${title}</strong>
+                ${message ? `<p>${message}</p>` : ""}
+                ${time ? `<small>${time}</small>` : ""}
+              </div>
+            </div>
+          `;
+        }).join("") +
+          '<a class="notif-all" href="/notifications.html">View all notifications</a>';
+
+      } catch (error) {
+        renderNotificationsEmpty("No new notifications right now.");
+      }
+    }
+
+    document.getElementById("notifButton").addEventListener("click", () => {
+      openSheetOverlay(notifSheetOverlay);
+      loadNotifications();
+    });
+    const drawerNotifButton = document.getElementById("drawerNotifButton");
+    if (drawerNotifButton) drawerNotifButton.addEventListener("click", () => {
+      openSheetOverlay(notifSheetOverlay);
+      loadNotifications();
+      closeDesktopDrawer();
+    });
+
+    document.getElementById("notifSheetClose").addEventListener("click", () => {
+      closeSheetOverlay(notifSheetOverlay);
+    });
+
+    notifSheetOverlay.addEventListener("click", event => {
+      if (event.target === notifSheetOverlay) {
+        closeSheetOverlay(notifSheetOverlay);
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key !== "Escape") return;
+
+      [locationSheetOverlay, notifSheetOverlay].forEach(overlay => {
+        if (overlay.classList.contains("open")) {
+          closeSheetOverlay(overlay);
+        }
+      });
+    });
+
+    /* iOS-STYLE PRESS-AND-HOLD DRAG OF THE SELECTED BOTTOM-NAV TAB */
+
+    (function () {
+      let state = null;
+      let holdTimer = null;
+      let suppressClick = false;
+
+      const getItems = () =>
+        [...bottomNav.querySelectorAll(".bottom-nav-item")];
+
+      function moveBubble(clientX) {
+        const items = getItems();
+        const first = items[0];
+        const last = items[items.length - 1];
+        const rect = bottomNav.getBoundingClientRect();
+
+        let x = clientX - rect.left - bottomNav.clientLeft - first.offsetWidth / 2;
+
+        x = Math.max(first.offsetLeft - 4, Math.min(last.offsetLeft + 4, x));
+
+        navIndicator.style.transform =
+          `translate3d(${x}px, 0, 0) scale(1.14)`;
+
+        let nearest = first;
+        let best = Infinity;
+
+        items.forEach(item => {
+          const distance = Math.abs(item.offsetLeft - x);
+
+          if (distance < best) {
+            best = distance;
+            nearest = item;
+          }
+        });
+
+        items.forEach(item => {
+          item.classList.toggle("drag-over", item === nearest);
+        });
+
+        state.target = nearest;
+      }
+
+      function beginDrag() {
+        if (!state) return;
+
+        state.dragging = true;
+        suppressClick = true;
+
+        try {
+          bottomNav.setPointerCapture(state.id);
+        } catch (error) { /* ignore */ }
+
+        navIndicator.classList.add("dragging");
+        bottomNav.classList.add("nav-dragging");
+
+        if (navigator.vibrate) {
+          try { navigator.vibrate(12); } catch (error) { /* ignore */ }
+        }
+
+        moveBubble(state.x);
+      }
+
+      function endDrag(commit) {
+        clearTimeout(holdTimer);
+
+        if (!state) return;
+
+        const finished = state;
+        state = null;
+
+        if (!finished.dragging) return;
+
+        try {
+          bottomNav.releasePointerCapture(finished.id);
+        } catch (error) { /* ignore */ }
+
+        navIndicator.classList.remove("dragging");
+        bottomNav.classList.remove("nav-dragging");
+
+        getItems().forEach(item => item.classList.remove("drag-over"));
+
+        void navIndicator.offsetWidth;
+
+        const target = commit ? finished.target : null;
+        const current = bottomNav.querySelector(".bottom-nav-item.active");
+
+        if (target && target !== current && target.dataset.bottomNav) {
+          handleNavigation(target.dataset.bottomNav);
+        } else {
+          positionNavIndicator();
+        }
+
+        setTimeout(() => { suppressClick = false; }, 80);
+      }
+
+      bottomNav.addEventListener("pointerdown", event => {
+        if (!document.body.classList.contains("app-premium-navigation")) return;
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        if (!event.target.closest(".bottom-nav-item.active")) return;
+
+        state = {
+          id: event.pointerId,
+          startX: event.clientX,
+          x: event.clientX,
+          dragging: false,
+          target: null
+        };
+
+        clearTimeout(holdTimer);
+        holdTimer = setTimeout(beginDrag, 220);
+      });
+
+      window.addEventListener("pointermove", event => {
+        if (!state || event.pointerId !== state.id) return;
+
+        state.x = event.clientX;
+
+        if (state.dragging) {
+          event.preventDefault();
+          moveBubble(event.clientX);
+        } else if (Math.abs(event.clientX - state.startX) > 10) {
+          clearTimeout(holdTimer);
+          state = null;
+        }
+      });
+
+      window.addEventListener("pointerup", event => {
+        if (state && event.pointerId === state.id) endDrag(true);
+      });
+
+      window.addEventListener("pointercancel", event => {
+        if (state && event.pointerId === state.id) endDrag(false);
+      });
+
+      bottomNav.addEventListener("click", event => {
+        if (suppressClick) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
+      }, true);
+
+      bottomNav.addEventListener("contextmenu", event => {
+        event.preventDefault();
+      });
+    })();
+
+
     /* INITIALIZATION */
 
     async function initializeHomePage() {
       updateResponsiveNavigation();
+      initLocation();
       await checkShoppyAuth();
       await loadCart();
       await loadProducts();
