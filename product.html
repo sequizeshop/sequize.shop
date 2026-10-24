@@ -24,24 +24,33 @@
   <meta name="twitter:description" id="twitterDescription" content="Explore product details, pricing, images, reviews and offers on Shoppy.">
   <meta name="twitter:image" id="twitterImage" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
-  <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-  <link rel="apple-touch-icon" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+  <link
+    rel="icon"
+    type="image/png"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+  >
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
     :root {
-      --primary: #2962ff;
-      --primary-hover: #1749d8;
-      --primary-light: #edf3ff;
-      --black: #202124;
-      --gray: #737780;
-      --border: #e6eaf0;
-      --light: #f6f8fc;
+      --black: #111111;
+      --gray: #737373;
+      --border: #e9e9e9;
+      --light: #f7f7f7;
       --danger: #c62828;
       --success: #16803c;
       --radius: 16px;
@@ -52,11 +61,6 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 90px;
     }
 
     body {
@@ -79,7 +83,7 @@
 
     button:focus-visible,
     a:focus-visible {
-      outline: 2px solid var(--primary);
+      outline: 2px solid #555;
       outline-offset: 3px;
     }
 
@@ -91,11 +95,8 @@
     /* NAVBAR */
 
     .navbar {
-      height: 76px;
       min-height: 76px;
-      max-height: 76px;
       padding: 0 7%;
-      margin: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -105,17 +106,6 @@
       top: 0;
       background: #fff;
       z-index: 20;
-      flex-shrink: 0;
-      transform: none;
-      transition: none;
-      box-sizing: border-box;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
     }
 
     .brand img {
@@ -132,20 +122,16 @@
     }
 
     .nav-icon {
-      width: 38px;
-      height: 42px;
+      width: 32px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 25px;
-      color: var(--primary);
-      border-radius: 12px;
-      transition: background .2s, color .2s;
+      font-size: 23px;
     }
 
     .nav-icon:hover {
-      background: var(--primary-light);
-      color: var(--primary-hover);
+      opacity: .6;
     }
 
     /* PAGE */
@@ -167,7 +153,7 @@
     }
 
     .breadcrumbs a:hover {
-      color: var(--primary);
+      color: var(--black);
     }
 
     .breadcrumbs i {
@@ -216,9 +202,7 @@
       bottom: 14px;
       padding: 8px 11px;
       border-radius: 8px;
-      background: rgba(255,255,255,.96);
-      color: var(--primary);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,.94);
       font-size: 11px;
       font-weight: 700;
     }
@@ -240,12 +224,10 @@
       border: 1px solid var(--border);
       border-radius: 11px;
       overflow: hidden;
-      transition: border-color .2s, background .2s;
     }
 
     .thumbnail-button.active {
-      border: 2px solid var(--primary);
-      background: var(--primary-light);
+      border: 2px solid var(--black);
     }
 
     .thumbnail-button img {
@@ -264,14 +246,11 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      color: var(--primary);
-      background: var(--primary-light);
-      padding: 7px 11px;
-      border-radius: 30px;
+      color: var(--gray);
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .5px;
+      letter-spacing: .8px;
       margin-bottom: 14px;
     }
 
@@ -306,8 +285,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      background: var(--primary-light);
-      color: var(--primary);
+      background: #f4f4f4;
       padding: 7px 9px;
       border-radius: 7px;
       font-weight: 800;
@@ -339,7 +317,6 @@
       font-size: 30px;
       font-weight: 800;
       letter-spacing: -.7px;
-      color: var(--primary);
     }
 
     .original-price {
@@ -371,7 +348,6 @@
       margin-top: 19px;
       font-size: 12px;
       font-weight: 700;
-      color: var(--success);
     }
 
     .stock-dot {
@@ -392,7 +368,7 @@
     .product-description {
       margin-top: 21px;
       font-size: 13px;
-      color: #555b65;
+      color: #555;
       line-height: 1.9;
       overflow-wrap: anywhere;
     }
@@ -421,7 +397,6 @@
       border: 1px solid var(--border);
       padding: 6px;
       border-radius: 10px;
-      background: #fff;
     }
 
     .quantity-control button {
@@ -429,17 +404,11 @@
       height: 30px;
       border: 0;
       border-radius: 7px;
-      background: var(--primary-light);
-      color: var(--primary);
+      background: var(--light);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 18px;
-      transition: background .2s;
-    }
-
-    .quantity-control button:hover:not(:disabled) {
-      background: #dce7ff;
     }
 
     .quantity-value {
@@ -468,47 +437,33 @@
       gap: 9px;
       font-size: 12px;
       font-weight: 800;
-      transition: background .2s, color .2s, border-color .2s;
+      transition: background .2s, color .2s;
     }
 
     .add-cart-button {
       background: #fff;
-      color: var(--primary);
-      border: 1px solid var(--primary);
+      color: var(--black);
+      border: 1px solid var(--black);
     }
 
-    .add-cart-button:hover:not(:disabled) {
-      background: var(--primary-light);
-    }
-
-    .add-cart-button i,
-    .buy-now-button i {
-      font-size: 18px;
-      flex-shrink: 0;
+    .add-cart-button:hover {
+      background: var(--light);
     }
 
     .buy-now-button {
-      background: var(--primary);
+      background: var(--black);
       color: #fff;
-      border: 1px solid var(--primary);
+      border: 1px solid var(--black);
     }
 
-    .buy-now-button:hover:not(:disabled) {
-      background: var(--primary-hover);
-      border-color: var(--primary-hover);
+    .buy-now-button:hover {
+      background: #333;
     }
 
     .wishlist-button {
       border: 1px solid var(--border);
       background: #fff;
-      color: var(--primary);
       font-size: 21px;
-      padding: 0;
-    }
-
-    .wishlist-button:hover {
-      background: var(--primary-light);
-      border-color: var(--primary);
     }
 
     .wishlist-button.active {
@@ -523,19 +478,14 @@
       gap: 7px;
       border: 0;
       background: transparent;
-      color: var(--primary);
+      color: var(--gray);
       font-size: 12px;
       font-weight: 700;
       margin-top: 17px;
-      padding: 5px 0;
     }
 
     .share-button:hover {
-      color: var(--primary-hover);
-    }
-
-    .share-button i {
-      font-size: 17px;
+      color: var(--black);
     }
 
     /* SERVICE CARDS */
@@ -553,7 +503,6 @@
       gap: 11px;
       padding: 14px;
       background: var(--light);
-      border: 1px solid #edf0f5;
       border-radius: 11px;
       min-width: 0;
     }
@@ -561,7 +510,6 @@
     .service-card > i {
       font-size: 22px;
       flex-shrink: 0;
-      color: var(--primary);
     }
 
     .service-card strong {
@@ -683,7 +631,7 @@
       margin-top: 13px;
       font-size: 12px;
       line-height: 1.8;
-      color: #555b65;
+      color: #555;
       overflow-wrap: anywhere;
     }
 
@@ -710,13 +658,12 @@
       border-radius: 13px;
       overflow: hidden;
       background: #fff;
-      transition: transform .2s, box-shadow .2s, border-color .2s;
+      transition: transform .2s, box-shadow .2s;
     }
 
     .related-card:hover {
       transform: translateY(-3px);
-      border-color: #cbd8ff;
-      box-shadow: 0 8px 25px rgba(41,98,255,.09);
+      box-shadow: 0 8px 25px rgba(0,0,0,.06);
     }
 
     .related-image {
@@ -750,7 +697,6 @@
       margin-top: 10px;
       font-size: 14px;
       font-weight: 800;
-      color: var(--primary);
     }
 
     .related-rating {
@@ -886,7 +832,6 @@
       font-size: 45px;
       display: block;
       margin-bottom: 15px;
-      color: var(--primary);
     }
 
     .status h2 {
@@ -902,18 +847,12 @@
       gap: 8px;
       margin-top: 18px;
       padding: 12px 18px;
-      border: 1px solid var(--primary);
+      border: 0;
       border-radius: 9px;
-      background: var(--primary);
+      background: var(--black);
       color: white;
       font-size: 12px;
       font-weight: 700;
-      transition: background .2s;
-    }
-
-    .status button:hover,
-    .status a:hover {
-      background: var(--primary-hover);
     }
 
     .toast {
@@ -923,7 +862,7 @@
       transform: translate(-50%, 15px);
       padding: 13px 18px;
       border-radius: 10px;
-      background: var(--primary);
+      background: #111;
       color: #fff;
       font-size: 12px;
       font-weight: 600;
@@ -933,7 +872,6 @@
       z-index: 100;
       text-align: center;
       max-width: calc(100% - 30px);
-      box-shadow: 0 6px 20px rgba(41,98,255,.2);
     }
 
     .toast.show {
@@ -960,16 +898,12 @@
       }
 
       .purchase-buttons {
-        grid-template-columns: 1fr 1fr 45px;
-      }
-
-      .purchase-button {
-        padding: 11px 9px;
+        grid-template-columns: 1fr 1fr;
       }
 
       .wishlist-button {
-        grid-column: auto;
-        min-height: 49px;
+        grid-column: 1 / -1;
+        min-height: 42px;
       }
 
       .related-grid,
@@ -980,13 +914,8 @@
 
     @media (max-width: 700px) {
       .navbar {
-        height: 66px;
         min-height: 66px;
-        max-height: 66px;
         padding: 0 5%;
-        margin: 0;
-        transition: none;
-        transform: none;
       }
 
       .brand img {
@@ -996,12 +925,6 @@
 
       .nav-actions {
         gap: 12px;
-      }
-
-      .nav-icon {
-        width: 36px;
-        height: 40px;
-        font-size: 24px;
       }
 
       .container {
@@ -1067,13 +990,7 @@
 
     @media (max-width: 380px) {
       .purchase-buttons {
-        grid-template-columns: 1fr 1fr 42px;
-        gap: 7px;
-      }
-
-      .purchase-button {
-        font-size: 11px;
-        padding: 10px 6px;
+        grid-template-columns: 1fr;
       }
 
       .wishlist-button {
@@ -1090,18 +1007,12 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-
       .skeleton::after {
         animation: none;
       }
 
       .related-card,
-      .toast,
-      .nav-icon,
-      .purchase-button {
+      .toast {
         transition: none;
       }
     }
@@ -1309,6 +1220,10 @@
     }
 
     function formatPrice(price) {
+      /*
+        Product API prices are already INR.
+        Do not multiply them by USD_TO_INR again.
+      */
       const inrPrice = Number(price) || 0;
 
       return new Intl.NumberFormat("en-IN", {
@@ -1453,6 +1368,7 @@
 
         product = data.product;
 
+        // Normalize optional API fields.
         product.title = String(product.title || "Product");
         product.description = String(product.description || "");
         product.category = String(product.category || "Products");
@@ -1484,7 +1400,9 @@
 
         renderProduct();
 
+        // Wishlist is loaded from Firebase, not localStorage.
         loadWishlistState();
+
         loadDetails();
         loadReviews();
         loadRelatedProducts();
@@ -1711,11 +1629,9 @@
                 id="addCartButton"
                 class="purchase-button add-cart-button"
                 type="button"
-                aria-label="Add to cart"
-                title="Add to cart"
                 ${!inStock ? "disabled" : ""}
               >
-                <i class="ph ph-shopping-cart-simple" aria-hidden="true"></i>
+                <i class="ph ph-shopping-cart"></i>
                 Add to Cart
               </button>
 
@@ -1726,7 +1642,7 @@
                 ${!inStock ? "disabled" : ""}
               >
                 Buy Now
-                <i class="ph ph-arrow-right" aria-hidden="true"></i>
+                <i class="ph ph-arrow-right"></i>
               </button>
 
               <button
@@ -1735,9 +1651,8 @@
                 type="button"
                 aria-label="Add to wishlist"
                 aria-pressed="false"
-                title="Add to wishlist"
               >
-                <i class="ph ph-heart" aria-hidden="true"></i>
+                <i class="ph ph-heart"></i>
               </button>
             </div>
 
@@ -1746,7 +1661,7 @@
               class="share-button"
               type="button"
             >
-              <i class="ph ph-share-network" aria-hidden="true"></i>
+              <i class="ph ph-share-network"></i>
               Share Product
             </button>
 
@@ -1882,11 +1797,10 @@
       addButton.disabled = true;
       buyButton.disabled = true;
 
-      addButton.innerHTML =
-        '<i class="ph ph-spinner" aria-hidden="true"></i>';
-
-      addButton.setAttribute("aria-label", "Adding to cart");
-      addButton.title = "Adding to cart";
+      addButton.innerHTML = `
+        <i class="ph ph-spinner"></i>
+        Adding...
+      `;
 
       try {
         /*
@@ -1967,11 +1881,10 @@
 
         showToast("Product added to cart!");
 
-        addButton.innerHTML =
-          '<i class="ph ph-check" aria-hidden="true"></i>';
-
-        addButton.setAttribute("aria-label", "Added to cart");
-        addButton.title = "Added to cart";
+        addButton.innerHTML = `
+          <i class="ph ph-check"></i>
+          Added to Cart
+        `;
 
       } catch (error) {
         console.error("Add to cart error:", error);
@@ -1990,11 +1903,10 @@
           error.message || "Unable to add product to cart."
         );
 
-        addButton.innerHTML =
-          '<i class="ph ph-shopping-cart-simple" aria-hidden="true"></i>';
-
-        addButton.setAttribute("aria-label", "Add to cart");
-        addButton.title = "Add to cart";
+        addButton.innerHTML = `
+          <i class="ph ph-shopping-cart"></i>
+          Add to Cart
+        `;
 
       } finally {
         busy = false;
@@ -2011,14 +1923,11 @@
           currentAddButton.disabled = unavailable;
           currentBuyButton.disabled = unavailable;
 
-          if (
-            currentAddButton.getAttribute("aria-label") === "Adding to cart"
-          ) {
-            currentAddButton.innerHTML =
-              '<i class="ph ph-shopping-cart-simple" aria-hidden="true"></i>';
-
-            currentAddButton.setAttribute("aria-label", "Add to cart");
-            currentAddButton.title = "Add to cart";
+          if (currentAddButton.textContent.includes("Adding")) {
+            currentAddButton.innerHTML = `
+              <i class="ph ph-shopping-cart"></i>
+              Add to Cart
+            `;
           }
 
           const decreaseButton =
@@ -2058,6 +1967,11 @@
         wishlistLoaded = true;
 
       } catch (error) {
+        /*
+          A logged-out visitor can still view the product page.
+          The wishlist button will ask them to log in when clicked.
+        */
+
         wishlistItems = [];
         wishlistLoaded = false;
 
@@ -2092,11 +2006,9 @@
         exists ? "Remove from wishlist" : "Add to wishlist"
       );
 
-      button.title = exists ? "Remove from wishlist" : "Add to wishlist";
-
       button.innerHTML = exists
-        ? '<i class="ph-fill ph-heart" aria-hidden="true"></i>'
-        : '<i class="ph ph-heart" aria-hidden="true"></i>';
+        ? '<i class="ph-fill ph-heart"></i>'
+        : '<i class="ph ph-heart"></i>';
 
       button.disabled = wishlistBusy;
     }
