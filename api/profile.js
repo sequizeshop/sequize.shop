@@ -120,7 +120,6 @@ function activeMembership(membership) {
 
 /* =========================================
    EXISTING AUTHENTICATION
-   Preserve session and blocked-user checks
 ========================================= */
 
 async function getAuthenticatedUser(req) {
@@ -204,6 +203,81 @@ async function getMembership(uid) {
 }
 
 /* =========================================
+   NOTIFICATIONS API INTEGRATION
+========================================= */
+
+async function getCustomerNotifications(uid) {
+  const adminApiKey = String(
+    process.env.ADMIN_API_KEY || ""
+  ).trim();
+
+  if (!adminApiKey) {
+    const error = new Error(
+      "Notification service is not configured."
+    );
+
+    error.status = 503;
+
+    throw error;
+  }
+
+  const apiUrl =
+    "https://apisequizeshoplite.vercel.app/api/admin/notifications.js";
+
+  const response = await fetch(apiUrl, {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${adminApiKey}`
+    },
+
+    body: JSON.stringify({
+      action: "list",
+      uid
+    }),
+
+    signal: AbortSignal.timeout(15000)
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    console.error(
+      "Notification API returned status:",
+      response.status
+    );
+
+    const error = new Error(
+      "Unable to load notifications right now."
+    );
+
+    error.status = 502;
+
+    throw error;
+  }
+
+  /*
+   * Supported response formats:
+   *
+   * { notifications: [...] }
+   * { items: [...] }
+   * [...]
+   */
+
+  const notifications = Array.isArray(data)
+    ? data
+    : Array.isArray(data.notifications)
+      ? data.notifications
+      : Array.isArray(data.items)
+        ? data.items
+        : [];
+
+  return notifications;
+}
+
+/* =========================================
    CREATE MEMBERSHIP PAYMENT
 ========================================= */
 
@@ -242,8 +316,6 @@ async function createMembershipPayment(uid, user, body) {
 
   const membership = membershipSnapshot.val() || {};
 
-  /* Trial can only be used once */
-
   if (plan.trial && membership.trialUsed === true) {
     const error = new Error(
       "Your one-time trial has already been used."
@@ -279,14 +351,14 @@ async function createMembershipPayment(uid, user, body) {
   );
 
   const paymentRecord = {
-    paymentId: paymentId,
-    uid: uid,
+    paymentId,
+    uid,
 
     plan: planId,
     planName: plan.name,
 
     amount: plan.amount,
-    amountPaise: amountPaise,
+    amountPaise,
 
     durationDays: plan.durationDays,
     trial: plan.trial,
@@ -358,7 +430,7 @@ async function createMembershipPayment(uid, user, body) {
     return {
       success: true,
 
-      paymentId: paymentId,
+      paymentId,
 
       paymentSessionId:
         order.payment_session_id,
@@ -369,6 +441,7 @@ async function createMembershipPayment(uid, user, body) {
 
       paymentStatus: "PENDING"
     };
+
   } catch (error) {
     await paymentRef.update({
       status: "CREATE_FAILED",
@@ -422,11 +495,6 @@ async function verifyMembershipPayment(uid, paymentId) {
     };
   }
 
-  /*
-   * Check Cashfree's server-side order status.
-   * Frontend success alone never activates membership.
-   */
-
   const cashfreeOrder = await cashfreeRequest(
     `/orders/${encodeURIComponent(paymentId)}`
   );
@@ -457,10 +525,6 @@ async function verifyMembershipPayment(uid, paymentId) {
     };
   }
 
-  /*
-   * Verify amount and currency before activation.
-   */
-
   const paidPaise = Math.round(
     Number(cashfreeOrder.order_amount) * 100
   );
@@ -483,11 +547,6 @@ async function verifyMembershipPayment(uid, paymentId) {
     };
   }
 
-  /*
-   * Transaction protects against activating the
-   * same payment more than once.
-   */
-
   const membershipRef = db.ref(
     `users/${uid}/membership`
   );
@@ -504,11 +563,6 @@ async function verifyMembershipPayment(uid, paymentId) {
       if (processedPayments[paymentId]) {
         return current;
       }
-
-      /*
-       * A trial that was already consumed cannot
-       * be activated again.
-       */
 
       if (
         payment.trial &&
@@ -580,11 +634,6 @@ async function verifyMembershipPayment(uid, paymentId) {
     };
   }
 
-  /*
-   * Mark the payment record only after membership
-   * activation has been confirmed.
-   */
-
   await paymentRef.update({
     status: "PAID",
     paidAt: now,
@@ -600,7 +649,6 @@ async function verifyMembershipPayment(uid, paymentId) {
 
 /* =========================================
    MAIN PROFILE API
-   Existing GET + additional POST actions
 ========================================= */
 
 module.exports = async function handler(req, res) {
@@ -608,17 +656,15 @@ module.exports = async function handler(req, res) {
 
   try {
     /*
-     * Existing authentication and account checks
-     * apply to both profile and membership actions.
+     * Existing session, user status, and blocked-user
+     * checks apply to all profile actions.
      */
 
     const { uid, user } =
       await getAuthenticatedUser(req);
 
     /* -----------------------------------------
-       EXISTING GET PROFILE API
-       Original fields preserved.
-       Membership is additional data.
+       GET PROFILE
     ----------------------------------------- */
 
     if (req.method === "GET") {
@@ -659,7 +705,7 @@ module.exports = async function handler(req, res) {
     }
 
     /* -----------------------------------------
-       ADDITIONAL POST API ACTIONS
+       POST ACTIONS
     ----------------------------------------- */
 
     if (req.method === "POST") {
@@ -678,9 +724,19 @@ module.exports = async function handler(req, res) {
           ? body
           : {};
 
-      /*
-       * Create Cashfree membership payment.
-       */
+      /* NEW: LIST CUSTOMER NOTIFICATIONS */
+
+      if (body.action === "list-notifications") {
+        const notifications =
+          await getCustomerNotifications(uid);
+
+        return sendJson(res, 200, {
+          success: true,
+          notifications
+        });
+      }
+
+      /* CREATE MEMBERSHIP PAYMENT */
 
       if (
         body.action === "create-membership-payment"
@@ -695,10 +751,7 @@ module.exports = async function handler(req, res) {
         return sendJson(res, 200, result);
       }
 
-      /*
-       * Verify Cashfree payment and activate
-       * membership after server-side verification.
-       */
+      /* VERIFY MEMBERSHIP PAYMENT */
 
       if (
         body.action === "verify-membership-payment"
@@ -724,6 +777,7 @@ module.exports = async function handler(req, res) {
       success: false,
       message: "Method not allowed."
     });
+
   } catch (error) {
     console.error(
       "Profile API error:",
