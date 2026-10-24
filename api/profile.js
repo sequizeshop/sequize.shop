@@ -119,7 +119,7 @@ function activeMembership(membership) {
 }
 
 /* =========================================
-   EXISTING AUTHENTICATION
+   AUTHENTICATION
 ========================================= */
 
 async function getAuthenticatedUser(req) {
@@ -203,15 +203,18 @@ async function getMembership(uid) {
 }
 
 /* =========================================
-   NOTIFICATIONS API INTEGRATION
+   NOTIFICATION API CONFIGURATION
 ========================================= */
 
-async function getCustomerNotifications(uid) {
-  const adminApiKey = String(
+const NOTIFICATION_API_URL =
+  "https://apisequizeshoplite.vercel.app/api/admin/notifications.js";
+
+function getNotificationApiKey() {
+  const key = String(
     process.env.ADMIN_API_KEY || ""
   ).trim();
 
-  if (!adminApiKey) {
+  if (!key) {
     const error = new Error(
       "Notification service is not configured."
     );
@@ -221,36 +224,65 @@ async function getCustomerNotifications(uid) {
     throw error;
   }
 
-  const apiUrl =
-    "https://apisequizeshoplite.vercel.app/api/admin/notifications.js";
+  return key;
+}
 
-  const response = await fetch(apiUrl, {
-    method: "POST",
+/* =========================================
+   NOTIFICATION API REQUEST
+========================================= */
 
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${adminApiKey}`
-    },
+async function callNotificationApi(payload) {
+  const adminApiKey = getNotificationApiKey();
 
-    body: JSON.stringify({
-      action: "list",
-      uid
-    }),
+  let response;
 
-    signal: AbortSignal.timeout(15000)
-  });
+  try {
+    response = await fetch(NOTIFICATION_API_URL, {
+      method: "POST",
 
-  const data = await response.json().catch(() => ({}));
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${adminApiKey}`
+      },
 
-  if (!response.ok) {
+      body: JSON.stringify(payload),
+
+      signal: AbortSignal.timeout(15000)
+    });
+  } catch (error) {
     console.error(
-      "Notification API returned status:",
-      response.status
+      "Notification API network error:",
+      error.message
     );
 
+    const networkError = new Error(
+      "Unable to connect to the notification service."
+    );
+
+    networkError.status = 502;
+
+    throw networkError;
+  }
+
+  const responseText = await response.text();
+
+  let data = {};
+
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    data = {};
+  }
+
+  if (!response.ok) {
+    console.error("Notification API failure:", {
+      status: response.status,
+      response: responseText.slice(0, 1500)
+    });
+
     const error = new Error(
-      "Unable to load notifications right now."
+      `Notification API returned HTTP ${response.status}.`
     );
 
     error.status = 502;
@@ -258,13 +290,42 @@ async function getCustomerNotifications(uid) {
     throw error;
   }
 
-  /*
-   * Supported response formats:
-   *
-   * { notifications: [...] }
-   * { items: [...] }
-   * [...]
-   */
+  if (
+    data &&
+    typeof data === "object" &&
+    data.success === false
+  ) {
+    console.error(
+      "Notification API action failed:",
+      JSON.stringify(data).slice(0, 1500)
+    );
+
+    const error = new Error(
+      data.message ||
+      data.error ||
+      "Notification API action failed."
+    );
+
+    error.status = 502;
+
+    throw error;
+  }
+
+  return data;
+}
+
+/* =========================================
+   GET CUSTOMER NOTIFICATIONS
+
+   UID always comes from authenticated session.
+   Browser cannot request another user's data.
+========================================= */
+
+async function getCustomerNotifications(uid) {
+  const data = await callNotificationApi({
+    action: "list",
+    uid
+  });
 
   const notifications = Array.isArray(data)
     ? data
@@ -272,9 +333,61 @@ async function getCustomerNotifications(uid) {
       ? data.notifications
       : Array.isArray(data.items)
         ? data.items
-        : [];
+        : null;
+
+  if (!notifications) {
+    console.error(
+      "Invalid notification API response:",
+      JSON.stringify(data).slice(0, 1500)
+    );
+
+    const error = new Error(
+      "Notification API returned an invalid response."
+    );
+
+    error.status = 502;
+
+    throw error;
+  }
 
   return notifications;
+}
+
+/* =========================================
+   MARK CUSTOMER NOTIFICATION AS READ
+
+   Read status is stored through the admin API.
+========================================= */
+
+async function markCustomerNotificationRead(
+  uid,
+  notificationId,
+  source
+) {
+  const id = String(notificationId || "").trim();
+
+  if (!id || id.length > 256) {
+    const error = new Error(
+      "A valid notification ID is required."
+    );
+
+    error.status = 400;
+
+    throw error;
+  }
+
+  const data = await callNotificationApi({
+    action: "mark_read",
+    uid,
+    id,
+    notificationId: id,
+    source: String(source || "").trim()
+  });
+
+  return {
+    success: true,
+    result: data
+  };
 }
 
 /* =========================================
@@ -441,7 +554,6 @@ async function createMembershipPayment(uid, user, body) {
 
       paymentStatus: "PENDING"
     };
-
   } catch (error) {
     await paymentRef.update({
       status: "CREATE_FAILED",
@@ -655,11 +767,6 @@ module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   try {
-    /*
-     * Existing session, user status, and blocked-user
-     * checks apply to all profile actions.
-     */
-
     const { uid, user } =
       await getAuthenticatedUser(req);
 
@@ -724,7 +831,9 @@ module.exports = async function handler(req, res) {
           ? body
           : {};
 
-      /* NEW: LIST CUSTOMER NOTIFICATIONS */
+      /* ---------------------------------------
+         LIST NOTIFICATIONS
+      --------------------------------------- */
 
       if (body.action === "list-notifications") {
         const notifications =
@@ -736,7 +845,45 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      /* CREATE MEMBERSHIP PAYMENT */
+      /* ---------------------------------------
+         MARK ONE NOTIFICATION AS READ
+      --------------------------------------- */
+
+      if (body.action === "mark-notification-read") {
+        const notificationId = String(
+          body.notificationId || body.id || ""
+        ).trim();
+
+        const source = String(
+          body.source || ""
+        ).trim();
+
+        if (
+          !notificationId ||
+          notificationId.length > 256
+        ) {
+          return sendJson(res, 400, {
+            success: false,
+            message: "A valid notification ID is required."
+          });
+        }
+
+        await markCustomerNotificationRead(
+          uid,
+          notificationId,
+          source
+        );
+
+        return sendJson(res, 200, {
+          success: true,
+          read: true,
+          notificationId
+        });
+      }
+
+      /* ---------------------------------------
+         CREATE MEMBERSHIP PAYMENT
+      --------------------------------------- */
 
       if (
         body.action === "create-membership-payment"
@@ -751,7 +898,9 @@ module.exports = async function handler(req, res) {
         return sendJson(res, 200, result);
       }
 
-      /* VERIFY MEMBERSHIP PAYMENT */
+      /* ---------------------------------------
+         VERIFY MEMBERSHIP PAYMENT
+      --------------------------------------- */
 
       if (
         body.action === "verify-membership-payment"
@@ -777,7 +926,6 @@ module.exports = async function handler(req, res) {
       success: false,
       message: "Method not allowed."
     });
-
   } catch (error) {
     console.error(
       "Profile API error:",
