@@ -1882,16 +1882,22 @@
     body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active .nav-item-icon { color: var(--text-primary); }
     body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over,
     body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over .nav-item-icon { color: #fff; }
-    body.app-premium-navigation .notif-list { padding: 10px 16px 20px; overflow-y: auto; overscroll-behavior: contain; }
-    body.app-premium-navigation .notif-item { padding: 12px 14px; display:flex; align-items:flex-start; gap:12px; border-radius:var(--radius-lg); }
-    body.app-premium-navigation .notif-item:hover { background:var(--primary-soft); }
-    body.app-premium-navigation .notif-item > i { width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--primary-soft);color:var(--primary);font-size:20px; }
-    body.app-premium-navigation .notif-item strong { display:block;font-size:14px;font-weight:700;line-height:1.4; }
-    body.app-premium-navigation .notif-item p { margin:2px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.5; }
-    body.app-premium-navigation .notif-item small { display:block;margin-top:4px;color:var(--text-muted);font-size:12px; }
-    body.app-premium-navigation .notif-empty { padding:36px 12px;text-align:center;color:var(--text-secondary);font-size:14px; }
-    body.app-premium-navigation .notif-empty i { display:block;margin-bottom:10px;color:var(--text-muted);font-size:40px; }
-    body.app-premium-navigation .notif-all { width:100%;min-height:48px;margin-top:8px;padding:12px 16px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-lg);background:var(--primary-soft);color:var(--primary);font-weight:700; }
+    .notif-list{padding:10px 16px 22px;overflow-y:auto;overscroll-behavior:contain}
+    .notif-category-filter{display:flex;gap:8px;padding:12px 16px 8px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--divider)}
+    .notif-category-filter::-webkit-scrollbar{display:none}
+    .notif-filter-chip{flex:0 0 auto;border:1px solid var(--border);border-radius:999px;padding:7px 12px;background:var(--surface);color:var(--text-secondary);font-size:12px;font-weight:700;text-transform:capitalize}
+    .notif-filter-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .notif-item{padding:13px 8px;display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--divider);border-radius:12px}
+    .notif-item:hover{background:var(--primary-soft)}.notif-icon{width:42px;height:42px;flex:0 0 42px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--primary-soft);color:var(--primary);font-size:21px}
+    .notif-copy{min-width:0;flex:1}.notif-title-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px;line-height:1.4}
+    .notif-copy strong{font-size:14px;font-weight:700;overflow-wrap:anywhere}.notif-item.unread .notif-copy strong{font-weight:800}
+    .notif-time{color:var(--text-muted);font-size:11px;font-weight:500;white-space:nowrap}
+    .notif-copy p{margin:4px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+    .notif-category-label{display:inline-flex;margin-top:7px;padding:3px 8px;border-radius:999px;background:var(--surface-secondary);color:var(--text-secondary);font-size:10px;font-weight:700;text-transform:capitalize}
+    .notif-empty{padding:36px 12px;text-align:center;color:var(--text-secondary);font-size:14px}.notif-empty i{display:block;margin-bottom:10px;color:var(--text-muted);font-size:40px}
+    .notif-all{width:100%;min-height:44px;margin-top:12px;padding:11px 16px;display:flex;align-items:center;justify-content:center;border:0;border-radius:var(--radius-lg);background:var(--primary-soft);color:var(--primary);font-weight:700}
+    .notif-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 16px 0}.notif-unread-count{color:var(--text-secondary);font-size:12px}
+    .notif-mark-all{border:0;background:transparent;color:var(--primary);font-size:12px;font-weight:800;padding:6px 0}
     @media (min-width:761px) {
       body.app-premium-navigation .nav-actions { display:none !important; }
       body.app-premium-navigation .desktop-drawer { display:flex; }
@@ -2029,7 +2035,6 @@
 
       <button class="nav-icon premium-toolbar-control" id="notifButton" type="button" aria-label="Notifications" title="Notifications">
         <i class="ph ph-bell" aria-hidden="true"></i>
-        <span class="notif-count-badge" id="notifCountBadge" hidden>0</span>
       </button>
 
     </nav>
@@ -2091,7 +2096,6 @@
       <button class="desktop-nav-link premium-drawer-control" type="button" id="drawerNotifButton" title="Notifications">
         <i class="ph ph-bell" aria-hidden="true"></i>
         <span>Notifications</span>
-        <span class="notif-count-badge drawer-notif-count-badge" id="drawerNotifCountBadge" hidden>0</span>
       </button>
 
       <button class="desktop-nav-link" type="button" data-desktop-nav="cart">
@@ -2501,6 +2505,8 @@
 
       </div>
 
+      <div class="notif-toolbar"><span class="notif-unread-count" id="notifUnreadCount">Your latest updates</span><button type="button" class="notif-mark-all" id="notifMarkAllRead">Mark all read</button></div>
+      <div class="notif-category-filter" id="notifCategoryFilter" aria-label="Filter notifications by category"></div>
       <div class="notif-list" id="notifList"></div>
 
     </section>
@@ -4652,196 +4658,70 @@
       }
     });
 
-    /* NOTIFICATIONS: temporary in-memory cache only; never stored in localStorage/sessionStorage. */
-    const notificationMemoryCache = { items: [], unreadCount: 0, fetchedAt: 0 };
-    const NOTIFICATION_CACHE_TTL = 15000;
-    const NOTIFICATION_POLL_INTERVAL = 10000;
-    let notificationLoadInFlight = null;
-    let notificationLastRenderAt = 0;
-
-    function notificationDate(item) {
-      const raw = item && (item.createdAt || item.created_at || item.timestamp || item.time || item.date || item.sentAt || item.updatedAt);
-      if (raw == null || raw === '') return null;
-      if (typeof raw === 'number' || /^\d+$/.test(String(raw))) {
-        let n = Number(raw);
-        if (n > 0 && n < 1000000000000) n *= 1000;
-        const d = new Date(n);
-        return Number.isNaN(d.getTime()) ? null : d;
-      }
-      const d = new Date(raw);
-      return Number.isNaN(d.getTime()) ? null : d;
-    }
-
+    /* NOTIFICATIONS — ShopLite API */
+    const NOTIFICATION_API_URL = "https://apisequizeshoplite.vercel.app/api/admin/notifications.js";
+    const NOTIFICATION_CATEGORIES = ["all","orders","payments","shipping","delivery","returns","refunds","cancellations","discounts","promotions","cart","wishlist","account","security","support","system"];
+    let notificationItems = [], notificationCategory = "all", notificationUid = "", notificationApiKey = "";
     function formatNotificationTime(value) {
-      const d = value instanceof Date ? value : new Date(value);
-      if (!value || Number.isNaN(d.getTime())) return '';
-      const seconds = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
-      if (seconds < 45) return 'just now';
-      if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
-      if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
-      if (seconds < 604800) return Math.floor(seconds / 86400) + 'd ago';
-      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      const date = new Date(Number(value) || value || 0);
+      if (!value || Number.isNaN(date.getTime())) return "";
+      const seconds = Math.max(0, Math.floor((Date.now()-date.getTime())/1000));
+      if(seconds<45)return "now"; if(seconds<3600)return Math.floor(seconds/60)+"m ago";
+      if(seconds<86400)return Math.floor(seconds/3600)+"h ago";
+      if(seconds<604800)return Math.floor(seconds/86400)+"d ago";
+      return date.toLocaleDateString("en-IN",{day:"numeric",month:"short"});
     }
-
-    function notificationIsUnread(item) {
-      if (!item || typeof item !== 'object') return false;
-      if (item.unread === true || item.isUnread === true || item.is_unread === true) return true;
-      if (item.read === false || item.isRead === false || item.is_read === false) return true;
-      const status = String(item.status || '').toLowerCase();
-      if (status === 'unread') return true;
-      if (item.read === true || item.isRead === true || item.is_read === true || item.unread === false || item.isUnread === false) return false;
-      return !(item.readAt || item.read_at || item.seen === true || item.seenAt || item.seen_at);
-    }
-
-    function notificationIcon(item) {
-      const category = String(item && (item.category || item.type || item.notificationType || item.kind) || 'general').toLowerCase().replace(/[\s-]+/g, '_');
-      const map = {
-        general:'ph-bell', notification:'ph-bell', orders:'ph-package', order:'ph-package', order_status:'ph-package', payments:'ph-credit-card', payment:'ph-credit-card', shipping:'ph-truck', delivery:'ph-truck', cancellations:'ph-x-circle', cancellation:'ph-x-circle', returns:'ph-arrow-u-up-left', return:'ph-arrow-u-up-left', refunds:'ph-wallet', refund:'ph-wallet', products:'ph-t-shirt', product:'ph-t-shirt', stock:'ph-package', offers:'ph-tag', offer:'ph-tag', discounts:'ph-percent', discount:'ph-percent', promotions:'ph-sparkle', promotion:'ph-sparkle', coupons:'ph-ticket', coupon:'ph-ticket', wishlist:'ph-heart', cart:'ph-shopping-cart', account:'ph-user-circle', security:'ph-shield-check', support:'ph-headset', reviews:'ph-star', review:'ph-star', loyalty:'ph-gift', system:'ph-info', message:'ph-chat-circle', messages:'ph-chat-circle'
-      };
-      return 'ph ' + (map[category] || 'ph-bell');
-    }
-
-    function updateNotificationBadges(count) {
-      const n = Math.max(0, Number(count) || 0);
-      ['notifCountBadge', 'drawerNotifCountBadge'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.textContent = n > 99 ? '99+' : String(n);
-        el.hidden = n <= 0;
-      });
-      const button = document.getElementById('notifButton');
-      if (button) button.setAttribute('aria-label', n > 0 ? 'Notifications, ' + n + ' unread' : 'Notifications');
-    }
-
     function renderNotificationsEmpty(message) {
-      notifList.innerHTML = `
-        <div class="notif-empty"><i class="ph ph-bell-slash" aria-hidden="true"></i>${escapeHTML(message)}</div>
-        <a class="notif-all" href="/notifications.html">View all notifications</a>`;
+      notifList.innerHTML=`<div class="notif-empty"><i class="ph ph-bell-slash" aria-hidden="true"></i>${escapeHTML(message)}</div>`;
     }
-
-    function notificationUnreadCount(data, items) {
-      const direct = data && (data.unreadCount ?? data.totalUnread ?? data.unread_count ?? data.unread);
-      if (direct !== undefined && direct !== null && direct !== '' && Number.isFinite(Number(direct))) return Math.max(0, Number(direct));
-      return items.filter(notificationIsUnread).length;
+    function notificationIcon(category) {
+      const icons={orders:"ph-package",payments:"ph-credit-card",shipping:"ph-truck",delivery:"ph-check-circle",returns:"ph-arrow-counter-clockwise",refunds:"ph-wallet",cancellations:"ph-x-circle",discounts:"ph-tag",promotions:"ph-confetti",cart:"ph-shopping-cart",wishlist:"ph-heart",account:"ph-user-circle",security:"ph-shield-check",support:"ph-headset",system:"ph-info"};
+      return icons[String(category||"").toLowerCase()]||"ph-bell";
     }
-
-    function renderNotifications(items) {
-      const latest = (Array.isArray(items) ? items.slice() : []).sort((a, b) => {
-        const da = notificationDate(a), db = notificationDate(b);
-        return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
-      }).slice(0, 5);
-      if (!latest.length) {
-        renderNotificationsEmpty("You're all caught up. No new notifications.");
-        return;
-      }
-      notifList.innerHTML = latest.map(item => {
-        const title = escapeHTML(item.title || item.heading || item.subject || 'Notification');
-        const message = escapeHTML(item.message || item.body || item.text || item.description || '');
-        const date = notificationDate(item);
-        const relative = date ? formatNotificationTime(date) : '';
-        const unread = notificationIsUnread(item);
-        return `<div class="notif-item${unread ? ' notif-unread' : ''}">
-          <i class="${notificationIcon(item)}" aria-hidden="true"></i>
-          <div class="notif-item-content">
-            <div class="notif-title-line"><strong>${title}</strong>${relative ? `<span class="notif-relative-time">• ${escapeHTML(relative)}</span>` : ''}</div>
-            ${message ? `<p>${message}</p>` : ''}
-          </div>${unread ? '<span class="notif-unread-dot" aria-label="Unread"></span>' : ''}
-        </div>`;
-      }).join('') + '<a class="notif-all" href="/notifications.html">View all notifications</a>';
-      notificationLastRenderAt = Date.now();
+    function renderNotificationFilters() {
+      document.getElementById("notifCategoryFilter").innerHTML=NOTIFICATION_CATEGORIES.map(c=>`<button type="button" class="notif-filter-chip ${c===notificationCategory?"active":""}" data-notif-category="${escapeHTML(c)}" aria-pressed="${c===notificationCategory}">${c==="all"?"All":escapeHTML(c)}</button>`).join("");
     }
-
-    async function loadNotifications(forceRefresh) {
-      if (authStatus !== 'logged-in') {
-        updateNotificationBadges(0);
-        notifList.innerHTML = `<div class="notif-empty"><i class="ph ph-bell-slash" aria-hidden="true"></i>Login to see your notifications.</div><a class="notif-all" href="/login.html">Login</a>`;
-        return;
-      }
-      const fresh = notificationMemoryCache.fetchedAt && (Date.now() - notificationMemoryCache.fetchedAt < NOTIFICATION_CACHE_TTL);
-      if (!forceRefresh && fresh) {
-        updateNotificationBadges(notificationMemoryCache.unreadCount);
-        renderNotifications(notificationMemoryCache.items);
-        return;
-      }
-      if (notificationLoadInFlight) return notificationLoadInFlight;
-      notificationLoadInFlight = (async () => {
-        try {
-          const response = await fetch('/api/notifications', {
-            method: 'GET', headers: { Accept: 'application/json' },
-            credentials: 'same-origin', cache: 'no-store'
-          });
-          if (response.status === 401) {
-            notificationMemoryCache.items = []; notificationMemoryCache.unreadCount = 0; notificationMemoryCache.fetchedAt = 0;
-            updateNotificationBadges(0);
-            renderNotificationsEmpty('Please log in to view notifications.');
-            return;
-          }
-          const contentType = response.headers.get('content-type') || '';
-          if (!response.ok || !contentType.includes('application/json')) throw new Error('Notifications unavailable');
-          const data = await response.json();
-          const items = Array.isArray(data) ? data : (data.notifications || data.items || data.data || []);
-          if (!Array.isArray(items)) throw new Error('Invalid notifications response');
-          notificationMemoryCache.items = items;
-          notificationMemoryCache.unreadCount = notificationUnreadCount(Array.isArray(data) ? null : data, items);
-          notificationMemoryCache.fetchedAt = Date.now();
-          updateNotificationBadges(notificationMemoryCache.unreadCount);
-          renderNotifications(items);
-        } catch (error) {
-          if (notificationMemoryCache.fetchedAt && notificationMemoryCache.items.length) {
-            updateNotificationBadges(notificationMemoryCache.unreadCount);
-            renderNotifications(notificationMemoryCache.items);
-          } else {
-            renderNotificationsEmpty('Unable to load notifications. Please try again.');
-          }
-        } finally {
-          notificationLoadInFlight = null;
-        }
-      })();
-      return notificationLoadInFlight;
+    function renderNotificationItems() {
+      const filtered=notificationItems.filter(n=>notificationCategory==="all"||String(n.category||"system").toLowerCase()===notificationCategory);
+      const unread=notificationItems.filter(n=>!n.read).length;
+      document.getElementById("notifUnreadCount").textContent=unread?`${unread} unread notification${unread===1?"":"s"}`:"You're all caught up";
+      document.getElementById("notifMarkAllRead").hidden=!unread;
+      if(!filtered.length){renderNotificationsEmpty(notificationCategory==="all"?"You're all caught up. No notifications yet.":`No ${notificationCategory} notifications.`);return;}
+      notifList.innerHTML=filtered.slice(0,100).map(n=>{
+        const title=escapeHTML(n.title||"Notification"),message=escapeHTML(n.message||""),time=escapeHTML(formatNotificationTime(n.createdAt)),category=escapeHTML(n.category||"system");
+        return `<article class="notif-item ${n.read?"":"unread"}" data-notif-id="${escapeHTML(n.id)}"><span class="notif-icon"><i class="ph ${notificationIcon(category)}" aria-hidden="true"></i></span><div class="notif-copy"><div class="notif-title-row"><strong>${title}</strong>${time?`<span class="notif-time">• ${time}</span>`:""}</div>${message?`<p>${message}</p>`:""}<span class="notif-category-label">${category}</span></div>${n.read?"":'<span aria-label="Unread" style="width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--primary);margin-top:7px"></span>'}</article>`;
+      }).join("");
     }
-
-    document.getElementById('notifButton').addEventListener('click', () => {
-      openSheetOverlay(notifSheetOverlay);
-      loadNotifications(true);
-    });
-    const drawerNotifButton = document.getElementById('drawerNotifButton');
-    if (drawerNotifButton) drawerNotifButton.addEventListener('click', () => {
-      openSheetOverlay(notifSheetOverlay);
-      loadNotifications(true);
-      closeDesktopDrawer();
-    });
-
-    // Keep unread badge current while the page is open; cache exists only in this page's memory.
-    setInterval(() => {
-      if (document.visibilityState === 'visible' && authStatus === 'logged-in') loadNotifications(true);
-    }, NOTIFICATION_POLL_INTERVAL);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && authStatus === 'logged-in') loadNotifications(true);
-    });
-    setInterval(() => {
-      if (document.visibilityState !== 'visible' || !notificationMemoryCache.fetchedAt) return;
-      if (Date.now() - notificationLastRenderAt >= 30000 && notifSheetOverlay.classList.contains('active')) renderNotifications(notificationMemoryCache.items);
-    }, 30000);
-
-    document.getElementById("notifSheetClose").addEventListener("click", () => {
-      closeSheetOverlay(notifSheetOverlay);
-    });
-
-    notifSheetOverlay.addEventListener("click", event => {
-      if (event.target === notifSheetOverlay) {
-        closeSheetOverlay(notifSheetOverlay);
-      }
-    });
-
-    document.addEventListener("keydown", event => {
-      if (event.key !== "Escape") return;
-
-      [locationSheetOverlay, notifSheetOverlay].forEach(overlay => {
-        if (overlay.classList.contains("open")) {
-          closeSheetOverlay(overlay);
-        }
-      });
-    });
+    async function notificationApi(action,extra={}) {
+      if(!notificationUid)throw new Error("Profile API did not provide a customer UID.");
+      if(!notificationApiKey)throw new Error("This admin-only API needs a secure server-side proxy. Do not expose ADMIN_API_KEY in HTML.");
+      const response=await fetch(NOTIFICATION_API_URL,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json","Authorization":"Bearer "+notificationApiKey},cache:"no-store",body:JSON.stringify({action,uid:notificationUid,...extra})});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||data.success!==true)throw new Error(data.message||"Notifications unavailable.");
+      return data;
+    }
+    async function loadNotifications() {
+      if(authStatus!=="logged-in"){renderNotificationsEmpty("Login to see your notifications.");notifList.insertAdjacentHTML("beforeend",'<a class="notif-all" href="/login.html">Login</a>');return;}
+      notifList.innerHTML='<div class="notif-empty"><i class="ph ph-spinner-gap"></i>Loading notifications…</div>';
+      try{
+        const response=await fetch("/api/profile",{method:"GET",credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});
+        const profile=await response.json().catch(()=>({}));
+        notificationUid=String(profile.user&&(profile.user.uid||profile.user.id)||"");
+        notificationApiKey=String(window.ADMIN_API_KEY||"");
+        const data=await notificationApi("list",{limit:100});
+        notificationItems=Array.isArray(data.notifications)?data.notifications:[];
+        renderNotificationFilters();renderNotificationItems();
+      }catch(error){console.error("Notification loading error:",error);renderNotificationsEmpty(error.message||"Notifications could not be loaded.");}
+    }
+    document.getElementById("notifButton").addEventListener("click",()=>{notificationCategory="all";openSheetOverlay(notifSheetOverlay);loadNotifications();});
+    const drawerNotifButton=document.getElementById("drawerNotifButton");
+    if(drawerNotifButton)drawerNotifButton.addEventListener("click",()=>{notificationCategory="all";openSheetOverlay(notifSheetOverlay);loadNotifications();closeDesktopDrawer();});
+    document.getElementById("notifSheetClose").addEventListener("click",()=>closeSheetOverlay(notifSheetOverlay));
+    notifSheetOverlay.addEventListener("click",event=>{if(event.target===notifSheetOverlay)closeSheetOverlay(notifSheetOverlay);});
+    document.getElementById("notifCategoryFilter").addEventListener("click",event=>{const b=event.target.closest("[data-notif-category]");if(!b)return;notificationCategory=b.dataset.notifCategory||"all";renderNotificationFilters();renderNotificationItems();});
+    notifList.addEventListener("click",async event=>{const row=event.target.closest(".notif-item");if(!row||!row.dataset.notifId||!row.classList.contains("unread"))return;try{await notificationApi("mark_read",{notificationId:row.dataset.notifId});const item=notificationItems.find(n=>String(n.id)===row.dataset.notifId);if(item)item.read=true;renderNotificationItems();}catch(error){console.warn("Could not mark notification read:",error);}});
+    document.getElementById("notifMarkAllRead").addEventListener("click",async()=>{try{await notificationApi("mark_all_read");notificationItems.forEach(n=>n.read=true);renderNotificationItems();showToast("All notifications marked as read");}catch(error){showToast(error.message||"Could not mark notifications as read");}});
+    document.addEventListener("keydown",event=>{if(event.key==="Escape"&&notifSheetOverlay.classList.contains("open"))closeSheetOverlay(notifSheetOverlay);});
 
     /* iOS-STYLE PRESS-AND-HOLD DRAG OF THE SELECTED BOTTOM-NAV TAB */
 
