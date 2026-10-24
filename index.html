@@ -67,7 +67,7 @@
       --radius-lg: 12px;
 
       --header-h: 64px;
-      --bottom-nav-height: 64px;
+      --bottom-nav-height: 66px;
     }
 
     * {
@@ -129,18 +129,16 @@
 
     /* HEADER */
 
-    /* Floating header: transparent track, only the glass elements inside are visible
-       (desktop = floating search pill, mobile = floating glass toolbar pill) */
     .topbar {
       position: sticky;
       position: -webkit-sticky;
-      top: 12px;
+      top: 0;
       z-index: 1000;
 
       width: 100%;
-      height: 48px;
-      min-height: 48px;
-      margin: 12px 0 8px;
+      height: var(--header-h);
+      min-height: var(--header-h);
+      margin: 0;
       padding: 0 5%;
 
       display: flex;
@@ -148,13 +146,8 @@
       justify-content: space-between;
       gap: 12px;
 
-      background: transparent;
-      border: 0;
-      pointer-events: none;
-    }
-
-    .topbar > * {
-      pointer-events: auto;
+      background: var(--background);
+      border-bottom: 1px solid var(--border);
     }
 
     .nav-actions {
@@ -261,12 +254,6 @@
 
     .search input::placeholder {
       color: var(--text-muted);
-    }
-
-    /* HEADER SEARCH (desktop only, shown in the media query below) */
-
-    .header-search {
-      display: none;
     }
 
     /* DEDICATED SEARCH VIEW */
@@ -1121,41 +1108,39 @@
       font-size: 12px;
     }
 
-    /* MOBILE BOTTOM NAVIGATION — iOS liquid glass floating pill */
+    /* MOBILE BOTTOM NAVIGATION */
 
     .bottom-nav {
       display: none;
     }
 
     .bottom-nav-item {
-      position: relative;
-      z-index: 2;
       min-width: 0;
       flex: 1;
-      height: 52px;
-      min-height: 0;
-      padding: 0;
+      min-height: 60px;
+      padding: 7px 2px 5px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 2px;
       border: 0;
-      border-radius: 100px;
+      border-radius: 0;
       background: transparent;
-      color: var(--text-primary);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1.3;
       -webkit-tap-highlight-color: transparent;
-      transition: background .28s ease, color .28s ease, box-shadow .28s ease, transform .15s ease;
-    }
-
-    .bottom-nav-item:active {
-      transform: scale(.94);
     }
 
     .bottom-nav-item .nav-item-icon {
-      height: 24px;
+      height: 25px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 23px;
       line-height: 1;
     }
 
@@ -1164,201 +1149,14 @@
     }
 
     .bottom-nav-item.active {
-      color: #ffffff;
+      color: var(--primary);
     }
 
     .bottom-nav-item.active .nav-item-icon {
-      color: #ffffff;
-    }
-
-    /* Sliding selected-tab background: glides to the active tab */
-    .nav-indicator {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
-      width: 0;
-      height: 52px;
-      border-radius: 100px;
-      background: var(--primary);
-      box-shadow:
-        0 4px 14px rgba(41, 98, 255, .38),
-        inset 0 1px 1px rgba(255, 255, 255, .38);
-      transform: translate3d(0, 0, 0);
-      transition:
-        transform .5s cubic-bezier(.34, 1.36, .5, 1),
-        width .5s cubic-bezier(.34, 1.36, .5, 1);
-      pointer-events: none;
-      will-change: transform;
-    }
-
-    .nav-indicator.no-anim {
-      transition: none;
-    }
-
-    /* press-and-hold drag (iOS style): the bubble lifts and follows the finger */
-    .nav-indicator.dragging {
-      transition: none;
-      box-shadow:
-        0 8px 22px rgba(41, 98, 255, .5),
-        inset 0 1px 1px rgba(255, 255, 255, .5);
-    }
-
-    .bottom-nav {
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-    }
-
-    .bottom-nav.nav-dragging .bottom-nav-item.active,
-    .bottom-nav.nav-dragging .bottom-nav-item.active .nav-item-icon {
-      color: var(--text-primary);
-    }
-
-    .bottom-nav.nav-dragging .bottom-nav-item.drag-over,
-    .bottom-nav.nav-dragging .bottom-nav-item.drag-over .nav-item-icon {
-      color: #ffffff;
-    }
-
-    /* cart count badge on the bottom-nav cart icon */
-    .bottom-nav-item .nav-item-icon {
-      position: relative;
-    }
-
-    .bottom-nav .cart-count {
-      top: -7px;
-      right: -11px;
-      min-width: 17px;
-      height: 17px;
-    }
-
-    .bottom-nav-item.active .cart-count {
-      background: #ffffff;
       color: var(--primary);
-      border-color: var(--primary);
     }
 
-    /* HEADER LOCATION CHIP (mobile header) */
-
-    .location-chip {
-      max-width: 150px;
-      min-width: 0;
-      height: 38px;
-      padding: 0 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid rgba(255, 255, 255, .75);
-      border-radius: 100px;
-      background: rgba(255, 255, 255, .55);
-      color: var(--text-primary);
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1;
-      transition: background .2s;
-    }
-
-    .location-chip:hover {
-      background: rgba(255, 255, 255, .8);
-    }
-
-    .location-chip i {
-      flex-shrink: 0;
-      color: var(--primary);
-      font-size: 17px;
-    }
-
-    .location-chip span {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    /* NOTIFICATIONS SHEET CONTENT */
-
-    .notif-list {
-      padding: 10px 16px 20px;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-    }
-
-    .notif-item {
-      padding: 12px 14px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      border-radius: var(--radius-lg);
-    }
-
-    .notif-item:hover {
-      background: var(--primary-soft);
-    }
-
-    .notif-item > i {
-      width: 38px;
-      height: 38px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background: var(--primary-soft);
-      color: var(--primary);
-      font-size: 20px;
-    }
-
-    .notif-item strong {
-      display: block;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.4;
-    }
-
-    .notif-item p {
-      margin: 2px 0 0;
-      color: var(--text-secondary);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .notif-item small {
-      display: block;
-      margin-top: 4px;
-      color: var(--text-muted);
-      font-size: 12px;
-    }
-
-    .notif-empty {
-      padding: 36px 12px;
-      text-align: center;
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
-    .notif-empty i {
-      display: block;
-      margin-bottom: 10px;
-      color: var(--text-muted);
-      font-size: 40px;
-    }
-
-    .notif-all {
-      width: 100%;
-      min-height: 48px;
-      margin-top: 8px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--radius-lg);
-      background: var(--primary-soft);
-      color: var(--primary);
-      font-weight: 700;
-    }
-
-    /* DESKTOP EXPANDABLE NAVIGATION — floating liquid glass drawer */
+    /* DESKTOP EXPANDABLE NAVIGATION */
 
     .desktop-nav-toggle {
       display: none;
@@ -1368,7 +1166,7 @@
       position: fixed;
       inset: 0;
       z-index: 2500;
-      background: rgba(20, 30, 60, .16);
+      background: rgba(0, 0, 0, .25);
       opacity: 0;
       visibility: hidden;
       transition: opacity .2s, visibility .2s;
@@ -1381,59 +1179,33 @@
 
     .desktop-drawer {
       position: fixed;
-      top: 12px;
-      left: 12px;
-      bottom: 12px;
+      top: 0;
+      left: 0;
+      bottom: 0;
       z-index: 2501;
-      width: 68px;
-      padding: 10px;
+      width: 76px;
+      padding: 16px 10px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
       overflow: hidden;
-      border-radius: 34px;
-      border: 1px solid rgba(255, 255, 255, .6);
-      background:
-        linear-gradient(180deg, rgba(41, 98, 255, .16), rgba(41, 98, 255, .07));
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
-      backdrop-filter: blur(24px) saturate(180%);
-      box-shadow:
-        0 18px 48px rgba(41, 98, 255, .18),
-        0 2px 10px rgba(0, 0, 0, .08),
-        inset 0 1px 1px rgba(255, 255, 255, .85),
-        inset 0 -1px 1px rgba(255, 255, 255, .25);
-      transition: width .3s cubic-bezier(.3, .9, .3, 1);
-    }
-
-    /* glass reflection / specular sheen */
-    .desktop-drawer::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background:
-        linear-gradient(160deg, rgba(255, 255, 255, .55) 0%, rgba(255, 255, 255, .12) 28%, rgba(255, 255, 255, 0) 55%),
-        radial-gradient(120% 60% at 0% 0%, rgba(255, 255, 255, .35), transparent 60%);
-      pointer-events: none;
-    }
-
-    .desktop-drawer > * {
-      position: relative;
-      z-index: 1;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      box-shadow: none;
+      transition: width .24s ease, transform .24s ease;
     }
 
     .desktop-drawer.expanded {
-      width: 252px;
+      width: 245px;
     }
 
     .desktop-drawer-head {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       min-height: 48px;
-      padding: 0 0 8px;
-      border-bottom: 1px solid rgba(41, 98, 255, .14);
-      flex-shrink: 0;
+      padding: 0 4px 12px;
+      border-bottom: 1px solid var(--divider);
     }
 
     .desktop-drawer-head .brand {
@@ -1446,14 +1218,14 @@
     }
 
     .desktop-drawer-toggle {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       border: 0;
-      border-radius: 100px;
+      border-radius: var(--radius-lg);
       background: transparent;
       color: var(--text-primary);
       font-size: 23px;
@@ -1461,50 +1233,31 @@
 
     .desktop-drawer-toggle:hover,
     .desktop-nav-link:hover {
-      background: rgba(41, 98, 255, .1);
+      background: var(--surface-secondary);
     }
 
     .desktop-nav-links {
-      flex: 1;
-      min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      overflow-y: auto;
-      overflow-x: hidden;
-      scrollbar-width: none;
-    }
-
-    .desktop-nav-links::-webkit-scrollbar {
-      display: none;
-    }
-
-    .desktop-nav-divider {
-      height: 1px;
-      margin: 6px 12px;
-      flex-shrink: 0;
-      background: rgba(41, 98, 255, .14);
+      gap: 5px;
     }
 
     .desktop-nav-link {
-      position: relative;
       min-height: 48px;
       width: 100%;
-      padding: 0 10px;
+      padding: 0 12px;
       display: flex;
       align-items: center;
       gap: 16px;
-      flex-shrink: 0;
       overflow: hidden;
       border: 0;
-      border-radius: 100px;
+      border-radius: var(--radius-lg);
       background: transparent;
-      color: var(--text-primary);
+      color: var(--text-secondary);
       text-align: left;
       white-space: nowrap;
       font-size: 14px;
       font-weight: 600;
-      transition: background .24s ease, color .24s ease, box-shadow .24s ease;
     }
 
     .desktop-nav-link > i {
@@ -1523,57 +1276,18 @@
     }
 
     .desktop-nav-link.active {
-      background: var(--primary);
-      color: #ffffff;
-      box-shadow:
-        0 4px 14px rgba(41, 98, 255, .38),
-        inset 0 1px 1px rgba(255, 255, 255, .38);
+      background: var(--primary-soft);
+      color: var(--primary);
     }
 
     .desktop-nav-link.active > i {
-      color: #ffffff;
-    }
-
-    .drawer-badge {
-      position: absolute;
-      top: 6px;
-      left: 31px;
-      min-width: 18px;
-      height: 18px;
-      padding: 0 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid #ffffff;
-      border-radius: 999px;
-      background: var(--primary);
-      color: #ffffff;
-      font-style: normal;
-      font-size: 10px;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    .desktop-drawer.expanded .drawer-badge {
-      position: static;
-      margin-left: auto;
-      border-color: transparent;
-    }
-
-    .desktop-nav-link.active .drawer-badge {
-      background: #ffffff;
       color: var(--primary);
-      border-color: var(--primary);
     }
 
     .desktop-drawer-bottom {
-      margin-top: 0;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(41, 98, 255, .14);
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--divider);
     }
 
     /* RESPONSIVE */
@@ -1586,60 +1300,11 @@
 
     @media (max-width: 760px) {
       body {
-        padding-bottom: calc(var(--bottom-nav-height) + 30px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
       }
 
-      /* iOS liquid glass floating header toolbar */
       .topbar {
-        top: 10px;
-        width: calc(100% - 32px);
-        height: 56px;
-        min-height: 56px;
-        margin: 10px auto 8px;
-        padding: 0 10px 0 16px;
-        overflow: hidden;
-        pointer-events: auto;
-        border-radius: 100px;
-        border: 1px solid rgba(255, 255, 255, .6);
-        background:
-          linear-gradient(180deg, rgba(41, 98, 255, .18), rgba(41, 98, 255, .08));
-        -webkit-backdrop-filter: blur(22px) saturate(180%);
-        backdrop-filter: blur(22px) saturate(180%);
-        box-shadow:
-          0 12px 32px rgba(41, 98, 255, .2),
-          0 2px 8px rgba(0, 0, 0, .08),
-          inset 0 1px 1px rgba(255, 255, 255, .85),
-          inset 0 -1px 1px rgba(255, 255, 255, .25);
-      }
-
-      /* glass reflection / specular sheen */
-      .topbar::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        border-radius: inherit;
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, .1) 40%, rgba(255, 255, 255, 0) 62%),
-          radial-gradient(110% 90% at 8% 0%, rgba(255, 255, 255, .38), transparent 55%);
-        pointer-events: none;
-      }
-
-      .topbar > * {
-        position: relative;
-        z-index: 1;
-      }
-
-      .topbar .nav-icon {
-        border-radius: 100px;
-      }
-
-      .topbar .nav-icon:hover {
-        background: rgba(41, 98, 255, .1);
-      }
-
-      .topbar .cart-count {
-        border-color: transparent;
+        padding: 0 5%;
       }
 
       .search-bar-wrap,
@@ -1751,53 +1416,20 @@
         -webkit-line-clamp: 2;
       }
 
-      /* iOS liquid glass floating bottom navigation */
       .bottom-nav {
         position: fixed;
-        left: 50%;
-        right: auto;
-        bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+        right: 0;
+        bottom: 0;
+        left: 0;
         z-index: 1500;
-        width: min(calc(100% - 32px), 400px);
-        height: var(--bottom-nav-height);
-        min-height: 0;
-        padding: 6px;
+        min-height: var(--bottom-nav-height);
+        padding: 3px 4px env(safe-area-inset-bottom, 0px);
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 2px;
-        overflow: hidden;
-        transform: translateX(-50%);
-        border-radius: 100px;
-        border: 1px solid rgba(255, 255, 255, .6);
-        background:
-          linear-gradient(180deg, rgba(41, 98, 255, .18), rgba(41, 98, 255, .08));
-        -webkit-backdrop-filter: blur(22px) saturate(180%);
-        backdrop-filter: blur(22px) saturate(180%);
-        box-shadow:
-          0 12px 32px rgba(41, 98, 255, .22),
-          0 2px 8px rgba(0, 0, 0, .08),
-          inset 0 1px 1px rgba(255, 255, 255, .85),
-          inset 0 -1px 1px rgba(255, 255, 255, .25);
-      }
-
-      /* glass reflection / specular sheen (content scrolling underneath is refracted by the blur) */
-      .bottom-nav::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        border-radius: inherit;
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, .1) 40%, rgba(255, 255, 255, 0) 62%),
-          radial-gradient(110% 90% at 8% 0%, rgba(255, 255, 255, .38), transparent 55%);
-        pointer-events: none;
-      }
-
-      @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-        .bottom-nav {
-          background: rgba(232, 238, 255, .95);
-        }
+        justify-content: space-around;
+        gap: 0;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
       }
 
       .desktop-nav-toggle,
@@ -1807,7 +1439,7 @@
       }
 
       .toast {
-        bottom: calc(var(--bottom-nav-height) + 30px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(var(--bottom-nav-height) + 15px + env(safe-area-inset-bottom, 0px));
       }
 
       .footer {
@@ -1838,94 +1470,43 @@
         height: 120px;
       }
 
+      .bottom-nav-item {
+        font-size: 9px;
+      }
+
       .bottom-nav-item .nav-item-icon {
         font-size: 22px;
       }
     }
 
     @media (min-width: 761px) {
+      .desktop-nav-toggle {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: var(--radius-md);
+        background: transparent;
+        color: var(--text-primary);
+        font-size: 24px;
+      }
+
+      .desktop-nav-toggle:hover {
+        background: var(--surface-secondary);
+      }
+
       .desktop-drawer-overlay {
         display: block;
       }
 
-      /* Header: icons move into the drawer, search bar lives here instead */
-      .nav-actions {
-        display: none;
-      }
-
       .topbar {
-        padding-left: max(5%, 104px);
+        padding-left: 5%;
       }
 
       body.desktop-drawer-open .topbar {
-        padding-left: max(5%, 104px);
-      }
-
-      /* Desktop toolbar = only a floating liquid-glass search pill (brand lives in the drawer) */
-      .guest-header-brand {
-        display: none !important;
-      }
-
-      .topbar > .brand {
-        display: none;
-      }
-
-      .header-search {
-        position: relative;
-        display: flex;
-        order: 2;
-        flex: 1 1 auto;
-        max-width: 520px;
-        height: 48px;
-        margin: 0 auto;
-        padding: 0 18px;
-        border-radius: 100px;
-        border: 1px solid rgba(255, 255, 255, .6);
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, .55) 0%, rgba(255, 255, 255, .12) 45%, rgba(255, 255, 255, 0) 70%),
-          linear-gradient(180deg, rgba(41, 98, 255, .16), rgba(41, 98, 255, .08));
-        -webkit-backdrop-filter: blur(22px) saturate(180%);
-        backdrop-filter: blur(22px) saturate(180%);
-        box-shadow:
-          0 12px 32px rgba(41, 98, 255, .18),
-          0 2px 8px rgba(0, 0, 0, .08),
-          inset 0 1px 1px rgba(255, 255, 255, .85),
-          inset 0 -1px 1px rgba(255, 255, 255, .25);
-      }
-
-      .header-search:focus-within {
-        border-color: var(--primary);
-        box-shadow:
-          0 12px 32px rgba(41, 98, 255, .22),
-          0 0 0 3px rgba(41, 98, 255, .18),
-          inset 0 1px 1px rgba(255, 255, 255, .85);
-      }
-
-      .header-search > i {
-        color: var(--text-secondary);
-      }
-
-      .header-search input::placeholder {
-        color: var(--text-secondary);
-      }
-
-      /* guests: Login / Sign Up become a small floating glass pill on the right */
-      .guest-header-actions {
-        order: 3;
-        padding: 5px;
-        border-radius: 100px;
-        border: 1px solid rgba(255, 255, 255, .6);
-        background:
-          linear-gradient(180deg, rgba(41, 98, 255, .16), rgba(41, 98, 255, .08));
-        -webkit-backdrop-filter: blur(22px) saturate(180%);
-        backdrop-filter: blur(22px) saturate(180%);
-        box-shadow:
-          0 12px 32px rgba(41, 98, 255, .18),
-          inset 0 1px 1px rgba(255, 255, 255, .85);
-      }
-
-      #homeSearchWrap {
-        display: none;
+        padding-left: 5%;
       }
     }
 
@@ -1985,6 +1566,10 @@
     .app-profile-name { font-family:var(--font-heading); font-size:22px; font-weight:800; overflow-wrap:anywhere; }
     .app-profile-email { color:var(--text-secondary); overflow-wrap:anywhere; }
     .app-member-badge { display:inline-flex; margin-top:14px; padding:4px 12px; border-radius:999px; background:var(--success-bg); color:var(--success); font-size:12px; font-weight:700; }
+    .app-member-badge.app-premium-badge { background:var(--primary-soft); color:var(--primary); }
+    .app-membership-summary { margin-top:14px; padding:14px; border:1px solid var(--primary-soft); border-radius:var(--radius-lg); background:var(--surface); }
+    .app-membership-summary strong { display:block; color:var(--primary); font-family:var(--font-heading); font-size:14px; font-weight:800; }
+    .app-membership-summary small { display:block; margin-top:5px; color:var(--text-secondary); font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
     .app-profile-row { min-height:60px; padding:14px 0; display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--divider); }
     .app-profile-row > i { color:var(--primary); font-size:22px; }
     .app-profile-row > span { min-width:0; flex:1; }
@@ -2056,33 +1641,20 @@
         <i class="ph ph-list" aria-hidden="true"></i>
       </button>
 
-      <button class="location-chip" id="headerLocationButton" type="button" data-open-location aria-label="Change location" title="Change location">
-        <i class="ph-fill ph-map-pin" aria-hidden="true"></i>
-        <span id="headerLocationLabel">Select state</span>
+      <button class="nav-icon" type="button" data-top-nav="home" aria-label="Home" title="Home">
+        <i class="ph ph-house" aria-hidden="true"></i>
       </button>
 
-      <button class="nav-icon" id="notifButton" type="button" aria-label="Notifications" title="Notifications">
-        <i class="ph ph-bell" aria-hidden="true"></i>
+      <button class="nav-icon" type="button" data-top-nav="cart" aria-label="Cart" title="Shopping cart">
+        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+        <span class="cart-count" id="cartCount" hidden>0</span>
+      </button>
+
+      <button class="nav-icon" type="button" data-top-nav="account" aria-label="My profile" title="My profile">
+        <i class="ph ph-user-circle" aria-hidden="true"></i>
       </button>
 
     </nav>
-
-    <!-- HEADER SEARCH (desktop only) -->
-
-    <form class="search header-search" id="headerSearchForm" role="search">
-
-      <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-
-      <input
-        id="headerSearchInput"
-        type="search"
-        placeholder="Search products..."
-        aria-label="Search products"
-        autocomplete="off"
-        maxlength="100"
-      >
-
-    </form>
 
     <a href="/home.html" class="brand" aria-label="Shoppy home">
       Shoppy.
@@ -2090,7 +1662,7 @@
 
   </header>
 
-  <!-- DESKTOP FLOATING GLASS DRAWER -->
+  <!-- DESKTOP EXPANDABLE NAVIGATION -->
 
   <div class="desktop-drawer-overlay" id="desktopDrawerOverlay"></div>
 
@@ -2114,88 +1686,31 @@
 
     <nav class="desktop-nav-links">
 
-      <button class="desktop-nav-link active" type="button" data-desktop-nav="home" title="Home">
+      <button class="desktop-nav-link active" type="button" data-desktop-nav="home">
         <i class="ph-fill ph-house" aria-hidden="true"></i>
         <span>Home</span>
       </button>
 
-      <button class="desktop-nav-link" type="button" data-desktop-nav="search" title="Search">
+      <button class="desktop-nav-link" type="button" data-desktop-nav="search">
         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
         <span>Search</span>
       </button>
 
-      <button class="desktop-nav-link" type="button" data-desktop-nav="explore" title="Explore">
+      <button class="desktop-nav-link" type="button" data-desktop-nav="explore">
         <i class="ph ph-compass" aria-hidden="true"></i>
         <span>Explore</span>
       </button>
-
-      <div class="desktop-nav-divider" aria-hidden="true"></div>
-
-      <a class="desktop-nav-link" href="/wishlist.html" title="My Wishlist">
-        <i class="ph ph-heart" aria-hidden="true"></i>
-        <span>My Wishlist</span>
-      </a>
-
-      <a class="desktop-nav-link" href="/orders.html" title="My Orders">
-        <i class="ph ph-package" aria-hidden="true"></i>
-        <span>My Orders</span>
-      </a>
-
-      <a class="desktop-nav-link" href="/coupons.html" title="Coupons & Offers">
-        <i class="ph ph-ticket" aria-hidden="true"></i>
-        <span>Coupons & Offers</span>
-      </a>
-
-      <a class="desktop-nav-link" href="/notifications.html" title="Notifications">
-        <i class="ph ph-bell" aria-hidden="true"></i>
-        <span>Notifications</span>
-      </a>
-
-      <div class="desktop-nav-divider" aria-hidden="true"></div>
-
-      <a class="desktop-nav-link" href="/addresses.html" title="Saved Addresses">
-        <i class="ph ph-map-pin" aria-hidden="true"></i>
-        <span>Saved Addresses</span>
-      </a>
-
-      <a class="desktop-nav-link" href="/payments.html" title="My Payments">
-        <i class="ph ph-credit-card" aria-hidden="true"></i>
-        <span>My Payments</span>
-      </a>
-
-      <div class="desktop-nav-divider" aria-hidden="true"></div>
-
-      <a class="desktop-nav-link" href="/support.html" title="Help & Support">
-        <i class="ph ph-headset" aria-hidden="true"></i>
-        <span>Help & Support</span>
-      </a>
-
-      <a class="desktop-nav-link" href="/privacy.html" title="Privacy & Security">
-        <i class="ph ph-shield-check" aria-hidden="true"></i>
-        <span>Privacy & Security</span>
-      </a>
-
-      <a class="desktop-nav-link" href="/about.html" title="About Us">
-        <i class="ph ph-info" aria-hidden="true"></i>
-        <span>About Us</span>
-      </a>
 
     </nav>
 
     <div class="desktop-drawer-bottom">
 
-      <button class="desktop-nav-link" type="button" id="drawerLocationButton" data-open-location title="Change location">
-        <i class="ph ph-map-pin" aria-hidden="true"></i>
-        <span id="drawerLocationLabel">Select state</span>
-      </button>
-
-      <button class="desktop-nav-link" type="button" data-desktop-nav="cart" title="My Cart">
+      <button class="desktop-nav-link" type="button" data-desktop-nav="cart">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
         <span>My Cart</span>
-        <em class="drawer-badge" id="drawerCartCount" hidden>0</em>
       </button>
 
-      <button class="desktop-nav-link" type="button" data-desktop-nav="account" title="Account">
+      <button class="desktop-nav-link" type="button" data-desktop-nav="account">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
         <span>Account</span>
       </button>
@@ -2469,7 +1984,12 @@
         <div id="appAvatar" class="app-avatar">U</div>
         <h2 id="appUserName" class="app-profile-name">User</h2>
         <p id="appUserEmail" class="app-profile-email"></p>
-        <div class="app-member-badge">✓ &nbsp; SHOPPING MEMBER</div>
+        <div id="appMembershipBadge" class="app-member-badge">✓ &nbsp; SHOPPING MEMBER</div>
+        <div id="appMembershipSummary" class="app-membership-summary" hidden>
+          <strong id="appMembershipTitle">Shoppy Premium</strong>
+          <small id="appMembershipPlan">Premium plan active</small>
+          <small id="appMembershipExpiry">Membership expiry</small>
+        </div>
         <div style="height:1px;background:var(--divider);margin:24px 0 0"></div>
         <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong></span><i class="ph ph-caret-right"></i></a>
         <a href="/wishlist.html" class="app-profile-row"><i class="ph ph-heart"></i><span><strong>My Wishlist</strong></span><i class="ph ph-caret-right"></i></a>
@@ -2477,6 +1997,7 @@
       </aside>
       <section>
         <h2 class="app-section-heading">Your Shopping</h2>
+        <a href="/membership.html" class="app-profile-row" id="appMembershipRow"><i class="ph ph-crown"></i><span><strong id="appMembershipRowTitle">Premium Membership</strong><small id="appMembershipRowDescription">Explore Premium plans and membership benefits.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong><small>View orders, track shipments and check delivery status.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/home.html" class="app-profile-row" id="appBuyAgain"><i class="ph ph-arrow-clockwise"></i><span><strong>Buy Again</strong><small>Quickly find products you purchased before.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/wishlist.html" class="app-profile-row"><i class="ph ph-heart"></i><span><strong>My Wishlist</strong><small>Products you saved for later.</small></span><i class="ph ph-caret-right"></i></a>
@@ -2561,125 +2082,64 @@
 
   </div>
 
-  <!-- NOTIFICATIONS BOTTOM SHEET -->
-
-  <div class="sheet-overlay" id="notifSheetOverlay" aria-hidden="true">
-
-    <section class="category-sheet" role="dialog" aria-modal="true" aria-labelledby="notifSheetTitle">
-
-      <div class="sheet-handle-wrap">
-        <div class="sheet-handle"></div>
-      </div>
-
-      <div class="sheet-header">
-
-        <div>
-          <h2 id="notifSheetTitle">Notifications</h2>
-          <p>Stay updated on orders and offers.</p>
-        </div>
-
-        <button type="button" class="sheet-close" id="notifSheetClose" aria-label="Close notifications">
-          <i class="ph ph-x" aria-hidden="true"></i>
-        </button>
-
-      </div>
-
-      <div class="notif-list" id="notifList"></div>
-
-    </section>
-
-  </div>
-
-  <!-- LOCATION (STATE) BOTTOM SHEET -->
-
-  <div class="sheet-overlay" id="locationSheetOverlay" aria-hidden="true">
-
-    <section class="category-sheet" role="dialog" aria-modal="true" aria-labelledby="locationSheetTitle">
-
-      <div class="sheet-handle-wrap">
-        <div class="sheet-handle"></div>
-      </div>
-
-      <div class="sheet-header">
-
-        <div>
-          <h2 id="locationSheetTitle">Choose Location</h2>
-          <p>Select your state.</p>
-        </div>
-
-        <button type="button" class="sheet-close" id="locationSheetClose" aria-label="Close locations">
-          <i class="ph ph-x" aria-hidden="true"></i>
-        </button>
-
-      </div>
-
-      <div class="sheet-categories" id="locationList"></div>
-
-    </section>
-
-  </div>
-
-  <!-- MOBILE BOTTOM NAVIGATION (iOS liquid glass floating pill, icons only) -->
+  <!-- MOBILE BOTTOM NAVIGATION -->
 
   <nav class="bottom-nav" id="bottomNav" aria-label="Bottom navigation">
-
-    <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
 
     <button
       type="button"
       class="bottom-nav-item active"
       data-bottom-nav="home"
-      aria-label="Home"
       aria-current="page"
     >
       <span class="nav-item-icon">
         <i class="ph-fill ph-house" aria-hidden="true"></i>
       </span>
+      <span>Home</span>
     </button>
 
     <button
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="search"
-      aria-label="Search"
     >
       <span class="nav-item-icon">
         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
       </span>
+      <span>Search</span>
     </button>
 
     <button
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="explore"
-      aria-label="Explore"
     >
       <span class="nav-item-icon">
         <i class="ph ph-compass" aria-hidden="true"></i>
       </span>
+      <span>Explore</span>
     </button>
 
     <button
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="cart"
-      aria-label="My Cart"
     >
       <span class="nav-item-icon">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
-        <span class="cart-count" id="cartCount" hidden>0</span>
       </span>
+      <span>My Cart</span>
     </button>
 
     <button
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="account"
-      aria-label="Account"
     >
       <span class="nav-item-icon">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </span>
+      <span>Account</span>
     </button>
 
   </nav>
@@ -2712,10 +2172,6 @@
 
     const searchInput = document.getElementById("searchInput");
     const searchForm = document.getElementById("searchForm");
-
-    const headerSearchForm = document.getElementById("headerSearchForm");
-    const headerSearchInput = document.getElementById("headerSearchInput");
-    const drawerCartCount = document.getElementById("drawerCartCount");
 
     const heroWrap = document.getElementById("heroWrap");
     const loadMoreButton = document.getElementById("loadMoreButton");
@@ -2874,11 +2330,6 @@
         total > 99 ? "99+" : String(total);
 
       actualCartCount.hidden = total <= 0;
-
-      drawerCartCount.textContent =
-        total > 99 ? "99+" : String(total);
-
-      drawerCartCount.hidden = total <= 0;
     }
 
     function updateCartButton(button, product) {
@@ -2934,7 +2385,6 @@
           cartIsLoaded = false;
           cartProductIds = new Set();
           actualCartCount.hidden = true;
-          drawerCartCount.hidden = true;
 
           refreshVisibleCartButtons();
 
@@ -3883,37 +3333,6 @@
 
     }
 
-    /* Slide the selected-tab background to the active bottom-nav tab */
-    const navIndicator = document.getElementById("navIndicator");
-
-    function positionNavIndicator(instant) {
-      const activeItem = bottomNav.querySelector(".bottom-nav-item.active");
-
-      if (!navIndicator || !activeItem || !activeItem.offsetWidth) return;
-
-      if (instant) navIndicator.classList.add("no-anim");
-
-      navIndicator.style.top = `${activeItem.offsetTop}px`;
-      navIndicator.style.height = `${activeItem.offsetHeight}px`;
-      navIndicator.style.width = `${activeItem.offsetWidth}px`;
-      navIndicator.style.transform =
-        `translate3d(${activeItem.offsetLeft}px, 0, 0)`;
-
-      if (instant) {
-        void navIndicator.offsetWidth;
-        navIndicator.classList.remove("no-anim");
-      }
-    }
-
-    window.addEventListener("resize", () => positionNavIndicator(true));
-    window.addEventListener("load", () => positionNavIndicator(true));
-
-    if ("ResizeObserver" in window) {
-      new ResizeObserver(() => positionNavIndicator(true)).observe(bottomNav);
-    }
-
-    positionNavIndicator(true);
-
     function updateNavigationState(active) {
       document.querySelectorAll("[data-bottom-nav]").forEach(button => {
         const isActive = button.dataset.bottomNav === active;
@@ -3942,8 +3361,6 @@
           button.setAttribute("aria-current", "page");
         }
       });
-
-      positionNavIndicator();
 
       document.querySelectorAll("[data-desktop-nav]").forEach(button => {
         const isActive = button.dataset.desktopNav === active;
@@ -4053,16 +3470,6 @@
       showSearchView();
 
       loadSearchProducts();
-    });
-
-    /* HEADER SEARCH (desktop) */
-
-    headerSearchForm.addEventListener("submit", event => {
-      event.preventDefault();
-
-      dedicatedSearchInput.value = headerSearchInput.value.trim();
-
-      showSearchView();
     });
 
     dedicatedSearchInput.addEventListener("search", () => {
@@ -4319,486 +3726,10 @@
       }
     }
 
-    /* LOCATION (STATE) + NOTIFICATION BOTTOM SHEETS */
-
-    const LOCATION_KEY = "shoppy_location_state";
-
-    const INDIAN_STATES = [
-      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-      "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-      "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-      "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
-      "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-      "Andaman and Nicobar Islands", "Chandigarh",
-      "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir",
-      "Ladakh", "Lakshadweep", "Puducherry"
-    ];
-
-    const locationSheetOverlay = document.getElementById("locationSheetOverlay");
-    const locationList = document.getElementById("locationList");
-    const notifSheetOverlay = document.getElementById("notifSheetOverlay");
-    const notifList = document.getElementById("notifList");
-    const headerLocationLabel = document.getElementById("headerLocationLabel");
-    const drawerLocationLabel = document.getElementById("drawerLocationLabel");
-
-    let currentLocation = "";
-
-    function openSheetOverlay(overlay) {
-      overlay.classList.add("open");
-      overlay.setAttribute("aria-hidden", "false");
-      document.body.classList.add("sheet-open");
-    }
-
-    function closeSheetOverlay(overlay) {
-      overlay.classList.remove("open");
-      overlay.setAttribute("aria-hidden", "true");
-
-      if (!document.querySelector(".sheet-overlay.open")) {
-        document.body.classList.remove("sheet-open");
-      }
-    }
-
-    function normalizeStateName(name) {
-      return String(name || "").toLowerCase().replace(/[^a-z]/g, "");
-    }
-
-    function matchState(name) {
-      const wanted = normalizeStateName(name);
-
-      if (!wanted) return "";
-
-      if (wanted.includes("delhi")) return "Delhi";
-      if (wanted === "orissa") return "Odisha";
-
-      return INDIAN_STATES.find(state =>
-        normalizeStateName(state) === wanted
-      ) || INDIAN_STATES.find(state => {
-        const normalized = normalizeStateName(state);
-        return normalized.includes(wanted) || wanted.includes(normalized);
-      }) || "";
-    }
-
-    function setLocation(state, persist = true) {
-      currentLocation = state || "";
-
-      const label = currentLocation || "Select state";
-
-      headerLocationLabel.textContent = label;
-      drawerLocationLabel.textContent = label;
-
-      document.getElementById("headerLocationButton").title =
-        currentLocation ? `Location: ${currentLocation}` : "Change location";
-
-      document.getElementById("drawerLocationButton").title =
-        currentLocation ? `Location: ${currentLocation}` : "Change location";
-
-      if (persist && currentLocation) {
-        try {
-          localStorage.setItem(LOCATION_KEY, currentLocation);
-        } catch (error) {
-          console.warn("Could not save location:", error);
-        }
-      }
-    }
-
-    function renderLocationList() {
-      locationList.innerHTML = `
-        <button type="button" class="sheet-category" data-detect-location>
-          <span class="sheet-category-name">
-            <i class="ph ph-crosshair" aria-hidden="true"></i>
-            <span>Use my current location</span>
-          </span>
-        </button>
-      ` + INDIAN_STATES.map(state => {
-        const active = state === currentLocation;
-
-        return `
-          <button
-            type="button"
-            class="sheet-category ${active ? "active" : ""}"
-            data-state="${escapeHTML(state)}"
-            aria-pressed="${active}"
-          >
-            <span class="sheet-category-name">
-              <i class="ph ph-map-pin" aria-hidden="true"></i>
-              <span>${escapeHTML(state)}</span>
-            </span>
-
-            ${
-              active
-                ? '<i class="ph-fill ph-check-circle sheet-category-check" aria-hidden="true"></i>'
-                : ""
-            }
-          </button>
-        `;
-      }).join("");
-    }
-
-    function openLocationSheet() {
-      renderLocationList();
-      openSheetOverlay(locationSheetOverlay);
-      closeDesktopDrawer();
-    }
-
-    function detectLocation(silent) {
-      if (!navigator.geolocation) {
-        if (!silent) showToast("Location is not supported on this device.");
-        return;
-      }
-
-      if (!silent) showToast("Detecting your location...");
-
-      navigator.geolocation.getCurrentPosition(async position => {
-        try {
-          const url =
-            "https://api.bigdatacloud.net/data/reverse-geocode-client" +
-            `?latitude=${encodeURIComponent(position.coords.latitude)}` +
-            `&longitude=${encodeURIComponent(position.coords.longitude)}` +
-            "&localityLanguage=en";
-
-          const response = await fetch(url, { cache: "no-store" });
-          const data = await response.json();
-          const match = matchState(data.principalSubdivision);
-
-          if (data.countryCode === "IN" && match) {
-            setLocation(match);
-            if (!silent) showToast(`Location set to ${match}`);
-          } else if (!silent) {
-            showToast("Could not detect your state. Please choose it.");
-          }
-        } catch (error) {
-          if (!silent) showToast("Could not detect your state. Please choose it.");
-        }
-      }, () => {
-        if (!silent) showToast("Location permission denied. Please choose your state.");
-      }, {
-        enableHighAccuracy: false,
-        timeout: 10000,
-        maximumAge: 600000
-      });
-    }
-
-    async function initLocation() {
-      let saved = "";
-
-      try {
-        saved = localStorage.getItem(LOCATION_KEY) || "";
-      } catch (error) {
-        saved = "";
-      }
-
-      if (saved) {
-        setLocation(saved, false);
-        return;
-      }
-
-      setLocation("", false);
-
-      // Only auto-detect silently when the browser already has permission.
-      try {
-        const permission = await navigator.permissions.query({ name: "geolocation" });
-
-        if (permission.state === "granted") {
-          detectLocation(true);
-        }
-      } catch (error) {
-        /* permissions API unavailable: user picks a state manually */
-      }
-    }
-
-    document.querySelectorAll("[data-open-location]").forEach(button => {
-      button.addEventListener("click", openLocationSheet);
-    });
-
-    locationList.addEventListener("click", event => {
-      if (event.target.closest("[data-detect-location]")) {
-        closeSheetOverlay(locationSheetOverlay);
-        detectLocation(false);
-        return;
-      }
-
-      const option = event.target.closest("[data-state]");
-
-      if (!option) return;
-
-      setLocation(option.dataset.state);
-      closeSheetOverlay(locationSheetOverlay);
-    });
-
-    document.getElementById("locationSheetClose").addEventListener("click", () => {
-      closeSheetOverlay(locationSheetOverlay);
-    });
-
-    locationSheetOverlay.addEventListener("click", event => {
-      if (event.target === locationSheetOverlay) {
-        closeSheetOverlay(locationSheetOverlay);
-      }
-    });
-
-    /* NOTIFICATIONS */
-
-    function formatNotificationTime(value) {
-      const date = new Date(value);
-
-      if (!value || Number.isNaN(date.getTime())) return "";
-
-      return date.toLocaleString("en-IN", {
-        day: "numeric",
-        month: "short",
-        hour: "numeric",
-        minute: "2-digit"
-      });
-    }
-
-    function renderNotificationsEmpty(message) {
-      notifList.innerHTML = `
-        <div class="notif-empty">
-          <i class="ph ph-bell-slash" aria-hidden="true"></i>
-          ${escapeHTML(message)}
-        </div>
-        <a class="notif-all" href="/notifications.html">View all notifications</a>
-      `;
-    }
-
-    async function loadNotifications() {
-      if (authStatus !== "logged-in") {
-        notifList.innerHTML = `
-          <div class="notif-empty">
-            <i class="ph ph-bell-slash" aria-hidden="true"></i>
-            Login to see your notifications.
-          </div>
-          <a class="notif-all" href="/login.html">Login</a>
-        `;
-        return;
-      }
-
-      notifList.innerHTML = '<div class="notif-empty">Loading...</div>';
-
-      try {
-        const response = await fetch("/api/notifications", {
-          method: "GET",
-          headers: { Accept: "application/json" },
-          credentials: "same-origin",
-          cache: "no-store"
-        });
-
-        const contentType = response.headers.get("content-type") || "";
-
-        if (!response.ok || !contentType.includes("application/json")) {
-          throw new Error("Notifications unavailable");
-        }
-
-        const data = await response.json();
-
-        const items = Array.isArray(data)
-          ? data
-          : (data.notifications || data.items || []);
-
-        if (!Array.isArray(items) || !items.length) {
-          renderNotificationsEmpty("You're all caught up. No new notifications.");
-          return;
-        }
-
-        notifList.innerHTML = items.slice(0, 20).map(item => {
-          const title = escapeHTML(item.title || item.heading || "Notification");
-          const message = escapeHTML(item.message || item.body || item.text || "");
-          const time = escapeHTML(
-            formatNotificationTime(item.createdAt || item.time || item.date)
-          );
-
-          return `
-            <div class="notif-item">
-              <i class="ph ph-bell" aria-hidden="true"></i>
-              <div>
-                <strong>${title}</strong>
-                ${message ? `<p>${message}</p>` : ""}
-                ${time ? `<small>${time}</small>` : ""}
-              </div>
-            </div>
-          `;
-        }).join("") +
-          '<a class="notif-all" href="/notifications.html">View all notifications</a>';
-
-      } catch (error) {
-        renderNotificationsEmpty("No new notifications right now.");
-      }
-    }
-
-    document.getElementById("notifButton").addEventListener("click", () => {
-      openSheetOverlay(notifSheetOverlay);
-      loadNotifications();
-    });
-
-    document.getElementById("notifSheetClose").addEventListener("click", () => {
-      closeSheetOverlay(notifSheetOverlay);
-    });
-
-    notifSheetOverlay.addEventListener("click", event => {
-      if (event.target === notifSheetOverlay) {
-        closeSheetOverlay(notifSheetOverlay);
-      }
-    });
-
-    document.addEventListener("keydown", event => {
-      if (event.key !== "Escape") return;
-
-      [locationSheetOverlay, notifSheetOverlay].forEach(overlay => {
-        if (overlay.classList.contains("open")) {
-          closeSheetOverlay(overlay);
-        }
-      });
-    });
-
-    /* iOS-STYLE PRESS-AND-HOLD DRAG OF THE SELECTED BOTTOM-NAV TAB */
-
-    (function () {
-      let state = null;
-      let holdTimer = null;
-      let suppressClick = false;
-
-      const getItems = () =>
-        [...bottomNav.querySelectorAll(".bottom-nav-item")];
-
-      function moveBubble(clientX) {
-        const items = getItems();
-        const first = items[0];
-        const last = items[items.length - 1];
-        const rect = bottomNav.getBoundingClientRect();
-
-        let x = clientX - rect.left - bottomNav.clientLeft - first.offsetWidth / 2;
-
-        x = Math.max(first.offsetLeft - 4, Math.min(last.offsetLeft + 4, x));
-
-        navIndicator.style.transform =
-          `translate3d(${x}px, 0, 0) scale(1.14)`;
-
-        let nearest = first;
-        let best = Infinity;
-
-        items.forEach(item => {
-          const distance = Math.abs(item.offsetLeft - x);
-
-          if (distance < best) {
-            best = distance;
-            nearest = item;
-          }
-        });
-
-        items.forEach(item => {
-          item.classList.toggle("drag-over", item === nearest);
-        });
-
-        state.target = nearest;
-      }
-
-      function beginDrag() {
-        if (!state) return;
-
-        state.dragging = true;
-        suppressClick = true;
-
-        try {
-          bottomNav.setPointerCapture(state.id);
-        } catch (error) { /* ignore */ }
-
-        navIndicator.classList.add("dragging");
-        bottomNav.classList.add("nav-dragging");
-
-        if (navigator.vibrate) {
-          try { navigator.vibrate(12); } catch (error) { /* ignore */ }
-        }
-
-        moveBubble(state.x);
-      }
-
-      function endDrag(commit) {
-        clearTimeout(holdTimer);
-
-        if (!state) return;
-
-        const finished = state;
-        state = null;
-
-        if (!finished.dragging) return;
-
-        try {
-          bottomNav.releasePointerCapture(finished.id);
-        } catch (error) { /* ignore */ }
-
-        navIndicator.classList.remove("dragging");
-        bottomNav.classList.remove("nav-dragging");
-
-        getItems().forEach(item => item.classList.remove("drag-over"));
-
-        void navIndicator.offsetWidth;
-
-        const target = commit ? finished.target : null;
-        const current = bottomNav.querySelector(".bottom-nav-item.active");
-
-        if (target && target !== current && target.dataset.bottomNav) {
-          handleNavigation(target.dataset.bottomNav);
-        } else {
-          positionNavIndicator();
-        }
-
-        setTimeout(() => { suppressClick = false; }, 80);
-      }
-
-      bottomNav.addEventListener("pointerdown", event => {
-        if (event.pointerType === "mouse" && event.button !== 0) return;
-        if (!event.target.closest(".bottom-nav-item.active")) return;
-
-        state = {
-          id: event.pointerId,
-          startX: event.clientX,
-          x: event.clientX,
-          dragging: false,
-          target: null
-        };
-
-        clearTimeout(holdTimer);
-        holdTimer = setTimeout(beginDrag, 220);
-      });
-
-      window.addEventListener("pointermove", event => {
-        if (!state || event.pointerId !== state.id) return;
-
-        state.x = event.clientX;
-
-        if (state.dragging) {
-          event.preventDefault();
-          moveBubble(event.clientX);
-        } else if (Math.abs(event.clientX - state.startX) > 10) {
-          clearTimeout(holdTimer);
-          state = null;
-        }
-      });
-
-      window.addEventListener("pointerup", event => {
-        if (state && event.pointerId === state.id) endDrag(true);
-      });
-
-      window.addEventListener("pointercancel", event => {
-        if (state && event.pointerId === state.id) endDrag(false);
-      });
-
-      bottomNav.addEventListener("click", event => {
-        if (suppressClick) {
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      }, true);
-
-      bottomNav.addEventListener("contextmenu", event => {
-        event.preventDefault();
-      });
-    })();
-
     /* INITIALIZATION */
 
     async function initializeHomePage() {
       updateResponsiveNavigation();
-      initLocation();
       await checkShoppyAuth();
       await loadCart();
       await loadProducts();
@@ -4831,7 +3762,32 @@
     (function(){
       const loading=document.getElementById("appProfileLoading"),layout=document.getElementById("appProfileLayout");let loaded=false;
       function initials(name){const w=String(name||"").trim().split(/\s+/).filter(Boolean);if(!w.length)return"U";if(w.length===1)return Array.from(w[0]).slice(0,2).join("").toUpperCase();return(Array.from(w[0])[0]+Array.from(w[1])[0]).toUpperCase();}
-      async function load(){if(loaded)return;loaded=true;loading.textContent="Loading your profile...";try{const r=await fetch("/api/profile",{method:"GET",credentials:"same-origin",cache:"no-store"});const d=await r.json();if(r.status===401){authStatus="guest";document.body.classList.add("guest-mode");document.getElementById("guestAccountPanel").hidden=false;loading.hidden=true;layout.hidden=true;return;}if(!r.ok||!d.success||!d.user)throw Error(d.message||"Unable to load profile");authStatus="logged-in";const u=d.user;document.getElementById("appUserName").textContent=u.name||"User";document.getElementById("appUserEmail").textContent=u.email||"";document.getElementById("appAvatar").textContent=initials(u.name);loading.hidden=true;layout.hidden=false;}catch(e){loaded=false;loading.textContent="Unable to load your profile.";const b=document.createElement("button");b.className="app-primary-button";b.textContent="Try Again";b.onclick=load;loading.appendChild(b);}}
+      function formatMembershipDate(value){const time=Number(value);if(!Number.isFinite(time)||time<=0)return"Not available";return new Date(time).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});}
+      function renderMembership(membership){
+        const m=membership&&typeof membership==="object"?membership:{};
+        const isActive=m.active===true&&Number(m.expiresAt)>Date.now();
+        const badge=document.getElementById("appMembershipBadge");
+        const summary=document.getElementById("appMembershipSummary");
+        const rowTitle=document.getElementById("appMembershipRowTitle");
+        const rowDescription=document.getElementById("appMembershipRowDescription");
+        if(isActive){
+          badge.classList.add("app-premium-badge");
+          badge.textContent="★  SHOPPY PREMIUM";
+          summary.hidden=false;
+          document.getElementById("appMembershipTitle").textContent="Premium Membership Active";
+          document.getElementById("appMembershipPlan").textContent=(m.planName||m.plan||"Premium")+" plan";
+          document.getElementById("appMembershipExpiry").textContent="Valid until "+formatMembershipDate(m.expiresAt);
+          rowTitle.textContent="Manage Premium Membership";
+          rowDescription.textContent=(m.planName||m.plan||"Premium")+" is active until "+formatMembershipDate(m.expiresAt)+".";
+        }else{
+          badge.classList.remove("app-premium-badge");
+          badge.textContent="✓  SHOPPING MEMBER";
+          summary.hidden=true;
+          rowTitle.textContent="Premium Membership";
+          rowDescription.textContent=m.status==="expired"?"Your Premium membership has expired. Choose a plan to renew.":"Explore Premium plans and membership benefits.";
+        }
+      }
+      async function load(){if(loaded)return;loaded=true;loading.textContent="Loading your profile...";try{const r=await fetch("/api/profile",{method:"GET",credentials:"same-origin",cache:"no-store"});const d=await r.json();if(r.status===401){authStatus="guest";document.body.classList.add("guest-mode");document.getElementById("guestAccountPanel").hidden=false;loading.hidden=true;layout.hidden=true;return;}if(!r.ok||!d.success||!d.user)throw Error(d.message||"Unable to load profile");authStatus="logged-in";const u=d.user;document.getElementById("appUserName").textContent=u.name||"User";document.getElementById("appUserEmail").textContent=u.email||"";document.getElementById("appAvatar").textContent=initials(u.name);renderMembership(d.membership);loading.hidden=true;layout.hidden=false;}catch(e){loaded=false;loading.textContent="Unable to load your profile.";const b=document.createElement("button");b.className="app-primary-button";b.textContent="Try Again";b.onclick=load;loading.appendChild(b);}}
       async function logout(){const b=document.getElementById("appLogoutButton");if(b.disabled)return;b.disabled=true;try{const r=await fetch("/api/logout",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"logout"}),cache:"no-store"});const d=await r.json();if(r.ok&&d.success){location.replace(d.redirect||"/login.html");return;}b.disabled=false;alert(d.message||"Unable to log out.");}catch(e){b.disabled=false;alert("Server se connect nahi ho paya.");console.error("Logout error:",e);}}
       document.getElementById("appLogoutButton").addEventListener("click",logout);document.getElementById("appProfileCartShortcut").onclick=()=>handleNavigation("cart");document.getElementById("appProfileCartRow").onclick=()=>handleNavigation("cart");
       window.ShoppyInPageProfile={load};
