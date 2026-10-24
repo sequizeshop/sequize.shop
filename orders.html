@@ -8,12 +8,12 @@
   <title>My Orders — Shoppy</title>
 
   <link rel="icon" type="image/png"
-    href="https://i.ibb.co/93kQCKxT/202610.png">
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap"
     rel="stylesheet">
 
   <link rel="stylesheet"
@@ -22,18 +22,131 @@
   <link rel="stylesheet" href="/global.css">
 
   <style>
-    /* =====================================================
-       SHOPPY — MY ORDERS
-       Payment page reference design
-       ===================================================== */
+    :root {
+      /* Shoppy design tokens */
+      --primary: #2962FF;
+      --primary-hover: #0059D7;
+      --primary-soft: #EDF2FF;
+      --primary-selected: #F8FAFF;
+      --background: #FFFFFF;
+      --surface: #FFFFFF;
+      --surface-secondary: #F5F5F2;
+      --text-primary: #1E1F1C;
+      --text-secondary: #666960;
+      --text-muted: #969991;
+      --border: #E5E7EB;
+      --divider: #E5E7EB;
+      --success: #15803D;
+      --success-bg: #ECFDF3;
+      --error: #DC2626;
+      --error-bg: #FEF2F2;
+      --disabled-bg: #E5E7EB;
+      --disabled-text: #969991;
+
+      --font-body: "DM Sans", sans-serif;
+      --font-heading: "Manrope", sans-serif;
+
+      --radius-sm: 5px;
+      --radius-md: 9px;
+      --radius-lg: 12px;
+
+      --header-h: 64px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.7;
+      background: var(--background);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+    }
+
+    /* HEADER */
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      height: var(--header-h);
+      min-height: var(--header-h);
+      margin: 0;
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--background);
+      border-bottom: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .bag-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      margin: 0;
+      border: none;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 24px;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .bag-link:hover {
+      background: var(--surface-secondary);
+    }
+
+    .brand {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.4;
+      letter-spacing: -0.7px;
+      color: var(--primary);
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      text-decoration: none;
+    }
+
+    /* PAGE */
 
     main {
       width: min(1050px, 90%);
+      max-width: 1050px;
       margin: 34px auto 65px;
       min-height: 55vh;
     }
-
-    /* PAGE HEADING */
 
     .page-heading {
       display: flex;
@@ -41,85 +154,80 @@
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      margin-bottom: 28px;
+      margin: 0 0 28px;
     }
 
     .page-heading h1 {
-      font-family: "Manrope", sans-serif;
+      font-family: var(--font-heading);
       font-size: clamp(27px, 4vw, 36px);
       font-weight: 800;
+      line-height: 1.25;
       letter-spacing: -1.2px;
       margin: 0 0 8px;
     }
 
     .page-heading p {
       margin: 0;
-      color: var(--muted);
+      color: var(--text-secondary);
       font-size: 14px;
       line-height: 1.7;
     }
 
-    /* BUTTONS */
+    /* BUTTONS (text only) */
 
     .refresh-btn,
     .action-btn,
     .primary-btn {
-      min-height: 43px;
+      min-height: 48px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 11px 16px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--paper);
-      color: var(--ink);
-      font-size: 12px;
-      font-weight: 800;
+      padding: 12px 24px;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
       text-decoration: none;
-      transition:
-        background .2s,
-        border-color .2s,
-        color .2s;
+      transition: background .2s, border-color .2s, color .2s;
     }
 
-    .refresh-btn:hover,
-    .action-btn:hover {
-      background: #f8faff;
-      border-color: #cbd7ff;
+    .refresh-btn,
+    .action-btn {
+      border: 1px solid var(--primary-soft);
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .refresh-btn:hover:not(:disabled),
+    .action-btn:hover:not(:disabled) {
+      border-color: var(--primary);
     }
 
     .refresh-btn:disabled {
-      opacity: .6;
+      background: var(--disabled-bg);
+      border-color: var(--disabled-bg);
+      color: var(--disabled-text);
       cursor: wait;
     }
 
     .primary-btn {
-      min-height: 49px;
-      padding: 13px 18px;
-      border-color: var(--blue);
-      background: var(--blue);
+      border: 1px solid var(--primary);
+      background: var(--primary);
       color: #ffffff;
     }
 
     .primary-btn:hover {
-      border-color: var(--blue-dark);
-      background: var(--blue-dark);
-    }
-
-    .refresh-btn i,
-    .action-btn i,
-    .primary-btn i {
-      font-size: 16px;
+      border-color: var(--primary-hover);
+      background: var(--primary-hover);
     }
 
     /* PAGE MESSAGE */
 
     #message {
       padding: 0;
-      margin: 0 0 20px;
-      color: var(--muted);
-      font-size: 13px;
+      margin: 0 0 18px;
+      color: var(--text-secondary);
+      font-size: 14px;
       line-height: 1.7;
     }
 
@@ -128,24 +236,36 @@
     }
 
     .notice {
-      padding: 13px 15px;
-      margin-bottom: 22px;
-      border: 1px solid #dce6ff;
-      border-radius: 10px;
-      background: #f5f8ff;
-      color: #34466f;
-      font-size: 12px;
+      padding: 12px 15px;
+      margin-bottom: 24px;
+      border-radius: var(--radius-lg);
+      background: var(--primary-soft);
+      color: var(--text-primary);
+      font-size: 13px;
       line-height: 1.7;
     }
 
-    /* ORDER CARD */
+    .notice i {
+      color: var(--primary);
+      vertical-align: -2px;
+    }
+
+    /* ORDERS (divider separated, no outer cards) */
 
     .order-card {
-      margin-bottom: 22px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--paper);
+      margin: 0;
+      padding: 27px 0;
+      border-bottom: 1px solid var(--divider);
+      background: transparent;
+    }
+
+    .order-card:first-child {
+      padding-top: 0;
+    }
+
+    .order-card:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
     }
 
     .order-top {
@@ -154,9 +274,8 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 18px;
-      padding: 18px 20px;
-      background: #f8faff;
-      border-bottom: 1px solid var(--line);
+      padding: 0 0 15px;
+      border-bottom: 1px solid var(--divider);
     }
 
     .order-meta {
@@ -166,19 +285,19 @@
 
     .meta-label {
       display: block;
-      margin-bottom: 7px;
-      color: var(--muted);
-      font-size: 10px;
-      font-weight: 800;
+      margin-bottom: 2px;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: .7px;
     }
 
     .meta-value {
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 14px;
+      font-weight: 600;
       overflow-wrap: anywhere;
-      line-height: 1.7;
+      line-height: 1.6;
     }
 
     /* STATUS */
@@ -194,51 +313,65 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 7px 10px;
-      border-radius: 7px;
-      background: #fff4d6;
-      color: #805900;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .2px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--surface-secondary);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
     }
 
     .status i {
-      font-size: 13px;
+      font-size: 14px;
     }
 
     .status.paid {
-      background: #dcfce7;
-      color: #166534;
+      background: var(--success-bg);
+      color: var(--success);
     }
 
     .status.failed {
-      background: #fee2e2;
-      color: #991b1b;
+      background: var(--error-bg);
+      color: var(--error);
     }
 
-    /* ORDER PRODUCTS */
+    /* ORDER PRODUCTS (with images) */
 
     .order-body {
-      padding: 8px 20px;
+      padding: 0;
     }
 
     .product-row {
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 20px;
+      align-items: center;
+      gap: 15px;
       padding: 15px 0;
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid var(--divider);
       line-height: 1.6;
-    }
-
-    .product-row:first-child {
-      padding-top: 12px;
     }
 
     .product-row:last-child {
       border-bottom: 0;
+    }
+
+    .product-image {
+      width: 76px;
+      height: 76px;
+      flex-shrink: 0;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      background: var(--surface-secondary);
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
 
     .product-details {
@@ -247,23 +380,26 @@
     }
 
     .product-name {
-      color: var(--ink);
-      font-size: 13px;
+      color: var(--text-primary);
+      font-family: var(--font-heading);
+      font-size: 14px;
       font-weight: 700;
+      line-height: 1.5;
       overflow-wrap: anywhere;
     }
 
     .product-info {
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 11px;
+      margin-top: 2px;
+      color: var(--text-secondary);
+      font-size: 13px;
     }
 
     .product-price {
       flex-shrink: 0;
       padding-left: 5px;
-      color: var(--ink);
-      font-size: 13px;
+      color: var(--text-primary);
+      font-family: var(--font-heading);
+      font-size: 14px;
       font-weight: 800;
       white-space: nowrap;
     }
@@ -276,8 +412,9 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 18px;
-      padding: 18px 20px 20px;
-      border-top: 1px solid var(--line);
+      margin-top: 3px;
+      padding: 18px 0 0;
+      border-top: 1px solid var(--divider);
     }
 
     .order-total {
@@ -285,35 +422,31 @@
     }
 
     .total-label {
-      margin-bottom: 6px;
-      color: var(--muted);
-      font-size: 11px;
+      margin-bottom: 0;
+      color: var(--text-secondary);
+      font-size: 13px;
     }
 
     .total {
-      font-family: "Manrope", sans-serif;
-      font-size: 25px;
+      font-family: var(--font-heading);
+      font-size: 24px;
       font-weight: 800;
       letter-spacing: -.7px;
       overflow-wrap: anywhere;
     }
 
-    /* ACTIONS */
-
     .order-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
 
     /* EMPTY STATE */
 
     .empty-state {
-      padding: 35px 20px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--paper);
+      padding: 40px 0;
+      background: transparent;
       text-align: center;
     }
 
@@ -322,41 +455,36 @@
       height: 64px;
       display: grid;
       place-items: center;
-      margin: 0 auto 20px;
+      margin: 0 auto 18px;
       border-radius: 50%;
-      background: #edf2ff;
-      color: var(--blue);
+      background: var(--primary-soft);
+      color: var(--primary);
       font-size: 29px;
     }
 
     .empty-state h2 {
-      margin: 0 0 10px;
-      font-family: "Manrope", sans-serif;
-      font-size: 21px;
+      margin: 0 0 8px;
+      font-family: var(--font-heading);
+      font-size: 22px;
       font-weight: 800;
-      letter-spacing: -.4px;
+      letter-spacing: -.7px;
     }
 
     .empty-state p {
       max-width: 380px;
-      margin: 0 auto 22px;
-      color: var(--muted);
-      font-size: 13px;
+      margin: 0 auto 24px;
+      color: var(--text-secondary);
+      font-size: 14px;
       line-height: 1.7;
-    }
-
-    .empty-state .primary-btn {
-      width: auto;
-      min-width: 155px;
     }
 
     /* FOOTER */
 
     footer {
-      padding: 24px 20px;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 11px;
+      padding: 24px 5%;
+      border-top: 1px solid var(--divider);
+      color: var(--text-muted);
+      font-size: 12px;
       text-align: center;
     }
 
@@ -384,17 +512,6 @@
         width: 100%;
       }
 
-      .order-body {
-        padding-left: 15px;
-        padding-right: 15px;
-      }
-
-      .order-top,
-      .order-bottom {
-        padding-left: 15px;
-        padding-right: 15px;
-      }
-
       .order-bottom {
         align-items: stretch;
       }
@@ -407,19 +524,17 @@
       .order-actions a {
         flex: 1;
       }
-
-      .product-row {
-        gap: 12px;
-      }
     }
 
     @media (max-width: 380px) {
-      .page-heading h1 {
-        font-size: 27px;
-      }
-
       .refresh-btn {
         width: 100%;
+      }
+
+      .product-image {
+        width: 60px;
+        height: 74px;
+        padding: 4px;
       }
 
       .product-name {
@@ -432,7 +547,7 @@
       }
 
       .total {
-        font-size: 23px;
+        font-size: 22px;
       }
 
       .order-actions {
@@ -450,10 +565,7 @@
 
 <body>
 
-  <!-- =====================================================
-       SHOPPY TOOLBAR
-       Same reference design as Payment Page
-       ===================================================== -->
+  <!-- HEADER -->
 
   <header class="topbar">
 
@@ -462,7 +574,7 @@
        aria-label="Continue shopping"
        title="Continue shopping">
 
-      <i class="ph ph-navigation-arrow"></i>
+      <i class="ph ph-bag-simple"></i>
 
     </a>
 
@@ -486,13 +598,7 @@
 
       <button class="refresh-btn"
               id="refreshBtn"
-              type="button">
-
-        <i class="ph ph-arrows-clockwise"></i>
-
-        <span>Refresh orders</span>
-
-      </button>
+              type="button">Refresh orders</button>
 
     </div>
 
@@ -533,6 +639,9 @@
     const ordersList = document.getElementById("ordersList");
     const message = document.getElementById("message");
     const refreshBtn = document.getElementById("refreshBtn");
+
+    const PLACEHOLDER_IMAGE =
+      "https://placehold.co/300x300/f5f5f2/969991?text=Product";
 
     document.getElementById("year").textContent =
       new Date().getFullYear();
@@ -622,6 +731,40 @@
       return "";
     }
 
+    /*
+      Product image for an order item.
+      Uses the same field names as the cart API (thumbnail),
+      with a few common fallbacks. Only https or same-origin
+      URLs are used; anything else falls back to a placeholder.
+    */
+    function getItemImage(item) {
+      const candidate =
+        item.thumbnail ||
+        item.image ||
+        item.imageUrl ||
+        (Array.isArray(item.images) ? item.images[0] : "") ||
+        "";
+
+      if (!candidate) {
+        return PLACEHOLDER_IMAGE;
+      }
+
+      try {
+        const parsed = new URL(candidate, window.location.origin);
+
+        if (
+          parsed.protocol !== "https:" &&
+          parsed.origin !== window.location.origin
+        ) {
+          return PLACEHOLDER_IMAGE;
+        }
+
+        return parsed.href;
+      } catch {
+        return PLACEHOLDER_IMAGE;
+      }
+    }
+
     function renderOrder(order) {
       const orderId = String(order.orderId || "");
 
@@ -653,6 +796,8 @@
             const lineTotalUSD =
               Number(item.lineTotalUSD);
 
+            const image = escapeHTML(getItemImage(item));
+
             let priceText = "";
 
             if (Number.isFinite(lineTotalUSD)) {
@@ -674,6 +819,15 @@
 
             return `
               <div class="product-row">
+
+                <div class="product-image">
+                  <img
+                    src="${image}"
+                    alt="${title}"
+                    loading="lazy"
+                    onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}';"
+                  >
+                </div>
 
                 <div class="product-details">
 
@@ -697,7 +851,7 @@
           }).join("")
         : `
             <div class="empty-state"
-                 style="border:0;padding:20px 0">
+                 style="padding:20px 0">
 
               <p style="margin:0">
                 No item details available for this order.
@@ -788,7 +942,7 @@
 
           <!-- ORDER TOTAL AND ACTIONS -->
 
-          <div class="order-bottom">
+          <div class="order-bottom total-row">
 
             <div class="order-total">
 
@@ -807,26 +961,14 @@
               <button
                 class="action-btn"
                 type="button"
-                data-copy-order="${escapeHTML(orderId)}">
-
-                <i class="ph ph-copy"></i>
-
-                <span>Copy order ID</span>
-
-              </button>
+                data-copy-order="${escapeHTML(orderId)}">Copy order ID</button>
 
               ${
                 canContinuePayment
                   ? `
                     <a
                       class="primary-btn"
-                      href="/payment.html?orderId=${encodedOrderId}">
-
-                      <i class="ph ph-lock-key"></i>
-
-                      <span>Continue to payment</span>
-
-                    </a>
+                      href="/payment.html?orderId=${encodedOrderId}">Continue to payment</a>
                   `
                   : ""
               }
@@ -842,10 +984,7 @@
     async function loadOrders() {
       refreshBtn.disabled = true;
 
-      refreshBtn.innerHTML = `
-        <i class="ph ph-spinner"></i>
-        <span>Loading...</span>
-      `;
+      refreshBtn.textContent = "Loading...";
 
       ordersList.replaceChildren();
 
@@ -882,13 +1021,7 @@
                 Log in to your Shoppy account to see your orders.
               </p>
 
-              <a class="primary-btn" href="/login.html">
-
-                <i class="ph ph-sign-in"></i>
-
-                Log in
-
-              </a>
+              <a class="primary-btn" href="/login.html">Log in</a>
 
             </div>
           `;
@@ -925,13 +1058,7 @@
                 Your orders will appear here after you place an order.
               </p>
 
-              <a class="primary-btn" href="/shop.html">
-
-                <i class="ph ph-shopping-bag"></i>
-
-                Start shopping
-
-              </a>
+              <a class="primary-btn" href="/shop.html">Start shopping</a>
 
             </div>
           `;
@@ -956,10 +1083,7 @@
 
         refreshBtn.disabled = false;
 
-        refreshBtn.innerHTML = `
-          <i class="ph ph-arrows-clockwise"></i>
-          <span>Refresh orders</span>
-        `;
+        refreshBtn.textContent = "Refresh orders";
 
       }
     }
@@ -973,26 +1097,18 @@
 
       if (copyButton) {
 
-        const originalHTML = `
-          <i class="ph ph-copy"></i>
-          <span>Copy order ID</span>
-        `;
-
         try {
 
           await navigator.clipboard.writeText(
             copyButton.dataset.copyOrder
           );
 
-          copyButton.innerHTML = `
-            <i class="ph ph-check"></i>
-            <span>Copied</span>
-          `;
+          copyButton.textContent = "Copied";
 
           setTimeout(() => {
 
             if (copyButton.isConnected) {
-              copyButton.innerHTML = originalHTML;
+              copyButton.textContent = "Copy order ID";
             }
 
           }, 1500);
