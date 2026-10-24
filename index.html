@@ -52,7 +52,11 @@
     const cacheValid = !!(cached && cached.active === true && Number.isFinite(expiry) && expiry > Date.now());
     if (!cacheValid && cached) { try { localStorage.removeItem(window.__appnetickMembershipCacheKey); } catch (e) {} }
     window.__appnetickCachedPremium = cacheValid;
-    if (apple || cacheValid) {
+    let uiPreference = "";
+    try { uiPreference = localStorage.getItem("shoppy_premium_ui_preference_v1") || ""; } catch (e) {}
+    window.__appnetickPremiumUiPreference = uiPreference;
+    const shouldUsePremiumSkin = cacheValid ? uiPreference !== "basic" : apple;
+    if (shouldUsePremiumSkin) {
       document.documentElement.classList.add("premium-skin-early");
       const apply = function () {
         if (!document.body) return;
@@ -1604,6 +1608,18 @@
     .app-profile-layout.app-premium-active #appMembershipRow strong { color:#855B00; }
     .app-profile-layout.app-premium-active #appMembershipRowDescription { color:#795F20; }
     @media (max-width:760px) { .app-profile-layout.app-premium-active .app-profile-aside { padding:18px; } }
+    .premium-ui-preference-row { margin:18px 0 0; padding:14px 12px; display:flex; align-items:center; gap:12px; border:1px solid var(--border); border-radius:14px; background:var(--surface-secondary); }
+    .premium-ui-preference-row[hidden] { display:none !important; }
+    .premium-ui-preference-copy { flex:1; min-width:0; }
+    .premium-ui-preference-copy strong { display:block; font-size:14px; font-weight:800; line-height:1.35; }
+    .premium-ui-preference-copy small { display:block; margin-top:4px; color:var(--text-secondary); font-size:12px; line-height:1.45; }
+    .premium-ui-switch { position:relative; display:inline-flex; flex:0 0 48px; width:48px; height:28px; cursor:pointer; }
+    .premium-ui-switch input { position:absolute; width:1px; height:1px; opacity:0; }
+    .premium-ui-switch-track { position:absolute; inset:0; border-radius:99px; background:#A6A6A6; transition:background .2s ease; }
+    .premium-ui-switch-track::after { content:""; position:absolute; width:22px; height:22px; left:3px; top:3px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.22); transition:transform .2s ease; }
+    .premium-ui-switch input:checked + .premium-ui-switch-track { background:var(--primary); }
+    .premium-ui-switch input:checked + .premium-ui-switch-track::after { transform:translateX(20px); }
+    .premium-ui-switch input:focus-visible + .premium-ui-switch-track { outline:3px solid rgba(41,98,255,.3); outline-offset:2px; }
     .app-profile-row { min-height:60px; padding:14px 0; display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--divider); }
     .app-profile-row > i { color:var(--primary); font-size:22px; }
     .app-profile-row > span { min-width:0; flex:1; }
@@ -1910,7 +1926,7 @@
       body.app-premium-navigation .topbar #headerLocationButton { order:1; }
       body.app-premium-navigation .topbar #notifButton { order:2; width:42px; min-width:42px; padding:0; justify-content:center; }
       body.app-premium-navigation .topbar #notifButton i { font-size:21px; }
-      body.app-premium-navigation .topbar .location-chip { padding:0 13px; gap:7px; }
+      body.app-premium-navigation .topbar .location-chip { padding:0 9px; gap:6px; }
       body.app-premium-navigation .topbar .location-chip span { max-width:125px; }
       body.app-premium-navigation .bottom-nav {
         position:fixed; top:22px; left:16px; right:auto; bottom:22px; z-index:1500; box-sizing:border-box;
@@ -1931,13 +1947,17 @@
     /* Basic mobile navigation: force five equal-width slots and keep the active state predictable. */
     @media (max-width:760px) {
       body:not(.app-premium-navigation) .bottom-nav {
-        box-sizing:border-box; width:100%; left:0; right:0; transform:none;
-        display:flex; align-items:stretch; justify-content:space-between; gap:0;
-        padding-left:4px; padding-right:4px; overflow:visible;
+        position:fixed; box-sizing:border-box; width:100%; left:0; right:0; transform:none;
+        display:flex; align-items:stretch; justify-content:flex-start; gap:0;
+        padding-left:0; padding-right:0; overflow:visible; isolation:isolate;
+      }
+      /* The indicator is a positioned overlay, never a sixth flex item. */
+      body:not(.app-premium-navigation) .bottom-nav > .nav-indicator {
+        position:absolute; display:none; pointer-events:none; z-index:0;
       }
       body:not(.app-premium-navigation) .bottom-nav > .bottom-nav-item {
-        box-sizing:border-box; flex:1 1 20%; width:20%; min-width:0; max-width:20%;
-        margin:0; align-items:center; justify-content:center; text-align:center;
+        box-sizing:border-box; flex:1 1 0 !important; width:0 !important; min-width:0; max-width:none !important;
+        margin:0; padding-left:0; padding-right:0; align-items:center; justify-content:center; text-align:center;
       }
       body:not(.app-premium-navigation) .bottom-nav > .bottom-nav-item .nav-item-icon {
         width:100%; display:flex; align-items:center; justify-content:center;
@@ -2356,6 +2376,13 @@
           <strong id="appMembershipTitle">Shoppy Premium</strong>
           <small id="appMembershipPlan">Premium plan active</small>
           <small id="appMembershipExpiry">Membership expiry</small>
+        </div>
+        <div id="premiumUiPreferenceRow" class="premium-ui-preference-row" hidden>
+          <div class="premium-ui-preference-copy"><strong>Premium UI</strong><small>Switch between Premium and Basic design on this device.</small></div>
+          <label class="premium-ui-switch" for="premiumUiPreferenceToggle" aria-label="Use Premium UI">
+            <input type="checkbox" id="premiumUiPreferenceToggle" role="switch" aria-label="Use Premium UI">
+            <span class="premium-ui-switch-track"></span>
+          </label>
         </div>
         <div style="height:1px;background:var(--divider);margin:24px 0 0"></div>
         <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong></span><i class="ph ph-caret-right"></i></a>
@@ -4203,7 +4230,20 @@
       return Number.isFinite(parsed) ? parsed : 0;
     }
 
+    const PREMIUM_UI_PREFERENCE_KEY = "shoppy_premium_ui_preference_v1";
+    let lastMembershipForPresentation = null;
+    function getPremiumUiPreference() {
+      try { return localStorage.getItem(PREMIUM_UI_PREFERENCE_KEY) || ""; } catch (e) { return ""; }
+    }
+    function syncPremiumUiPreferenceControl(active) {
+      const row = document.getElementById("premiumUiPreferenceRow");
+      const toggle = document.getElementById("premiumUiPreferenceToggle");
+      if (!row || !toggle) return;
+      row.hidden = !active;
+      toggle.checked = active && getPremiumUiPreference() !== "basic";
+    }
     function setPremiumPresentation(membership, verified) {
+      lastMembershipForPresentation = membership && typeof membership === "object" ? membership : {};
       const expiry = membership ? expiryTimestamp(membership.expiresAt) : 0;
       const active = !!(verified && membership && membership.active === true && expiry > Date.now());
       if (active) {
@@ -4213,8 +4253,11 @@
         lastVerifiedMembership = null;
         try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {}
       }
-      // Apple devices get the Premium visual skin only; paid membership entitlements remain server-controlled.
-      const usePremiumSkin = isAppleDevice || active;
+      // Paid members can persistently choose either visual style on iOS and Android.
+      // Non-members retain the existing iOS visual treatment where applicable.
+      const preference = getPremiumUiPreference();
+      const usePremiumSkin = active ? preference !== "basic" : isAppleDevice;
+      syncPremiumUiPreferenceControl(active);
       const hadPremiumSkin = document.body.classList.contains("app-premium-navigation");
       if (hadPremiumSkin !== usePremiumSkin) {
         document.body.classList.toggle("app-premium-navigation", usePremiumSkin);
@@ -4224,6 +4267,17 @@
       updateBrowserThemeColor(usePremiumSkin);
       return active;
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("premiumUiPreferenceToggle");
+      if (!toggle) return;
+      toggle.addEventListener("change", () => {
+        const preference = toggle.checked ? "premium" : "basic";
+        try { localStorage.setItem(PREMIUM_UI_PREFERENCE_KEY, preference); } catch (e) {}
+        setPremiumPresentation(lastMembershipForPresentation || {}, true);
+        requestAnimationFrame(() => positionNavIndicator(true));
+      });
+    });
 
     function updateBrowserThemeColor(usePremiumTheme) {
       const meta = document.querySelector('meta[name="theme-color"]');
