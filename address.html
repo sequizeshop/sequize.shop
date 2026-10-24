@@ -11,89 +11,507 @@
   <link rel="stylesheet" href="/global.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Manrope:wght@800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
-    body { background: var(--paper); color: var(--ink); }
-    .navbar { min-height: 76px; padding: 0 7%; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--paper); z-index: 10; }
-    .brand img { width: 46px; height: 46px; object-fit: contain; display: block; }
-    .nav-actions { display: flex; align-items: center; gap: 22px; }
-    .nav-icon { width: 32px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 23px; color: var(--ink); }
-    .nav-icon:hover { opacity: .6; }
-    .container { width: 86%; max-width: 1400px; margin: 45px auto 70px; background: var(--paper); }
-    .page-heading { margin-bottom: 30px; }
-    .page-heading h1 { font-size: clamp(28px, 4vw, 38px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.2; }
-    .page-heading p { margin-top: 9px; color: var(--muted); font-size: 13px; line-height: 1.7; }
-    .address-form { width: 100%; max-width: 1250px; background: var(--paper); }
-    .form-section + .form-section { margin-top: 30px; padding-top: 27px; border-top: 1px solid var(--line); }
-    .section-title { margin-bottom: 22px; }
-    .section-title h2 { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
-    .section-title p { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.7; }
-    .fields-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 21px 18px; align-items: start; }
+    :root {
+      /* Shoppy design tokens */
+      --primary: #2962FF;
+      --primary-hover: #0059D7;
+      --primary-soft: #EDF2FF;
+      --primary-selected: #F8FAFF;
+      --background: #FFFFFF;
+      --surface: #FFFFFF;
+      --surface-secondary: #F5F5F2;
+      --text-primary: #1E1F1C;
+      --text-secondary: #666960;
+      --text-muted: #969991;
+      --border: #E5E7EB;
+      --divider: #E5E7EB;
+      --success: #15803D;
+      --success-bg: #ECFDF3;
+      --error: #DC2626;
+      --error-bg: #FEF2F2;
+      --disabled-bg: #E5E7EB;
+      --disabled-text: #969991;
+
+      --font-body: "DM Sans", sans-serif;
+      --font-heading: "Manrope", sans-serif;
+
+      --radius-sm: 5px;
+      --radius-md: 9px;
+      --radius-lg: 12px;
+
+      --header-h: 64px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.7;
+      background: var(--background);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+    }
+
+    /* HEADER */
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      height: var(--header-h);
+      min-height: var(--header-h);
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--background);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-actions { display: flex; align-items: center; gap: 4px; }
+
+    .nav-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      border-radius: var(--radius-md);
+      font-size: 24px;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .nav-icon:hover { background: var(--surface-secondary); }
+
+    .brand {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.4;
+      letter-spacing: -0.7px;
+      color: var(--primary);
+    }
+
+    /* PAGE */
+
+    .container {
+      width: min(1050px, 90%);
+      max-width: 1050px;
+      margin: 34px auto 65px;
+      background: transparent;
+    }
+
+    .page-heading { margin: 0 0 28px; }
+
+    .page-heading h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(27px, 4vw, 36px);
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .page-heading p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .address-form { width: 100%; background: transparent; }
+
+    .form-section + .form-section {
+      margin-top: 27px;
+      padding-top: 27px;
+      border-top: 1px solid var(--divider);
+    }
+
+    .section-title { margin-bottom: 18px; }
+
+    .section-title h2 {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.7px;
+    }
+
+    .section-title p {
+      margin-top: 2px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .fields-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px 18px;
+      align-items: start;
+    }
+
     .field { min-width: 0; }
     .field.full { grid-column: 1 / -1; }
     .field.span-two { grid-column: span 2; }
-    .field label { display: block; margin-bottom: 9px; color: var(--ink); font-size: 12px; font-weight: 600; }
-    .required { color: var(--red); margin-left: 2px; }
-    .optional { color: var(--muted); font-size: 11px; font-weight: 400; margin-left: 4px; }
-    .field input:not([type="checkbox"]):not([type="radio"]), .field select, .field textarea {
-      display: block; width: 100%; min-width: 0; min-height: 47px; padding: 13px 14px;
-      border: 1px solid var(--line); border-radius: 10px; outline: none; background: var(--paper);
-      color: var(--ink); font-size: 13px; transition: border-color .18s, box-shadow .18s;
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 600;
     }
-    .field textarea { min-height: 95px; resize: vertical; line-height: 1.7; }
-    .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
-    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(23, 72, 209, .08); }
-    .field input[readonly] { background: #f7f7f7; }
-    .field-help { margin-top: 7px; color: var(--muted); font-size: 11px; line-height: 1.6; }
-    .field-error { display: none; margin-top: 7px; color: var(--red); font-size: 11px; }
-    .field.invalid input, .field.invalid select, .field.invalid textarea { border-color: var(--red); }
+
+    .required { color: var(--error); margin-left: 2px; }
+
+    .optional {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 400;
+      margin-left: 4px;
+    }
+
+    .field input:not([type="checkbox"]):not([type="radio"]),
+    .field select,
+    .field textarea {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      min-height: 48px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      outline: none;
+      background: var(--surface);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .field textarea { min-height: 96px; resize: vertical; line-height: 1.7; }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--text-muted); }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    .field input[readonly] { background: var(--surface-secondary); }
+
+    .field-help {
+      margin-top: 6px;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .field-error {
+      display: none;
+      margin-top: 6px;
+      color: var(--error);
+      font-size: 12px;
+    }
+
+    .field.invalid input,
+    .field.invalid select,
+    .field.invalid textarea { border-color: var(--error); }
+
     .field.invalid .field-error { display: block; }
-    .pincode-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
-    .lookup-button, .location-button {
-      min-height: 47px; padding: 12px 15px; border: 1px solid var(--ink); border-radius: 10px;
-      background: var(--paper); color: var(--ink); font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer;
+
+    .pincode-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
     }
-    .lookup-button:hover, .location-button:hover { background: #f7f7f7; }
-    .pincode-status, .location-note { margin-top: 9px; font-size: 11px; line-height: 1.6; color: var(--muted); display: none; }
-    .pincode-status.show, .location-note.show { display: block; }
-    .pincode-status.success, .location-note.success { color: var(--green); }
-    .pincode-status.error, .location-note.error { color: var(--red); }
+
+    /* BUTTONS (text only) */
+
+    .lookup-button,
+    .location-button {
+      min-height: 48px;
+      padding: 12px 18px;
+      border: 1px solid var(--primary-soft);
+      border-radius: var(--radius-lg);
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: border-color .2s;
+    }
+
+    .lookup-button:hover:not(:disabled),
+    .location-button:hover:not(:disabled) { border-color: var(--primary); }
+
+    .lookup-button:disabled,
+    .location-button:disabled {
+      background: var(--disabled-bg);
+      border-color: var(--disabled-bg);
+      color: var(--disabled-text);
+      cursor: not-allowed;
+    }
+
+    .pincode-status,
+    .location-note {
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      display: none;
+    }
+
+    .pincode-status.show,
+    .location-note.show { display: block; }
+
+    .pincode-status.success,
+    .location-note.success { color: var(--success); }
+
+    .pincode-status.error,
+    .location-note.error { color: var(--error); }
+
+    /* ADDRESS TYPE */
+
     .address-types { display: flex; flex-wrap: wrap; gap: 10px; }
     .address-type { position: relative; }
+
     .address-type input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+
     .address-type label {
-      display: inline-flex; align-items: center; justify-content: center; min-width: 90px; min-height: 42px;
-      padding: 10px 17px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper);
-      color: var(--ink); font-size: 12px; font-weight: 600; cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 90px;
+      min-height: 44px;
+      padding: 10px 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
     }
-    .address-type input:checked + label { border-color: var(--ink); background: #f7f7f7; color: var(--ink); }
-    .default-option { display: flex; align-items: flex-start; gap: 10px; margin-top: 22px; cursor: pointer; }
-    .default-option input { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; accent-color: var(--ink); }
-    .default-option strong { display: block; font-size: 12px; font-weight: 700; }
-    .default-option small { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; line-height: 1.7; }
-    .form-actions { display: flex; align-items: center; gap: 12px; margin-top: 30px; }
-    .form-message { display: none; margin-top: 20px; padding: 12px 14px; border-radius: 10px; font-size: 12px; line-height: 1.7; }
+
+    .address-type label:hover { border-color: var(--primary); }
+
+    .address-type input:checked + label {
+      border-color: var(--primary);
+      background: var(--primary-selected);
+      color: var(--primary);
+    }
+
+    .address-type input:focus-visible + label {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+    }
+
+    .default-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    .default-option input {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 3px;
+      accent-color: var(--primary);
+    }
+
+    .default-option strong { display: block; font-size: 14px; font-weight: 600; }
+
+    .default-option small {
+      display: block;
+      margin-top: 2px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* FORM ACTIONS */
+
+    .form-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 27px;
+    }
+
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+
+    .button.primary {
+      border: 1px solid var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .button.primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    .button.secondary {
+      border: 1px solid var(--primary-soft);
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .button.secondary:hover { border-color: var(--primary); }
+
+    .button:disabled {
+      background: var(--disabled-bg);
+      border-color: var(--disabled-bg);
+      color: var(--disabled-text);
+      cursor: not-allowed;
+    }
+
+    .form-message {
+      display: none;
+      margin-top: 20px;
+      padding: 12px 15px;
+      border-radius: var(--radius-lg);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
     .form-message.show { display: block; }
-    .form-message.error { background: #fff0f0; color: var(--red); }
-    .form-message.success { background: #ecfdf3; color: var(--green); }
-    .footer { border-top: 1px solid var(--line); padding: 25px 7%; display: flex; justify-content: space-between; gap: 15px; color: var(--muted); font-size: 11px; background: var(--paper); }
-    .dialog-overlay { display: none; position: fixed; inset: 0; z-index: 1000; align-items: center; justify-content: center; padding: 20px; background: rgba(0, 0, 0, .45); }
+    .form-message.error { background: var(--error-bg); color: var(--error); }
+    .form-message.success { background: var(--success-bg); color: var(--success); }
+
+    /* FOOTER */
+
+    .footer {
+      border-top: 1px solid var(--divider);
+      padding: 24px 5%;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      color: var(--text-muted);
+      font-size: 12px;
+      background: var(--background);
+    }
+
+    /* LOADING DIALOG */
+
+    .dialog-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(30, 31, 28, .45);
+    }
+
     .dialog-overlay.show { display: flex; }
-    .dialog { width: 100%; max-width: 340px; padding: 28px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); text-align: center; }
-    .spinner { width: 32px; height: 32px; margin: 0 auto 17px; border: 3px solid var(--line); border-top-color: var(--ink); border-radius: 50%; animation: spin .8s linear infinite; }
+
+    .dialog {
+      width: 100%;
+      max-width: 340px;
+      padding: 28px;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .dialog h3 {
+      font-family: var(--font-heading);
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    .dialog p {
+      margin-top: 6px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      margin: 0 auto 16px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+      .fields-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .field.span-two { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 760px) {
+      .container { width: 90%; margin-top: 25px; }
+
+      .page-heading h1 { font-size: 29px; }
+
+      .fields-grid { grid-template-columns: minmax(0, 1fr); }
+
+      .section-title h2 { font-size: 21px; }
+
+      .form-actions { flex-direction: column-reverse; align-items: stretch; }
+      .form-actions .button { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
   </style>
 </head>
 
 <body>
 
-  <header class="navbar">
-    <a href="/home.html" class="brand" aria-label="Shoppy home">
-      <img src="https://i.ibb.co/93kQCKxT/20261019-120246.png" alt="Shoppy logo">
-    </a>
-
+  <header class="topbar">
     <nav class="nav-actions" aria-label="Main navigation">
       <a class="nav-icon" href="/home.html" aria-label="Home" title="Home">
         <i class="ph ph-house" aria-hidden="true"></i>
@@ -107,6 +525,8 @@
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </a>
     </nav>
+
+    <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
   </header>
 
   <main class="container">
