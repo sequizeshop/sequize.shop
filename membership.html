@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>Premium Membership — Shoppy</title>
+
+  <link rel="icon" type="image/png"
+    href="https://i.ibb.co/93kQCKxT/202610.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+
+  <link rel="stylesheet" href="/global.css">
+
+  <style>
+    main {
+      width: min(1050px, 90%);
+      margin: 34px auto 65px;
+    }
+
+    .page-heading {
+      margin-bottom: 28px;
+    }
+
+    .page-heading h1 {
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(27px, 4vw, 36px);
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      margin: 0 0 8px;
+    }
+
+    .page-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 19px;
+    }
+
+    .section-heading h2 {
+      font-family: "Manrope", sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+      margin: 0;
+    }
+
+    .section-number {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 7px;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 27px 0;
+    }
+
+    .membership-status {
+      border: 1px solid var(--line);
+      padding: 18px;
+      margin-bottom: 30px;
+      border-radius: 12px;
+    }
+
+    .membership-status h2 {
+      font-family: "Manrope", sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+
+    .membership-status p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .membership-status.active {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+
+    .membership-status.active h2 {
+      color: #166534;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .plan-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+    }
+
+    .plan-card.featured {
+      border-color: var(--blue);
+    }
+
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      border-radius: 999px;
+      background: #edf2ff;
+      color: var(--blue);
+      padding: 6px 10px;
+      font-size: 10px;
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+
+    .plan-title {
+      font-family: "Manrope", sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+
+    .plan-price {
+      font-family: "Manrope", sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin: 0;
+    }
+
+    .plan-duration {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .plan-description {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--muted);
+      margin: 16px 0 20px;
+      flex: 1;
+    }
+
+    .buy-button {
+      width: 100%;
+      min-height: 46px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #fff;
+      font-family: "DM Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: opacity .2s, transform .2s;
+    }
+
+    .buy-button:hover:not(:disabled) {
+      opacity: .9;
+      transform: translateY(-1px);
+    }
+
+    .buy-button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .phone-section {
+      margin-bottom: 25px;
+    }
+
+    .phone-section label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 9px;
+    }
+
+    .phone-section input {
+      width: 100%;
+      max-width: 420px;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0 14px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      outline: none;
+    }
+
+    .phone-section input:focus {
+      border-color: var(--blue);
+    }
+
+    .phone-help {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.7;
+      margin-top: 8px;
+    }
+
+    .notice {
+      display: none;
+      padding: 13px 15px;
+      margin: 18px 0;
+      border-radius: 9px;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .notice.show {
+      display: block;
+    }
+
+    .notice.info {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .notice.success {
+      background: #ecfdf3;
+      color: #166534;
+    }
+
+    .notice.error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .membership-footnote {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.8;
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    @media (max-width: 650px) {
+      main {
+        width: 90%;
+        margin-top: 25px;
+      }
+
+      .plans-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+      }
+
+      .plan-card {
+        padding: 19px;
+      }
+
+      .page-heading h1 {
+        font-size: 29px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <a href="/" class="bag-link"
+       aria-label="Continue shopping"
+       title="Continue shopping">
+      <i class="ph ph-bag-simple"></i>
+    </a>
+
+    <a href="/" class="brand">Shoppy.</a>
+  </header>
+
+  <main>
+
+    <div class="page-heading">
+      <h1>Premium Membership</h1>
+      <p>
+        Unlock your Shoppy Premium experience with a plan that works for you.
+      </p>
+    </div>
+
+    <div id="message" class="notice" role="status" aria-live="polite"></div>
+
+    <section id="membershipStatusBox" class="membership-status">
+      <h2 id="membershipStatusTitle">Checking membership...</h2>
+      <p id="membershipStatus">
+        Loading your current membership status.
+      </p>
+    </section>
+
+    <section class="phone-section">
+      <label for="phone">Mobile number for payment</label>
+      <input
+        type="tel"
+        id="phone"
+        inputmode="numeric"
+        autocomplete="tel"
+        maxlength="10"
+        placeholder="Enter 10-digit mobile number"
+      >
+      <p class="phone-help">
+        Enter your Indian mobile number to continue to Cashfree checkout.
+      </p>
+    </section>
+
+    <div class="section-heading">
+      <h2><span class="section-number">01</span> Choose your plan</h2>
+    </div>
+
+    <section class="plans-grid">
+
+      <article class="plan-card">
+        <span class="plan-badge">ONE-TIME TRIAL</span>
+        <h3 class="plan-title">3-Day Trial</h3>
+        <p class="plan-price">₹1</p>
+        <div class="plan-duration">3 days · One time only</div>
+        <p class="plan-description">
+          Try Premium for three days. The trial can only be purchased once
+          per account. No automatic renewal.
+        </p>
+        <button class="buy-button" id="trialButton" data-plan="trial">
+          <i class="ph ph-sparkle"></i>
+          <span>Start Trial · ₹1</span>
+        </button>
+      </article>
+
+      <article class="plan-card">
+        <span class="plan-badge">MONTHLY</span>
+        <h3 class="plan-title">Monthly Premium</h3>
+        <p class="plan-price">₹149</p>
+        <div class="plan-duration">30 days</div>
+        <p class="plan-description">
+          Enjoy Premium for one month. Your membership does not renew
+          automatically.
+        </p>
+        <button class="buy-button" data-plan="monthly">
+          <i class="ph ph-lock-key"></i>
+          <span>Get Premium · ₹149</span>
+        </button>
+      </article>
+
+      <article class="plan-card featured">
+        <span class="plan-badge">POPULAR PLAN</span>
+        <h3 class="plan-title">3 Months Premium</h3>
+        <p class="plan-price">₹299</p>
+        <div class="plan-duration">90 days</div>
+        <p class="plan-description">
+          Enjoy Premium for three months with a single payment and no
+          automatic renewal.
+        </p>
+        <button class="buy-button" data-plan="quarterly">
+          <i class="ph ph-lock-key"></i>
+          <span>Get Premium · ₹299</span>
+        </button>
+      </article>
+
+      <article class="plan-card">
+        <span class="plan-badge">BEST DURATION</span>
+        <h3 class="plan-title">Yearly Premium</h3>
+        <p class="plan-price">₹699</p>
+        <div class="plan-duration">365 days</div>
+        <p class="plan-description">
+          Get one year of Premium with a single payment. Renew manually
+          whenever you want.
+        </p>
+        <button class="buy-button" data-plan="yearly">
+          <i class="ph ph-lock-key"></i>
+          <span>Get Premium · ₹699</span>
+        </button>
+      </article>
+
+    </section>
+
+    <div class="section-divider"></div>
+
+    <p class="membership-footnote">
+      Payments are processed securely by Cashfree. Membership is activated
+      only after server-side payment verification. No plan automatically
+      renews. Your membership expires at the end of the purchased duration.
+    </p>
+
+  </main>
+
+  <script>
+    "use strict";
+
+    const CASHFREE_MODE = "production";
+
+    const cashfree = typeof window.Cashfree === "function"
+      ? window.Cashfree({ mode: CASHFREE_MODE })
+      : null;
+
+    const messageElement = document.getElementById("message");
+    const statusElement = document.getElementById("membershipStatus");
+    const statusBox = document.getElementById("membershipStatusBox");
+    const statusTitle = document.getElementById("membershipStatusTitle");
+    const phoneInput = document.getElementById("phone");
+    const trialButton = document.getElementById("trialButton");
+
+    let currentMembership = null;
+    let paymentInProgress = false;
+
+    function showMessage(message, type = "info") {
+      messageElement.textContent = message;
+      messageElement.className = `notice show ${type}`;
+    }
+
+    function hideMessage() {
+      messageElement.textContent = "";
+      messageElement.className = "notice";
+    }
+
+    async function apiRequest(action = null, data = null) {
+      const options = {
+        method: action ? "POST" : "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: {}
+      };
+
+      if (action) {
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify({ action, ...(data || {}) });
+      }
+
+      const response = await fetch("/api/profile", options);
+      const result = await response.json().catch(() => ({}));
+
+      if (response.status === 401) {
+        window.location.href = result.redirect || "/login.html";
+        throw new Error("Please sign in first.");
+      }
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Something went wrong.");
+      }
+
+      return result;
+    }
+
+    function formatDate(timestamp) {
+      if (!timestamp) return "Not available";
+
+      return new Date(timestamp).toLocaleString("en-IN", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
+    }
+
+    async function loadMembership() {
+      try {
+        const result = await apiRequest();
+
+        currentMembership = result.membership || {};
+
+        if (currentMembership.active) {
+          statusBox.classList.add("active");
+          statusTitle.textContent = "Premium is active";
+
+          statusElement.textContent =
+            `${currentMembership.planName || currentMembership.plan} · ` +
+            `Expires ${formatDate(currentMembership.expiresAt)}`;
+        } else {
+          statusBox.classList.remove("active");
+          statusTitle.textContent = "Basic membership";
+
+          statusElement.textContent =
+            currentMembership.status === "expired"
+              ? "Your previous Premium membership has expired. Choose a plan to renew."
+              : "You do not currently have an active Premium membership.";
+        }
+
+        if (currentMembership.trialUsed) {
+          trialButton.disabled = true;
+          trialButton.innerHTML =
+            '<i class="ph ph-check-circle"></i><span>Trial Already Used</span>';
+        } else {
+          trialButton.disabled = paymentInProgress;
+          trialButton.innerHTML =
+            '<i class="ph ph-sparkle"></i><span>Start Trial · ₹1</span>';
+        }
+      } catch (error) {
+        showMessage(error.message, "error");
+      }
+    }
+
+    async function verifyMembershipPayment(paymentId) {
+      const delays = [0, 1500, 2500, 3500, 5000];
+
+      for (const delay of delays) {
+        if (delay) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        const result = await apiRequest(
+          "verify-membership-payment",
+          { paymentId }
+        );
+
+        if (result.paymentStatus === "PAID") {
+          await loadMembership();
+          return true;
+        }
+
+        if (
+          result.paymentStatus === "FAILED" ||
+          result.paymentStatus === "AMOUNT_MISMATCH"
+        ) {
+          return false;
+        }
+      }
+
+      return null;
+    }
+
+    async function buyMembership(plan) {
+      if (paymentInProgress) return;
+
+      hideMessage();
+
+      const phone = phoneInput.value.replace(/\D/g, "");
+
+      if (!/^[6-9]\d{9}$/.test(phone)) {
+        showMessage("Please enter a valid 10-digit mobile number.", "error");
+        phoneInput.focus();
+        return;
+      }
+
+      if (
+        plan === "trial" &&
+        currentMembership &&
+        currentMembership.trialUsed
+      ) {
+        showMessage("Your one-time trial has already been used.", "error");
+        return;
+      }
+
+      if (!cashfree) {
+        showMessage(
+          "Cashfree SDK did not load. Refresh the page and try again.",
+          "error"
+        );
+        return;
+      }
+
+      paymentInProgress = true;
+
+      const buttons = document.querySelectorAll(".buy-button");
+      buttons.forEach(button => button.disabled = true);
+
+      try {
+        showMessage("Preparing secure payment...", "info");
+
+        const order = await apiRequest(
+          "create-membership-payment",
+          { plan, phone }
+        );
+
+        if (!order.paymentSessionId || !order.paymentId) {
+          throw new Error("Cashfree payment session was not created.");
+        }
+
+        showMessage("Opening Cashfree payment...", "info");
+
+        try {
+          await cashfree.checkout({
+            paymentSessionId: order.paymentSessionId,
+            redirectTarget: "_modal"
+          });
+        } catch (checkoutError) {
+          console.warn("Cashfree checkout returned:", checkoutError);
+        }
+
+        showMessage("Verifying your payment...", "info");
+
+        const verified = await verifyMembershipPayment(order.paymentId);
+
+        if (verified === true) {
+          showMessage(
+            "Payment successful! Your Premium membership is active.",
+            "success"
+          );
+        } else if (verified === false) {
+          showMessage(
+            "Payment was not completed. Your membership has not been activated.",
+            "error"
+          );
+        } else {
+          showMessage(
+            "Payment status is still processing. Please check your membership again shortly.",
+            "info"
+          );
+        }
+      } catch (error) {
+        showMessage(error.message || "Unable to process payment.", "error");
+      } finally {
+        paymentInProgress = false;
+
+        buttons.forEach(button => button.disabled = false);
+
+        await loadMembership();
+      }
+    }
+
+    document.querySelectorAll(".buy-button").forEach(button => {
+      button.addEventListener("click", () => {
+        buyMembership(button.dataset.plan);
+      });
+    });
+
+    async function init() {
+      const params = new URLSearchParams(window.location.search);
+      const paymentId = params.get("paymentId");
+
+      await loadMembership();
+
+      if (paymentId) {
+        try {
+          showMessage("Checking your recent payment...", "info");
+
+          const verified = await verifyMembershipPayment(paymentId);
+
+          if (verified === true) {
+            showMessage(
+              "Payment successful! Your Premium membership is active.",
+              "success"
+            );
+          } else if (verified === false) {
+            showMessage(
+              "The payment was not completed or could not be verified.",
+              "error"
+            );
+          } else {
+            showMessage(
+              "Your payment is still processing. Please check again shortly.",
+              "info"
+            );
+          }
+        } catch (error) {
+          showMessage(error.message, "error");
+        }
+      }
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
