@@ -1882,22 +1882,20 @@
     body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active .nav-item-icon { color: var(--text-primary); }
     body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over,
     body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over .nav-item-icon { color: #fff; }
-    .notif-list{padding:10px 16px 22px;overflow-y:auto;overscroll-behavior:contain}
-    .notif-category-filter{display:flex;gap:8px;padding:12px 16px 8px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--divider)}
-    .notif-category-filter::-webkit-scrollbar{display:none}
-    .notif-filter-chip{flex:0 0 auto;border:1px solid var(--border);border-radius:999px;padding:7px 12px;background:var(--surface);color:var(--text-secondary);font-size:12px;font-weight:700;text-transform:capitalize}
-    .notif-filter-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .notif-item{padding:13px 8px;display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--divider);border-radius:12px}
-    .notif-item:hover{background:var(--primary-soft)}.notif-icon{width:42px;height:42px;flex:0 0 42px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--primary-soft);color:var(--primary);font-size:21px}
-    .notif-copy{min-width:0;flex:1}.notif-title-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px;line-height:1.4}
-    .notif-copy strong{font-size:14px;font-weight:700;overflow-wrap:anywhere}.notif-item.unread .notif-copy strong{font-weight:800}
-    .notif-time{color:var(--text-muted);font-size:11px;font-weight:500;white-space:nowrap}
-    .notif-copy p{margin:4px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.55;overflow-wrap:anywhere}
-    .notif-category-label{display:inline-flex;margin-top:7px;padding:3px 8px;border-radius:999px;background:var(--surface-secondary);color:var(--text-secondary);font-size:10px;font-weight:700;text-transform:capitalize}
-    .notif-empty{padding:36px 12px;text-align:center;color:var(--text-secondary);font-size:14px}.notif-empty i{display:block;margin-bottom:10px;color:var(--text-muted);font-size:40px}
-    .notif-all{width:100%;min-height:44px;margin-top:12px;padding:11px 16px;display:flex;align-items:center;justify-content:center;border:0;border-radius:var(--radius-lg);background:var(--primary-soft);color:var(--primary);font-weight:700}
-    .notif-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 16px 0}.notif-unread-count{color:var(--text-secondary);font-size:12px}
-    .notif-mark-all{border:0;background:transparent;color:var(--primary);font-size:12px;font-weight:800;padding:6px 0}
+    body.app-premium-navigation .notif-list { padding: 10px 16px 20px; overflow-y: auto; overscroll-behavior: contain; }
+    body.app-premium-navigation .notif-item { padding: 12px 14px; display:flex; align-items:flex-start; gap:12px; border-radius:var(--radius-lg); }
+    body.app-premium-navigation .notif-item:hover { background:var(--primary-soft); }
+    body.app-premium-navigation .notif-item > i { width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--primary-soft);color:var(--primary);font-size:20px; }
+    body.app-premium-navigation .notif-item strong { display:block;font-size:14px;font-weight:700;line-height:1.4; }
+    body.app-premium-navigation .notif-item p { margin:2px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.5; }
+    body.app-premium-navigation .notif-item small { display:block;margin-top:4px;color:var(--text-muted);font-size:12px; }
+    body.app-premium-navigation .notif-item.notif-unread { background:color-mix(in srgb, var(--primary-soft) 48%, transparent); }
+    body.app-premium-navigation .notif-copy { min-width:0;flex:1; }
+    body.app-premium-navigation .notif-time { color:var(--text-muted);font-size:12px;font-weight:500;white-space:nowrap; }
+
+    body.app-premium-navigation .notif-empty { padding:36px 12px;text-align:center;color:var(--text-secondary);font-size:14px; }
+    body.app-premium-navigation .notif-empty i { display:block;margin-bottom:10px;color:var(--text-muted);font-size:40px; }
+    body.app-premium-navigation .notif-all { width:100%;min-height:48px;margin-top:8px;padding:12px 16px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-lg);background:var(--primary-soft);color:var(--primary);font-weight:700; }
     @media (min-width:761px) {
       body.app-premium-navigation .nav-actions { display:none !important; }
       body.app-premium-navigation .desktop-drawer { display:flex; }
@@ -2505,8 +2503,6 @@
 
       </div>
 
-      <div class="notif-toolbar"><span class="notif-unread-count" id="notifUnreadCount">Your latest updates</span><button type="button" class="notif-mark-all" id="notifMarkAllRead">Mark all read</button></div>
-      <div class="notif-category-filter" id="notifCategoryFilter" aria-label="Filter notifications by category"></div>
       <div class="notif-list" id="notifList"></div>
 
     </section>
@@ -4658,70 +4654,176 @@
       }
     });
 
-    /* NOTIFICATIONS — ShopLite API */
-    const NOTIFICATION_API_URL = "https://apisequizeshoplite.vercel.app/api/admin/notifications.js";
-    const NOTIFICATION_CATEGORIES = ["all","orders","payments","shipping","delivery","returns","refunds","cancellations","discounts","promotions","cart","wishlist","account","security","support","system"];
-    let notificationItems = [], notificationCategory = "all", notificationUid = "", notificationApiKey = "";
+    /* NOTIFICATIONS */
+
     function formatNotificationTime(value) {
-      const date = new Date(Number(value) || value || 0);
-      if (!value || Number.isNaN(date.getTime())) return "";
-      const seconds = Math.max(0, Math.floor((Date.now()-date.getTime())/1000));
-      if(seconds<45)return "now"; if(seconds<3600)return Math.floor(seconds/60)+"m ago";
-      if(seconds<86400)return Math.floor(seconds/3600)+"h ago";
-      if(seconds<604800)return Math.floor(seconds/86400)+"d ago";
-      return date.toLocaleDateString("en-IN",{day:"numeric",month:"short"});
+      if (value === null || value === undefined || value === "") return "";
+
+      let timestamp = value;
+      if (typeof timestamp === "number" && timestamp > 0 && timestamp < 1e12) {
+        timestamp *= 1000;
+      }
+
+      const date = new Date(timestamp);
+      if (Number.isNaN(date.getTime())) return "";
+
+      const seconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+      if (seconds < 60) return "just now";
+
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m ago`;
+
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+
+      const days = Math.floor(hours / 24);
+      if (days < 7) return `${days}d ago`;
+
+      return date.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short"
+      });
     }
+
+    function notificationIcon(category, type) {
+      const key = String(category || type || "system").toLowerCase();
+      const icons = {
+        orders: "ph-package",
+        order: "ph-package",
+        payments: "ph-credit-card",
+        payment: "ph-credit-card",
+        shipping: "ph-truck",
+        delivery: "ph-check-circle",
+        returns: "ph-arrow-counter-clockwise",
+        refunds: "ph-currency-inr",
+        cancellations: "ph-x-circle",
+        discounts: "ph-tag",
+        promotions: "ph-confetti",
+        cart: "ph-shopping-cart",
+        wishlist: "ph-heart",
+        account: "ph-user-circle",
+        security: "ph-shield-check",
+        support: "ph-headset",
+        system: "ph-bell"
+      };
+      return icons[key] || "ph-bell";
+    }
+
     function renderNotificationsEmpty(message) {
-      notifList.innerHTML=`<div class="notif-empty"><i class="ph ph-bell-slash" aria-hidden="true"></i>${escapeHTML(message)}</div>`;
+      notifList.innerHTML = `
+        <div class="notif-empty">
+          <i class="ph ph-bell-slash" aria-hidden="true"></i>
+          ${escapeHTML(message)}
+        </div>
+        <a class="notif-all" href="/notifications.html">View all notifications</a>
+      `;
     }
-    function notificationIcon(category) {
-      const icons={orders:"ph-package",payments:"ph-credit-card",shipping:"ph-truck",delivery:"ph-check-circle",returns:"ph-arrow-counter-clockwise",refunds:"ph-wallet",cancellations:"ph-x-circle",discounts:"ph-tag",promotions:"ph-confetti",cart:"ph-shopping-cart",wishlist:"ph-heart",account:"ph-user-circle",security:"ph-shield-check",support:"ph-headset",system:"ph-info"};
-      return icons[String(category||"").toLowerCase()]||"ph-bell";
-    }
-    function renderNotificationFilters() {
-      document.getElementById("notifCategoryFilter").innerHTML=NOTIFICATION_CATEGORIES.map(c=>`<button type="button" class="notif-filter-chip ${c===notificationCategory?"active":""}" data-notif-category="${escapeHTML(c)}" aria-pressed="${c===notificationCategory}">${c==="all"?"All":escapeHTML(c)}</button>`).join("");
-    }
-    function renderNotificationItems() {
-      const filtered=notificationItems.filter(n=>notificationCategory==="all"||String(n.category||"system").toLowerCase()===notificationCategory);
-      const unread=notificationItems.filter(n=>!n.read).length;
-      document.getElementById("notifUnreadCount").textContent=unread?`${unread} unread notification${unread===1?"":"s"}`:"You're all caught up";
-      document.getElementById("notifMarkAllRead").hidden=!unread;
-      if(!filtered.length){renderNotificationsEmpty(notificationCategory==="all"?"You're all caught up. No notifications yet.":`No ${notificationCategory} notifications.`);return;}
-      notifList.innerHTML=filtered.slice(0,100).map(n=>{
-        const title=escapeHTML(n.title||"Notification"),message=escapeHTML(n.message||""),time=escapeHTML(formatNotificationTime(n.createdAt)),category=escapeHTML(n.category||"system");
-        return `<article class="notif-item ${n.read?"":"unread"}" data-notif-id="${escapeHTML(n.id)}"><span class="notif-icon"><i class="ph ${notificationIcon(category)}" aria-hidden="true"></i></span><div class="notif-copy"><div class="notif-title-row"><strong>${title}</strong>${time?`<span class="notif-time">• ${time}</span>`:""}</div>${message?`<p>${message}</p>`:""}<span class="notif-category-label">${category}</span></div>${n.read?"":'<span aria-label="Unread" style="width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--primary);margin-top:7px"></span>'}</article>`;
-      }).join("");
-    }
-    async function notificationApi(action,extra={}) {
-      if(!notificationUid)throw new Error("Profile API did not provide a customer UID.");
-      if(!notificationApiKey)throw new Error("This admin-only API needs a secure server-side proxy. Do not expose ADMIN_API_KEY in HTML.");
-      const response=await fetch(NOTIFICATION_API_URL,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json","Authorization":"Bearer "+notificationApiKey},cache:"no-store",body:JSON.stringify({action,uid:notificationUid,...extra})});
-      const data=await response.json().catch(()=>({}));
-      if(!response.ok||data.success!==true)throw new Error(data.message||"Notifications unavailable.");
-      return data;
-    }
+
     async function loadNotifications() {
-      if(authStatus!=="logged-in"){renderNotificationsEmpty("Login to see your notifications.");notifList.insertAdjacentHTML("beforeend",'<a class="notif-all" href="/login.html">Login</a>');return;}
-      notifList.innerHTML='<div class="notif-empty"><i class="ph ph-spinner-gap"></i>Loading notifications…</div>';
-      try{
-        const response=await fetch("/api/profile",{method:"GET",credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});
-        const profile=await response.json().catch(()=>({}));
-        notificationUid=String(profile.user&&(profile.user.uid||profile.user.id)||"");
-        notificationApiKey=String(window.ADMIN_API_KEY||"");
-        const data=await notificationApi("list",{limit:100});
-        notificationItems=Array.isArray(data.notifications)?data.notifications:[];
-        renderNotificationFilters();renderNotificationItems();
-      }catch(error){console.error("Notification loading error:",error);renderNotificationsEmpty(error.message||"Notifications could not be loaded.");}
+      if (authStatus !== "logged-in") {
+        notifList.innerHTML = `
+          <div class="notif-empty">
+            <i class="ph ph-bell-slash" aria-hidden="true"></i>
+            Login to see your notifications.
+          </div>
+          <a class="notif-all" href="/login.html">Login</a>
+        `;
+        return;
+      }
+
+      notifList.innerHTML = '<div class="notif-empty">Loading notifications...</div>';
+
+      try {
+        /*
+         * Same-origin profile endpoint validates the customer's session.
+         * The server then calls the notification admin API using its
+         * server-only ADMIN_API_KEY. Never expose that key in this HTML.
+         */
+        const response = await fetch("/api/profile", {
+          method: "POST",
+          credentials: "same-origin",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+          },
+          body: JSON.stringify({ action: "list-notifications" })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || data.success !== true) {
+          throw new Error(data.message || "Notifications unavailable");
+        }
+
+        const items = Array.isArray(data.notifications)
+          ? data.notifications
+          : (Array.isArray(data.items) ? data.items : []);
+
+        if (!items.length) {
+          renderNotificationsEmpty("You're all caught up. No new notifications.");
+          return;
+        }
+
+        notifList.innerHTML = items.slice(0, 20).map(item => {
+          const titleText = item.title || item.heading || "Notification";
+          const messageText = item.message || item.body || item.text || "";
+          const timeText = formatNotificationTime(
+            item.createdAt || item.time || item.date
+          );
+          const title = escapeHTML(titleText);
+          const message = escapeHTML(messageText);
+          const time = escapeHTML(timeText);
+          const icon = escapeHTML(notificationIcon(item.category, item.type));
+          const unread = item.read === true ? "" : " notif-unread";
+
+          return `
+            <div class="notif-item${unread}">
+              <i class="ph ${icon}" aria-hidden="true"></i>
+              <div class="notif-copy">
+                <strong>${title}${time ? `<span class="notif-time"> • ${time}</span>` : ""}</strong>
+                ${message ? `<p>${message}</p>` : ""}
+              </div>
+            </div>
+          `;
+        }).join("") +
+          '<a class="notif-all" href="/notifications.html">View all notifications</a>';
+
+      } catch (error) {
+        renderNotificationsEmpty("Notifications couldn't be loaded right now. Please try again.");
+      }
     }
-    document.getElementById("notifButton").addEventListener("click",()=>{notificationCategory="all";openSheetOverlay(notifSheetOverlay);loadNotifications();});
-    const drawerNotifButton=document.getElementById("drawerNotifButton");
-    if(drawerNotifButton)drawerNotifButton.addEventListener("click",()=>{notificationCategory="all";openSheetOverlay(notifSheetOverlay);loadNotifications();closeDesktopDrawer();});
-    document.getElementById("notifSheetClose").addEventListener("click",()=>closeSheetOverlay(notifSheetOverlay));
-    notifSheetOverlay.addEventListener("click",event=>{if(event.target===notifSheetOverlay)closeSheetOverlay(notifSheetOverlay);});
-    document.getElementById("notifCategoryFilter").addEventListener("click",event=>{const b=event.target.closest("[data-notif-category]");if(!b)return;notificationCategory=b.dataset.notifCategory||"all";renderNotificationFilters();renderNotificationItems();});
-    notifList.addEventListener("click",async event=>{const row=event.target.closest(".notif-item");if(!row||!row.dataset.notifId||!row.classList.contains("unread"))return;try{await notificationApi("mark_read",{notificationId:row.dataset.notifId});const item=notificationItems.find(n=>String(n.id)===row.dataset.notifId);if(item)item.read=true;renderNotificationItems();}catch(error){console.warn("Could not mark notification read:",error);}});
-    document.getElementById("notifMarkAllRead").addEventListener("click",async()=>{try{await notificationApi("mark_all_read");notificationItems.forEach(n=>n.read=true);renderNotificationItems();showToast("All notifications marked as read");}catch(error){showToast(error.message||"Could not mark notifications as read");}});
-    document.addEventListener("keydown",event=>{if(event.key==="Escape"&&notifSheetOverlay.classList.contains("open"))closeSheetOverlay(notifSheetOverlay);});
+
+    document.getElementById("notifButton").addEventListener("click", () => {
+      openSheetOverlay(notifSheetOverlay);
+      loadNotifications();
+    });
+    const drawerNotifButton = document.getElementById("drawerNotifButton");
+    if (drawerNotifButton) drawerNotifButton.addEventListener("click", () => {
+      openSheetOverlay(notifSheetOverlay);
+      loadNotifications();
+      closeDesktopDrawer();
+    });
+
+    document.getElementById("notifSheetClose").addEventListener("click", () => {
+      closeSheetOverlay(notifSheetOverlay);
+    });
+
+    notifSheetOverlay.addEventListener("click", event => {
+      if (event.target === notifSheetOverlay) {
+        closeSheetOverlay(notifSheetOverlay);
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key !== "Escape") return;
+
+      [locationSheetOverlay, notifSheetOverlay].forEach(overlay => {
+        if (overlay.classList.contains("open")) {
+          closeSheetOverlay(overlay);
+        }
+      });
+    });
 
     /* iOS-STYLE PRESS-AND-HOLD DRAG OF THE SELECTED BOTTOM-NAV TAB */
 
