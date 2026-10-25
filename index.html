@@ -1590,7 +1590,8 @@
     .app-profile-aside { min-width:0; }
     .app-avatar { width:88px; height:88px; margin-bottom:18px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:30px; font-weight:800; }
     .app-profile-name { font-family:var(--font-heading); font-size:22px; font-weight:800; overflow-wrap:anywhere; }
-    .app-profile-layout.app-premium-active .app-profile-name::after { content:"\2713"; display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; margin-left:7px; vertical-align:middle; border-radius:50%; background:var(--primary); color:#fff; font-family:Arial,sans-serif; font-size:12px; font-weight:900; line-height:1; box-shadow:0 0 0 2px rgba(41,98,255,.12); }
+    .app-verified-badge { display:inline-block; margin-left:7px; vertical-align:-3px; color:var(--primary, #2962FF); font-size:21px; line-height:1; filter:drop-shadow(0 1px 1px rgba(41,98,255,.18)); }
+    .app-verified-badge[hidden] { display:none !important; }
     .app-profile-email { color:var(--text-secondary); overflow-wrap:anywhere; }
     .app-member-badge { display:inline-flex; margin-top:14px; padding:4px 12px; border-radius:999px; background:var(--success-bg); color:var(--success); font-size:12px; font-weight:700; }
     .app-member-badge.app-premium-badge { background:#FFF3C4; color:#855B00; border:1px solid #F3D36B; padding:6px 12px; letter-spacing:.35px; }
@@ -2094,6 +2095,45 @@
     html[data-start-tab="explore"] #cartPage,
     html[data-start-tab="explore"] #accountPage { display:none !important; }
       #notifButton .shoppy-notification-badge { top:6px !important; right:6px !important; }
+
+    /* Final profile fixes: real verification icon, shared membership background, compact switch, and reliable desktop tabs. */
+    .app-profile-name { display:flex; align-items:center; flex-wrap:wrap; gap:0; }
+    @media (min-width:761px) {
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-aside {
+        background:linear-gradient(135deg,#173D8F 0%,#2962FF 58%,#7C5CDB 100%) !important;
+        border:1px solid rgba(255,255,255,.35) !important;
+        box-shadow:0 12px 32px rgba(41,98,255,.2) !important;
+        color:#fff !important;
+      }
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-name,
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-email { color:#fff !important; }
+      body.app-premium-navigation #appProfileLayout.app-premium-active #appMembershipSummary { display:none !important; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow { display:none !important; }
+      body.app-premium-navigation #appProfileLayout > section > #premiumUiPreferenceRow {
+        display:flex; justify-content:flex-end; align-items:center; min-height:26px;
+        margin:0 0 0 auto; padding:0; border:0; border-radius:0; background:transparent;
+        width:auto; grid-column:1 / -1; grid-row:auto; gap:0;
+      }
+      body.app-premium-navigation #appProfileLayout > section > #premiumUiPreferenceRow .premium-ui-preference-copy { display:none !important; }
+      body.app-premium-navigation #appProfileLayout > section > #premiumUiPreferenceRow .premium-ui-switch { margin-left:auto; }
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-verified-badge { color:#55A6FF !important; }
+      /* Keep the real icon above the name baseline and visible on the blue profile card. */
+      body.app-premium-navigation #appProfileLayout .app-profile-name { display:flex; align-items:center; }
+    }
+    @media (max-width:760px) {
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-aside { background:linear-gradient(135deg,#173D8F 0%,#2962FF 58%,#7C5CDB 100%); color:#fff; }
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-name,
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-email { color:#fff; }
+      body.app-premium-navigation #appProfileLayout.app-premium-active #appMembershipSummary { display:none !important; }
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-verified-badge { color:#55A6FF; }
+    }
+    /* Ensure floating navigation buttons stay above decorative glass layers and remain clickable. */
+    @media (min-width:761px) {
+      body.app-premium-navigation #bottomNav { pointer-events:auto !important; }
+      body.app-premium-navigation #bottomNav > .bottom-nav-item { position:relative !important; z-index:3 !important; pointer-events:auto !important; cursor:pointer; }
+      body.app-premium-navigation #bottomNav::before { pointer-events:none !important; }
+    }
+
 </style>
 </head>
 
@@ -2485,20 +2525,13 @@
     <div id="appProfileLayout" class="app-profile-layout" hidden>
       <aside class="app-profile-aside">
         <div id="appAvatar" class="app-avatar">U</div>
-        <h2 id="appUserName" class="app-profile-name">User</h2>
+        <h2 id="appUserName" class="app-profile-name"><span id="appUserNameText">User</span><i id="appVerifiedBadge" class="ph-fill ph-seal-check app-verified-badge" aria-label="Verified Premium member" title="Verified Premium member" hidden></i></h2>
         <p id="appUserEmail" class="app-profile-email"></p>
         <div id="appMembershipBadge" class="app-member-badge">✓ &nbsp; SHOPPING MEMBER</div>
         <div id="appMembershipSummary" class="app-membership-summary" hidden>
           <strong id="appMembershipTitle">Shoppy Premium</strong>
           <small id="appMembershipPlan">Premium plan active</small>
           <small id="appMembershipExpiry">Membership expiry</small>
-        </div>
-        <div id="premiumUiPreferenceRow" class="premium-ui-preference-row" hidden>
-          <div class="premium-ui-preference-copy"><strong>Premium UI</strong><small>Switch between Premium and Basic design on this device.</small></div>
-          <label class="premium-ui-switch" for="premiumUiPreferenceToggle" aria-label="Use Premium UI">
-            <input type="checkbox" id="premiumUiPreferenceToggle" role="switch" aria-label="Use Premium UI">
-            <span class="premium-ui-switch-track"></span>
-          </label>
         </div>
         <div style="height:1px;background:var(--divider);margin:24px 0 0"></div>
         <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong></span><i class="ph ph-caret-right"></i></a>
@@ -2507,6 +2540,13 @@
       </aside>
       <section>
         <h2 class="app-section-heading">Your Shopping</h2>
+        <div id="premiumUiPreferenceRow" class="premium-ui-preference-row" hidden>
+          <div class="premium-ui-preference-copy"><strong>Premium UI</strong><small>Switch between Premium and Basic design on this device.</small></div>
+          <label class="premium-ui-switch" for="premiumUiPreferenceToggle" aria-label="Use Premium UI">
+            <input type="checkbox" id="premiumUiPreferenceToggle" role="switch" aria-label="Use Premium UI">
+            <span class="premium-ui-switch-track"></span>
+          </label>
+        </div>
         <a href="/membership.html" class="app-profile-row" id="appMembershipRow"><i class="ph ph-crown"></i><span><strong id="appMembershipRowTitle">Premium Membership</strong><small id="appMembershipRowDescription">Explore Premium plans and membership benefits.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong><small>View orders, track shipments and check delivery status.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/home.html" class="app-profile-row" id="appBuyAgain"><i class="ph ph-arrow-clockwise"></i><span><strong>Buy Again</strong><small>Quickly find products you purchased before.</small></span><i class="ph ph-caret-right"></i></a>
@@ -4000,7 +4040,7 @@
       });
     }
 
-    function handleNavigation(action) {
+    window.handleNavigation = function handleNavigation(action) {
       if (action === "home") {
         showHomeView();
         return;
@@ -4054,7 +4094,7 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
         window.ShoppyInPageProfile && window.ShoppyInPageProfile.load();
       }
-    }
+    };
 
     bottomNav.querySelectorAll("[data-bottom-nav]").forEach(button => {
       button.addEventListener("click", () => {
@@ -4452,6 +4492,8 @@
       } catch (error) {}
       if (savedTab !== "home") handleNavigation(savedTab);
       else updateNavigationState("home");
+      /* data-start-tab is only for first paint; keeping it permanently would !important-hide tabs after clicks. */
+      document.documentElement.removeAttribute("data-start-tab");
 
       document.body.classList.remove("nav-pending");
       document.body.classList.toggle("guest-mode", authStatus !== "logged-in");
@@ -5182,6 +5224,8 @@
         const rowTitle=document.getElementById("appMembershipRowTitle");
         const rowDescription=document.getElementById("appMembershipRowDescription");
         setPremiumPresentation(m, true);
+        const verifiedBadge=document.getElementById("appVerifiedBadge");
+        if(verifiedBadge) verifiedBadge.hidden=!isActive;
         if(isActive){
           profileLayout.classList.add("app-premium-active");
           badge.classList.add("app-premium-badge");
@@ -5204,7 +5248,7 @@
       async function load(){
         if(loaded)return;
         loaded=true;
-        const applyProfile=(u,m)=>{document.getElementById("appUserName").textContent=u.name||"User";document.getElementById("appUserEmail").textContent=u.email||"";document.getElementById("appAvatar").textContent=initials(u.name);renderMembership(m);loading.hidden=true;layout.hidden=false;};
+        const applyProfile=(u,m)=>{document.getElementById("appUserNameText").textContent=u.name||"User";document.getElementById("appUserEmail").textContent=u.email||"";document.getElementById("appAvatar").textContent=initials(u.name);renderMembership(m);loading.hidden=true;layout.hidden=false;};
         let cached=null;
         try{cached=JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY)||"null");}catch(e){}
         const cacheValid=!!(cached&&cached.user&&Number(cached.expiresAt)>Date.now());
@@ -5227,6 +5271,25 @@
     })();
 
   </script>
+
+
+<script>
+/* Desktop floating navigation: route clicks directly and remove first-paint state that can mask views. */
+(function () {
+  const nav = document.getElementById("bottomNav");
+  if (!nav) return;
+  nav.addEventListener("click", function (event) {
+    if (window.innerWidth < 761 || !document.body.classList.contains("app-premium-navigation")) return;
+    const item = event.target.closest("[data-bottom-nav]");
+    if (!item || !nav.contains(item)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    document.documentElement.removeAttribute("data-start-tab");
+    if (typeof window.handleNavigation === "function") window.handleNavigation(item.dataset.bottomNav);
+    else item.dispatchEvent(new Event("shoppy-navigation", { bubbles: true }));
+  }, true);
+})();
+</script>
 
 </body>
 </html>
