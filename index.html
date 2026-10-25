@@ -6419,5 +6419,17 @@
   html body.guest-mode:not(.nav-pending) header.topbar .guest-header-actions { margin-left:auto !important; }
 }
 </style>
+
+<style id="desktop-body-top-offset-fix">
+@media (min-width:761px) {
+  /* An older rule set padding-top:0 with higher specificity; this one wins so content starts below the 68px header. */
+  html body:not(.zz):not(.yy):not(.nav-pending),
+  html body:not(.zz):not(.yy):not(.nav-pending).desktop-drawer-expanded,
+  html body.app-premium-navigation:not(.zz):not(.nav-pending),
+  html body.app-basic-navigation:not(.zz):not(.nav-pending) {
+    padding-top:68px !important;
+  }
+}
+</style>
 </body>
 </html>
