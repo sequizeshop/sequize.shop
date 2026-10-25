@@ -1988,7 +1988,24 @@
       body.app-premium-navigation .desktop-nav-toggle { display:none !important; }
     }
 
-  </style>
+  
+
+    /* Requested desktop Premium navigation adjustment: vertically centered and content-height. */
+    @media (min-width:761px) {
+      body.app-premium-navigation .bottom-nav {
+        top:50% !important;
+        bottom:auto !important;
+        height:max-content !important;
+        min-height:0 !important;
+        max-height:calc(100vh - 32px);
+        max-height:calc(100dvh - 32px);
+        justify-content:center !important;
+        overflow-y:auto !important;
+        overflow-x:hidden !important;
+        transform:translateY(-50%) !important;
+      }
+    }
+</style>
 </head>
 
 <body class="nav-pending">
@@ -4717,14 +4734,19 @@
     }
 
     function updateNotificationBadge() {
+      const totalCount = customerNotifications.length;
       const unreadCount = customerNotifications.reduce((count, item) => count + (item && item.read !== true ? 1 : 0), 0);
       [document.getElementById("notifBadge"), document.getElementById("drawerNotifBadge")].forEach(badge => {
         if (!badge) return;
-        badge.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
-        badge.style.display = unreadCount > 0 ? "inline-flex" : "none";
+        badge.textContent = totalCount > 99 ? "99+" : String(totalCount);
+        badge.style.display = totalCount > 0 ? "inline-flex" : "none";
+        badge.setAttribute("aria-label", `${totalCount} total notifications${unreadCount ? `, ${unreadCount} unread` : ""}`);
       });
       const button = document.getElementById("notifButton");
-      if (button) { button.setAttribute("aria-label", unreadCount ? `Notifications, ${unreadCount} unread` : "Notifications"); button.title = unreadCount ? `${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}` : "Notifications"; }
+      if (button) {
+        button.setAttribute("aria-label", totalCount ? `Notifications, ${totalCount} total${unreadCount ? `, ${unreadCount} unread` : ""}` : "Notifications");
+        button.title = totalCount ? `${totalCount} notification${totalCount === 1 ? "" : "s"}${unreadCount ? ` (${unreadCount} unread)` : ""}` : "Notifications";
+      }
     }
 
     function renderNotificationsEmpty(message) {
