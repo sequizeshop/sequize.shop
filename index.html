@@ -4710,6 +4710,20 @@
           icon.setAttribute("aria-hidden", "true");
         }
       });
+
+      // Active-state classes/icons can change the item's measured box. Reposition only
+      // after the browser has committed those changes, then once more after layout settles.
+      if (window.innerWidth > 760) {
+        requestAnimationFrame(() => {
+          if (typeof positionNavIndicator === "function") positionNavIndicator(true);
+          requestAnimationFrame(() => {
+            if (typeof positionNavIndicator === "function") positionNavIndicator(true);
+          });
+        });
+        window.setTimeout(() => {
+          if (typeof positionNavIndicator === "function") positionNavIndicator(true);
+        }, 420);
+      }
     }
 
     window.handleNavigation = function handleNavigation(action) {
@@ -6022,6 +6036,59 @@
     requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
   });
   window.addEventListener('resize',()=>{if(window.innerWidth<761){nav.classList.remove('nav-expanded');toggle.setAttribute('aria-expanded','false');}} ,{passive:true});
+})();
+</script>
+
+
+<style id="desktop-nav-indicator-selection-and-expand-final-fix">
+/* Final coordinate fix: JS transform is the complete nav-inner coordinate, so CSS must add no offset. */
+@media (min-width:761px) {
+  body:not(.nav-pending) #bottomNav > .nav-indicator,
+  body:not(.nav-pending) #bottomNav.nav-expanded > .nav-indicator,
+  body.app-basic-navigation:not(.nav-pending) #bottomNav.nav-expanded > .nav-indicator,
+  body.app-premium-navigation:not(.nav-pending) #bottomNav.nav-expanded > .nav-indicator {
+    top:0 !important;
+    left:0 !important;
+    margin:0 !important;
+    transform-origin:top left !important;
+  }
+}
+@media (max-width:760px) {
+  /* No changes to mobile navigation or page layout. */
+}
+</style>
+<script id="desktop-nav-indicator-realign-on-state-change">
+(function(){
+  const nav = document.getElementById('bottomNav');
+  const indicator = document.getElementById('navIndicator');
+  if (!nav || !indicator) return;
+  let timer = 0;
+  function realign() {
+    if (window.innerWidth <= 760) return;
+    const active = nav.querySelector('.bottom-nav-item.active');
+    if (!active || !active.getBoundingClientRect().width) return;
+    // The main navigation function measures the active item's actual post-layout rectangle.
+    if (typeof positionNavIndicator === 'function') positionNavIndicator(true);
+  }
+  function schedule() {
+    if (window.innerWidth <= 760) return;
+    cancelAnimationFrame(timer);
+    requestAnimationFrame(() => {
+      realign();
+      requestAnimationFrame(realign);
+      window.setTimeout(realign, 420);
+    });
+  }
+  const observer = new MutationObserver(records => {
+    if (records.some(record => record.attributeName === 'class')) schedule();
+  });
+  observer.observe(nav, {attributes:true, attributeFilter:['class'], subtree:true});
+  nav.addEventListener('transitionend', event => {
+    if (event.target === nav && ['width','height','top','left','padding','gap','transform'].includes(event.propertyName)) schedule();
+  });
+  window.addEventListener('resize', schedule, {passive:true});
+  window.addEventListener('load', schedule, {once:true});
+  schedule();
 })();
 </script>
 
