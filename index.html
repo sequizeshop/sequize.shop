@@ -2743,6 +2743,74 @@
 }
 </style>
 
+
+<style id="vercel-style-desktop-drawer-update">
+@media (min-width:761px) {
+  body:not(.nav-pending) { padding-left:88px !important; transition:none !important; }
+  body:not(.nav-pending).desktop-drawer-expanded { padding-left:250px !important; }
+  body:not(.nav-pending) .topbar { padding-left:24px !important; padding-right:28px !important; }
+  body:not(.nav-pending) .topbar > .brand,
+  body:not(.nav-pending) .topbar > .guest-header-brand { display:none !important; }
+  body:not(.nav-pending) .topbar .nav-actions { display:none !important; }
+  body:not(.nav-pending) #bottomNav { display:none !important; }
+  body:not(.nav-pending) .desktop-nav-toggle { display:none !important; }
+  body:not(.nav-pending) .desktop-drawer-overlay { display:none !important; }
+  body:not(.nav-pending) .desktop-drawer {
+    position:fixed !important; top:92px !important; left:12px !important; bottom:auto !important;
+    z-index:2501 !important; width:64px !important; max-height:calc(100vh - 112px) !important;
+    padding:10px 8px !important; display:flex !important; flex-direction:column !important;
+    gap:10px !important; overflow-x:hidden !important; overflow-y:auto !important;
+    background:#fff !important; border:1px solid #e5e7eb !important; border-radius:14px !important;
+    box-shadow:0 5px 20px rgba(20,25,35,.08) !important; transition:none !important;
+  }
+  body:not(.nav-pending) .desktop-drawer.expanded { width:226px !important; }
+  body:not(.nav-pending) .desktop-drawer-head {
+    min-height:48px !important; padding:0 0 10px !important; gap:8px !important;
+    display:flex !important; align-items:center !important; border-bottom:1px solid #e5e7eb !important;
+  }
+  body:not(.nav-pending) .desktop-drawer-toggle {
+    width:44px !important; min-width:44px !important; height:44px !important; padding:0 !important;
+    border:0 !important; border-radius:9px !important; background:transparent !important;
+    color:#20221f !important; display:flex !important; align-items:center !important; justify-content:center !important;
+    font-size:22px !important; flex-shrink:0 !important;
+  }
+  body:not(.nav-pending) .desktop-drawer-head .brand { display:none !important; font-size:21px !important; }
+  body:not(.nav-pending) .desktop-drawer.expanded .desktop-drawer-head .brand { display:block !important; }
+  body:not(.nav-pending) .desktop-nav-links { display:flex !important; flex-direction:column !important; gap:3px !important; }
+  body:not(.nav-pending) .desktop-nav-link {
+    position:relative !important; width:100% !important; min-width:0 !important; min-height:42px !important;
+    height:42px !important; padding:0 8px !important; display:flex !important; align-items:center !important;
+    justify-content:flex-start !important; gap:12px !important; overflow:hidden !important;
+    border:1px solid transparent !important; border-radius:9px !important; background:transparent !important;
+    color:#555b65 !important; text-align:left !important; white-space:nowrap !important;
+    font-family:"DM Sans",sans-serif !important; font-size:13px !important; font-weight:600 !important;
+    text-decoration:none !important; cursor:pointer !important; transition:none !important;
+  }
+  body:not(.nav-pending) .desktop-nav-link > i { flex:0 0 28px !important; width:28px !important; font-size:20px !important; text-align:center !important; color:inherit !important; }
+  body:not(.nav-pending) .desktop-nav-link span { display:none !important; }
+  body:not(.nav-pending) .desktop-drawer.expanded .desktop-nav-link span { display:inline !important; }
+  body:not(.nav-pending) .desktop-nav-link:hover { background:#f7f8fa !important; }
+  body:not(.nav-pending) .desktop-nav-link.active,
+  body:not(.nav-pending) .desktop-nav-link[aria-current="page"] { background:#f0f4ff !important; color:#2962ff !important; border-color:#e2eaff !important; }
+  body:not(.nav-pending) .desktop-nav-link.active > i { color:#2962ff !important; }
+  body:not(.nav-pending) .desktop-drawer-bottom { display:none !important; }
+  body:not(.nav-pending) .desktop-drawer .shoppy-notification-badge { position:absolute !important; top:3px !important; right:3px !important; min-width:15px !important; height:15px !important; padding:0 3px !important; font-size:9px !important; }
+  body:not(.nav-pending) .desktop-drawer.expanded .desktop-nav-link .shoppy-notification-badge { right:auto !important; left:30px !important; }
+  /* These shortcuts now live in the desktop drawer only; mobile account UI is unchanged. */
+  body:not(.nav-pending) #appProfileLayout > .app-profile-aside > a.app-profile-row[href="/orders.html"],
+  body:not(.nav-pending) #appProfileLayout > .app-profile-aside > #appProfileCartShortcut,
+  body:not(.nav-pending) #appProfileLayout > section > a.app-profile-row[href="/orders.html"],
+  body:not(.nav-pending) #appProfileLayout > section > a.app-profile-row[href="/addresses.html"],
+  body:not(.nav-pending) #appProfileLayout > section > a.app-profile-row[href="/coupons.html"],
+  body:not(.nav-pending) #appProfileLayout > section > a.app-profile-row[href="/payments.html"],
+  body:not(.nav-pending) #appProfileLayout > section > #appProfileCartRow { display:none !important; }
+}
+@media (max-width:760px) {
+  /* Intentionally preserve the existing mobile navigation, header, account layout and spacing. */
+  body .desktop-drawer, body .desktop-drawer-overlay, body .desktop-nav-toggle { display:none !important; }
+}
+</style>
+
 </head>
 
 <body class="nav-pending">
@@ -2809,64 +2877,28 @@
   <aside class="desktop-drawer" id="desktopDrawer" aria-label="Desktop navigation">
 
     <div class="desktop-drawer-head">
-
-      <button
-        class="desktop-drawer-toggle"
-        id="desktopDrawerToggle"
-        type="button"
-        aria-label="Expand navigation"
-        aria-expanded="false"
-      >
+      <button class="desktop-drawer-toggle" id="desktopDrawerToggle" type="button"
+        aria-label="Expand navigation" aria-expanded="false">
         <i class="ph ph-list" aria-hidden="true"></i>
       </button>
-
-      <a href="/home.html" class="brand">Shoppy.</a>
-
+      <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
     </div>
 
-    <nav class="desktop-nav-links">
-
-      <button class="desktop-nav-link active" type="button" data-desktop-nav="home">
-        <i class="ph-fill ph-house" aria-hidden="true"></i>
-        <span>Home</span>
-      </button>
-
-      <button class="desktop-nav-link" type="button" data-desktop-nav="search">
-        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-        <span>Search</span>
-      </button>
-
-      <button class="desktop-nav-link" type="button" data-desktop-nav="explore">
-        <i class="ph ph-compass" aria-hidden="true"></i>
-        <span>Explore</span>
-      </button>
-
+    <nav class="desktop-nav-links" aria-label="Desktop navigation links">
+      <button class="desktop-nav-link active" type="button" data-desktop-nav="home" title="Home"><i class="ph-fill ph-house" aria-hidden="true"></i><span>Home</span></button>
+      <button class="desktop-nav-link" type="button" data-desktop-nav="search" title="Search"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><span>Search</span></button>
+      <button class="desktop-nav-link" type="button" data-desktop-nav="explore" title="Explore"><i class="ph ph-compass" aria-hidden="true"></i><span>Explore</span></button>
+      <button class="desktop-nav-link" type="button" data-desktop-nav="cart" title="My Cart"><i class="ph ph-shopping-cart" aria-hidden="true"></i><span>My Cart</span></button>
+      <button class="desktop-nav-link" type="button" data-desktop-nav="account" title="Account"><i class="ph ph-user-circle" aria-hidden="true"></i><span>Account</span></button>
+      <button class="desktop-nav-link" type="button" id="drawerLocationButton" data-open-location title="Change location"><i class="ph ph-map-pin" aria-hidden="true"></i><span id="drawerLocationLabel">Select state</span></button>
+      <button class="desktop-nav-link" type="button" id="drawerNotifButton" title="Notifications"><i class="ph ph-bell" aria-hidden="true"></i><span>Notifications</span><span class="shoppy-notification-badge" id="drawerNotifBadge" aria-label="Unread notifications">0</span></button>
+      <a class="desktop-nav-link desktop-drawer-page-link" href="/orders.html" title="My Orders"><i class="ph ph-package" aria-hidden="true"></i><span>My Orders</span></a>
+      <a class="desktop-nav-link desktop-drawer-page-link" href="/addresses.html" title="Saved Addresses"><i class="ph ph-map-pin-line" aria-hidden="true"></i><span>Saved Addresses</span></a>
+      <a class="desktop-nav-link desktop-drawer-page-link" href="/coupons.html" title="Coupons &amp; Offers"><i class="ph ph-ticket" aria-hidden="true"></i><span>Coupons &amp; Offers</span></a>
+      <a class="desktop-nav-link desktop-drawer-page-link" href="/payments.html" title="My Payments"><i class="ph ph-credit-card" aria-hidden="true"></i><span>My Payments</span></a>
     </nav>
 
-    <div class="desktop-drawer-bottom">
-
-      <button class="desktop-nav-link premium-drawer-control" type="button" id="drawerLocationButton" data-open-location title="Change location">
-        <i class="ph ph-map-pin" aria-hidden="true"></i>
-        <span id="drawerLocationLabel">Select state</span>
-      </button>
-
-      <button class="desktop-nav-link premium-drawer-control" type="button" id="drawerNotifButton" title="Notifications">
-        <i class="ph ph-bell" aria-hidden="true"></i>
-        <span>Notifications</span>
-        <span class="shoppy-notification-badge" id="drawerNotifBadge" aria-label="Unread notifications">0</span>
-      </button>
-
-      <button class="desktop-nav-link" type="button" data-desktop-nav="cart">
-        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
-        <span>My Cart</span>
-      </button>
-
-      <button class="desktop-nav-link" type="button" data-desktop-nav="account">
-        <i class="ph ph-user-circle" aria-hidden="true"></i>
-        <span>Account</span>
-      </button>
-
-    </div>
+    <div class="desktop-drawer-bottom"></div>
 
   </aside>
 
@@ -4789,6 +4821,10 @@
       });
     });
 
+    document.querySelectorAll(".desktop-drawer-page-link").forEach(link => {
+      link.addEventListener("click", () => closeDesktopDrawer());
+    });
+
     document.querySelectorAll("[data-top-nav]").forEach(button => button.addEventListener("click", () => handleNavigation(button.dataset.topNav)));
     window.ShoppyInPageCartBadge = () => loadCart();
 
@@ -4981,7 +5017,7 @@
       if (window.innerWidth <= 760) return;
 
       desktopDrawer.classList.add("expanded");
-      desktopDrawerOverlay.classList.add("open");
+      document.body.classList.add("desktop-drawer-expanded");
 
       desktopDrawerToggle.setAttribute("aria-expanded", "true");
       desktopDrawerToggle.setAttribute("aria-label", "Collapse navigation");
@@ -4991,7 +5027,7 @@
 
     function closeDesktopDrawer() {
       desktopDrawer.classList.remove("expanded");
-      desktopDrawerOverlay.classList.remove("open");
+      document.body.classList.remove("desktop-drawer-expanded");
 
       desktopDrawerToggle.setAttribute("aria-expanded", "false");
       desktopDrawerToggle.setAttribute("aria-label", "Expand navigation");
@@ -5010,7 +5046,7 @@
     desktopDrawerToggle.addEventListener("click", toggleDesktopDrawer);
     desktopNavToggle.addEventListener("click", toggleDesktopDrawer);
 
-    desktopDrawerOverlay.addEventListener("click", closeDesktopDrawer);
+    /* The desktop drawer is a floating navigation rail; no overlay is used. */
 
     function updateResponsiveNavigation() {
       const desktop = window.innerWidth > 760;
