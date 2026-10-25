@@ -2267,6 +2267,41 @@
       #appProfileLayout > section { grid-template-columns:minmax(0,1fr); }
     }
 
+
+
+    /* Requested desktop-only layout and navigation updates. Mobile styles remain unchanged. */
+    @media (min-width:761px) {
+      body.app-premium-navigation .desktop-sheet-nav-item { display:flex !important; }
+      body.app-premium-navigation .bottom-nav { width:64px !important; }
+      body.app-premium-navigation .bottom-nav-item { flex:0 0 52px !important; }
+      body.app-premium-navigation .topbar { position:relative; margin-left:0 !important; padding-left:180px !important; }
+      body.app-premium-navigation .topbar > .brand {
+        position:absolute !important; left:24px !important; top:50% !important; right:auto !important;
+        margin:0 !important; transform:translateY(-50%) !important; z-index:3;
+      }
+      body.app-premium-navigation .app-view {
+        width:calc(100% - 124px) !important; max-width:none !important;
+        margin:30px 24px 60px 100px !important; box-sizing:border-box;
+      }
+      body.app-premium-navigation #cartPage .app-summary { min-width:0; }
+      body.app-premium-navigation #cartPage #appCheckoutButton,
+      body.app-premium-navigation #cartPage #appContinueShopping,
+      body.app-premium-navigation #cartPage #appClearCartButton {
+        display:inline-flex; vertical-align:top; width:calc(33.333% - 9px) !important;
+        min-width:0; min-height:44px; margin:12px 8px 0 0; padding:10px 8px;
+        box-sizing:border-box; font-size:12px; white-space:normal; line-height:1.25;
+      }
+      body.app-premium-navigation #cartPage #appClearCartButton { margin-right:0; }
+      body.app-premium-navigation #cartPage #appClearCartButton[hidden] { display:none !important; }
+      body.guest-mode #appProfileLayout,
+      body.guest-mode #appProfileLoading { display:none !important; }
+    }
+    /* Never show account settings/actions to guests, regardless of viewport. */
+    body.guest-mode #appProfileLayout { display:none !important; }
+    body.guest-mode #appProfileLoading { display:none !important; }
+    @media (max-width:760px) {
+      .desktop-sheet-nav-item { display:none !important; }
+    }
 </style>
 </head>
 
@@ -2889,6 +2924,16 @@
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </span>
       <span>Account</span>
+    </button>
+
+    <!-- Desktop-only sheet tabs. Hidden on mobile to preserve the existing five-item layout. -->
+    <button type="button" class="bottom-nav-item desktop-sheet-nav-item" data-bottom-nav="location" aria-label="Location" title="Location">
+      <span class="nav-item-icon"><i class="ph ph-map-pin" aria-hidden="true"></i></span>
+      <span>Location</span>
+    </button>
+    <button type="button" class="bottom-nav-item desktop-sheet-nav-item" data-bottom-nav="notifications" aria-label="Notifications" title="Notifications">
+      <span class="nav-item-icon"><i class="ph ph-bell" aria-hidden="true"></i></span>
+      <span>Notifications</span>
     </button>
 
   </nav>
@@ -4116,7 +4161,9 @@
           search: "magnifying-glass",
           explore: "compass",
           cart: "shopping-cart",
-          account: "user-circle"
+          account: "user-circle",
+          location: "map-pin",
+          notifications: "bell"
         };
 
         if (icon) {
@@ -4160,7 +4207,9 @@
           search: "magnifying-glass",
           explore: "compass",
           cart: "shopping-cart",
-          account: "user-circle"
+          account: "user-circle",
+          location: "map-pin",
+          notifications: "bell"
         };
 
         const icon = button.querySelector("i");
@@ -4214,6 +4263,22 @@
         return;
       }
 
+      if (action === "location") {
+        updateNavigationState("location");
+        if (typeof openLocationSheet === "function") openLocationSheet();
+        return;
+      }
+
+      if (action === "notifications") {
+        updateNavigationState("notifications");
+        const overlay = document.getElementById("notifSheetOverlay");
+        if (overlay && typeof openSheetOverlay === "function") {
+          openSheetOverlay(overlay);
+          if (typeof loadNotifications === "function") loadNotifications();
+        }
+        return;
+      }
+
       if (action === "account") {
         currentView = "account";
         homeContent.hidden = true;
@@ -4224,6 +4289,12 @@
         document.body.classList.remove("explore-mode");
         document.getElementById("exploreFilterRow").hidden = true;
         updateNavigationState("account");
+        const guestAccountPanel = document.getElementById("guestAccountPanel");
+        if (guestAccountPanel) guestAccountPanel.hidden = authStatus !== "guest";
+        if (authStatus === "guest") {
+          document.getElementById("appProfileLayout").hidden = true;
+          document.getElementById("appProfileLoading").hidden = true;
+        }
         window.scrollTo({ top: 0, behavior: "smooth" });
         window.ShoppyInPageProfile && window.ShoppyInPageProfile.load();
       }
