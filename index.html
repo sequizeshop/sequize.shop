@@ -2811,6 +2811,66 @@
 }
 </style>
 
+
+<style id="desktop-drawer-visibility-fix">
+/* Final desktop-only override: keep the Vercel-style floating drawer visible for Basic and Premium. */
+@media (min-width:761px) {
+  html body #desktopDrawer,
+  html body.nav-pending #desktopDrawer,
+  html body.app-premium-navigation #desktopDrawer,
+  html body.app-basic-navigation #desktopDrawer {
+    display:flex !important;
+    position:fixed !important;
+    top:92px !important;
+    left:12px !important;
+    bottom:auto !important;
+    z-index:9999 !important;
+    width:64px !important;
+    max-height:calc(100vh - 112px) !important;
+    padding:10px 8px !important;
+    flex-direction:column !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    transform:none !important;
+    background:#fff !important;
+    border:1px solid #e5e7eb !important;
+    border-radius:14px !important;
+    box-shadow:0 5px 20px rgba(20,25,35,.08) !important;
+    transition:none !important;
+  }
+  html body #desktopDrawer.expanded,
+  html body.nav-pending #desktopDrawer.expanded,
+  html body.app-premium-navigation #desktopDrawer.expanded,
+  html body.app-basic-navigation #desktopDrawer.expanded { width:226px !important; }
+  html body #desktopDrawerOverlay,
+  html body #desktopNavToggle { display:none !important; }
+  html body #bottomNav { display:none !important; }
+  html body { padding-left:88px !important; }
+  html body.desktop-drawer-expanded { padding-left:250px !important; }
+  html body #desktopDrawer .desktop-drawer-head { display:flex !important; min-height:48px !important; padding:0 0 10px !important; gap:8px !important; align-items:center !important; border-bottom:1px solid #e5e7eb !important; }
+  html body #desktopDrawer .desktop-drawer-toggle { display:flex !important; flex:0 0 44px !important; width:44px !important; min-width:44px !important; height:44px !important; align-items:center !important; justify-content:center !important; border:0 !important; border-radius:9px !important; background:transparent !important; color:#20221f !important; font-size:22px !important; }
+  html body #desktopDrawer .desktop-drawer-head .brand { display:none !important; }
+  html body #desktopDrawer.expanded .desktop-drawer-head .brand { display:block !important; font-size:21px !important; }
+  html body #desktopDrawer .desktop-nav-links { display:flex !important; flex-direction:column !important; gap:3px !important; }
+  html body #desktopDrawer .desktop-nav-link { position:relative !important; display:flex !important; width:100% !important; min-width:0 !important; height:42px !important; min-height:42px !important; padding:0 8px !important; align-items:center !important; justify-content:flex-start !important; gap:12px !important; border:1px solid transparent !important; border-radius:9px !important; background:transparent !important; color:#555b65 !important; font:600 13px "DM Sans",sans-serif !important; text-align:left !important; white-space:nowrap !important; transition:none !important; }
+  html body #desktopDrawer .desktop-nav-link > i { flex:0 0 28px !important; width:28px !important; font-size:20px !important; text-align:center !important; }
+  html body #desktopDrawer .desktop-nav-link span { display:none !important; }
+  html body #desktopDrawer.expanded .desktop-nav-link span { display:inline !important; }
+  html body #desktopDrawer .desktop-nav-link.active,
+  html body #desktopDrawer .desktop-nav-link[aria-current="page"] { background:#f0f4ff !important; color:#2962ff !important; border-color:#e2eaff !important; }
+  html body #desktopDrawer .desktop-nav-link:hover { background:#f7f8fa !important; }
+  html body #desktopDrawer .desktop-drawer-bottom { display:none !important; }
+  html body #desktopDrawer .shoppy-notification-badge { position:absolute !important; top:2px !important; right:2px !important; min-width:15px !important; height:15px !important; padding:0 3px !important; font-size:9px !important; }
+  html body #desktopDrawer.expanded .desktop-nav-link .shoppy-notification-badge { right:auto !important; left:30px !important; }
+}
+@media (max-width:760px) {
+  html body #desktopDrawer, html body #desktopDrawerOverlay, html body #desktopNavToggle { display:none !important; }
+}
+</style>
+
 </head>
 
 <body class="nav-pending">
