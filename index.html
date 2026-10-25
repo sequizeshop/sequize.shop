@@ -2606,6 +2606,87 @@
 }
 </style>
 
+
+<style id="desktop-floating-drawer-basic-premium-final">
+/* Desktop uses one shared floating navigation shell for Basic and Premium accounts. */
+@media (min-width:761px) {
+  body:not(.nav-pending) .topbar {
+    display:none !important; height:0 !important; min-height:0 !important; margin:0 !important; padding:0 !important;
+    border:0 !important; visibility:hidden !important; overflow:hidden !important;
+  }
+  body:not(.nav-pending) .topbar > *,
+  body:not(.nav-pending) .topbar .nav-actions { display:none !important; }
+  body:not(.nav-pending) #bottomNav {
+    top:50% !important; left:16px !important; right:auto !important; bottom:auto !important;
+    transform:translateY(-50%) !important; width:64px !important; height:476px !important;
+    max-height:calc(100vh - 32px) !important; max-height:calc(100dvh - 32px) !important;
+    padding:8px 6px !important; gap:0 !important; overflow-x:hidden !important; overflow-y:auto !important;
+    border:1px solid rgba(255,255,255,.72) !important; border-radius:999px !important;
+    background:rgba(255,255,255,.78) !important;
+    -webkit-backdrop-filter:blur(24px) saturate(175%) !important; backdrop-filter:blur(24px) saturate(175%) !important;
+    box-shadow:0 12px 36px rgba(25,45,90,.14),0 2px 8px rgba(25,45,90,.06),inset 0 1px 0 rgba(255,255,255,.9) !important;
+    transition:width .42s cubic-bezier(.2,.75,.25,1),height .42s cubic-bezier(.2,.75,.25,1),
+      max-height .42s cubic-bezier(.2,.75,.25,1),top .42s cubic-bezier(.2,.75,.25,1),
+      left .42s cubic-bezier(.2,.75,.25,1),transform .42s cubic-bezier(.2,.75,.25,1),
+      padding .42s ease,border-radius .42s ease,gap .42s ease,box-shadow .3s ease !important;
+  }
+  body:not(.nav-pending) #bottomNav::before {
+    content:"Shoppy."; display:none; flex:0 0 0; width:100%; box-sizing:border-box;
+    padding:6px 10px 12px; color:var(--primary,#2458D3); font-family:var(--font-heading,Manrope,sans-serif);
+    font-size:21px; font-weight:800; letter-spacing:-.7px; line-height:1.2; white-space:nowrap;
+    opacity:0; transform:translateY(-5px); transition:opacity .22s ease,transform .28s ease;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded {
+    top:16px !important; left:16px !important; bottom:auto !important; transform:none !important;
+    width:224px !important; height:calc(100vh - 32px) !important; height:calc(100dvh - 32px) !important;
+    max-height:none !important; padding:14px 12px !important; gap:8px !important;
+    align-items:stretch !important; justify-content:flex-start !important; border-radius:30px !important;
+    overflow-x:hidden !important; overflow-y:auto !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded::before {
+    display:block; flex:0 0 auto; opacity:1; transform:translateY(0); padding:7px 14px 14px;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .bottom-nav-item {
+    flex:0 0 48px !important; width:100% !important; max-width:none !important; min-width:0 !important;
+    height:48px !important; min-height:48px !important; flex-direction:row !important; justify-content:flex-start !important;
+    gap:14px !important; padding:0 14px !important; border-radius:16px !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .bottom-nav-item > span:not(.nav-item-icon) {
+    display:inline-flex !important; align-items:center !important; min-width:0 !important; white-space:nowrap !important;
+    font-size:13px !important; font-weight:700 !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .bottom-nav-item .nav-item-icon {
+    flex:0 0 24px !important; width:24px !important; min-width:24px !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .nav-indicator {
+    top:14px !important; left:12px !important; width:200px !important; border-radius:16px !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .desktop-nav-expand-toggle {
+    justify-content:flex-start !important; padding:0 14px !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .desktop-nav-expand-toggle i { transform:rotate(180deg) !important; }
+  body:not(.nav-pending) #bottomNav.nav-expanded .desktop-nav-expand-toggle span { display:inline !important; }
+  body:not(.nav-pending) #bottomNav .desktop-nav-expand-toggle {
+    flex:0 0 44px !important; min-height:44px !important; border-radius:999px !important;
+  }
+  body:not(.nav-pending) #homeContent .search-bar-wrap,
+  body:not(.nav-pending) #homeContent .hero-wrap,
+  body:not(.nav-pending) #homeContent .offers-wrap,
+  body:not(.nav-pending) #homeContent .container,
+  body:not(.nav-pending) #searchPage,
+  body:not(.nav-pending) .app-view {
+    width:calc(100% - 124px) !important; max-width:none !important; margin-left:100px !important; margin-right:24px !important;
+  }
+}
+@media (max-width:760px) {
+  /* Mobile header and bottom navigation retain their original behavior. */
+  body .topbar { display:flex; }
+  body #bottomNav::before { content:none !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  @media (min-width:761px) { body:not(.nav-pending) #bottomNav { transition-duration:.01ms !important; } }
+}
+</style>
 </head>
 
 <body class="nav-pending">
@@ -5108,7 +5189,7 @@
       const navWidth = bottomNav.clientWidth;
       const navRect = bottomNav.getBoundingClientRect();
       const itemRect = activeItem.getBoundingClientRect();
-      const verticalDesktop = window.innerWidth > 760 && document.body.classList.contains("app-premium-navigation");
+      const verticalDesktop = window.innerWidth > 760;
       if (verticalDesktop) {
         const h = Math.min(activeItem.offsetHeight, bottomNav.clientHeight - 16);
         const y = Math.max(0, Math.min(bottomNav.clientHeight - h, itemRect.top - navRect.top - bottomNav.clientTop));
@@ -5170,7 +5251,7 @@
       }
 
       // Desktop sheet tabs are temporary actions: restore the page tab that was active before opening.
-      if (window.innerWidth > 760 && document.body.classList.contains("app-premium-navigation")) {
+      if (window.innerWidth > 760) {
         const activeTab = document.querySelector("#bottomNav [data-bottom-nav].active");
         const activeName = activeTab && activeTab.dataset.bottomNav;
         const closingLocation = overlay && overlay.id === "locationSheetOverlay";
