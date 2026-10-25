@@ -92,6 +92,77 @@ async function loadOwnOrder(db, uid, orderId) {
 }
 
 /*
+ * PAYMENT NOTIFICATIONS
+ *
+ * PAID   -> success notification
+ * FAILED -> failure notification
+ * PENDING -> no notification
+ *
+ * Uses a fixed notification ID for each order and result,
+ * preventing duplicate notifications for the same result.
+ */
+async function sendPaymentNotification(db, uid, order, status) {
+  try {
+    if (status !== "PAID" && status !== "FAILED") {
+      return;
+    }
+
+    const orderId = String(order.orderId);
+    const amount = Number(order.totalINR).toFixed(2);
+
+    let notificationId;
+    let notification;
+
+    if (status === "PAID") {
+      notificationId = `payment_success_${orderId}`;
+
+      notification = {
+        title: "Order placed successfully 🎉",
+        message:
+          `Dear Shoppy user, your order (${orderId}) worth ₹${amount} has been placed successfully. Thank you for shopping with Shoppy!`,
+        category: "orders",
+        type: "success",
+        read: false,
+        createdAt: Date.now(),
+        orderId,
+        source: "payment"
+      };
+    } else {
+      notificationId = `payment_failed_${orderId}`;
+
+      notification = {
+        title: "Payment not completed",
+        message:
+          `Dear Shoppy user, payment for your order (${orderId}) worth ₹${amount} was not completed. Please try again to complete your purchase. If any amount was deducted, please allow time for the payment status to update.`,
+        category: "payments",
+        type: "warning",
+        read: false,
+        createdAt: Date.now(),
+        orderId,
+        source: "payment"
+      };
+    }
+
+    const notificationRef = db.ref(
+      `Notifications/${uid}/${notificationId}`
+    );
+
+    await notificationRef.transaction(current => {
+      if (current !== null) {
+        return;
+      }
+
+      return notification;
+    });
+  } catch (error) {
+    console.error(
+      "Payment notification error:",
+      error.message
+    );
+  }
+}
+
+/*
  * Create a Cashfree order (payment session) for an existing order.
  * The amount always comes from our database, never from the browser.
  *
@@ -317,6 +388,13 @@ async function verifyPayment(req, res, session) {
   }
 
   if (order.paymentStatus === "PAID") {
+    await sendPaymentNotification(
+      db,
+      uid,
+      order,
+      "PAID"
+    );
+
     return res.status(200).json({
       success: true,
       paymentStatus: "PAID"
@@ -324,6 +402,13 @@ async function verifyPayment(req, res, session) {
   }
 
   if (!order.lastPaymentId) {
+    await sendPaymentNotification(
+      db,
+      uid,
+      order,
+      "FAILED"
+    );
+
     return res.status(200).json({
       success: true,
       paymentStatus: "FAILED"
@@ -333,6 +418,13 @@ async function verifyPayment(req, res, session) {
   const paymentStatus = await syncPayment(
     db,
     String(order.lastPaymentId)
+  );
+
+  await sendPaymentNotification(
+    db,
+    uid,
+    order,
+    paymentStatus
   );
 
   return res.status(200).json({
