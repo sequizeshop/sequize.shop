@@ -2634,6 +2634,115 @@
   body .desktop-drawer, body .desktop-drawer-overlay, body .desktop-nav-toggle { display:none !important; }
 }
 </style>
+
+<style id="shoppy-final-shared-pages-role-navigation">
+/* FINAL RULE: page content/layout is shared between Basic and Premium; only the nav skin varies. */
+@media (min-width:761px) {
+  /* Keep the Premium account-page layout for both roles, including its two-column settings list. */
+  body:not(.nav-pending) #appProfileLayout {
+    display:grid !important;
+    grid-template-columns:max-content minmax(260px,1fr) !important;
+    gap:16px 20px !important;
+    align-items:stretch !important;
+  }
+  body:not(.nav-pending) #appProfileLayout > section {
+    grid-column:1 / -1 !important;
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:12px 16px !important;
+  }
+  body:not(.nav-pending) #appProfileLayout > section > .app-section-heading,
+  body:not(.nav-pending) #appProfileLayout > section > #appLogoutButton {
+    grid-column:1 / -1 !important;
+  }
+  body:not(.nav-pending) #appProfileLayout > section > .app-section-heading { margin-bottom:4px !important; }
+
+  /* Use the Basic user's original cart layout for both roles (items and summary side by side). */
+  body:not(.nav-pending) #cartPage .app-cart-layout {
+    display:grid !important;
+    grid-template-columns:minmax(0,1.3fr) minmax(260px,.8fr) !important;
+    gap:42px !important;
+    align-items:start !important;
+  }
+  body:not(.nav-pending) #cartPage .app-cart-items {
+    display:flex !important;
+    flex-direction:column !important;
+    min-width:0 !important;
+    column-gap:0 !important;
+    row-gap:0 !important;
+  }
+  body:not(.nav-pending) #cartPage .app-cart-item {
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    align-items:center !important;
+    gap:15px !important;
+    padding:15px 0 !important;
+  }
+  body:not(.nav-pending) #cartPage .app-cart-item:first-child { padding-top:0 !important; }
+  body:not(.nav-pending) #cartPage .app-cart-image { width:90px !important; height:90px !important; }
+  body:not(.nav-pending) #cartPage .app-cart-info { min-width:0 !important; flex:1 1 auto !important; }
+  body:not(.nav-pending) #cartPage .app-cart-total { width:auto !important; text-align:right !important; }
+  body:not(.nav-pending) #cartPage .app-summary { position:sticky !important; top:24px !important; width:auto !important; }
+
+  /* One shared vertical nav component for both roles; no duplicate desktop drawer. */
+  body:not(.nav-pending) .desktop-drawer,
+  body:not(.nav-pending) .desktop-drawer-overlay,
+  body:not(.nav-pending) .desktop-nav-toggle { display:none !important; visibility:hidden !important; pointer-events:none !important; }
+  body:not(.nav-pending) .topbar .nav-actions { display:none !important; }
+
+  /* Basic gets a neutral translucent white floating rail; Premium retains its existing blue glass skin. */
+  body.app-basic-navigation:not(.nav-pending) #bottomNav {
+    border:1px solid rgba(220,224,231,.78) !important;
+    border-radius:999px !important;
+    background:rgba(255,255,255,.82) !important;
+    -webkit-backdrop-filter:blur(22px) saturate(160%) !important;
+    backdrop-filter:blur(22px) saturate(160%) !important;
+    box-shadow:0 12px 30px rgba(25,35,55,.10), inset 0 1px 0 rgba(255,255,255,.95) !important;
+    color:var(--text-primary) !important;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav .bottom-nav-item,
+  body.app-basic-navigation:not(.nav-pending) #bottomNav .desktop-nav-expand-toggle {
+    color:var(--text-secondary) !important;
+    background:transparent !important;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav .bottom-nav-item.active,
+  body.app-basic-navigation:not(.nav-pending) #bottomNav .bottom-nav-item.active .nav-item-icon {
+    color:#fff !important;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav .nav-indicator {
+    background:var(--primary,#2962FF) !important;
+    box-shadow:0 4px 14px rgba(41,98,255,.25) !important;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav.nav-expanded {
+    border-radius:26px !important;
+    padding-top:58px !important;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav.nav-expanded::before {
+    content:"Shoppy.";
+    position:absolute;
+    top:16px;
+    left:18px;
+    right:18px;
+    display:block;
+    overflow:hidden;
+    color:var(--primary,#2962FF);
+    font-family:var(--font-heading);
+    font-size:21px;
+    font-weight:800;
+    letter-spacing:-.6px;
+    line-height:28px;
+    white-space:nowrap;
+    pointer-events:none;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav.nav-expanded .nav-indicator { top:58px !important; }
+  /* Keep the Premium navigation's own glass background and selected-tab styling untouched. */
+}
+@media (max-width:760px) {
+  /* This stylesheet deliberately does not alter mobile page layout or bottom navigation. */
+}
+</style>
+
 </head>
 
 <body class="nav-pending">
@@ -4490,7 +4599,7 @@
       const desktopBell = document.querySelector('#bottomNav [data-bottom-nav="notifications"] .nav-item-icon');
       if (!badge || !headerButton || !desktopBell) return;
       const placeBadge = () => {
-        if (window.innerWidth > 760 && document.body.classList.contains("app-premium-navigation")) {
+        if (window.innerWidth > 760) {
           if (badge.parentElement !== desktopBell) desktopBell.appendChild(badge);
         } else if (badge.parentElement !== headerButton) {
           headerButton.appendChild(badge);
@@ -4547,7 +4656,7 @@
       const premiumIndicator = document.getElementById("navIndicator");
       const premiumNav = document.getElementById("bottomNav");
       const premiumActive = premiumNav && premiumNav.querySelector("[data-bottom-nav].active");
-      if (premiumIndicator && premiumNav && premiumActive && document.body.classList.contains("app-premium-navigation")) {
+      if (premiumIndicator && premiumNav && premiumActive && (window.innerWidth > 760 || document.body.classList.contains("app-premium-navigation"))) {
         const navRect = premiumNav.getBoundingClientRect();
         const itemRect = premiumActive.getBoundingClientRect();
         if (window.innerWidth > 760) {
@@ -4919,12 +5028,8 @@
       if (active) {
         const nav = document.getElementById("bottomNav");
         const indicator = document.getElementById("navIndicator");
-        if (nav && indicator && document.body.classList.contains("app-premium-navigation")) {
-          const nr = nav.getBoundingClientRect(), ar = active.getBoundingClientRect();
-          const width = Math.min(Math.max(0, ar.width), nav.clientWidth);
-          const x = Math.max(0, Math.min(nav.clientWidth - width, ar.left - nr.left - nav.clientLeft));
-          indicator.style.width = width + "px";
-          indicator.style.transform = "translate3d(" + x + "px,0,0)";
+        if (nav && indicator && typeof positionNavIndicator === "function") {
+          positionNavIndicator(true);
         }
       }
     });
@@ -5136,7 +5241,7 @@
       const navWidth = bottomNav.clientWidth;
       const navRect = bottomNav.getBoundingClientRect();
       const itemRect = activeItem.getBoundingClientRect();
-      const verticalDesktop = window.innerWidth > 760 && document.body.classList.contains("app-premium-navigation");
+      const verticalDesktop = window.innerWidth > 760;
       if (verticalDesktop) {
         const h = Math.min(activeItem.offsetHeight, bottomNav.clientHeight - 16);
         const y = Math.max(0, Math.min(bottomNav.clientHeight - h, itemRect.top - navRect.top - bottomNav.clientTop));
@@ -5198,7 +5303,7 @@
       }
 
       // Desktop sheet tabs are temporary actions: restore the page tab that was active before opening.
-      if (window.innerWidth > 760 && document.body.classList.contains("app-premium-navigation")) {
+      if (window.innerWidth > 760) {
         const activeTab = document.querySelector("#bottomNav [data-bottom-nav].active");
         const activeName = activeTab && activeTab.dataset.bottomNav;
         const closingLocation = overlay && overlay.id === "locationSheetOverlay";
