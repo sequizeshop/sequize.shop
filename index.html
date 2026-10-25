@@ -6277,5 +6277,35 @@
 }
 </style>
 
+
+<style id="desktop-drawer-fullheight-divider-final">
+@media (min-width:761px) {
+  /* Full-height drawer pinned to the very top, flush left, no shadow, no rounded floating card. */
+  html body #desktopDrawer,
+  html body.nav-pending #desktopDrawer,
+  html body.app-premium-navigation #desktopDrawer,
+  html body.app-basic-navigation #desktopDrawer {
+    position:fixed !important; top:0 !important; left:0 !important; bottom:0 !important; right:auto !important;
+    width:226px !important; height:100vh !important; height:100dvh !important; max-height:none !important;
+    margin:0 !important; padding:0 !important; border:0 !important; border-radius:0 !important;
+    box-shadow:none !important; filter:none !important; transform:none !important;
+    display:flex !important; flex-direction:column !important; justify-content:flex-start !important;
+    align-items:stretch !important; align-content:flex-start !important; gap:0 !important;
+    overflow:hidden !important; background:#fff !important; z-index:9999 !important;
+  }
+  /* Content starts at the top of the drawer. */
+  html body #desktopDrawer .desktop-drawer-head { margin:0 !important; padding-top:0 !important; flex:0 0 68px !important; }
+  html body #desktopDrawer .desktop-nav-links {
+    flex:1 1 auto !important; margin:0 !important; padding:12px 10px 18px !important;
+    justify-content:flex-start !important; align-content:flex-start !important;
+  }
+  /* Vertical divider between the drawer and the pages (full viewport height). */
+  html body:not(.nav-pending)::before {
+    content:""; position:fixed; top:0; bottom:0; left:226px; width:1px; background:#e5e7eb;
+    z-index:10000; pointer-events:none;
+  }
+}
+@media (max-width:760px) { html body::before { display:none !important; } }
+</style>
 </body>
 </html>
