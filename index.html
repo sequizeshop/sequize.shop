@@ -2871,6 +2871,75 @@
 }
 </style>
 
+
+<style id="desktop-drawer-layout-final">
+@media (min-width:761px) {
+  html body:not(.nav-pending) { padding-left:226px !important; }
+  html body:not(.nav-pending).desktop-drawer-expanded { padding-left:226px !important; }
+  html body #desktopDrawer,
+  html body.nav-pending #desktopDrawer {
+    position:fixed !important; top:0 !important; left:0 !important; bottom:0 !important;
+    width:226px !important; max-height:100vh !important; height:100vh !important;
+    padding:0 !important; margin:0 !important; display:flex !important;
+    flex-direction:column !important; gap:0 !important; overflow:hidden !important;
+    background:#fff !important; border:0 !important; border-right:1px solid #e5e7eb !important;
+    border-radius:0 !important; box-shadow:none !important; transform:none !important;
+    visibility:visible !important; opacity:1 !important; pointer-events:auto !important;
+    transition:none !important; z-index:9999 !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head {
+    flex:0 0 auto !important; width:100% !important; min-height:68px !important;
+    height:68px !important; margin:0 !important; padding:0 16px !important;
+    display:flex !important; align-items:center !important; gap:12px !important;
+    border:0 !important; border-bottom:1px solid #e5e7eb !important;
+    box-sizing:border-box !important; background:#fff !important;
+  }
+  html body #desktopDrawer .desktop-drawer-toggle {
+    display:flex !important; flex:0 0 32px !important; width:32px !important;
+    min-width:32px !important; height:36px !important; padding:0 !important;
+    align-items:center !important; justify-content:center !important;
+    border:0 !important; border-radius:8px !important; background:transparent !important;
+    color:#20221f !important; font-size:22px !important; cursor:default !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head .brand,
+  html body #desktopDrawer.expanded .desktop-drawer-head .brand {
+    display:block !important; min-width:0 !important; font-size:21px !important;
+    font-weight:800 !important; line-height:1.3 !important; white-space:nowrap !important;
+  }
+  html body #desktopDrawer .desktop-nav-links {
+    flex:1 1 auto !important; min-height:0 !important; width:100% !important;
+    padding:12px 10px 18px !important; margin:0 !important; display:flex !important;
+    flex-direction:column !important; gap:3px !important; overflow-x:hidden !important;
+    overflow-y:auto !important; overscroll-behavior:contain !important;
+  }
+  html body #desktopDrawer .desktop-nav-link,
+  html body #desktopDrawer.expanded .desktop-nav-link {
+    position:relative !important; display:flex !important; width:100% !important;
+    min-width:0 !important; min-height:42px !important; height:42px !important;
+    padding:0 10px !important; align-items:center !important; justify-content:flex-start !important;
+    gap:12px !important; overflow:hidden !important; border:1px solid transparent !important;
+    border-radius:8px !important; background:transparent !important; color:#555b65 !important;
+    font:600 13px "DM Sans",sans-serif !important; text-align:left !important;
+    white-space:nowrap !important; transition:none !important;
+  }
+  html body #desktopDrawer .desktop-nav-link > i { flex:0 0 26px !important; width:26px !important; font-size:20px !important; text-align:center !important; }
+  html body #desktopDrawer .desktop-nav-link span,
+  html body #desktopDrawer.expanded .desktop-nav-link span { display:inline !important; }
+  html body #desktopDrawer .desktop-nav-link:hover { background:#f7f8fa !important; }
+  html body #desktopDrawer .desktop-nav-link.active,
+  html body #desktopDrawer .desktop-nav-link[aria-current="page"] {
+    background:#f0f4ff !important; color:#2962ff !important; border-color:#e2eaff !important;
+  }
+  html body #desktopDrawer .desktop-drawer-bottom { display:none !important; }
+  html body #desktopDrawer .shoppy-notification-badge { position:absolute !important; top:2px !important; right:4px !important; }
+  html body .topbar { border-bottom:0 !important; box-shadow:none !important; }
+  html body #desktopDrawerOverlay, html body #desktopNavToggle, html body #bottomNav { display:none !important; }
+}
+@media (max-width:760px) {
+  html body #desktopDrawer, html body #desktopDrawerOverlay, html body #desktopNavToggle { display:none !important; }
+}
+</style>
+
 </head>
 
 <body class="nav-pending">
@@ -5075,32 +5144,28 @@
 
     function openDesktopDrawer() {
       if (window.innerWidth <= 760) return;
-
       desktopDrawer.classList.add("expanded");
       document.body.classList.add("desktop-drawer-expanded");
-
       desktopDrawerToggle.setAttribute("aria-expanded", "true");
-      desktopDrawerToggle.setAttribute("aria-label", "Collapse navigation");
-
+      desktopDrawerToggle.setAttribute("aria-label", "Main menu");
       desktopNavToggle.setAttribute("aria-expanded", "true");
     }
 
+    /* Desktop navigation stays expanded; the menu icon is a fixed header control, not a collapse toggle. */
     function closeDesktopDrawer() {
+      if (window.innerWidth > 760) {
+        openDesktopDrawer();
+        return;
+      }
       desktopDrawer.classList.remove("expanded");
       document.body.classList.remove("desktop-drawer-expanded");
-
       desktopDrawerToggle.setAttribute("aria-expanded", "false");
-      desktopDrawerToggle.setAttribute("aria-label", "Expand navigation");
-
+      desktopDrawerToggle.setAttribute("aria-label", "Main menu");
       desktopNavToggle.setAttribute("aria-expanded", "false");
     }
 
     function toggleDesktopDrawer() {
-      if (desktopDrawer.classList.contains("expanded")) {
-        closeDesktopDrawer();
-      } else {
-        openDesktopDrawer();
-      }
+      if (window.innerWidth > 760) openDesktopDrawer();
     }
 
     desktopDrawerToggle.addEventListener("click", toggleDesktopDrawer);
@@ -5119,6 +5184,7 @@
     }
 
     window.addEventListener("resize", updateResponsiveNavigation);
+    if (window.innerWidth > 760) openDesktopDrawer();
     window.addEventListener("resize", () => {
       const active = document.querySelector("[data-bottom-nav].active");
       if (active) {
@@ -6094,5 +6160,26 @@
 })();
 </script>
 
+
+<style id="desktop-content-left-alignment-fix">
+@media (min-width:761px) {
+  /* Keep the existing right gutter, but remove the oversized blank area to the left of every page.
+     The 226px body offset is the fixed desktop drawer; content begins just 24px after it. */
+  html body:not(.nav-pending) #homeContent .search-bar-wrap,
+  html body:not(.nav-pending) #homeContent .hero-wrap,
+  html body:not(.nav-pending) #homeContent .offers-wrap,
+  html body:not(.nav-pending) #homeContent .container,
+  html body:not(.nav-pending) #searchPage,
+  html body:not(.nav-pending) .app-view {
+    width:calc(100% - 48px) !important;
+    max-width:none !important;
+    margin-left:24px !important;
+    margin-right:24px !important;
+    box-sizing:border-box !important;
+  }
+  html body:not(.nav-pending) #homeContent .search-bar-wrap { margin-top:20px !important; }
+  html body:not(.nav-pending) #homeContent .hero-wrap { margin-top:28px !important; }
+}
+</style>
 </body>
 </html>
