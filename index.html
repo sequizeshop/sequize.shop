@@ -2995,6 +2995,13 @@
 
   <header class="topbar">
 
+    <form class="desktop-top-search search" id="globalSearchForm" role="search">
+      <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+      <input id="globalSearchInput" type="search" placeholder="Search products..." aria-label="Search products" autocomplete="off" maxlength="100">
+    </form>
+    <button type="button" class="desktop-top-avatar" id="desktopTopAvatar" aria-label="My profile" title="My profile">U</button>
+
+
     <a href="/home.html" class="guest-header-brand" aria-label="Shoppy home">Shoppy.</a>
     <div class="guest-header-actions" id="guestHeaderActions" aria-label="Account actions">
       <a class="guest-auth-button guest-auth-login" href="/login.html">Login</a>
@@ -6306,6 +6313,111 @@
   }
 }
 @media (max-width:760px) { html body::before { display:none !important; } }
+</style>
+
+<style id="desktop-fixed-topbar-search-profile">
+.desktop-top-search, .desktop-top-avatar { display:none; }
+@media (min-width:761px) {
+  html body:not(.nav-pending) { padding-top:68px !important; }
+  /* Fixed header: never scrolls with the page. */
+  html body .topbar, html body.app-premium-navigation .topbar, html body.app-basic-navigation .topbar {
+    position:fixed !important; top:0 !important; left:226px !important; right:0 !important;
+    width:auto !important; height:68px !important; min-height:68px !important; margin:0 !important;
+    padding:0 24px !important; display:flex !important; align-items:center !important;
+    justify-content:flex-start !important; gap:12px !important; background:#fff !important;
+    border:0 !important; border-radius:0 !important; box-shadow:none !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    overflow:visible !important; pointer-events:auto !important; z-index:1000 !important;
+  }
+  html body .topbar::before { display:none !important; }
+  html body .desktop-top-search {
+    display:flex !important; flex:1 1 auto; width:auto; max-width:640px; height:44px; margin:0;
+  }
+  html body .desktop-top-avatar {
+    display:flex !important; align-items:center; justify-content:center; flex:0 0 42px;
+    width:42px; height:42px; padding:0; border:0; border-radius:50%;
+    background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:15px; font-weight:800;
+    cursor:pointer;
+  }
+  html body .desktop-top-avatar:hover { background:var(--primary-hover); }
+  html body.guest-mode .desktop-top-avatar { display:none !important; }
+  html body.guest-mode .guest-header-actions { margin-left:auto; }
+  /* Search bar is common for all pages: remove the in-page copies on desktop. */
+  html body #homeSearchWrap, html body #searchPage .search-bar-wrap { display:none !important; }
+  html body:not(.nav-pending) #homeContent .hero-wrap { margin-top:24px !important; }
+  html body:not(.nav-pending) #searchPage, html body:not(.nav-pending) .app-view { margin-top:24px !important; }
+  html body #productsSection, html body.explore-mode #productsSection { margin-top:24px !important; }
+  html body .app-summary { top:92px !important; }
+  html { scroll-padding-top:92px; }
+  /* Drawer: header line moves to a full-width line across drawer + page. */
+  html body #desktopDrawer .desktop-drawer-head { border-bottom:0 !important; }
+  html body:not(.nav-pending)::after {
+    content:""; position:fixed; top:67px; left:0; right:0; height:1px; background:#e5e7eb;
+    z-index:9999; pointer-events:none;
+  }
+}
+@media (max-width:760px) { html body::after { display:none !important; } }
+</style>
+<script id="desktop-topbar-search-profile">
+(function(){
+  const form=document.getElementById("globalSearchForm"), input=document.getElementById("globalSearchInput");
+  const avatar=document.getElementById("desktopTopAvatar");
+  if(!form||!input||!avatar) return;
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    const d=document.getElementById("dedicatedSearchInput");
+    if(d) d.value=input.value.trim();
+    if(typeof window.handleNavigation==="function") window.handleNavigation("search");
+    if(typeof loadSearchProducts==="function") loadSearchProducts();
+  });
+  input.addEventListener("search",function(){
+    if(!input.value.trim() && typeof currentView!=="undefined" && currentView==="search"){
+      const d=document.getElementById("dedicatedSearchInput"); if(d) d.value="";
+      if(typeof loadSearchProducts==="function") loadSearchProducts();
+    }
+  });
+  avatar.addEventListener("click",function(){ if(typeof window.handleNavigation==="function") window.handleNavigation("account"); });
+  function initials(name){
+    const w=String(name||"").trim().split(/\s+/).filter(Boolean);
+    if(!w.length) return "U";
+    if(w.length===1) return Array.from(w[0]).slice(0,2).join("").toUpperCase();
+    return (Array.from(w[0])[0]+Array.from(w[1])[0]).toUpperCase();
+  }
+  function refreshAvatar(){
+    try{
+      const c=JSON.parse(localStorage.getItem("shoppy_profile_cache_v1")||"null");
+      const t=initials(c&&c.user&&c.user.name);
+      if(avatar.textContent!==t) avatar.textContent=t;
+    }catch(e){}
+  }
+  refreshAvatar();
+  setInterval(refreshAvatar,1500);
+})();
+</script>
+
+<style id="desktop-topbar-fixed-solid-aligned">
+@media (min-width:761px) {
+  /* Very high specificity so older topbar rules (relative / padding-left:180px / flex-end) can never win. */
+  html body:not(.nav-pending) header.topbar,
+  html body.nav-pending header.topbar,
+  html body.app-premium-navigation:not(.nav-pending) header.topbar,
+  html body.app-basic-navigation:not(.nav-pending) header.topbar {
+    position:fixed !important; top:0 !important; left:226px !important; right:0 !important; bottom:auto !important;
+    width:auto !important; max-width:none !important; height:68px !important; min-height:68px !important;
+    margin:0 !important; box-sizing:border-box !important;
+    /* content starts at 226 (drawer) + 20 (body offset) + 24 (page margin) = 270px */
+    padding:0 24px 0 44px !important;
+    display:flex !important; flex-direction:row !important; align-items:center !important;
+    justify-content:flex-start !important; gap:12px !important;
+    background:#ffffff !important; background-image:none !important; opacity:1 !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    border:0 !important; border-radius:0 !important; box-shadow:none !important;
+    transform:none !important; overflow:visible !important; z-index:1000 !important;
+  }
+  html body:not(.nav-pending) header.topbar .desktop-top-search { flex:1 1 auto !important; max-width:640px !important; margin:0 !important; }
+  html body:not(.nav-pending) header.topbar .desktop-top-avatar { flex:0 0 42px !important; margin:0 !important; }
+  html body.guest-mode:not(.nav-pending) header.topbar .guest-header-actions { margin-left:auto !important; }
+}
 </style>
 </body>
 </html>
