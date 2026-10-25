@@ -6227,5 +6227,55 @@
   html body:not(.nav-pending) #homeContent .hero-wrap { margin-top:28px !important; }
 }
 </style>
+
+<style id="final-desktop-floating-and-mobile-profile-promo-fix">
+/* Desktop: make the floating rail start in the correct position immediately and stay there. */
+@media (min-width:761px) {
+  html body #bottomNav,
+  html body.app-premium-navigation #bottomNav,
+  html body.app-basic-navigation #bottomNav {
+    position:fixed !important;
+    top:8px !important;
+    bottom:8px !important;
+    left:16px !important;
+    right:auto !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    width:64px !important;
+    transform:none !important;
+    margin:0 !important;
+    padding:7px 5px !important;
+    box-sizing:border-box !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    align-content:center !important;
+    z-index:1500 !important;
+    box-shadow:none !important;
+    animation:none !important;
+    transition:none !important;
+  }
+  /* Remove the Premium UI switch from desktop Account completely. */
+  html body #premiumUiPreferenceRow,
+  html body #appProfileLayout #premiumUiPreferenceRow,
+  html body .premium-ui-preference-row { display:none !important; }
+  /* Compact the rail vertically while keeping all navigation options reachable. */
+  html body #bottomNav > .bottom-nav-item { min-height:48px !important; }
+}
+/* Mobile: place the 50% OFF promo immediately after the profile card. */
+@media (max-width:760px) {
+  #appProfileLayout { display:flex !important; flex-direction:column !important; gap:16px !important; }
+  #appProfileLayout > .app-profile-aside { order:1 !important; width:100% !important; box-sizing:border-box !important; }
+  #appProfileLayout > .app-profile-promo {
+    display:block !important;
+    order:2 !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+    margin:0 !important;
+  }
+  #appProfileLayout > section { order:3 !important; width:100% !important; box-sizing:border-box !important; }
+}
+</style>
+
 </body>
 </html>
