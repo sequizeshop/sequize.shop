@@ -2379,6 +2379,113 @@
     }
 
 </style>
+<style id="desktop-nav-profile-refinements">
+  .app-profile-promo { display:none; }
+  .desktop-nav-expand-toggle { display:none; }
+  @media (min-width:761px) {
+    /* Balanced active pill and icon; keep the indicator centered within every tab. */
+    body.app-premium-navigation #bottomNav { align-items:center !important; flex-direction:column !important; }
+    body.app-premium-navigation #bottomNav .bottom-nav-item {
+      position:relative !important; display:flex !important; align-items:center !important; justify-content:center !important;
+      box-sizing:border-box !important; padding:0 !important; margin:0 !important;
+    }
+    body.app-premium-navigation #bottomNav .bottom-nav-item .nav-item-icon {
+      position:relative !important; display:flex !important; align-items:center !important; justify-content:center !important;
+      flex:0 0 24px !important; width:24px !important; min-width:24px !important; height:24px !important; margin:0 !important;
+      overflow:visible !important; line-height:1 !important;
+    }
+    body.app-premium-navigation #bottomNav .bottom-nav-item .nav-item-icon > i { display:block; line-height:1; }
+    body.app-premium-navigation #bottomNav .nav-indicator {
+      box-sizing:border-box !important; width:52px !important; left:6px !important; margin:0 !important;
+    }
+    /* The count badge is positioned against the 24px bell-icon wrapper, not the tab pill. */
+    body.app-premium-navigation #bottomNav [data-bottom-nav="notifications"] .nav-item-icon #notifBadge {
+      top:-5px !important; right:-5px !important; left:auto !important; bottom:auto !important;
+      transform:none !important; z-index:8 !important; pointer-events:none !important;
+    }
+    body.app-premium-navigation #bottomNav .desktop-nav-expand-toggle {
+      display:flex !important; align-items:center !important; justify-content:center !important; gap:10px !important;
+      position:relative !important; z-index:3 !important; flex:0 0 44px !important; width:100% !important; min-height:44px !important;
+      margin-top:auto !important; padding:0 12px !important; border:0 !important; border-radius:22px !important;
+      background:transparent !important; color:var(--text-secondary) !important; cursor:pointer !important; white-space:nowrap !important;
+    }
+    body.app-premium-navigation #bottomNav .desktop-nav-expand-toggle i { font-size:20px; flex:0 0 auto; transition:transform .25s ease; }
+    body.app-premium-navigation #bottomNav .desktop-nav-expand-toggle span { display:none; font-size:13px; font-weight:700; }
+    body.app-premium-navigation #bottomNav.nav-expanded {
+      top:16px !important; bottom:16px !important; left:16px !important; transform:none !important;
+      width:224px !important; max-height:none !important; height:auto !important; min-height:0 !important;
+      padding:14px 12px !important; align-items:stretch !important; justify-content:flex-start !important; gap:8px !important;
+      overflow-x:hidden !important; overflow-y:auto !important; border-radius:24px !important;
+    }
+    body.app-premium-navigation #bottomNav.nav-expanded .bottom-nav-item {
+      flex:0 0 48px !important; width:100% !important; max-width:none !important; min-width:0 !important; height:48px !important;
+      min-height:48px !important; flex-direction:row !important; justify-content:flex-start !important; gap:14px !important;
+      padding:0 14px !important; border-radius:16px !important;
+    }
+    body.app-premium-navigation #bottomNav.nav-expanded .bottom-nav-item > span:not(.nav-item-icon) {
+      display:inline-flex !important; align-items:center !important; min-width:0 !important; white-space:nowrap !important;
+      font-size:13px !important; font-weight:700 !important;
+    }
+    body.app-premium-navigation #bottomNav.nav-expanded .bottom-nav-item .nav-item-icon { flex:0 0 24px !important; width:24px !important; }
+    body.app-premium-navigation #bottomNav.nav-expanded .nav-indicator {
+      left:12px !important; width:200px !important; border-radius:16px !important;
+    }
+    body.app-premium-navigation #bottomNav.nav-expanded .desktop-nav-expand-toggle { justify-content:flex-start !important; padding:0 14px !important; }
+    body.app-premium-navigation #bottomNav.nav-expanded .desktop-nav-expand-toggle i { transform:rotate(180deg); }
+    body.app-premium-navigation #bottomNav.nav-expanded .desktop-nav-expand-toggle span { display:inline !important; }
+    /* Profile identity card wraps its content; the themed promo occupies the adjacent free space. */
+    body.app-premium-navigation #appProfileLayout {
+      display:grid !important; grid-template-columns:max-content minmax(260px,1fr) !important; gap:16px 20px !important; align-items:stretch !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside {
+      display:flex !important; flex-wrap:wrap !important; align-content:flex-start !important; align-items:center !important;
+      justify-content:flex-start !important; gap:6px 10px !important; width:max-content !important; max-width:100% !important;
+      min-width:0 !important; padding:18px !important; box-sizing:border-box !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-avatar {
+      flex:0 0 58px !important; width:58px !important; height:58px !important; margin:0 2px 0 0 !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-name {
+      flex:0 1 auto !important; max-width:230px !important; margin:0 !important; font-size:19px !important; line-height:1.2 !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-email {
+      flex:1 0 100% !important; max-width:100% !important; margin:0 !important; font-size:13px !important; line-height:1.35 !important;
+      overflow-wrap:anywhere !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-member-badge { flex:0 0 auto !important; margin:4px 0 0 !important; }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > #appMembershipSummary,
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow { flex:1 0 100% !important; width:100% !important; margin:4px 0 0 !important; }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > div[style*="height:1px"] { display:none !important; }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row { flex:1 0 100% !important; width:100% !important; }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo {
+      position:relative !important; isolation:isolate !important; overflow:hidden !important; display:flex !important; flex-direction:column !important;
+      align-items:flex-start !important; justify-content:center !important; min-width:0 !important; min-height:190px !important;
+      box-sizing:border-box !important; padding:24px 28px !important; border-radius:22px !important;
+      border:1px solid rgba(255,255,255,.55) !important;
+      background:linear-gradient(125deg,#173D8F 0%,#2962FF 52%,#7856D8 100%) !important;
+      box-shadow:0 14px 36px rgba(41,98,255,.18),inset 0 1px 0 rgba(255,255,255,.32) !important; color:#fff !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo-eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.92; }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo > strong { display:block; margin-top:10px; font-family:var(--font-heading); font-size:clamp(34px,3.2vw,48px); font-weight:800; line-height:1; letter-spacing:-.04em; }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo > strong span { font-size:.62em; letter-spacing:-.02em; }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo p { position:relative; z-index:1; max-width:340px; margin:10px 0 16px; color:rgba(255,255,255,.88); font-size:13px; line-height:1.5; }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo-button { position:relative; z-index:2; display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1px solid rgba(255,255,255,.45); border-radius:999px; background:rgba(255,255,255,.16); color:#fff; font:700 12px var(--font-body); cursor:pointer; backdrop-filter:blur(10px); }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo-art { position:absolute; right:18px; bottom:-24px; z-index:-1; font-size:155px; line-height:1; color:rgba(255,255,255,.13); transform:rotate(-12deg); }
+    body.app-premium-navigation #appProfileLayout > section { grid-column:1 / -1 !important; min-width:0 !important; }
+    body.app-premium-navigation #appProfileLayout .app-verified-badge,
+    #appProfileLayout .app-verified-badge { color:var(--primary,#2962FF) !important; }
+  }
+  /* Profile card tidy-up is intentionally limited to the requested profile elements on mobile. */
+  @media (max-width:760px) {
+    #appProfileLayout .app-profile-aside { gap:8px 10px; }
+    #appProfileLayout .app-profile-aside > .app-avatar { margin-right:2px !important; }
+    #appProfileLayout .app-profile-name { margin:0 !important; }
+    #appProfileLayout .app-profile-email { margin-top:0 !important; }
+    #appProfileLayout .app-verified-badge { color:var(--primary,#2962FF) !important; }
+    #bottomNav .desktop-nav-expand-toggle { display:none !important; }
+  }
+</style>
+
 </head>
 
 <body class="nav-pending">
@@ -2782,6 +2889,13 @@
         <a href="/wishlist.html" class="app-profile-row"><i class="ph ph-heart"></i><span><strong>My Wishlist</strong></span><i class="ph ph-caret-right"></i></a>
         <button type="button" class="app-profile-row" id="appProfileCartShortcut" style="width:100%;border-top:0;border-left:0;border-right:0;background:transparent;text-align:left"><i class="ph ph-shopping-cart"></i><span><strong>My Cart</strong></span><i class="ph ph-caret-right"></i></button>
       </aside>
+      <aside class="app-profile-promo" aria-label="Special discount offer">
+        <span class="app-profile-promo-eyebrow"><i class="ph-fill ph-sparkle" aria-hidden="true"></i> Shoppy Special</span>
+        <strong>50% <span>Off</span></strong>
+        <p>Discover more for less. Shop your favourites and enjoy a special saving.</p>
+        <button type="button" class="app-profile-promo-button" onclick="handleNavigation('explore')">Explore offers <i class="ph ph-arrow-up-right" aria-hidden="true"></i></button>
+        <i class="ph ph-seal-percent app-profile-promo-art" aria-hidden="true"></i>
+      </aside>
       <section>
         <h2 class="app-section-heading">Your Shopping</h2>
         <div id="premiumUiPreferenceRow" class="premium-ui-preference-row" hidden>
@@ -3010,6 +3124,10 @@
     <button type="button" class="bottom-nav-item desktop-sheet-nav-item" data-bottom-nav="notifications" aria-label="Notifications" title="Notifications">
       <span class="nav-item-icon"><i class="ph ph-bell" aria-hidden="true"></i></span>
       <span>Notifications</span>
+    </button>
+
+    <button type="button" id="desktopNavExpandToggle" class="desktop-nav-expand-toggle" aria-label="Expand navigation" title="Expand navigation" aria-expanded="false">
+      <i class="ph ph-caret-right" aria-hidden="true"></i><span>Expand navigation</span>
     </button>
 
   </nav>
@@ -5604,6 +5722,26 @@
     if (typeof window.handleNavigation === "function") window.handleNavigation(item.dataset.bottomNav);
     else item.dispatchEvent(new Event("shoppy-navigation", { bubbles: true }));
   }, true);
+})();
+</script>
+
+<script id="desktop-nav-expand-behavior">
+(function(){
+  const nav=document.getElementById('bottomNav');
+  const toggle=document.getElementById('desktopNavExpandToggle');
+  if(!nav||!toggle)return;
+  toggle.addEventListener('click',function(event){
+    event.preventDefault(); event.stopPropagation();
+    if(window.innerWidth<761 || !document.body.classList.contains('app-premium-navigation'))return;
+    const expanded=nav.classList.toggle('nav-expanded');
+    toggle.setAttribute('aria-expanded',String(expanded));
+    toggle.setAttribute('aria-label',expanded?'Collapse navigation':'Expand navigation');
+    toggle.setAttribute('title',expanded?'Collapse navigation':'Expand navigation');
+    const label=toggle.querySelector('span'); if(label)label.textContent=expanded?'Collapse navigation':'Expand navigation';
+    const icon=toggle.querySelector('i'); if(icon)icon.className='ph '+(expanded?'ph-caret-left':'ph-caret-right');
+    requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
+  });
+  window.addEventListener('resize',()=>{if(window.innerWidth<761){nav.classList.remove('nav-expanded');toggle.setAttribute('aria-expanded','false');}} ,{passive:true});
 })();
 </script>
 
