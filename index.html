@@ -2743,6 +2743,20 @@
 }
 </style>
 
+
+<style id="desktop-nav-indicator-exact-centering-fix">
+/* Only fixes the selected-pill coordinates; no page layout or role-specific skin changes. */
+@media (min-width:761px) {
+  body:not(.nav-pending) #bottomNav > .nav-indicator {
+    top:0 !important;
+    left:0 !important;
+    margin:0 !important;
+    transform-origin:top left !important;
+    will-change:transform,width,height;
+  }
+}
+</style>
+
 </head>
 
 <body class="nav-pending">
@@ -5243,11 +5257,16 @@
       const itemRect = activeItem.getBoundingClientRect();
       const verticalDesktop = window.innerWidth > 760;
       if (verticalDesktop) {
-        const h = Math.min(activeItem.offsetHeight, bottomNav.clientHeight - 16);
-        const y = Math.max(0, Math.min(bottomNav.clientHeight - h, itemRect.top - navRect.top - bottomNav.clientTop));
-        navIndicator.style.width = Math.min(activeItem.offsetWidth, navWidth - 12) + "px";
-        navIndicator.style.height = h + "px";
-        navIndicator.style.transform = "translate3d(0," + y + "px,0)";
+        /* Use the active item's real rectangle in the nav's inner coordinate space.
+           The old CSS added a non-zero top/left offset on top of this transform,
+           shifting the pill down/right (especially after expanding the drawer). */
+        const itemWidth = activeItem.getBoundingClientRect().width;
+        const itemHeight = activeItem.getBoundingClientRect().height;
+        const x = Math.max(0, itemRect.left - navRect.left - bottomNav.clientLeft);
+        const y = Math.max(0, itemRect.top - navRect.top - bottomNav.clientTop);
+        navIndicator.style.width = Math.min(itemWidth, Math.max(0, navWidth - bottomNav.clientLeft - 1)) + "px";
+        navIndicator.style.height = Math.min(itemHeight, Math.max(0, bottomNav.clientHeight - bottomNav.clientTop - 1)) + "px";
+        navIndicator.style.transform = "translate3d(" + x + "px," + y + "px,0)";
       } else {
         const width = Math.min(itemRect.width, navWidth);
         const x = Math.max(0, Math.min(navWidth - width, itemRect.left - navRect.left - bottomNav.clientLeft));
@@ -5262,6 +5281,14 @@
     }
     window.addEventListener("resize", () => positionNavIndicator(true));
     window.addEventListener("load", () => positionNavIndicator(true));
+    if (bottomNav) {
+      bottomNav.addEventListener("transitionend", (event) => {
+        if (window.innerWidth > 760 && event.target === bottomNav &&
+            ["width", "height", "top", "left", "padding", "gap", "transform"].includes(event.propertyName)) {
+          positionNavIndicator(true);
+        }
+      });
+    }
     positionNavIndicator(true);
 
     /* LOCATION (STATE) + NOTIFICATION BOTTOM SHEETS */
