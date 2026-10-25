@@ -2486,6 +2486,126 @@
   }
 </style>
 
+
+<style id="desktop-basic-premium-shared-layout-final">
+/* Shared desktop structure for Basic and Premium users; mobile rules are intentionally untouched. */
+@media (min-width:761px) {
+  body:not(.nav-pending) #bottomNav {
+    position:fixed !important; top:50% !important; left:16px !important; right:auto !important; bottom:auto !important;
+    transform:translateY(-50%) !important; z-index:1500 !important;
+    display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important;
+    gap:0 !important; box-sizing:border-box !important; width:64px !important; height:476px !important;
+    min-height:0 !important; max-height:calc(100vh - 32px) !important; max-height:calc(100dvh - 32px) !important;
+    padding:8px 6px !important; overflow-x:hidden !important; overflow-y:auto !important;
+    transition:width .38s cubic-bezier(.2,.75,.25,1),height .38s cubic-bezier(.2,.75,.25,1),
+      top .38s cubic-bezier(.2,.75,.25,1),left .38s cubic-bezier(.2,.75,.25,1),
+      transform .38s cubic-bezier(.2,.75,.25,1),padding .38s ease,border-radius .38s ease,gap .38s ease !important;
+  }
+  body:not(.nav-pending) #bottomNav > .bottom-nav-item {
+    position:relative !important; flex:0 0 52px !important; width:52px !important; min-width:52px !important; max-width:52px !important;
+    height:52px !important; min-height:52px !important; margin:0 !important; padding:0 !important; box-sizing:border-box !important;
+    display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important;
+    gap:0 !important; border-radius:26px !important;
+  }
+  body:not(.nav-pending) #bottomNav .bottom-nav-item .nav-item-icon {
+    position:relative !important; display:flex !important; align-items:center !important; justify-content:center !important;
+    flex:0 0 24px !important; width:24px !important; min-width:24px !important; height:24px !important;
+    margin:0 !important; padding:0 !important; line-height:1 !important; overflow:visible !important;
+  }
+  body:not(.nav-pending) #bottomNav .bottom-nav-item .nav-item-icon > i { display:block !important; line-height:1 !important; margin:0 !important; }
+  body:not(.nav-pending) #bottomNav .nav-indicator {
+    position:absolute !important; top:8px !important; left:6px !important; width:52px !important; height:52px !important;
+    margin:0 !important; padding:0 !important; box-sizing:border-box !important; border-radius:26px !important;
+    transition:transform .5s cubic-bezier(.34,1.36,.5,1),width .38s ease,height .38s ease,left .38s ease,top .38s ease,border-radius .38s ease !important;
+    pointer-events:none !important;
+  }
+  body:not(.nav-pending) #bottomNav .bottom-nav-item > span:not(.nav-item-icon) { display:none !important; }
+  body:not(.nav-pending) #bottomNav .desktop-sheet-nav-item { display:flex !important; }
+  body:not(.nav-pending) #bottomNav .desktop-nav-expand-toggle {
+    display:flex !important; align-items:center !important; justify-content:center !important; flex:0 0 44px !important;
+    width:100% !important; min-height:44px !important; margin-top:auto !important; padding:0 !important;
+    border:0 !important; border-radius:22px !important; background:transparent !important; cursor:pointer !important;
+    overflow:hidden !important; white-space:nowrap !important; gap:10px !important; position:relative !important; z-index:3 !important;
+  }
+  body:not(.nav-pending) #bottomNav .desktop-nav-expand-toggle i { flex:0 0 auto !important; font-size:20px !important; transition:transform .3s ease !important; }
+  body:not(.nav-pending) #bottomNav .desktop-nav-expand-toggle span { display:none !important; }
+  body:not(.nav-pending) #bottomNav .nav-item-icon #notifBadge,
+  body:not(.nav-pending) #bottomNav [data-bottom-nav="notifications"] .nav-item-icon .shoppy-notification-badge {
+    position:absolute !important; top:-5px !important; right:-5px !important; left:auto !important; bottom:auto !important;
+    transform:none !important; z-index:8 !important; min-width:15px !important; height:15px !important;
+    padding:0 3px !important; border:1px solid #fff !important; border-radius:999px !important; font-size:9px !important;
+    line-height:13px !important; box-sizing:border-box !important; pointer-events:none !important;
+  }
+  body:not(.nav-pending) .topbar { position:relative !important; padding-left:180px !important; }
+  body:not(.nav-pending) .topbar > .brand { position:fixed !important; top:18px !important; left:24px !important; right:auto !important;
+    margin:0 !important; transform:none !important; z-index:1601 !important; line-height:1.2 !important; }
+  body:not(.nav-pending) .topbar #headerLocationButton,
+  body:not(.nav-pending) .topbar #notifButton { display:none !important; }
+  body:not(.nav-pending) #homeContent .search-bar-wrap,
+  body:not(.nav-pending) #homeContent .hero-wrap,
+  body:not(.nav-pending) #homeContent .offers-wrap,
+  body:not(.nav-pending) #homeContent .container,
+  body:not(.nav-pending) #searchPage,
+  body:not(.nav-pending) .app-view {
+    width:calc(100% - 124px) !important; max-width:none !important; margin-left:100px !important; margin-right:24px !important;
+    box-sizing:border-box !important;
+  }
+  body:not(.nav-pending) #homeContent .search-bar-wrap { margin-top:20px; }
+  body:not(.nav-pending) #homeContent .hero-wrap { margin-top:28px; }
+  body:not(.nav-pending) #bottomNav.nav-expanded {
+    top:16px !important; left:16px !important; bottom:auto !important; transform:none !important;
+    width:224px !important; height:calc(100vh - 32px) !important; height:calc(100dvh - 32px) !important;
+    max-height:none !important; padding:14px 12px !important; align-items:stretch !important; justify-content:flex-start !important;
+    gap:8px !important; border-radius:24px !important; overflow-y:auto !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .bottom-nav-item {
+    flex:0 0 48px !important; width:100% !important; max-width:none !important; min-width:0 !important;
+    height:48px !important; min-height:48px !important; flex-direction:row !important; justify-content:flex-start !important;
+    gap:14px !important; padding:0 14px !important; border-radius:16px !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .bottom-nav-item > span:not(.nav-item-icon) {
+    display:inline-flex !important; align-items:center !important; min-width:0 !important; white-space:nowrap !important;
+    font-size:13px !important; font-weight:700 !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .bottom-nav-item .nav-item-icon { flex:0 0 24px !important; width:24px !important; }
+  body:not(.nav-pending) #bottomNav.nav-expanded .nav-indicator { top:14px !important; left:12px !important; width:200px !important; border-radius:16px !important; }
+  body:not(.nav-pending) #bottomNav.nav-expanded .desktop-nav-expand-toggle { justify-content:flex-start !important; padding:0 14px !important; }
+  body:not(.nav-pending) #bottomNav.nav-expanded .desktop-nav-expand-toggle i { transform:rotate(180deg) !important; }
+  body:not(.nav-pending) #bottomNav.nav-expanded .desktop-nav-expand-toggle span { display:inline !important; }
+  body:not(.nav-pending) #appProfileLayout {
+    display:grid !important; grid-template-columns:max-content minmax(260px,1fr) !important; gap:16px 20px !important; align-items:stretch !important;
+  }
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside {
+    display:flex !important; flex-wrap:wrap !important; align-content:flex-start !important; align-items:center !important;
+    justify-content:flex-start !important; gap:6px 10px !important; width:max-content !important; max-width:100% !important;
+    min-width:0 !important; padding:18px !important; box-sizing:border-box !important;
+  }
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > .app-avatar { flex:0 0 58px !important; width:58px !important; height:58px !important; margin:0 2px 0 0 !important; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > .app-profile-name { flex:0 1 auto !important; max-width:230px !important; margin:0 !important; font-size:19px !important; line-height:1.2 !important; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > .app-profile-email { flex:1 0 100% !important; max-width:100% !important; margin:0 !important; font-size:13px !important; line-height:1.35 !important; overflow-wrap:anywhere !important; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > #appMembershipSummary,
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow,
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > .app-profile-row { flex:1 0 100% !important; width:100% !important; margin:4px 0 0 !important; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo {
+    position:relative !important; isolation:isolate !important; overflow:hidden !important; display:flex !important; flex-direction:column !important;
+    align-items:flex-start !important; justify-content:center !important; min-width:0 !important; min-height:190px !important;
+    box-sizing:border-box !important; padding:24px 28px !important; border-radius:22px !important;
+    border:1px solid rgba(255,255,255,.55) !important; background:linear-gradient(125deg,#173D8F 0%,#2962FF 52%,#7856D8 100%) !important;
+    box-shadow:0 14px 36px rgba(41,98,255,.18),inset 0 1px 0 rgba(255,255,255,.32) !important; color:#fff !important;
+  }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo-eyebrow { display:inline-flex !important; align-items:center; gap:7px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo > strong { display:block !important; margin-top:10px; font-family:var(--font-heading); font-size:clamp(34px,3.2vw,48px); font-weight:800; line-height:1; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo p { margin:10px 0 16px; color:rgba(255,255,255,.88); font-size:13px; line-height:1.5; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo-button { display:inline-flex !important; align-items:center; gap:8px; padding:10px 14px; border:1px solid rgba(255,255,255,.45); border-radius:999px; background:rgba(255,255,255,.16); color:#fff; font:700 12px var(--font-body); cursor:pointer; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo-art { position:absolute; right:18px; bottom:-24px; z-index:-1; font-size:155px; line-height:1; color:rgba(255,255,255,.13); }
+  body:not(.nav-pending) #appProfileLayout .app-verified-badge { color:var(--primary,#2962FF) !important; }
+}
+@media (max-width:760px) { #bottomNav .desktop-nav-expand-toggle { display:none !important; } }
+@media (prefers-reduced-motion:reduce) {
+  @media (min-width:761px) { #bottomNav, #bottomNav *, #bottomNav .nav-indicator { transition-duration:.01ms !important; } }
+}
+</style>
+
 </head>
 
 <body class="nav-pending">
@@ -5713,7 +5833,7 @@
   const nav = document.getElementById("bottomNav");
   if (!nav) return;
   nav.addEventListener("click", function (event) {
-    if (window.innerWidth < 761 || !document.body.classList.contains("app-premium-navigation")) return;
+    if (window.innerWidth < 761) return;
     const item = event.target.closest("[data-bottom-nav]");
     if (!item || !nav.contains(item)) return;
     event.preventDefault();
@@ -5732,7 +5852,7 @@
   if(!nav||!toggle)return;
   toggle.addEventListener('click',function(event){
     event.preventDefault(); event.stopPropagation();
-    if(window.innerWidth<761 || !document.body.classList.contains('app-premium-navigation'))return;
+    if(window.innerWidth<761)return;
     const expanded=nav.classList.toggle('nav-expanded');
     toggle.setAttribute('aria-expanded',String(expanded));
     toggle.setAttribute('aria-label',expanded?'Collapse navigation':'Expand navigation');
