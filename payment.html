@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
 
   <!-- Phosphor Regular Icons -->
@@ -23,28 +23,119 @@
   <!-- Cashfree Payment SDK -->
   <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
-  <!-- Global design -->
-  <link rel="stylesheet" href="/global.css">
+  <!-- global.css removed: all styles for this page live below, same tokens as cart/addresses -->
 
   <style>
-    /* Sirf is page ka layout. Baaki sab global.css se aata hai */
+    :root {
+      --primary: #2962FF;
+      --primary-hover: #0059D7;
+      --primary-soft: #EDF2FF;
+      --background: #FFFFFF;
+      --surface-secondary: #F5F5F2;
+      --text-primary: #1E1F1C;
+      --text-secondary: #666960;
+      --text-muted: #969991;
+      --border: #E5E7EB;
+      --success: #15803D;
+      --success-bg: #ECFDF3;
+      --error: #DC2626;
+      --error-bg: #FEF2F2;
+      --disabled-bg: #E5E7EB;
+      --disabled-text: #969991;
+
+      /* aliases used by this page */
+      --blue: var(--primary);
+      --ink: var(--text-primary);
+      --muted: var(--text-secondary);
+      --line: var(--border);
+      --green: var(--success);
+
+      --font-body: "DM Sans", sans-serif;
+      --font-heading: "Manrope", sans-serif;
+      --radius-md: 9px;
+      --radius-lg: 12px;
+
+      --header-h: 64px;
+      --page-top-gap: 34px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.7;
+      background: var(--background);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    button { font: inherit; cursor: pointer; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+    [hidden] { display: none !important; }
+
+    /* HEADER (same as cart) */
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      height: var(--header-h);
+      min-height: var(--header-h);
+      padding: 0 max(2%, calc((100% - 1440px) / 2));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--background);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      border-radius: var(--radius-md);
+      font-size: 24px;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .nav-icon:hover { background: var(--surface-secondary); }
+
+    .brand {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.4;
+      letter-spacing: -0.7px;
+      color: var(--primary);
+    }
+
+    /* PAGE (same width / spacing as cart) */
 
     main {
-      width: 100%;
-      max-width: none;
-      box-sizing: border-box;
-      padding: 0 max(5%, calc((100% - 1050px) / 2));
-      margin: 34px 0 65px;
+      width: min(1440px, 96%);
+      max-width: 1440px;
+      margin: var(--page-top-gap) auto 65px;
     }
 
     .page-heading {
-      margin-bottom: 28px;
+      grid-area: heading;
+      margin: 0 0 28px;
     }
 
     .page-heading h1 {
-      font-family: "Manrope", sans-serif;
+      font-family: var(--font-heading);
       font-size: clamp(27px, 4vw, 36px);
       font-weight: 800;
+      line-height: 1.25;
       letter-spacing: -1.2px;
       margin: 0 0 8px;
     }
@@ -56,11 +147,28 @@
       line-height: 1.7;
     }
 
+    /* Heading + notice + main in the left column; summary in the right
+       column starting at the very top (aligned with the page heading). */
     .checkout-layout {
       display: grid;
       grid-template-columns: minmax(0, 1.3fr) minmax(300px, .8fr);
-      gap: 32px;
+      grid-template-areas:
+        "heading summary"
+        "notice  summary"
+        "main    summary";
+      column-gap: 58px;
+      row-gap: 0;
       align-items: start;
+    }
+
+    .checkout-main { grid-area: main; min-width: 0; }
+
+    .summary-column {
+      grid-area: summary;
+      min-width: 0;
+      position: sticky;
+      top: calc(var(--header-h) + var(--page-top-gap));
+      align-self: start;
     }
 
     .checkout-section {
@@ -81,25 +189,56 @@
     }
 
     .section-heading h2 {
-      font-family: "Manrope", sans-serif;
+      font-family: var(--font-heading);
       font-size: 18px;
       font-weight: 800;
       letter-spacing: -.4px;
       margin: 0;
     }
 
-    .section-number {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      margin-right: 7px;
-    }
+    .section-number { display: none; }
 
     .section-divider {
       height: 1px;
       background: var(--line);
       margin: 27px 0;
     }
+
+    /* NOTICE / LOADING / EMPTY / LINK */
+
+    .notice {
+      grid-area: notice;
+      display: none;
+      margin: 0 0 20px;
+      padding: 12px 15px;
+      border-radius: var(--radius-lg);
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .notice.show { display: block; }
+    .notice.error { background: var(--error-bg); color: var(--error); }
+    .notice.success { background: var(--success-bg); color: var(--success); }
+    .notice.info { background: var(--surface-secondary); color: var(--text-secondary); }
+
+    .loading, .empty-state {
+      padding: 20px 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .text-link:hover { text-decoration: underline; }
 
     /* ADDRESS OPTIONS */
 
@@ -119,9 +258,7 @@
       transition: border-color .2s, background .2s;
     }
 
-    .address-option:hover {
-      border-color: #b9c8fa;
-    }
+    .address-option:hover { border-color: #b9c8fa; }
 
     .address-option:has(input:checked) {
       border-color: var(--blue);
@@ -134,10 +271,7 @@
       flex-shrink: 0;
     }
 
-    .address-content {
-      flex: 1;
-      min-width: 0;
-    }
+    .address-content { flex: 1; min-width: 0; }
 
     .address-name {
       display: block;
@@ -223,119 +357,53 @@
       white-space: nowrap;
     }
 
-    /* PRODUCT LIST */
+    /* SUMMARY (no card, no stroke - same as cart's Order Summary) */
 
-    .product-list {
-      display: grid;
-    }
+    .payment-summary-section { padding: 0; border: 0; background: transparent; }
 
-    .product-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 13px;
-      padding: 15px 0;
-      border-bottom: 1px solid var(--line);
-    }
+    .summary-heading { margin-bottom: 18px; }
 
-    .product-item:first-child {
-      padding-top: 0;
-    }
-
-    .product-item:last-child {
-      border-bottom: 0;
-    }
-
-    .product-image-wrap {
-      position: relative;
-      flex-shrink: 0;
-      width: 76px;
-      height: 88px;
-      overflow: hidden;
-      border-radius: 9px;
-      background: #f5f5f2;
-    }
-
-    .product-image {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: center;
-    }
-
-    .product-details {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .product-name {
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1.6;
-      overflow-wrap: anywhere;
-    }
-
-    .product-meta {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 5px;
-    }
-
-    .product-discount {
-      display: inline-block;
-      margin-top: 7px;
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--green);
-    }
-
-    .product-pricing {
-      text-align: right;
-      flex-shrink: 0;
-      padding-left: 5px;
-    }
-
-    .product-final-price {
-      display: block;
-      font-size: 13px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .product-original-price {
-      display: block;
-      margin-top: 5px;
-      font-size: 11px;
-      color: #969991;
-      text-decoration: line-through;
-      white-space: nowrap;
-    }
-
-    /* SUMMARY */
-
-    .summary-heading {
-      margin-bottom: 20px;
+    .summary-heading h2 {
+      font-size: 22px;
+      letter-spacing: -.7px;
     }
 
     .price-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 15px;
-      margin: 15px 0;
-      font-size: 13px;
-      color: #666960;
+      gap: 12px;
+      margin: 12px 0;
+      font-size: 14px;
+      color: var(--text-secondary);
     }
 
     .price-row strong {
       color: var(--ink);
-      font-weight: 700;
+      font-weight: 600;
       text-align: right;
       white-space: nowrap;
     }
 
-    .discount-row strong {
-      color: var(--green);
+    .discount-row strong { color: var(--green); }
+
+    .tax-rows { margin: 0; }
+    .tax-rows:empty { display: none; }
+
+    .tax-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 12px 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .tax-row strong {
+      color: var(--ink);
+      font-weight: 600;
+      white-space: nowrap;
     }
 
     .total-row {
@@ -344,15 +412,15 @@
       border-top: 1px solid var(--line);
       align-items: center;
       color: var(--ink);
-      font-size: 15px;
+      font-family: var(--font-heading);
+      font-size: 17px;
       font-weight: 800;
     }
 
     .total-row strong {
-      font-family: "Manrope", sans-serif;
-      font-size: 25px;
+      font-family: var(--font-heading);
+      font-size: 17px;
       font-weight: 800;
-      letter-spacing: -.7px;
     }
 
     .savings-box {
@@ -364,6 +432,38 @@
       font-size: 12px;
       font-weight: 700;
       line-height: 1.6;
+    }
+
+    .pay-button {
+      width: 100%;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 12px 16px;
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-lg);
+      background: var(--primary);
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+
+    #payButton { margin-top: 24px; }
+
+    .pay-button:hover:not(:disabled) {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    .pay-button:disabled {
+      background: var(--disabled-bg);
+      border-color: var(--disabled-bg);
+      color: var(--disabled-text);
+      cursor: not-allowed;
     }
 
     .order-reference {
@@ -389,255 +489,95 @@
       color: var(--blue);
       font-size: 12px;
       font-weight: 700;
-      text-decoration: none;
       text-align: center;
     }
 
-    .orders-link:hover {
-      text-decoration: underline;
-    }
+    .orders-link:hover { text-decoration: underline; }
+
+    .mobile-pay-sticky { display: none; }
+
+    /* MOBILE (unchanged behaviour: summary first, sticky pay bar) */
 
     @media (max-width: 760px) {
+      .topbar {
+        position: sticky;
+        top: 0;
+        height: 58px;
+        min-height: 58px;
+        max-height: 58px;
+        padding: 0 16px;
+      }
+
+      .nav-icon { width: 40px; height: 40px; padding: 0; }
+
       main {
         width: 100%;
-        padding-left: 5%;
-        padding-right: 5%;
-        margin-top: 25px;
+        max-width: none;
+        padding: 20px 16px 30px;
+        margin: 0;
       }
 
       .checkout-layout {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 28px;
       }
+
+      .page-heading { order: -3; margin: 0; }
+      .page-heading h1 { font-size: 29px; }
+      .notice { order: -2; margin: 0; }
 
       .summary-column {
         order: -1;
+        width: 100%;
+        position: static;
+        margin: 0;
       }
 
-      .section-divider {
-        margin: 24px 0;
-      }
+      .checkout-main { order: 1; width: 100%; }
 
-      .product-image-wrap {
-        width: 70px;
-        height: 82px;
-      }
+      .section-divider { margin: 22px 0; }
 
-      .page-heading h1 {
-        font-size: 29px;
-      }
-    }
+      /* Desktop button stays in the summary; the mobile twin is sticky. */
+      #payButton { display: none; }
 
-    @media (min-width: 761px) {
-      .summary-column {
+      .mobile-pay-sticky {
+        display: block;
         position: sticky;
-        /* fixed header ke neeche */
-        top: calc(var(--header-h) + 25px);
-      }
-    }
-
-    @media (max-width: 380px) {
-      .product-image-wrap {
-        width: 60px;
-        height: 74px;
-      }
-
-      .product-name {
-        font-size: 12px;
+        bottom: 0;
+        z-index: 1000;
+        order: 0;
+        flex: 0 0 auto;
+        width: calc(100% + 32px);
+        box-sizing: border-box;
+        margin: -28px -16px 0;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        background: #FFFFFF;
+        border-top: 1px solid #E5E7EB;
+        box-shadow: 0 -8px 18px rgba(0,0,0,.05);
       }
 
-      .product-final-price {
-        font-size: 12px;
-      }
-
-      .product-pricing {
-        padding-left: 0;
-      }
-    }
-
-    /* Keep the payment header consistent with the addresses page. */
-    .topbar {
-      position: relative !important;
-      top: auto !important;
-      left: auto !important;
-      right: auto !important;
-      width: 100% !important;
-      height: 64px !important;
-      min-height: 64px !important;
-      max-height: 64px !important;
-      box-sizing: border-box !important;
-      padding: 0 24px !important;
-      margin: 0 !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      background: #fff !important;
-      border-bottom: 1px solid #E5E7EB !important;
-      box-shadow: none !important;
-      transform: none !important;
-    }
-    .payment-back {
-      display: flex !important;
-      width: 40px !important;
-      height: 40px !important;
-      align-items: center !important;
-      justify-content: center !important;
-      padding: 8px !important;
-      border: 0 !important;
-      border-radius: 9px !important;
-      background: transparent !important;
-      color: #1E1F1C !important;
-      font-size: 24px !important;
-      line-height: 1 !important;
-      box-shadow: none !important;
-      text-decoration: none !important;
-      border-bottom: 0 !important;
-      outline-offset: 2px !important;
-      position: relative !important;
-    }
-    .payment-back::before, .payment-back::after { content: none !important; display: none !important; }
-    .payment-back i { display: block !important; border: 0 !important; text-decoration: none !important; box-shadow: none !important; background: none !important; }
-    .topbar .payment-back, .topbar .payment-back:visited, .topbar .payment-back:hover, .topbar .payment-back:active {
-      border: 0 !important; border-bottom: 0 !important; text-decoration: none !important;
-      background-image: none !important; box-shadow: none !important;
-    }
-    .payment-back:hover { background: #F5F5F2 !important; }
-    .discount-row[hidden], .tax-rows:empty { display: none !important; }
-    .tax-rows { margin: 0; }
-    .tax-row { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:8px 0; color:var(--muted); font-size:13px; }
-    .tax-row strong { color:var(--ink); font-weight:700; white-space:nowrap; }
-    .payment-summary-section { border:1px solid var(--line); border-radius:16px; padding:22px; background:var(--surface, #fff); }
-    @media (min-width: 761px) {
-      .checkout-layout { grid-template-columns: minmax(0, 1fr) minmax(330px, .72fr); gap: clamp(24px, 3vw, 44px); }
-      .summary-column { min-width:0; }
-    }
-    .topbar .brand {
-      margin-left: auto !important;
-      font-family: "Manrope", sans-serif !important;
-      font-size: 22px !important;
-      font-weight: 800 !important;
-      line-height: 1.2 !important;
-      letter-spacing: -.7px !important;
-      color: #2962FF !important;
-    }
-
-    /* Keep the desktop summary aligned with the page title. */
-    .section-number { display: none !important; }
-    .mobile-pay-sticky { display: none; }
-
-    @media (min-width: 761px) {
-      .topbar { padding-left: 24px !important; padding-right: 24px !important; }
-      main {
-        width: 100% !important;
-        max-width: none !important;
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-        margin: 34px 0 65px !important;
-      }
-      .checkout-layout {
-        grid-template-columns: minmax(0, 1fr) minmax(320px, .72fr) !important;
-        gap: clamp(24px, 3vw, 44px) !important;
-        align-items: start !important;
-      }
-      .summary-column {
-        min-width: 0 !important;
-        margin-top: -102px !important;
-        top: calc(var(--header-h, 64px) + 25px) !important;
-      }
-      .payment-summary-section { box-sizing: border-box !important; }
-    }
-
-    /* The mobile bar uses CSS sticky only: no fixed-position JS jumps. */
-    @media (max-width: 760px) {
-      .topbar {
-        position: relative !important;
-        height: 58px !important;
-        min-height: 58px !important;
-        max-height: 58px !important;
-        padding: 0 16px !important;
-      }
-      .topbar .payment-back {
-        flex: 0 0 40px !important;
-        width: 40px !important;
-        height: 40px !important;
-        min-height: 40px !important;
-        padding: 0 !important;
-      }
-      main {
-        width: 100% !important;
-        max-width: none !important;
-        padding: 20px 16px 30px !important;
-        margin: 0 !important;
-        box-sizing: border-box !important;
-      }
-      .checkout-layout {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 28px !important;
-      }
-      .summary-column {
-        order: -1 !important;
-        width: 100% !important;
-        position: static !important;
-        margin: 0 !important;
-      }
-      .checkout-main { order: 1 !important; width: 100% !important; }
-      .payment-summary-section {
-        position: relative !important;
-        overflow: visible !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-        padding: 18px 16px !important;
-        margin: 0 !important;
-      }
-      /* Original button stays in the desktop card; the mobile twin is sticky. */
-      #payButton { display: none !important; }
-      .mobile-pay-sticky {
-        display: block !important;
-        position: sticky !important;
-        bottom: 0 !important;
-        z-index: 1000 !important;
-        order: 0 !important;
-        flex: 0 0 auto !important;
-        width: calc(100% + 32px) !important;
-        box-sizing: border-box !important;
-        margin: -28px -16px 0 !important;
-        padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) !important;
-        background: #FFFFFF !important;
-        border-top: 1px solid #E5E7EB !important;
-        box-shadow: 0 -8px 18px rgba(0,0,0,.05) !important;
-      }
       .mobile-pay-sticky #mobilePayButton {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 9px !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-height: 50px !important;
-        box-sizing: border-box !important;
-        margin: 0 !important;
-        white-space: normal !important;
-        overflow-wrap: anywhere !important;
+        min-height: 50px;
+        white-space: normal;
+        overflow-wrap: anywhere;
       }
+
       .mobile-pay-sticky #mobilePayButton:disabled { opacity: .78; }
-      .section-divider { margin: 22px 0 !important; }
     }
 
     @media (max-width: 380px) {
-      main { padding-left: 12px !important; padding-right: 12px !important; }
-      .topbar { padding-left: 12px !important; padding-right: 12px !important; }
-      .payment-summary-section { padding-left: 12px !important; padding-right: 12px !important; }
+      main { padding-left: 12px; padding-right: 12px; }
+      .topbar { padding-left: 12px; padding-right: 12px; }
       .mobile-pay-sticky {
-        width: calc(100% + 24px) !important;
-        margin-left: -12px !important;
-        margin-right: -12px !important;
-        padding-left: 12px !important;
-        padding-right: 12px !important;
+        width: calc(100% + 24px);
+        margin-left: -12px;
+        margin-right: -12px;
+        padding-left: 12px;
+        padding-right: 12px;
       }
     }
-
   </style>
 </head>
 
@@ -652,14 +592,14 @@
 
   <main>
 
-    <div class="page-heading">
-      <h1>Complete your order</h1>
-      <p>Review your order details and complete your secure payment.</p>
-    </div>
-
-    <div id="pageNotice" class="notice"></div>
-
     <div class="checkout-layout">
+
+      <div class="page-heading">
+        <h1>Complete your order</h1>
+        <p>Review your order details and complete your secure payment.</p>
+      </div>
+
+      <div id="pageNotice" class="notice"></div>
 
       <!-- LEFT SIDE -->
       <section class="checkout-main">
@@ -732,7 +672,7 @@
 
       </section>
 
-      <!-- PAYMENT DETAILS: no product/order list; cart page already shows products -->
+      <!-- PAYMENT DETAILS: no card, no border -->
       <aside class="summary-column">
         <section class="checkout-section payment-summary-section">
           <div class="section-heading summary-heading">
@@ -779,7 +719,7 @@
         </section>
       </aside>
 
-      <!-- Mobile-only sticky twin. The desktop button remains inside the summary card. -->
+      <!-- Mobile-only sticky twin. The desktop button remains inside the summary. -->
       <div class="mobile-pay-sticky" aria-label="Secure payment action">
         <button id="mobilePayButton" class="pay-button" disabled>
           <i class="ph ph-lock-key"></i>
