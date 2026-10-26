@@ -93,7 +93,7 @@
       width: 100%;
       height: var(--header-h);
       min-height: var(--header-h);
-      padding: 0 5%;
+      padding: 0 max(2%, calc((100% - 1440px) / 2));
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -134,8 +134,8 @@
     /* PAGE */
 
     .container {
-      width: min(1050px, 90%);
-      max-width: 1050px;
+      width: min(1440px, 96%);
+      max-width: 1440px;
       margin: 34px auto 65px;
       background: transparent;
     }
@@ -346,6 +346,19 @@
       display: none;
     }
 
+    .summary-line .discount-value {
+      color: var(--success);
+    }
+
+    .tax-total-line {
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+    }
+
+    .tax-total-line strong {
+      color: var(--text-primary);
+    }
+
     .summary-total {
       display: flex;
       justify-content: space-between;
@@ -529,8 +542,13 @@
     /* RESPONSIVE */
 
     @media (max-width: 760px) {
+      .topbar {
+        padding-left: 3%;
+        padding-right: 3%;
+      }
+
       .container {
-        width: 90%;
+        width: 94%;
         margin-top: 25px;
       }
 
@@ -587,16 +605,8 @@
 
   <header class="topbar">
     <nav class="nav-actions" aria-label="Main navigation">
-      <a class="nav-icon" href="/home.html" aria-label="Home" title="Home">
-        <i class="ph ph-house" aria-hidden="true"></i>
-      </a>
-
-      <a class="nav-icon" href="/cart.html" aria-label="Cart" title="Cart">
-        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
-      </a>
-
-      <a class="nav-icon" href="/profile.html" aria-label="My profile" title="My profile">
-        <i class="ph ph-user-circle" aria-hidden="true"></i>
+      <a class="nav-icon" href="javascript:history.back()" aria-label="Back to previous page" title="Back">
+        <i class="ph ph-arrow-left" aria-hidden="true"></i>
       </a>
     </nav>
 
@@ -633,7 +643,7 @@
           <strong>Calculated at checkout</strong>
         </div>
 
-        <div class="summary-divider"></div>
+        <div id="summaryAdjustments" aria-live="polite"></div>
 
         <div class="summary-total total-row">
           <span>Total</span>
@@ -671,6 +681,7 @@
     const summaryQuantity = document.getElementById("summaryQuantity");
     const summarySubtotal = document.getElementById("summarySubtotal");
     const summaryTotal = document.getElementById("summaryTotal");
+    const summaryAdjustments = document.getElementById("summaryAdjustments");
     const checkoutButton = document.getElementById("checkoutButton");
     const clearCartButton = document.getElementById("clearCartButton");
     const toast = document.getElementById("toast");
@@ -679,6 +690,8 @@
     let cart = [];
     let toastTimer = null;
     let busy = false;
+    let taxSettings = [{ title: "GST", percent: 18 }];
+    let eligibleDiscounts = [];
 
     document.getElementById("year").textContent = new Date().getFullYear();
 
@@ -703,6 +716,60 @@
       toastTimer = setTimeout(() => { toast.classList.remove("show"); }, 2200);
     }
 
+    function trimPercent(value) {
+      return Number(value).toFixed(2).replace(/\\.?0+$/, "");
+    }
+
+    async function loadTaxSettings() {
+      try {
+        const response = await fetch("https://apisequizeshoplite.vercel.app/api/admin/taxes", {
+          method: "GET", headers: { Accept: "application/json" }, cache: "no-store"
+        });
+        const data = await response.json().catch(() => ({}));
+        if (response.ok && data.success && Array.isArray(data.taxes)) {
+          taxSettings = data.taxes.filter(t => t && String(t.title || "").trim() &&
+            Number.isFinite(Number(t.percent)) && Number(t.percent) >= 0 && Number(t.percent) <= 100);
+        }
+      } catch (error) {
+        console.warn("Could not load tax settings; using GST default.", error);
+      }
+    }
+
+    async function loadDiscountSettings() {
+      try {
+        let email = "";
+        try {
+          const cached = JSON.parse(localStorage.getItem("shoppy_profile_cache_v1") || "null");
+          if (cached && cached.user && cached.user.email && Number(cached.expiresAt) > Date.now()) {
+            email = String(cached.user.email).trim().toLowerCase();
+          }
+        } catch (_) {}
+        if (!email) {
+          try {
+            const response = await fetch("/api/profile", {
+              method: "GET", credentials: "same-origin",
+              headers: { Accept: "application/json" }, cache: "no-store"
+            });
+            const data = await response.json().catch(() => ({}));
+            if (response.ok && data.success && data.user && data.user.email) {
+              email = String(data.user.email).trim().toLowerCase();
+            }
+          } catch (_) {}
+        }
+        const endpoint = "https://apisequizeshoplite.vercel.app/api/admin/discounts" +
+          (email ? "?email=" + encodeURIComponent(email) : "");
+        const response = await fetch(endpoint, {
+          method: "GET", headers: { Accept: "application/json" }, cache: "no-store"
+        });
+        const data = await response.json().catch(() => ({}));
+        if (response.ok && data.success && Array.isArray(data.discounts)) {
+          eligibleDiscounts = data.discounts.filter(d => d && Number(d.percent) > 0 && Number(d.percent) <= 100);
+        }
+      } catch (error) {
+        console.warn("Could not load discount settings.", error);
+      }
+    }
+
     function renderSkeleton() {
       cartItemsEl.setAttribute("aria-busy", "true");
       cartItemsEl.innerHTML = Array.from({ length: 3 }, () => `
@@ -716,6 +783,7 @@
       `).join("");
       summaryQuantity.textContent = "—";
       summarySubtotal.textContent = "Loading…";
+      summaryAdjustments.innerHTML = "";
       summaryTotal.textContent = "Loading…";
       checkoutButton.disabled = true;
       clearCartButton.hidden = true;
@@ -765,10 +833,23 @@
     function renderCart() {
       const totalQuantity = cart.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
       const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
+      const discount = eligibleDiscounts.slice().sort((a, b) => Number(b.percent) - Number(a.percent))[0] || null;
+      const discountAmount = discount ? subtotal * Number(discount.percent) / 100 : 0;
+      const taxableAmount = Math.max(0, subtotal - discountAmount);
+      const taxes = taxSettings.map(tax => ({
+        ...tax,
+        amount: taxableAmount * (Number(tax.percent) || 0) / 100
+      }));
+      const totalTax = taxes.reduce((sum, tax) => sum + tax.amount, 0);
+      const total = taxableAmount + totalTax;
 
       summaryQuantity.textContent = String(totalQuantity);
       summarySubtotal.textContent = formatPrice(subtotal);
-      summaryTotal.textContent = formatPrice(subtotal);
+      summaryAdjustments.innerHTML =
+        (discount ? `<div class="summary-line"><span>${escapeHTML(discount.title || "Discount")} (${trimPercent(Number(discount.percent))}% off)</span><strong class="discount-value">−${formatPrice(discountAmount)}</strong></div>` : "") +
+        taxes.map(tax => `<div class="summary-line"><span>${escapeHTML(tax.title)} (${trimPercent(Number(tax.percent))}%)</span><strong>${formatPrice(tax.amount)}</strong></div>`).join("") +
+        (taxes.length ? `<div class="summary-line tax-total-line"><span>Total taxes</span><strong>${formatPrice(totalTax)}</strong></div>` : "");
+      summaryTotal.textContent = formatPrice(total);
 
       checkoutButton.disabled = cart.length === 0 || busy;
       clearCartButton.hidden = cart.length === 0;
@@ -882,6 +963,9 @@
     });
 
     loadCart();
+    Promise.all([loadTaxSettings(), loadDiscountSettings()]).then(() => {
+      if (cart.length) renderCart();
+    });
   </script>
 </body>
 </html>
