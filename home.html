@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
 
   <title>Shoppy — Discover Products</title>
@@ -37,6 +37,42 @@
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
 
   <link rel="stylesheet" href="/global.css">
+
+  <script>
+  /* Early navigation state: apply iOS skin or a still-valid verified membership cache before first paint. */
+  (function () {
+    const ua = navigator.userAgent || "";
+    const apple = /iPhone|iPad|iPod/i.test(ua) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    window.__appnetickAppleDevice = apple;
+    window.__appnetickMembershipCacheKey = "shoppy_verified_premium_cache_v2";
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem(window.__appnetickMembershipCacheKey) || "null"); } catch (e) {}
+    const expiry = cached ? (Number(cached.expiresAt) || Date.parse(cached.expiresAt || "")) : 0;
+    const cacheValid = !!(cached && cached.active === true && Number.isFinite(expiry) && expiry > Date.now());
+    if (!cacheValid && cached) { try { localStorage.removeItem(window.__appnetickMembershipCacheKey); } catch (e) {} }
+    window.__appnetickCachedPremium = cacheValid;
+    let uiPreference = "";
+    try { uiPreference = localStorage.getItem("shoppy_premium_ui_preference_v1") || ""; } catch (e) {}
+    window.__appnetickPremiumUiPreference = uiPreference;
+    try {
+      const savedTab = localStorage.getItem("shoppy_home_active_tab_v1");
+      if (["home", "search", "explore", "cart", "account"].includes(savedTab)) {
+        document.documentElement.setAttribute("data-start-tab", savedTab);
+      }
+    } catch (e) {}
+    const shouldUsePremiumSkin = cacheValid ? uiPreference !== "basic" : apple;
+    if (shouldUsePremiumSkin) {
+      document.documentElement.classList.add("premium-skin-early");
+      const apply = function () {
+        if (!document.body) return;
+        document.body.classList.add("app-premium-navigation");
+        document.body.classList.remove("app-basic-navigation", "nav-pending");
+      };
+      if (document.body) apply(); else document.addEventListener("DOMContentLoaded", apply, { once: true });
+    }
+  })();
+  </script>
 
   <style>
     :root {
@@ -846,38 +882,28 @@
     /* ADD TO CART */
 
     .add-button {
-      min-width: 56px;
-      height: 36px;
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 14px;
-      border: 1px solid var(--primary);
-      border-radius: var(--radius-lg);
-      background: var(--primary);
-      color: #ffffff;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1;
-      transition: background .2s, border-color .2s;
+      width:36px;
+      min-width:36px;
+      height:36px;
+      flex:0 0 36px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:0;
+      border:1px solid #D9DEE8;
+      border-radius:50%;
+      background:#F3F5F9;
+      color:var(--primary);
+      font-size:19px;
+      font-weight:700;
+      line-height:1;
+      transition:background .2s,border-color .2s,color .2s,transform .15s;
     }
-
-    .add-button:hover:not(:disabled) {
-      background: var(--primary-hover);
-      border-color: var(--primary-hover);
-    }
-
-    .add-button.added {
-      background: var(--success-bg);
-      border-color: var(--success-bg);
-      color: var(--success);
-    }
-
-    .add-button.added:hover:not(:disabled) {
-      background: var(--success-bg);
-      border-color: var(--success);
-    }
+    .add-button i { font-size:19px; line-height:1; }
+    .add-button:hover:not(:disabled) { background:#E8EDFA; border-color:var(--primary); }
+    .add-button.added { background:var(--primary); border-color:var(--primary); color:#fff; }
+    .add-button.added:hover:not(:disabled) { background:var(--primary-hover); border-color:var(--primary-hover); }
+    .add-button:active:not(:disabled) { transform:scale(.94); }
 
     .add-button:disabled {
       cursor: wait;
@@ -1564,8 +1590,34 @@
     .app-profile-aside { min-width:0; }
     .app-avatar { width:88px; height:88px; margin-bottom:18px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:30px; font-weight:800; }
     .app-profile-name { font-family:var(--font-heading); font-size:22px; font-weight:800; overflow-wrap:anywhere; }
+    .app-verified-badge { display:inline-block; margin-left:7px; vertical-align:-3px; color:var(--primary, #2962FF); font-size:21px; line-height:1; filter:drop-shadow(0 1px 1px rgba(41,98,255,.18)); }
+    .app-verified-badge[hidden] { display:none !important; }
     .app-profile-email { color:var(--text-secondary); overflow-wrap:anywhere; }
     .app-member-badge { display:inline-flex; margin-top:14px; padding:4px 12px; border-radius:999px; background:var(--success-bg); color:var(--success); font-size:12px; font-weight:700; }
+    .app-member-badge.app-premium-badge { background:#FFF3C4; color:#855B00; border:1px solid #F3D36B; padding:6px 12px; letter-spacing:.35px; }
+    .app-profile-layout.app-premium-active .app-profile-aside { padding:22px; border:1px solid #E8C65B; border-radius:22px; background:linear-gradient(145deg,#FFFDF5 0%,#FFF5CF 48%,#FFFFFF 100%); box-shadow:0 12px 32px rgba(133,91,0,.09); }
+    .app-profile-layout.app-premium-active .app-avatar { outline:4px solid #F3D36B; outline-offset:4px; box-shadow:0 0 0 8px rgba(243,211,107,.18); }
+    .app-membership-summary { position:relative; overflow:hidden; margin-top:16px; padding:19px 17px; border:1px solid #E7C65E; border-radius:18px; background:linear-gradient(135deg,#173D8F 0%,#2962FF 58%,#7C5CDB 100%); box-shadow:0 10px 24px rgba(41,98,255,.18); }
+    .app-membership-summary:after { content:"✦"; position:absolute; right:14px; top:8px; color:rgba(255,255,255,.22); font-size:54px; line-height:1; }
+    .app-membership-summary strong { position:relative; z-index:1; display:block; padding-right:22px; color:#FFFFFF; font-family:var(--font-heading); font-size:16px; font-weight:800; }
+    .app-membership-summary small { position:relative; z-index:1; display:block; margin-top:7px; color:rgba(255,255,255,.91); font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
+    .app-profile-layout.app-premium-active #appMembershipRow { margin:8px 0 5px; padding:15px 14px; border:1px solid #E7C65E; border-radius:15px; background:linear-gradient(110deg,#FFF9E5,#FFFFFF); }
+    .app-profile-layout.app-premium-active #appMembershipRow > i:first-child { color:#A87500; }
+    .app-profile-layout.app-premium-active #appMembershipRow strong { color:#855B00; }
+    .app-profile-layout.app-premium-active #appMembershipRowDescription { color:#795F20; }
+    @media (max-width:760px) { .app-profile-layout.app-premium-active .app-profile-aside { padding:18px; } }
+    .premium-ui-preference-row { margin:18px 0 0; padding:14px 12px; display:flex; align-items:center; gap:12px; border:1px solid var(--border); border-radius:14px; background:var(--surface-secondary); }
+    .premium-ui-preference-row[hidden] { display:none !important; }
+    .premium-ui-preference-copy { flex:1; min-width:0; }
+    .premium-ui-preference-copy strong { display:block; font-size:14px; font-weight:800; line-height:1.35; }
+    .premium-ui-preference-copy small { display:block; margin-top:4px; color:var(--text-secondary); font-size:12px; line-height:1.45; }
+    .premium-ui-switch { position:relative; display:inline-flex; flex:0 0 48px; width:48px; height:28px; cursor:pointer; }
+    .premium-ui-switch input { position:absolute; width:1px; height:1px; opacity:0; }
+    .premium-ui-switch-track { position:absolute; inset:0; border-radius:99px; background:#A6A6A6; transition:background .2s ease; }
+    .premium-ui-switch-track::after { content:""; position:absolute; width:22px; height:22px; left:3px; top:3px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.22); transition:transform .2s ease; }
+    .premium-ui-switch input:checked + .premium-ui-switch-track { background:var(--primary); }
+    .premium-ui-switch input:checked + .premium-ui-switch-track::after { transform:translateX(20px); }
+    .premium-ui-switch input:focus-visible + .premium-ui-switch-track { outline:3px solid rgba(41,98,255,.3); outline-offset:2px; }
     .app-profile-row { min-height:60px; padding:14px 0; display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--divider); }
     .app-profile-row > i { color:var(--primary); font-size:22px; }
     .app-profile-row > span { min-width:0; flex:1; }
@@ -1609,14 +1661,1346 @@
     body.guest-mode .add-button { display:none !important; }
     @media (max-width:420px) { .guest-auth-button { padding:7px 11px; font-size:12px; } .guest-header-brand { font-size:20px; } .guest-header-actions { gap:6px; } }
 
-  </style>
+  
+    /* PREMIUM-ONLY NAVIGATION SKIN.
+       Basic members keep the original toolbar and bottom navigation unchanged. */
+    body.app-premium-navigation .topbar {
+      position: sticky;
+      position: -webkit-sticky;
+      top: 12px;
+      height: 48px;
+      min-height: 48px;
+      margin: 12px 0 8px;
+      background: transparent;
+      border: 0;
+      pointer-events: none;
+    }
+    body.app-premium-navigation .topbar > * { pointer-events: auto; }
+    body.app-premium-navigation .nav-icon {
+      border: 0;
+      border-radius: 100px;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 24px;
+    }
+    body.app-premium-navigation .nav-icon:hover { background: var(--surface-secondary); }
+    body.app-premium-navigation .brand {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.7px;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+    body.app-premium-navigation .nav-indicator { display: none; }
+    body.app-premium-navigation .bottom-nav-item {
+      position: relative;
+      z-index: 2;
+      height: 52px;
+      min-height: 0;
+      padding: 0;
+      border-radius: 100px;
+      justify-content: center;
+      transition: background .28s ease, color .28s ease, box-shadow .28s ease, transform .15s ease;
+    }
+    body.app-premium-navigation .bottom-nav-item:active { transform: scale(.94); }
+    body.app-premium-navigation .bottom-nav-item .nav-item-icon {
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      line-height: 1;
+    }
+    body.app-premium-navigation .bottom-nav-item.active,
+    body.app-premium-navigation .bottom-nav-item.active .nav-item-icon { color: #fff; }
+    body.app-premium-navigation .nav-indicator {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      z-index: 1;
+      display: block;
+      width: 0;
+      height: 52px;
+      border-radius: 100px;
+      background: var(--primary);
+      box-shadow: 0 4px 14px rgba(41,98,255,.38), inset 0 1px 1px rgba(255,255,255,.38);
+      transform: translate3d(0,0,0);
+      transition: transform .5s cubic-bezier(.34,1.36,.5,1), width .5s cubic-bezier(.34,1.36,.5,1);
+      pointer-events: none;
+      will-change: transform;
+    }
+    body.app-premium-navigation .nav-indicator.no-anim { transition: none; }
+    body.app-premium-navigation .bottom-nav .cart-count {
+      top: -7px; right: -11px; min-width: 17px; height: 17px;
+    }
+    body.app-premium-navigation .bottom-nav-item.active .cart-count {
+      background: #fff; color: var(--primary); border-color: var(--primary);
+    }
+
+    @media (max-width:760px) {
+      body.app-premium-navigation .topbar {
+        top: 10px;
+        width: calc(100% - 32px);
+        height: 56px;
+        min-height: 56px;
+        margin: 10px auto 8px;
+        padding: 0 10px 0 16px;
+        overflow: hidden;
+        pointer-events: auto;
+        border-radius: 100px;
+        border: 1px solid rgba(255,255,255,.6);
+        background: linear-gradient(180deg,rgba(41,98,255,.18),rgba(41,98,255,.08));
+        -webkit-backdrop-filter: blur(22px) saturate(180%);
+        backdrop-filter: blur(22px) saturate(180%);
+        box-shadow: 0 12px 32px rgba(41,98,255,.2), 0 2px 8px rgba(0,0,0,.08),
+          inset 0 1px 1px rgba(255,255,255,.85), inset 0 -1px 1px rgba(255,255,255,.25);
+      }
+      body.app-premium-navigation .topbar::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        border-radius: inherit;
+        background: linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.1) 40%,rgba(255,255,255,0) 62%),
+          radial-gradient(110% 90% at 8% 0%,rgba(255,255,255,.38),transparent 55%);
+        pointer-events: none;
+      }
+      body.app-premium-navigation .topbar > * { position: relative; z-index: 1; }
+      body.app-premium-navigation .topbar .nav-icon { border-radius: 100px; }
+      body.app-premium-navigation .topbar .nav-icon:hover { background: rgba(41,98,255,.1); }
+      body.app-premium-navigation .topbar .cart-count { border-color: transparent; }
+
+      body.app-premium-navigation .bottom-nav {
+        position: fixed;
+        left: 50%;
+        right: auto;
+        bottom: calc(14px + env(safe-area-inset-bottom,0px));
+        z-index: 1500;
+        width: min(calc(100% - 32px),400px);
+        height: var(--bottom-nav-height);
+        min-height: 0;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2px;
+        overflow: hidden;
+        transform: translateX(-50%);
+        border-radius: 100px;
+        border: 1px solid rgba(255,255,255,.6);
+        background: linear-gradient(180deg,rgba(41,98,255,.18),rgba(41,98,255,.08));
+        -webkit-backdrop-filter: blur(22px) saturate(180%);
+        backdrop-filter: blur(22px) saturate(180%);
+        box-shadow: 0 12px 32px rgba(41,98,255,.22), 0 2px 8px rgba(0,0,0,.08),
+          inset 0 1px 1px rgba(255,255,255,.85), inset 0 -1px 1px rgba(255,255,255,.25);
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+      body.app-premium-navigation .bottom-nav::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        border-radius: inherit;
+        background: linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.1) 40%,rgba(255,255,255,0) 62%),
+          radial-gradient(110% 90% at 8% 0%,rgba(255,255,255,.38),transparent 55%);
+        pointer-events: none;
+      }
+      body.app-premium-navigation .bottom-nav-item > span:not(.nav-item-icon) { display: none !important; }
+      body.app-premium-navigation .bottom-nav-item { flex: 1; }
+      body.app-premium-navigation .nav-indicator { top: 6px; left: 0; }
+      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active,
+      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active .nav-item-icon { color: var(--text-primary); }
+      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over,
+      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over .nav-item-icon { color: #fff; }
+      @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+        body.app-premium-navigation .bottom-nav { background: rgba(232,238,255,.95); }
+      }
+    }
+
+  
+    /* Premium-only location/notification controls; basic navigation remains unchanged. */
+    .premium-toolbar-control,
+    .premium-drawer-control { display: none !important; }
+
+    body.app-premium-navigation .premium-toolbar-control {
+      display: inline-flex !important;
+    }
+    body.app-premium-navigation .nav-actions [data-top-nav] {
+      display: none !important;
+    }
+    body.app-premium-navigation .premium-drawer-control {
+      display: flex !important;
+    }
+    body:not(.app-premium-navigation) .premium-drawer-control {
+      display: none !important;
+    }
+    body.nav-pending .topbar,
+    body.nav-pending .topbar .nav-actions,
+    body.nav-pending .bottom-nav,
+    body.nav-pending .desktop-drawer,
+    body.nav-pending .desktop-nav-toggle {
+      visibility: hidden !important;
+    }
+    body.app-premium-navigation .location-chip {
+      max-width: 150px;
+      min-width: 0;
+      height: 38px;
+      padding: 0 12px;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255,255,255,.75);
+      border-radius: 100px;
+      background: rgba(255,255,255,.55);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    body.app-premium-navigation .location-chip i {
+      flex-shrink: 0;
+      color: var(--primary);
+      font-size: 17px;
+    }
+    body.app-premium-navigation .location-chip span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    body.app-premium-navigation .bottom-nav { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    body.app-premium-navigation .nav-indicator.dragging {
+      transition: none;
+      box-shadow: 0 8px 22px rgba(41,98,255,.5), inset 0 1px 1px rgba(255,255,255,.5);
+    }
+    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active,
+    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active .nav-item-icon { color: var(--text-primary); }
+    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over,
+    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over .nav-item-icon { color: #fff; }
+    body.app-premium-navigation .notif-list { padding: 10px 16px 20px; overflow-y: auto; overscroll-behavior: contain; }
+    body.app-premium-navigation .notif-item { padding: 12px 14px; display:flex; align-items:flex-start; gap:12px; border-radius:var(--radius-lg); }
+    body.app-premium-navigation .notif-item:hover { background:var(--primary-soft); }
+    body.app-premium-navigation .notif-item > i { width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--primary-soft);color:var(--primary);font-size:20px; }
+    body.app-premium-navigation .notif-item strong { display:block;font-size:14px;font-weight:700;line-height:1.4; }
+    body.app-premium-navigation .notif-item p { margin:2px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.5; }
+    body.app-premium-navigation .notif-item small { display:block;margin-top:4px;color:var(--text-muted);font-size:12px; }
+    body.app-premium-navigation .notif-item.notif-unread { background:color-mix(in srgb, var(--primary-soft) 48%, transparent); }
+    body.app-premium-navigation .notif-copy { min-width:0;flex:1; }
+    body.app-premium-navigation .notif-time { color:var(--text-muted);font-size:12px;font-weight:500;white-space:nowrap; }
+    .shoppy-notification-badge { position:absolute; top:-5px; right:-6px; min-width:17px; height:17px; padding:0 4px; display:none; align-items:center; justify-content:center; border:2px solid var(--surface, #fff); border-radius:999px; background:#e53935; color:#fff; font-size:10px; font-weight:800; line-height:1; z-index:3; }
+    #notifButton { position:relative; }
+    #notifButton .shoppy-notification-badge { top:6px; right:6px; }
+    #drawerNotifButton { position:relative; }
+    #drawerNotifButton .shoppy-notification-badge { position:static; margin-left:auto; border-color:transparent; }
+
+    body.app-premium-navigation .notif-empty { padding:36px 12px;text-align:center;color:var(--text-secondary);font-size:14px; }
+    body.app-premium-navigation .notif-empty i { display:block;margin-bottom:10px;color:var(--text-muted);font-size:40px; }
+    body.app-premium-navigation .notif-all { width:100%;min-height:48px;margin-top:8px;padding:12px 16px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-lg);background:var(--primary-soft);color:var(--primary);font-weight:700; }
+    @media (min-width:761px) {
+      body.app-premium-navigation .nav-actions { display:none !important; }
+      body.app-premium-navigation .desktop-drawer { display:flex; }
+    }
+    /* Desktop Premium: compact right toolbar + icon-only vertical floating navigation on the left. */
+    @media (min-width:761px) {
+      body.app-premium-navigation { padding-bottom:36px; padding-left:92px; }
+      body.app-premium-navigation .topbar {
+        box-sizing:border-box; width:calc(100% - 64px); max-width:none; margin:18px 24px 14px 40px;
+        padding:8px 10px 8px 16px; min-height:58px; height:auto; display:flex; align-items:center;
+        justify-content:flex-end; gap:10px; border:0; border-radius:0; background:transparent; box-shadow:none; overflow:visible;
+      }
+      body.app-premium-navigation .topbar::before { display:none; }
+      body.app-premium-navigation .topbar .brand {
+        order:1; position:static; display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;
+        width:auto; min-width:0; padding:9px 13px; margin:0; border:1px solid rgba(255,255,255,.7); border-radius:100px;
+        background:linear-gradient(180deg,rgba(41,98,255,.17),rgba(41,98,255,.08));
+        -webkit-backdrop-filter:blur(22px) saturate(180%); backdrop-filter:blur(22px) saturate(180%);
+        box-shadow:0 6px 18px rgba(41,98,255,.12),inset 0 1px 1px rgba(255,255,255,.8);
+      }
+      body.app-premium-navigation .topbar .nav-actions {
+        order:2; display:flex !important; align-items:center; justify-content:flex-end; gap:10px;
+        width:auto; margin:0; padding:0; flex:0 0 auto;
+      }
+      body.app-premium-navigation .topbar .premium-toolbar-control {
+        box-sizing:border-box; flex:0 0 auto; width:auto; max-width:170px; min-width:0; height:42px;
+        border:1px solid rgba(255,255,255,.7); border-radius:100px;
+        background:linear-gradient(180deg,rgba(41,98,255,.17),rgba(41,98,255,.08));
+        -webkit-backdrop-filter:blur(22px) saturate(180%); backdrop-filter:blur(22px) saturate(180%);
+        box-shadow:0 6px 18px rgba(41,98,255,.12),inset 0 1px 1px rgba(255,255,255,.8);
+      }
+      body.app-premium-navigation .topbar #headerLocationButton { order:1; }
+      body.app-premium-navigation .topbar #notifButton { order:2; width:42px; min-width:42px; padding:0; justify-content:center; }
+      body.app-premium-navigation .topbar #notifButton i { font-size:21px; }
+      body.app-premium-navigation .topbar .location-chip { padding:0 9px; gap:6px; }
+      body.app-premium-navigation .topbar .location-chip span { max-width:125px; }
+      body.app-premium-navigation .bottom-nav {
+        position:fixed; top:22px; left:16px; right:auto; bottom:22px; z-index:1500; box-sizing:border-box;
+        width:64px; height:auto; min-height:0; padding:8px 6px; display:flex; flex-direction:column;
+        align-items:stretch; justify-content:flex-start; gap:8px; overflow:hidden; transform:none;
+        border:1px solid rgba(255,255,255,.68); border-radius:34px;
+        background:linear-gradient(180deg,rgba(41,98,255,.17),rgba(41,98,255,.08));
+        -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%);
+        box-shadow:0 14px 38px rgba(41,98,255,.2),0 3px 10px rgba(0,0,0,.08),inset 0 1px 1px rgba(255,255,255,.85);
+      }
+      body.app-premium-navigation .bottom-nav::before { content:""; position:absolute; inset:0; z-index:0; border-radius:inherit; pointer-events:none; background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 68%); }
+      body.app-premium-navigation .bottom-nav-item { flex:0 0 52px; width:100%; height:52px; min-height:52px; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; border-radius:26px; }
+      body.app-premium-navigation .bottom-nav-item > span:not(.nav-item-icon) { display:none !important; }
+      body.app-premium-navigation .bottom-nav-item .nav-item-icon { width:100%; height:24px; font-size:24px; }
+      body.app-premium-navigation .nav-indicator { top:0; left:6px; width:50px; height:52px !important; border-radius:26px; transition:transform .5s cubic-bezier(.34,1.36,.5,1),height .5s cubic-bezier(.34,1.36,.5,1); }
+      body.app-premium-navigation .desktop-drawer, body.app-premium-navigation .desktop-drawer-overlay, body.app-premium-navigation .desktop-nav-toggle { display:none !important; }
+    }
+    /* Basic mobile navigation: force five equal-width slots and keep the active state predictable. */
+    @media (max-width:760px) {
+      body:not(.app-premium-navigation) .bottom-nav {
+        position:fixed; box-sizing:border-box; width:100%; left:0; right:0; transform:none;
+        display:flex; align-items:stretch; justify-content:flex-start; gap:0;
+        padding-left:0; padding-right:0; overflow:visible; isolation:isolate;
+      }
+      /* The indicator is a positioned overlay, never a sixth flex item. */
+      body:not(.app-premium-navigation) .bottom-nav > .nav-indicator {
+        position:absolute; display:none; pointer-events:none; z-index:0;
+      }
+      body:not(.app-premium-navigation) .bottom-nav > .bottom-nav-item {
+        box-sizing:border-box; flex:1 1 0 !important; width:0 !important; min-width:0; max-width:none !important;
+        margin:0; padding-left:0; padding-right:0; align-items:center; justify-content:center; text-align:center;
+      }
+      body:not(.app-premium-navigation) .bottom-nav > .bottom-nav-item .nav-item-icon {
+        width:100%; display:flex; align-items:center; justify-content:center;
+      }
+      body:not(.app-premium-navigation) .bottom-nav > .bottom-nav-item.active,
+      body:not(.app-premium-navigation) .bottom-nav > .bottom-nav-item.active .nav-item-icon { color:var(--primary); }
+    }
+
+    /* Keep the page scrolling behind the device's bottom safe-area while the web nav stays in place. */
+    @media (max-width:760px) {
+      html { background:transparent; }
+      body.app-premium-navigation { padding-bottom:calc(var(--bottom-nav-height) + 28px + env(safe-area-inset-bottom,0px)); }
+      body.app-premium-navigation .bottom-nav { bottom:calc(14px + env(safe-area-inset-bottom,0px)); }
+    }
+
+    @media (max-width:760px) {
+      body.app-premium-navigation .premium-toolbar-control.location-chip { display:inline-flex !important; }
+      body.app-premium-navigation .desktop-drawer,
+      body.app-premium-navigation .desktop-drawer-overlay,
+      body.app-premium-navigation .desktop-nav-toggle { display:none !important; }
+    }
+
+  
+
+    /* Desktop Premium layout refinements requested: floating nav, icon badge, and two-column cards. */
+    @media (min-width:761px) {
+      /* The vertical navigation floats over the page instead of reserving a blank left rail. */
+      body.app-premium-navigation { padding-left:0 !important; padding-bottom:0 !important; }
+      body.app-premium-navigation .topbar { margin-left:24px !important; }
+      body.app-premium-navigation .bottom-nav {
+        position:fixed !important; top:50% !important; left:16px !important; right:auto !important; bottom:auto !important;
+        width:64px !important; height:max-content !important; min-height:0 !important;
+        max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px);
+        padding:8px 6px !important; justify-content:center !important; overflow-y:auto !important; overflow-x:hidden !important;
+        transform:translateY(-50%) !important; z-index:1500 !important;
+      }
+      /* Pin the red count to the bell glyph's top-right, not outside the toolbar button. */
+      body.app-premium-navigation #notifButton .shoppy-notification-badge {
+        top:6px !important; right:6px !important; border-width:1px !important; min-width:15px; height:15px;
+        padding:0 3px; font-size:9px;
+      }
+      /* Cart products appear two per row; the order summary follows beneath the full grid. */
+      body.app-premium-navigation #cartPage .app-cart-layout {
+        display:grid !important; grid-template-columns:minmax(0,1fr) !important; gap:28px !important;
+      }
+      body.app-premium-navigation #cartPage .app-cart-items {
+        display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+        align-items:stretch; column-gap:28px; row-gap:0;
+      }
+      body.app-premium-navigation #cartPage .app-cart-item {
+        min-width:0; align-items:flex-start; flex-wrap:wrap; gap:12px; padding:18px 0;
+      }
+      body.app-premium-navigation #cartPage .app-cart-item:first-child { padding-top:0; }
+      body.app-premium-navigation #cartPage .app-cart-image { width:76px; height:76px; }
+      body.app-premium-navigation #cartPage .app-cart-info { flex:1 1 120px; }
+      body.app-premium-navigation #cartPage .app-cart-total { width:100%; text-align:right; }
+      body.app-premium-navigation #cartPage .app-summary { position:static; width:100%; }
+      /* Profile identity/actions stay in a horizontal top card; shopping settings form a two-column grid below. */
+      body.app-premium-navigation #appProfileLayout {
+        display:grid !important; grid-template-columns:minmax(0,1fr) !important; gap:28px !important;
+      }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside {
+        display:flex; flex-wrap:wrap; align-items:center; gap:14px 18px; padding:20px !important;
+      }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-avatar { flex:0 0 76px; width:76px; height:76px; margin:0 8px 0 0; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-name { flex:0 1 180px; margin:0; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-email { flex:1 1 190px; margin:0; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-member-badge { flex:0 0 auto; margin:0; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > #appMembershipSummary { flex:1 1 210px; margin:0; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow { flex:1 1 230px; margin:0; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > div[style*="height:1px"] { display:none !important; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row { box-sizing:border-box; flex:1 1 150px; width:auto !important; min-width:130px; margin:0; padding:13px 12px; border:1px solid var(--divider) !important; border-radius:14px; }
+      body.app-premium-navigation #appProfileLayout > section {
+        min-width:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 16px;
+      }
+      body.app-premium-navigation #appProfileLayout > section > .app-section-heading,
+      body.app-premium-navigation #appProfileLayout > section > #appLogoutButton { grid-column:1 / -1; }
+      body.app-premium-navigation #appProfileLayout > section > .app-section-heading { margin-bottom:4px; }
+      body.app-premium-navigation #appProfileLayout > section > .app-profile-row { box-sizing:border-box; min-width:0; margin:0; padding:15px 14px; border:1px solid var(--divider); border-radius:14px; }
+      body.app-premium-navigation #appProfileLayout > section > #appLogoutButton { margin-top:8px; }
+    }
+    @media (min-width:761px) {
+      body.app-premium-navigation #appProfileLayout .app-profile-aside {
+        display:grid !important;
+        grid-template-columns:repeat(6,minmax(0,1fr));
+        grid-template-rows:auto auto auto auto;
+        align-items:center;
+        gap:12px;
+      }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-avatar { grid-column:1; grid-row:1 / span 2; align-self:center; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-name { grid-column:2 / 5; grid-row:1; align-self:end; min-width:0; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-email { grid-column:2 / 5; grid-row:2; align-self:start; min-width:0; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-member-badge { grid-column:5 / 7; grid-row:1 / span 2; justify-self:end; align-self:center; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > #appMembershipSummary { grid-column:1 / 4; grid-row:3; width:100%; box-sizing:border-box; margin:0; min-width:0; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow { grid-column:4 / 7; grid-row:3; width:100%; box-sizing:border-box; min-width:0; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > div[style*="height:1px"] { display:none !important; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > a.app-profile-row[href="/orders.html"],
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > a.app-profile-row[href="/wishlist.html"],
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > #appProfileCartShortcut {
+        grid-row:4; grid-column:span 2; min-width:0; width:100% !important; box-sizing:border-box;
+        display:flex; align-items:center; gap:8px; margin:0; padding:12px 10px; border:1px solid var(--divider) !important;
+        border-radius:14px; background:var(--surface) !important; text-align:left; overflow:hidden;
+      }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row > i:first-child { flex:0 0 auto; font-size:19px; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row > span { min-width:0; flex:1; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row strong { font-size:12px; white-space:nowrap; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row .ph-caret-right { display:none; }
+    }
+    /* Restore the last selected tab before first paint, preventing a brief jump to Home on refresh. */
+    html[data-start-tab="search"] #homeContent,
+    html[data-start-tab="search"] #cartPage,
+    html[data-start-tab="search"] #accountPage { display:none !important; }
+    html[data-start-tab="search"] #searchPage { display:block !important; }
+    html[data-start-tab="cart"] #homeContent,
+    html[data-start-tab="cart"] #searchPage,
+    html[data-start-tab="cart"] #accountPage { display:none !important; }
+    html[data-start-tab="cart"] #cartPage { display:block !important; }
+    html[data-start-tab="account"] #homeContent,
+    html[data-start-tab="account"] #searchPage,
+    html[data-start-tab="account"] #cartPage { display:none !important; }
+    html[data-start-tab="account"] #accountPage { display:block !important; }
+    html[data-start-tab="explore"] #homeSearchWrap,
+    html[data-start-tab="explore"] #heroWrap,
+    html[data-start-tab="explore"] #offersSection,
+    html[data-start-tab="explore"] #categories { display:none !important; }
+    html[data-start-tab="explore"] #homeContent { display:block !important; }
+    html[data-start-tab="explore"] #searchPage,
+    html[data-start-tab="explore"] #cartPage,
+    html[data-start-tab="explore"] #accountPage { display:none !important; }
+      #notifButton .shoppy-notification-badge { top:6px !important; right:6px !important; }
+
+    /* Final profile fixes: real verification icon, shared membership background, compact switch, and reliable desktop tabs. */
+    .app-profile-name { display:flex; align-items:center; flex-wrap:wrap; gap:0; }
+    @media (min-width:761px) {
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-aside {
+        background:linear-gradient(135deg,#173D8F 0%,#2962FF 58%,#7C5CDB 100%) !important;
+        border:1px solid rgba(255,255,255,.35) !important;
+        box-shadow:0 12px 32px rgba(41,98,255,.2) !important;
+        color:#fff !important;
+      }
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-name,
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-email { color:#fff !important; }
+      body.app-premium-navigation #appProfileLayout.app-premium-active #appMembershipSummary { display:none !important; }
+      body.app-premium-navigation #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow { display:none !important; }
+      body.app-premium-navigation #appProfileLayout > section > #premiumUiPreferenceRow {
+        display:flex; justify-content:flex-end; align-items:center; min-height:26px;
+        margin:0 0 0 auto; padding:0; border:0; border-radius:0; background:transparent;
+        width:auto; grid-column:1 / -1; grid-row:auto; gap:0;
+      }
+      body.app-premium-navigation #appProfileLayout > section > #premiumUiPreferenceRow .premium-ui-preference-copy { display:none !important; }
+      body.app-premium-navigation #appProfileLayout > section > #premiumUiPreferenceRow .premium-ui-switch { margin-left:auto; }
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-verified-badge { color:#55A6FF !important; }
+      /* Keep the real icon above the name baseline and visible on the blue profile card. */
+      body.app-premium-navigation #appProfileLayout .app-profile-name { display:flex; align-items:center; }
+    }
+    @media (max-width:760px) {
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-aside { background:linear-gradient(135deg,#173D8F 0%,#2962FF 58%,#7C5CDB 100%); color:#fff; }
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-name,
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-email { color:#fff; }
+      body.app-premium-navigation #appProfileLayout.app-premium-active #appMembershipSummary { display:none !important; }
+      body.app-premium-navigation #appProfileLayout.app-premium-active .app-verified-badge { color:#55A6FF; }
+    }
+    /* Ensure floating navigation buttons stay above decorative glass layers and remain clickable. */
+    @media (min-width:761px) {
+      body.app-premium-navigation #bottomNav { pointer-events:auto !important; }
+      body.app-premium-navigation #bottomNav > .bottom-nav-item { position:relative !important; z-index:3 !important; pointer-events:auto !important; cursor:pointer; }
+      body.app-premium-navigation #bottomNav::before { pointer-events:none !important; }
+    }
+
+
+
+    /* Keep Profile and settings geometry identical in Premium UI and Basic UI.
+       Premium mode changes only the header/navigation skin, not content placement. */
+    #appProfileLayout {
+      display:grid !important;
+      grid-template-columns:minmax(0,1fr) !important;
+      gap:24px !important;
+      align-items:start !important;
+    }
+    #appProfileLayout > .app-profile-aside {
+      box-sizing:border-box;
+      display:grid !important;
+      grid-template-columns:84px minmax(0,1fr) auto;
+      grid-template-rows:auto auto auto;
+      align-items:center;
+      gap:7px 18px;
+      min-width:0;
+      margin:0;
+      padding:24px !important;
+      border:1px solid #E5EAF2 !important;
+      border-radius:24px !important;
+      background:#FFFFFF !important;
+      color:#172033 !important;
+      box-shadow:0 12px 32px rgba(25,45,80,.09),0 2px 6px rgba(25,45,80,.04) !important;
+    }
+    #appProfileLayout > .app-profile-aside > .app-avatar {
+      grid-column:1; grid-row:1 / span 2;
+      width:76px; height:76px; margin:0;
+      background:linear-gradient(135deg,#2962FF,#1744B5) !important;
+      color:#fff !important;
+      outline:0 !important;
+      box-shadow:0 5px 14px rgba(41,98,255,.2) !important;
+    }
+    #appProfileLayout > .app-profile-aside > .app-profile-name {
+      grid-column:2; grid-row:1; align-self:end;
+      min-width:0; margin:0; color:#172033 !important;
+    }
+    #appProfileLayout > .app-profile-aside > .app-profile-email {
+      grid-column:2; grid-row:2; align-self:start;
+      min-width:0; margin:0; color:#667085 !important;
+    }
+    #appProfileLayout > .app-profile-aside > .app-member-badge {
+      grid-column:3; grid-row:1 / span 2; justify-self:end; align-self:center;
+      margin:0; white-space:nowrap;
+    }
+    /* Membership summary is already represented by the Premium Membership setting below. */
+    #appProfileLayout > .app-profile-aside > #appMembershipSummary,
+    #appProfileLayout > .app-profile-aside > div[style*="height:1px"],
+    #appProfileLayout > .app-profile-aside > a.app-profile-row[href="/orders.html"],
+    #appProfileLayout > .app-profile-aside > a.app-profile-row[href="/wishlist.html"],
+    #appProfileLayout > .app-profile-aside > #appProfileCartShortcut,
+    #appProfileLayout > .app-profile-aside > #premiumUiPreferenceRow {
+      display:none !important;
+    }
+    #appProfileLayout > section {
+      min-width:0;
+      display:grid !important;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px 16px;
+      align-content:start;
+    }
+    #appProfileLayout > section > .app-section-heading,
+    #appProfileLayout > section > #premiumUiPreferenceRow,
+    #appProfileLayout > section > #appLogoutButton { grid-column:1 / -1; }
+    #appProfileLayout > section > .app-section-heading { margin:0 0 4px; }
+    #appProfileLayout > section > #premiumUiPreferenceRow {
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      min-height:28px;
+      margin:0 0 0 auto;
+      padding:0;
+      border:0;
+      border-radius:0;
+      background:transparent;
+      width:100%;
+      gap:0;
+    }
+    #appProfileLayout > section > #premiumUiPreferenceRow .premium-ui-preference-copy { display:none !important; }
+    #appProfileLayout > section > #premiumUiPreferenceRow .premium-ui-switch { margin-left:auto; }
+    #appProfileLayout > section > .app-profile-row {
+      box-sizing:border-box;
+      min-width:0;
+      width:100%;
+      margin:0;
+      padding:15px 14px;
+      border:1px solid #E5EAF2 !important;
+      border-radius:15px !important;
+      background:#fff !important;
+      color:#172033;
+      box-shadow:0 3px 10px rgba(25,45,80,.035);
+    }
+    #appProfileLayout > section > #appLogoutButton { margin-top:8px; }
+    #appProfileLayout.app-premium-active .app-profile-aside,
+    body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-aside {
+      background:#FFFFFF !important;
+      color:#172033 !important;
+      border:1px solid #E5EAF2 !important;
+      box-shadow:0 12px 32px rgba(25,45,80,.09),0 2px 6px rgba(25,45,80,.04) !important;
+    }
+    #appProfileLayout.app-premium-active .app-profile-name,
+    #appProfileLayout.app-premium-active .app-profile-email,
+    body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-name,
+    body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-email { color:#172033 !important; }
+    #appProfileLayout .app-verified-badge,
+    body.app-premium-navigation #appProfileLayout .app-verified-badge {
+      color:#2962FF !important;
+      font-size:22px;
+      filter:drop-shadow(0 1px 1px rgba(41,98,255,.2));
+    }
+    @media (max-width:760px) {
+      #appProfileLayout { gap:20px !important; }
+      #appProfileLayout > .app-profile-aside {
+        grid-template-columns:62px minmax(0,1fr);
+        grid-template-rows:auto auto auto;
+        gap:5px 14px;
+        padding:18px !important;
+        border-radius:20px !important;
+      }
+      #appProfileLayout > .app-profile-aside > .app-avatar {
+        grid-column:1; grid-row:1 / span 2; width:58px; height:58px; font-size:23px;
+      }
+      #appProfileLayout > .app-profile-aside > .app-profile-name { grid-column:2; grid-row:1; align-self:end; font-size:19px; }
+      #appProfileLayout > .app-profile-aside > .app-profile-email { grid-column:2; grid-row:2; align-self:start; font-size:13px; }
+      #appProfileLayout > .app-profile-aside > .app-member-badge { grid-column:1 / -1; grid-row:3; justify-self:start; margin-top:8px; }
+      #appProfileLayout > section { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+      #appProfileLayout > section > .app-profile-row { padding:13px 11px; }
+    }
+    @media (max-width:380px) {
+      #appProfileLayout > section { grid-template-columns:minmax(0,1fr); }
+    }
+
+
+
+    /* Requested desktop-only layout and navigation updates. Mobile styles remain unchanged. */
+    @media (min-width:761px) {
+      body.app-premium-navigation .desktop-sheet-nav-item { display:flex !important; }
+      body.app-premium-navigation .bottom-nav { width:64px !important; }
+      body.app-premium-navigation .bottom-nav-item { flex:0 0 52px !important; }
+      body.app-premium-navigation .topbar { position:relative; margin-left:0 !important; padding-left:180px !important; }
+      body.app-premium-navigation .topbar > .brand {
+        position:absolute !important; left:24px !important; top:50% !important; right:auto !important;
+        margin:0 !important; transform:translateY(-50%) !important; z-index:3;
+      }
+      body.app-premium-navigation .app-view {
+        width:calc(100% - 124px) !important; max-width:none !important;
+        margin:30px 24px 60px 100px !important; box-sizing:border-box;
+      }
+      body.app-premium-navigation #cartPage .app-summary { min-width:0; }
+      body.app-premium-navigation #cartPage #appCheckoutButton,
+      body.app-premium-navigation #cartPage #appContinueShopping,
+      body.app-premium-navigation #cartPage #appClearCartButton {
+        display:inline-flex; vertical-align:top; width:calc(33.333% - 9px) !important;
+        min-width:0; min-height:44px; margin:12px 8px 0 0; padding:10px 8px;
+        box-sizing:border-box; font-size:12px; white-space:normal; line-height:1.25;
+      }
+      body.app-premium-navigation #cartPage #appClearCartButton { margin-right:0; }
+      body.app-premium-navigation #cartPage #appClearCartButton[hidden] { display:none !important; }
+      body.guest-mode #appProfileLayout,
+      body.guest-mode #appProfileLoading { display:none !important; }
+    }
+    /* Never show account settings/actions to guests, regardless of viewport. */
+    body.guest-mode #appProfileLayout { display:none !important; }
+    body.guest-mode #appProfileLoading { display:none !important; }
+    @media (max-width:760px) {
+      .desktop-sheet-nav-item { display:none !important; }
+    }
+
+
+    /* Desktop follow-up: balanced nav bubble, persistent brand, relocated sheet controls, and unified page width. */
+    @media (min-width:761px) {
+      body.app-premium-navigation .bottom-nav {
+        box-sizing:border-box !important;
+        padding:8px 6px !important;
+        align-items:center !important;
+        gap:0 !important;
+      }
+      body.app-premium-navigation .bottom-nav-item {
+        box-sizing:border-box !important;
+        width:52px !important;
+        min-width:52px !important;
+        max-width:52px !important;
+        margin:0 !important;
+      }
+      body.app-premium-navigation .nav-indicator {
+        left:6px !important;
+        width:52px !important;
+        border-radius:26px !important;
+      }
+      /* The brand remains visible while page content scrolls. */
+      body.app-premium-navigation .topbar > .brand {
+        position:fixed !important;
+        top:18px !important;
+        left:24px !important;
+        right:auto !important;
+        margin:0 !important;
+        transform:none !important;
+        z-index:1601 !important;
+        line-height:1.2;
+      }
+      /* Location and notifications now live in the vertical navigation. */
+      body.app-premium-navigation .topbar #headerLocationButton,
+      body.app-premium-navigation .topbar #notifButton { display:none !important; }
+      body.app-premium-navigation #bottomNav .nav-item-icon { position:relative !important; overflow:visible !important; }
+      body.app-premium-navigation #bottomNav #notifBadge {
+        position:absolute !important;
+        top:-5px !important;
+        right:-7px !important;
+        z-index:5 !important;
+        min-width:15px !important;
+        height:15px !important;
+        padding:0 3px !important;
+        border:1px solid #fff !important;
+        border-radius:999px !important;
+        font-size:9px !important;
+        line-height:13px !important;
+        box-sizing:border-box !important;
+        justify-content:center !important;
+      }
+      /* Use the same available page width and left/right gutters on every desktop view. */
+      body.app-premium-navigation #homeContent .search-bar-wrap,
+      body.app-premium-navigation #homeContent .hero-wrap,
+      body.app-premium-navigation #homeContent .offers-wrap,
+      body.app-premium-navigation #homeContent .container,
+      body.app-premium-navigation #searchPage {
+        width:calc(100% - 124px) !important;
+        max-width:none !important;
+        margin-left:100px !important;
+        margin-right:24px !important;
+        box-sizing:border-box !important;
+      }
+      body.app-premium-navigation #searchPage,
+      body.app-premium-navigation .app-view {
+        width:calc(100% - 124px) !important;
+        max-width:none !important;
+        margin-left:100px !important;
+        margin-right:24px !important;
+        box-sizing:border-box !important;
+      }
+      body.app-premium-navigation #homeContent .search-bar-wrap { margin-top:20px; }
+      body.app-premium-navigation #homeContent .hero-wrap { margin-top:28px; }
+    }
+
+</style>
+<style id="desktop-nav-profile-refinements">
+  .app-profile-promo { display:none; }
+  .desktop-nav-expand-toggle { display:none; }
+  @media (min-width:761px) {
+    /* Balanced active pill and icon; keep the indicator centered within every tab. */
+    body.app-premium-navigation #bottomNav { align-items:center !important; flex-direction:column !important; }
+    body.app-premium-navigation #bottomNav .bottom-nav-item {
+      position:relative !important; display:flex !important; align-items:center !important; justify-content:center !important;
+      box-sizing:border-box !important; padding:0 !important; margin:0 !important;
+    }
+    body.app-premium-navigation #bottomNav .bottom-nav-item .nav-item-icon {
+      position:relative !important; display:flex !important; align-items:center !important; justify-content:center !important;
+      flex:0 0 24px !important; width:24px !important; min-width:24px !important; height:24px !important; margin:0 !important;
+      overflow:visible !important; line-height:1 !important;
+    }
+    body.app-premium-navigation #bottomNav .bottom-nav-item .nav-item-icon > i { display:block; line-height:1; }
+    body.app-premium-navigation #bottomNav .nav-indicator {
+      box-sizing:border-box !important; width:52px !important; left:6px !important; margin:0 !important;
+    }
+    /* The count badge is positioned against the 24px bell-icon wrapper, not the tab pill. */
+    body.app-premium-navigation #bottomNav [data-bottom-nav="notifications"] .nav-item-icon #notifBadge {
+      top:-5px !important; right:-5px !important; left:auto !important; bottom:auto !important;
+      transform:none !important; z-index:8 !important; pointer-events:none !important;
+    }
+    body.app-premium-navigation #bottomNav .desktop-nav-expand-toggle {
+      display:flex !important; align-items:center !important; justify-content:center !important; gap:10px !important;
+      position:relative !important; z-index:3 !important; flex:0 0 44px !important; width:100% !important; min-height:44px !important;
+      margin-top:auto !important; padding:0 12px !important; border:0 !important; border-radius:22px !important;
+      background:transparent !important; color:var(--text-secondary) !important; cursor:pointer !important; white-space:nowrap !important;
+    }
+    body.app-premium-navigation #bottomNav .desktop-nav-expand-toggle i { font-size:20px; flex:0 0 auto; transition:transform .25s ease; }
+    body.app-premium-navigation #bottomNav .desktop-nav-expand-toggle span { display:none; font-size:13px; font-weight:700; }
+    body.app-premium-navigation #bottomNav.nav-expanded {
+      top:16px !important; bottom:16px !important; left:16px !important; transform:none !important;
+      width:224px !important; max-height:none !important; height:auto !important; min-height:0 !important;
+      padding:14px 12px !important; align-items:stretch !important; justify-content:flex-start !important; gap:8px !important;
+      overflow-x:hidden !important; overflow-y:auto !important; border-radius:24px !important;
+    }
+    body.app-premium-navigation #bottomNav.nav-expanded .bottom-nav-item {
+      flex:0 0 48px !important; width:100% !important; max-width:none !important; min-width:0 !important; height:48px !important;
+      min-height:48px !important; flex-direction:row !important; justify-content:flex-start !important; gap:14px !important;
+      padding:0 14px !important; border-radius:16px !important;
+    }
+    body.app-premium-navigation #bottomNav.nav-expanded .bottom-nav-item > span:not(.nav-item-icon) {
+      display:inline-flex !important; align-items:center !important; min-width:0 !important; white-space:nowrap !important;
+      font-size:13px !important; font-weight:700 !important;
+    }
+    body.app-premium-navigation #bottomNav.nav-expanded .bottom-nav-item .nav-item-icon { flex:0 0 24px !important; width:24px !important; }
+    body.app-premium-navigation #bottomNav.nav-expanded .nav-indicator {
+      left:12px !important; width:200px !important; border-radius:16px !important;
+    }
+    body.app-premium-navigation #bottomNav.nav-expanded .desktop-nav-expand-toggle { justify-content:flex-start !important; padding:0 14px !important; }
+    body.app-premium-navigation #bottomNav.nav-expanded .desktop-nav-expand-toggle i { transform:rotate(180deg); }
+    body.app-premium-navigation #bottomNav.nav-expanded .desktop-nav-expand-toggle span { display:inline !important; }
+    /* Profile identity card wraps its content; the themed promo occupies the adjacent free space. */
+    body.app-premium-navigation #appProfileLayout {
+      display:grid !important; grid-template-columns:max-content minmax(260px,1fr) !important; gap:16px 20px !important; align-items:stretch !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside {
+      display:flex !important; flex-wrap:wrap !important; align-content:flex-start !important; align-items:center !important;
+      justify-content:flex-start !important; gap:6px 10px !important; width:max-content !important; max-width:100% !important;
+      min-width:0 !important; padding:18px !important; box-sizing:border-box !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-avatar {
+      flex:0 0 58px !important; width:58px !important; height:58px !important; margin:0 2px 0 0 !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-name {
+      flex:0 1 auto !important; max-width:230px !important; margin:0 !important; font-size:19px !important; line-height:1.2 !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-email {
+      flex:1 0 100% !important; max-width:100% !important; margin:0 !important; font-size:13px !important; line-height:1.35 !important;
+      overflow-wrap:anywhere !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-member-badge { flex:0 0 auto !important; margin:4px 0 0 !important; }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > #appMembershipSummary,
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow { flex:1 0 100% !important; width:100% !important; margin:4px 0 0 !important; }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > div[style*="height:1px"] { display:none !important; }
+    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row { flex:1 0 100% !important; width:100% !important; }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo {
+      position:relative !important; isolation:isolate !important; overflow:hidden !important; display:flex !important; flex-direction:column !important;
+      align-items:flex-start !important; justify-content:center !important; min-width:0 !important; min-height:190px !important;
+      box-sizing:border-box !important; padding:24px 28px !important; border-radius:22px !important;
+      border:1px solid rgba(255,255,255,.55) !important;
+      background:linear-gradient(125deg,#173D8F 0%,#2962FF 52%,#7856D8 100%) !important;
+      box-shadow:0 14px 36px rgba(41,98,255,.18),inset 0 1px 0 rgba(255,255,255,.32) !important; color:#fff !important;
+    }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo-eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.92; }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo > strong { display:block; margin-top:10px; font-family:var(--font-heading); font-size:clamp(34px,3.2vw,48px); font-weight:800; line-height:1; letter-spacing:-.04em; }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo > strong span { font-size:.62em; letter-spacing:-.02em; }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo p { position:relative; z-index:1; max-width:340px; margin:10px 0 16px; color:rgba(255,255,255,.88); font-size:13px; line-height:1.5; }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo-button { position:relative; z-index:2; display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1px solid rgba(255,255,255,.45); border-radius:999px; background:rgba(255,255,255,.16); color:#fff; font:700 12px var(--font-body); cursor:pointer; backdrop-filter:blur(10px); }
+    body.app-premium-navigation #appProfileLayout .app-profile-promo-art { position:absolute; right:18px; bottom:-24px; z-index:-1; font-size:155px; line-height:1; color:rgba(255,255,255,.13); transform:rotate(-12deg); }
+    body.app-premium-navigation #appProfileLayout > section { grid-column:1 / -1 !important; min-width:0 !important; }
+    body.app-premium-navigation #appProfileLayout .app-verified-badge,
+    #appProfileLayout .app-verified-badge { color:var(--primary,#2962FF) !important; }
+  }
+  /* Profile card tidy-up is intentionally limited to the requested profile elements on mobile. */
+  @media (max-width:760px) {
+    #appProfileLayout .app-profile-aside { gap:8px 10px; }
+    #appProfileLayout .app-profile-aside > .app-avatar { margin-right:2px !important; }
+    #appProfileLayout .app-profile-name { margin:0 !important; }
+    #appProfileLayout .app-profile-email { margin-top:0 !important; }
+    #appProfileLayout .app-verified-badge { color:var(--primary,#2962FF) !important; }
+    #bottomNav .desktop-nav-expand-toggle { display:none !important; }
+  }
+</style>
+
+
+<style id="desktop-basic-premium-shared-layout-final">
+/* Shared desktop structure for Basic and Premium users; mobile rules are intentionally untouched. */
+@media (min-width:761px) {
+  body:not(.nav-pending) #bottomNav {
+    position:fixed !important; top:50% !important; left:16px !important; right:auto !important; bottom:auto !important;
+    transform:translateY(-50%) !important; z-index:1500 !important;
+    display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important;
+    gap:0 !important; box-sizing:border-box !important; width:64px !important; height:476px !important;
+    min-height:0 !important; max-height:calc(100vh - 32px) !important; max-height:calc(100dvh - 32px) !important;
+    padding:8px 6px !important; overflow-x:hidden !important; overflow-y:auto !important;
+    transition:width .38s cubic-bezier(.2,.75,.25,1),height .38s cubic-bezier(.2,.75,.25,1),
+      top .38s cubic-bezier(.2,.75,.25,1),left .38s cubic-bezier(.2,.75,.25,1),
+      transform .38s cubic-bezier(.2,.75,.25,1),padding .38s ease,border-radius .38s ease,gap .38s ease !important;
+  }
+  body:not(.nav-pending) #bottomNav > .bottom-nav-item {
+    position:relative !important; flex:0 0 52px !important; width:52px !important; min-width:52px !important; max-width:52px !important;
+    height:52px !important; min-height:52px !important; margin:0 !important; padding:0 !important; box-sizing:border-box !important;
+    display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important;
+    gap:0 !important; border-radius:26px !important;
+  }
+  body:not(.nav-pending) #bottomNav .bottom-nav-item .nav-item-icon {
+    position:relative !important; display:flex !important; align-items:center !important; justify-content:center !important;
+    flex:0 0 24px !important; width:24px !important; min-width:24px !important; height:24px !important;
+    margin:0 !important; padding:0 !important; line-height:1 !important; overflow:visible !important;
+  }
+  body:not(.nav-pending) #bottomNav .bottom-nav-item .nav-item-icon > i { display:block !important; line-height:1 !important; margin:0 !important; }
+  body:not(.nav-pending) #bottomNav .nav-indicator {
+    position:absolute !important; top:8px !important; left:6px !important; width:52px !important; height:52px !important;
+    margin:0 !important; padding:0 !important; box-sizing:border-box !important; border-radius:26px !important;
+    transition:transform .5s cubic-bezier(.34,1.36,.5,1),width .38s ease,height .38s ease,left .38s ease,top .38s ease,border-radius .38s ease !important;
+    pointer-events:none !important;
+  }
+  body:not(.nav-pending) #bottomNav .bottom-nav-item > span:not(.nav-item-icon) { display:none !important; }
+  body:not(.nav-pending) #bottomNav .desktop-sheet-nav-item { display:flex !important; }
+  body:not(.nav-pending) #bottomNav .desktop-nav-expand-toggle {
+    display:flex !important; align-items:center !important; justify-content:center !important; flex:0 0 44px !important;
+    width:100% !important; min-height:44px !important; margin-top:auto !important; padding:0 !important;
+    border:0 !important; border-radius:22px !important; background:transparent !important; cursor:pointer !important;
+    overflow:hidden !important; white-space:nowrap !important; gap:10px !important; position:relative !important; z-index:3 !important;
+  }
+  body:not(.nav-pending) #bottomNav .desktop-nav-expand-toggle i { flex:0 0 auto !important; font-size:20px !important; transition:transform .3s ease !important; }
+  body:not(.nav-pending) #bottomNav .desktop-nav-expand-toggle span { display:none !important; }
+  body:not(.nav-pending) #bottomNav .nav-item-icon #notifBadge,
+  body:not(.nav-pending) #bottomNav [data-bottom-nav="notifications"] .nav-item-icon .shoppy-notification-badge {
+    position:absolute !important; top:-5px !important; right:-5px !important; left:auto !important; bottom:auto !important;
+    transform:none !important; z-index:8 !important; min-width:15px !important; height:15px !important;
+    padding:0 3px !important; border:1px solid #fff !important; border-radius:999px !important; font-size:9px !important;
+    line-height:13px !important; box-sizing:border-box !important; pointer-events:none !important;
+  }
+  body:not(.nav-pending) .topbar { position:relative !important; padding-left:180px !important; }
+  body:not(.nav-pending) .topbar > .brand { position:fixed !important; top:18px !important; left:24px !important; right:auto !important;
+    margin:0 !important; transform:none !important; z-index:1601 !important; line-height:1.2 !important; }
+  body:not(.nav-pending) .topbar #headerLocationButton,
+  body:not(.nav-pending) .topbar #notifButton { display:none !important; }
+  body:not(.nav-pending) #homeContent .search-bar-wrap,
+  body:not(.nav-pending) #homeContent .hero-wrap,
+  body:not(.nav-pending) #homeContent .offers-wrap,
+  body:not(.nav-pending) #homeContent .container,
+  body:not(.nav-pending) #searchPage,
+  body:not(.nav-pending) .app-view {
+    width:calc(100% - 124px) !important; max-width:none !important; margin-left:100px !important; margin-right:24px !important;
+    box-sizing:border-box !important;
+  }
+  body:not(.nav-pending) #homeContent .search-bar-wrap { margin-top:20px; }
+  body:not(.nav-pending) #homeContent .hero-wrap { margin-top:28px; }
+  body:not(.nav-pending) #bottomNav.nav-expanded {
+    top:16px !important; left:16px !important; bottom:auto !important; transform:none !important;
+    width:224px !important; height:calc(100vh - 32px) !important; height:calc(100dvh - 32px) !important;
+    max-height:none !important; padding:14px 12px !important; align-items:stretch !important; justify-content:flex-start !important;
+    gap:8px !important; border-radius:24px !important; overflow-y:auto !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .bottom-nav-item {
+    flex:0 0 48px !important; width:100% !important; max-width:none !important; min-width:0 !important;
+    height:48px !important; min-height:48px !important; flex-direction:row !important; justify-content:flex-start !important;
+    gap:14px !important; padding:0 14px !important; border-radius:16px !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .bottom-nav-item > span:not(.nav-item-icon) {
+    display:inline-flex !important; align-items:center !important; min-width:0 !important; white-space:nowrap !important;
+    font-size:13px !important; font-weight:700 !important;
+  }
+  body:not(.nav-pending) #bottomNav.nav-expanded .bottom-nav-item .nav-item-icon { flex:0 0 24px !important; width:24px !important; }
+  body:not(.nav-pending) #bottomNav.nav-expanded .nav-indicator { top:14px !important; left:12px !important; width:200px !important; border-radius:16px !important; }
+  body:not(.nav-pending) #bottomNav.nav-expanded .desktop-nav-expand-toggle { justify-content:flex-start !important; padding:0 14px !important; }
+  body:not(.nav-pending) #bottomNav.nav-expanded .desktop-nav-expand-toggle i { transform:rotate(180deg) !important; }
+  body:not(.nav-pending) #bottomNav.nav-expanded .desktop-nav-expand-toggle span { display:inline !important; }
+  body:not(.nav-pending) #appProfileLayout {
+    display:grid !important; grid-template-columns:max-content minmax(260px,1fr) !important; gap:16px 20px !important; align-items:stretch !important;
+  }
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside {
+    display:flex !important; flex-wrap:wrap !important; align-content:flex-start !important; align-items:center !important;
+    justify-content:flex-start !important; gap:6px 10px !important; width:max-content !important; max-width:100% !important;
+    min-width:0 !important; padding:18px !important; box-sizing:border-box !important;
+  }
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > .app-avatar { flex:0 0 58px !important; width:58px !important; height:58px !important; margin:0 2px 0 0 !important; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > .app-profile-name { flex:0 1 auto !important; max-width:230px !important; margin:0 !important; font-size:19px !important; line-height:1.2 !important; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > .app-profile-email { flex:1 0 100% !important; max-width:100% !important; margin:0 !important; font-size:13px !important; line-height:1.35 !important; overflow-wrap:anywhere !important; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > #appMembershipSummary,
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow,
+  body:not(.nav-pending) #appProfileLayout .app-profile-aside > .app-profile-row { flex:1 0 100% !important; width:100% !important; margin:4px 0 0 !important; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo {
+    position:relative !important; isolation:isolate !important; overflow:hidden !important; display:flex !important; flex-direction:column !important;
+    align-items:flex-start !important; justify-content:center !important; min-width:0 !important; min-height:190px !important;
+    box-sizing:border-box !important; padding:24px 28px !important; border-radius:22px !important;
+    border:1px solid rgba(255,255,255,.55) !important; background:linear-gradient(125deg,#173D8F 0%,#2962FF 52%,#7856D8 100%) !important;
+    box-shadow:0 14px 36px rgba(41,98,255,.18),inset 0 1px 0 rgba(255,255,255,.32) !important; color:#fff !important;
+  }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo-eyebrow { display:inline-flex !important; align-items:center; gap:7px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo > strong { display:block !important; margin-top:10px; font-family:var(--font-heading); font-size:clamp(34px,3.2vw,48px); font-weight:800; line-height:1; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo p { margin:10px 0 16px; color:rgba(255,255,255,.88); font-size:13px; line-height:1.5; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo-button { display:inline-flex !important; align-items:center; gap:8px; padding:10px 14px; border:1px solid rgba(255,255,255,.45); border-radius:999px; background:rgba(255,255,255,.16); color:#fff; font:700 12px var(--font-body); cursor:pointer; }
+  body:not(.nav-pending) #appProfileLayout .app-profile-promo-art { position:absolute; right:18px; bottom:-24px; z-index:-1; font-size:155px; line-height:1; color:rgba(255,255,255,.13); }
+  body:not(.nav-pending) #appProfileLayout .app-verified-badge { color:var(--primary,#2962FF) !important; }
+}
+@media (max-width:760px) { #bottomNav .desktop-nav-expand-toggle { display:none !important; } }
+@media (prefers-reduced-motion:reduce) {
+  @media (min-width:761px) { #bottomNav, #bottomNav *, #bottomNav .nav-indicator { transition-duration:.01ms !important; } }
+}
+</style>
+
+
+<style id="desktop-landscape-role-ui-correction">
+/* Desktop-only correction: use the same single bottomNav component as mobile,
+   rotated into a vertical rail. Keep role-specific colors/skins from the original CSS. */
+@media (min-width:761px) {
+  /* The legacy desktop drawer was the duplicate Premium drawer visible under Basic UI. */
+  body:not(.nav-pending) .desktop-drawer,
+  body:not(.nav-pending) .desktop-drawer-overlay,
+  body:not(.nav-pending) .desktop-nav-toggle {
+    display:none !important; visibility:hidden !important; pointer-events:none !important;
+  }
+  /* Navigation items already live in the vertical rail; remove duplicate header actions,
+     while keeping the existing header/brand layout intact. */
+  body:not(.nav-pending) .topbar .nav-actions { display:none !important; }
+  /* Preserve the original role-dependent navigation appearance. No forced white/glass
+     background, border, or shadow is applied here. */
+  body:not(.nav-pending) #bottomNav {
+    flex-direction:column !important;
+    transition:width .38s cubic-bezier(.2,.75,.25,1), height .38s cubic-bezier(.2,.75,.25,1),
+      top .38s cubic-bezier(.2,.75,.25,1), left .38s cubic-bezier(.2,.75,.25,1),
+      transform .38s cubic-bezier(.2,.75,.25,1), padding .38s ease, gap .38s ease !important;
+  }
+}
+@media (max-width:760px) {
+  /* Explicitly leave the mobile header, bottom nav, spacing, and role switch untouched. */
+  body .desktop-drawer, body .desktop-drawer-overlay, body .desktop-nav-toggle { display:none !important; }
+}
+</style>
+
+<style id="shoppy-final-shared-pages-role-navigation">
+/* FINAL RULE: page content/layout is shared between Basic and Premium; only the nav skin varies. */
+@media (min-width:761px) {
+  /* Keep the Premium account-page layout for both roles, including its two-column settings list. */
+  body:not(.nav-pending) #appProfileLayout {
+    display:grid !important;
+    grid-template-columns:max-content minmax(260px,1fr) !important;
+    gap:16px 20px !important;
+    align-items:stretch !important;
+  }
+  body:not(.nav-pending) #appProfileLayout > section {
+    grid-column:1 / -1 !important;
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:12px 16px !important;
+  }
+  body:not(.nav-pending) #appProfileLayout > section > .app-section-heading,
+  body:not(.nav-pending) #appProfileLayout > section > #appLogoutButton {
+    grid-column:1 / -1 !important;
+  }
+  body:not(.nav-pending) #appProfileLayout > section > .app-section-heading { margin-bottom:4px !important; }
+
+  /* Use the Basic user's original cart layout for both roles (items and summary side by side). */
+  body:not(.nav-pending) #cartPage .app-cart-layout {
+    display:grid !important;
+    grid-template-columns:minmax(0,1.3fr) minmax(260px,.8fr) !important;
+    gap:42px !important;
+    align-items:start !important;
+  }
+  body:not(.nav-pending) #cartPage .app-cart-items {
+    display:flex !important;
+    flex-direction:column !important;
+    min-width:0 !important;
+    column-gap:0 !important;
+    row-gap:0 !important;
+  }
+  body:not(.nav-pending) #cartPage .app-cart-item {
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    align-items:center !important;
+    gap:15px !important;
+    padding:15px 0 !important;
+  }
+  body:not(.nav-pending) #cartPage .app-cart-item:first-child { padding-top:0 !important; }
+  body:not(.nav-pending) #cartPage .app-cart-image { width:90px !important; height:90px !important; }
+  body:not(.nav-pending) #cartPage .app-cart-info { min-width:0 !important; flex:1 1 auto !important; }
+  body:not(.nav-pending) #cartPage .app-cart-total { width:auto !important; text-align:right !important; }
+  body:not(.nav-pending) #cartPage .app-summary { position:sticky !important; top:24px !important; width:auto !important; }
+
+  /* One shared vertical nav component for both roles; no duplicate desktop drawer. */
+  body:not(.nav-pending) .desktop-drawer,
+  body:not(.nav-pending) .desktop-drawer-overlay,
+  body:not(.nav-pending) .desktop-nav-toggle { display:none !important; visibility:hidden !important; pointer-events:none !important; }
+  body:not(.nav-pending) .topbar .nav-actions { display:none !important; }
+
+  /* Basic gets a neutral translucent white floating rail; Premium retains its existing blue glass skin. */
+  body.app-basic-navigation:not(.nav-pending) #bottomNav {
+    border:1px solid rgba(220,224,231,.78) !important;
+    border-radius:999px !important;
+    background:rgba(255,255,255,.82) !important;
+    -webkit-backdrop-filter:blur(22px) saturate(160%) !important;
+    backdrop-filter:blur(22px) saturate(160%) !important;
+    box-shadow:0 12px 30px rgba(25,35,55,.10), inset 0 1px 0 rgba(255,255,255,.95) !important;
+    color:var(--text-primary) !important;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav .bottom-nav-item,
+  body.app-basic-navigation:not(.nav-pending) #bottomNav .desktop-nav-expand-toggle {
+    color:var(--text-secondary) !important;
+    background:transparent !important;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav .bottom-nav-item.active,
+  body.app-basic-navigation:not(.nav-pending) #bottomNav .bottom-nav-item.active .nav-item-icon {
+    color:#fff !important;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav .nav-indicator {
+    background:var(--primary,#2962FF) !important;
+    box-shadow:0 4px 14px rgba(41,98,255,.25) !important;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav.nav-expanded {
+    border-radius:26px !important;
+    padding-top:58px !important;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav.nav-expanded::before {
+    content:"Shoppy.";
+    position:absolute;
+    top:16px;
+    left:18px;
+    right:18px;
+    display:block;
+    overflow:hidden;
+    color:var(--primary,#2962FF);
+    font-family:var(--font-heading);
+    font-size:21px;
+    font-weight:800;
+    letter-spacing:-.6px;
+    line-height:28px;
+    white-space:nowrap;
+    pointer-events:none;
+  }
+  body.app-basic-navigation:not(.nav-pending) #bottomNav.nav-expanded .nav-indicator { top:58px !important; }
+  /* Keep the Premium navigation's own glass background and selected-tab styling untouched. */
+}
+@media (max-width:760px) {
+  /* This stylesheet deliberately does not alter mobile page layout or bottom navigation. */
+}
+</style>
+
+
+<style id="vercel-style-desktop-drawer-update">
+@media (min-width:761px) {
+  body:not(.nav-pending) { padding-left:88px !important; transition:none !important; }
+  body:not(.nav-pending).desktop-drawer-expanded { padding-left:250px !important; }
+  body:not(.nav-pending) .topbar { padding-left:24px !important; padding-right:28px !important; }
+  body:not(.nav-pending) .topbar > .brand,
+  body:not(.nav-pending) .topbar > .guest-header-brand { display:none !important; }
+  body:not(.nav-pending) .topbar .nav-actions { display:none !important; }
+  body:not(.nav-pending) #bottomNav { display:none !important; }
+  body:not(.nav-pending) .desktop-nav-toggle { display:none !important; }
+  body:not(.nav-pending) .desktop-drawer-overlay { display:none !important; }
+  body:not(.nav-pending) .desktop-drawer {
+    position:fixed !important; top:92px !important; left:12px !important; bottom:auto !important;
+    z-index:2501 !important; width:64px !important; max-height:calc(100vh - 112px) !important;
+    padding:10px 8px !important; display:flex !important; flex-direction:column !important;
+    gap:10px !important; overflow-x:hidden !important; overflow-y:auto !important;
+    background:#fff !important; border:1px solid #e5e7eb !important; border-radius:14px !important;
+    box-shadow:0 5px 20px rgba(20,25,35,.08) !important; transition:none !important;
+  }
+  body:not(.nav-pending) .desktop-drawer.expanded { width:226px !important; }
+  body:not(.nav-pending) .desktop-drawer-head {
+    min-height:48px !important; padding:0 0 10px !important; gap:8px !important;
+    display:flex !important; align-items:center !important; border-bottom:1px solid #e5e7eb !important;
+  }
+  body:not(.nav-pending) .desktop-drawer-toggle {
+    width:44px !important; min-width:44px !important; height:44px !important; padding:0 !important;
+    border:0 !important; border-radius:9px !important; background:transparent !important;
+    color:#20221f !important; display:flex !important; align-items:center !important; justify-content:center !important;
+    font-size:22px !important; flex-shrink:0 !important;
+  }
+  body:not(.nav-pending) .desktop-drawer-head .brand { display:none !important; font-size:21px !important; }
+  body:not(.nav-pending) .desktop-drawer.expanded .desktop-drawer-head .brand { display:block !important; }
+  body:not(.nav-pending) .desktop-nav-links { display:flex !important; flex-direction:column !important; gap:3px !important; }
+  body:not(.nav-pending) .desktop-nav-link {
+    position:relative !important; width:100% !important; min-width:0 !important; min-height:42px !important;
+    height:42px !important; padding:0 8px !important; display:flex !important; align-items:center !important;
+    justify-content:flex-start !important; gap:12px !important; overflow:hidden !important;
+    border:1px solid transparent !important; border-radius:9px !important; background:transparent !important;
+    color:#555b65 !important; text-align:left !important; white-space:nowrap !important;
+    font-family:"DM Sans",sans-serif !important; font-size:13px !important; font-weight:600 !important;
+    text-decoration:none !important; cursor:pointer !important; transition:none !important;
+  }
+  body:not(.nav-pending) .desktop-nav-link > i { flex:0 0 28px !important; width:28px !important; font-size:20px !important; text-align:center !important; color:inherit !important; }
+  body:not(.nav-pending) .desktop-nav-link span { display:none !important; }
+  body:not(.nav-pending) .desktop-drawer.expanded .desktop-nav-link span { display:inline !important; }
+  body:not(.nav-pending) .desktop-nav-link:hover { background:#f7f8fa !important; }
+  body:not(.nav-pending) .desktop-nav-link.active,
+  body:not(.nav-pending) .desktop-nav-link[aria-current="page"] { background:#f0f4ff !important; color:#2962ff !important; border-color:#e2eaff !important; }
+  body:not(.nav-pending) .desktop-nav-link.active > i { color:#2962ff !important; }
+  body:not(.nav-pending) .desktop-drawer-bottom { display:none !important; }
+  body:not(.nav-pending) .desktop-drawer .shoppy-notification-badge { position:absolute !important; top:3px !important; right:3px !important; min-width:15px !important; height:15px !important; padding:0 3px !important; font-size:9px !important; }
+  body:not(.nav-pending) .desktop-drawer.expanded .desktop-nav-link .shoppy-notification-badge { right:auto !important; left:30px !important; }
+  /* These shortcuts now live in the desktop drawer only; mobile account UI is unchanged. */
+  body:not(.nav-pending) #appProfileLayout > .app-profile-aside > a.app-profile-row[href="/orders.html"],
+  body:not(.nav-pending) #appProfileLayout > .app-profile-aside > #appProfileCartShortcut,
+  body:not(.nav-pending) #appProfileLayout > section > a.app-profile-row[href="/orders.html"],
+  body:not(.nav-pending) #appProfileLayout > section > a.app-profile-row[href="/addresses.html"],
+  body:not(.nav-pending) #appProfileLayout > section > a.app-profile-row[href="/coupons.html"],
+  body:not(.nav-pending) #appProfileLayout > section > a.app-profile-row[href="/payments.html"],
+  body:not(.nav-pending) #appProfileLayout > section > #appProfileCartRow { display:none !important; }
+}
+@media (max-width:760px) {
+  /* Intentionally preserve the existing mobile navigation, header, account layout and spacing. */
+  body .desktop-drawer, body .desktop-drawer-overlay, body .desktop-nav-toggle { display:none !important; }
+}
+</style>
+
+
+<style id="desktop-drawer-visibility-fix">
+/* Final desktop-only override: keep the Vercel-style floating drawer visible for Basic and Premium. */
+@media (min-width:761px) {
+  html body #desktopDrawer,
+  html body.nav-pending #desktopDrawer,
+  html body.app-premium-navigation #desktopDrawer,
+  html body.app-basic-navigation #desktopDrawer {
+    display:flex !important;
+    position:fixed !important;
+    top:92px !important;
+    left:12px !important;
+    bottom:auto !important;
+    z-index:9999 !important;
+    width:64px !important;
+    max-height:calc(100vh - 112px) !important;
+    padding:10px 8px !important;
+    flex-direction:column !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    transform:none !important;
+    background:#fff !important;
+    border:1px solid #e5e7eb !important;
+    border-radius:14px !important;
+    box-shadow:0 5px 20px rgba(20,25,35,.08) !important;
+    transition:none !important;
+  }
+  html body #desktopDrawer.expanded,
+  html body.nav-pending #desktopDrawer.expanded,
+  html body.app-premium-navigation #desktopDrawer.expanded,
+  html body.app-basic-navigation #desktopDrawer.expanded { width:226px !important; }
+  html body #desktopDrawerOverlay,
+  html body #desktopNavToggle { display:none !important; }
+  html body #bottomNav { display:none !important; }
+  html body { padding-left:88px !important; }
+  html body.desktop-drawer-expanded { padding-left:250px !important; }
+  html body #desktopDrawer .desktop-drawer-head { display:flex !important; min-height:48px !important; padding:0 0 10px !important; gap:8px !important; align-items:center !important; border-bottom:1px solid #e5e7eb !important; }
+  html body #desktopDrawer .desktop-drawer-toggle { display:flex !important; flex:0 0 44px !important; width:44px !important; min-width:44px !important; height:44px !important; align-items:center !important; justify-content:center !important; border:0 !important; border-radius:9px !important; background:transparent !important; color:#20221f !important; font-size:22px !important; }
+  html body #desktopDrawer .desktop-drawer-head .brand { display:none !important; }
+  html body #desktopDrawer.expanded .desktop-drawer-head .brand { display:block !important; font-size:21px !important; }
+  html body #desktopDrawer .desktop-nav-links { display:flex !important; flex-direction:column !important; gap:3px !important; }
+  html body #desktopDrawer .desktop-nav-link { position:relative !important; display:flex !important; width:100% !important; min-width:0 !important; height:42px !important; min-height:42px !important; padding:0 8px !important; align-items:center !important; justify-content:flex-start !important; gap:12px !important; border:1px solid transparent !important; border-radius:9px !important; background:transparent !important; color:#555b65 !important; font:600 13px "DM Sans",sans-serif !important; text-align:left !important; white-space:nowrap !important; transition:none !important; }
+  html body #desktopDrawer .desktop-nav-link > i { flex:0 0 28px !important; width:28px !important; font-size:20px !important; text-align:center !important; }
+  html body #desktopDrawer .desktop-nav-link span { display:none !important; }
+  html body #desktopDrawer.expanded .desktop-nav-link span { display:inline !important; }
+  html body #desktopDrawer .desktop-nav-link.active,
+  html body #desktopDrawer .desktop-nav-link[aria-current="page"] { background:#f0f4ff !important; color:#2962ff !important; border-color:#e2eaff !important; }
+  html body #desktopDrawer .desktop-nav-link:hover { background:#f7f8fa !important; }
+  html body #desktopDrawer .desktop-drawer-bottom { display:none !important; }
+  html body #desktopDrawer .shoppy-notification-badge { position:absolute !important; top:2px !important; right:2px !important; min-width:15px !important; height:15px !important; padding:0 3px !important; font-size:9px !important; }
+  html body #desktopDrawer.expanded .desktop-nav-link .shoppy-notification-badge { right:auto !important; left:30px !important; }
+}
+@media (max-width:760px) {
+  html body #desktopDrawer, html body #desktopDrawerOverlay, html body #desktopNavToggle { display:none !important; }
+}
+</style>
+
+
+<style id="desktop-drawer-layout-final">
+@media (min-width:761px) {
+  html body:not(.nav-pending) { padding-left:226px !important; }
+  html body:not(.nav-pending).desktop-drawer-expanded { padding-left:226px !important; }
+  html body #desktopDrawer,
+  html body.nav-pending #desktopDrawer {
+    position:fixed !important; top:0 !important; left:0 !important; bottom:0 !important;
+    width:226px !important; max-height:100vh !important; height:100vh !important;
+    padding:0 !important; margin:0 !important; display:flex !important;
+    flex-direction:column !important; gap:0 !important; overflow:hidden !important;
+    background:#fff !important; border:0 !important; border-right:1px solid #e5e7eb !important;
+    border-radius:0 !important; box-shadow:none !important; transform:none !important;
+    visibility:visible !important; opacity:1 !important; pointer-events:auto !important;
+    transition:none !important; z-index:9999 !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head {
+    flex:0 0 auto !important; width:100% !important; min-height:68px !important;
+    height:68px !important; margin:0 !important; padding:0 16px !important;
+    display:flex !important; align-items:center !important; gap:12px !important;
+    border:0 !important; border-bottom:1px solid #e5e7eb !important;
+    box-sizing:border-box !important; background:#fff !important;
+  }
+  html body #desktopDrawer .desktop-drawer-toggle {
+    display:flex !important; flex:0 0 32px !important; width:32px !important;
+    min-width:32px !important; height:36px !important; padding:0 !important;
+    align-items:center !important; justify-content:center !important;
+    border:0 !important; border-radius:8px !important; background:transparent !important;
+    color:#20221f !important; font-size:22px !important; cursor:default !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head .brand,
+  html body #desktopDrawer.expanded .desktop-drawer-head .brand {
+    display:block !important; min-width:0 !important; font-size:21px !important;
+    font-weight:800 !important; line-height:1.3 !important; white-space:nowrap !important;
+  }
+  html body #desktopDrawer .desktop-nav-links {
+    flex:1 1 auto !important; min-height:0 !important; width:100% !important;
+    padding:12px 10px 18px !important; margin:0 !important; display:flex !important;
+    flex-direction:column !important; gap:3px !important; overflow-x:hidden !important;
+    overflow-y:auto !important; overscroll-behavior:contain !important;
+  }
+  html body #desktopDrawer .desktop-nav-link,
+  html body #desktopDrawer.expanded .desktop-nav-link {
+    position:relative !important; display:flex !important; width:100% !important;
+    min-width:0 !important; min-height:42px !important; height:42px !important;
+    padding:0 10px !important; align-items:center !important; justify-content:flex-start !important;
+    gap:12px !important; overflow:hidden !important; border:1px solid transparent !important;
+    border-radius:8px !important; background:transparent !important; color:#555b65 !important;
+    font:600 13px "DM Sans",sans-serif !important; text-align:left !important;
+    white-space:nowrap !important; transition:none !important;
+  }
+  html body #desktopDrawer .desktop-nav-link > i { flex:0 0 26px !important; width:26px !important; font-size:20px !important; text-align:center !important; }
+  html body #desktopDrawer .desktop-nav-link span,
+  html body #desktopDrawer.expanded .desktop-nav-link span { display:inline !important; }
+  html body #desktopDrawer .desktop-nav-link:hover { background:#f7f8fa !important; }
+  html body #desktopDrawer .desktop-nav-link.active,
+  html body #desktopDrawer .desktop-nav-link[aria-current="page"] {
+    background:#f0f4ff !important; color:#2962ff !important; border-color:#e2eaff !important;
+  }
+  html body #desktopDrawer .desktop-drawer-bottom { display:none !important; }
+  html body #desktopDrawer .shoppy-notification-badge { position:absolute !important; top:2px !important; right:4px !important; }
+  html body .topbar { border-bottom:0 !important; box-shadow:none !important; }
+  html body #desktopDrawerOverlay, html body #desktopNavToggle, html body #bottomNav { display:none !important; }
+}
+@media (max-width:760px) {
+  html body #desktopDrawer, html body #desktopDrawerOverlay, html body #desktopNavToggle { display:none !important; }
+}
+</style>
+
+
+<style id="desktop-drawer-final-top-alignment-fix">
+@media (min-width:761px) {
+  html body:not(.nav-pending), html body:not(.nav-pending).desktop-drawer-expanded { padding-left:246px !important; padding-top:0 !important; }
+  html body #desktopDrawer, html body.nav-pending #desktopDrawer {
+    position:fixed !important; inset:0 auto 0 0 !important; top:0 !important; left:0 !important;
+    width:226px !important; height:100vh !important; height:100dvh !important; max-height:none !important;
+    margin:0 !important; padding:0 !important; border:0 !important; border-right:1px solid #e5e7eb !important;
+    border-radius:0 !important; box-shadow:none !important; transform:none !important;
+    display:flex !important; flex-direction:column !important; gap:0 !important; overflow:hidden !important;
+    background:#fff !important; z-index:9999 !important; transition:none !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head {
+    width:100% !important; flex:0 0 68px !important; height:68px !important; min-height:68px !important;
+    margin:0 !important; padding:0 18px !important; display:flex !important; align-items:center !important;
+    gap:0 !important; border:0 !important; border-bottom:1px solid #e5e7eb !important;
+    border-radius:0 !important; box-shadow:none !important; background:#fff !important;
+  }
+  html body #desktopDrawer .desktop-drawer-toggle { display:none !important; }
+  html body #desktopDrawer .desktop-drawer-head .brand,
+  html body #desktopDrawer.expanded .desktop-drawer-head .brand {
+    display:block !important; margin:0 !important; padding:0 !important; font-size:21px !important;
+    font-weight:800 !important; line-height:1.3 !important; white-space:nowrap !important;
+  }
+  html body #desktopDrawer .desktop-nav-links {
+    flex:1 1 auto !important; min-height:0 !important; width:100% !important;
+    margin:0 !important; padding:14px 10px 18px !important; overflow-x:hidden !important; overflow-y:auto !important;
+    display:flex !important; flex-direction:column !important; gap:4px !important;
+  }
+  html body #desktopDrawer .desktop-nav-link, html body #desktopDrawer.expanded .desktop-nav-link {
+    display:flex !important; width:100% !important; min-height:42px !important; height:42px !important;
+    padding:0 10px !important; gap:12px !important; border-radius:8px !important;
+    box-shadow:none !important; transform:none !important; transition:none !important;
+  }
+  html body #desktopDrawer .desktop-nav-link.active, html body #desktopDrawer .desktop-nav-link[aria-current="page"] {
+    background:#f0f4ff !important; border-color:#e2eaff !important; color:#2962ff !important;
+  }
+  html body #desktopDrawer .desktop-drawer-bottom { display:none !important; }
+  html body #desktopDrawerOverlay, html body #desktopNavToggle, html body #bottomNav { display:none !important; }
+  html body .topbar { border-bottom:0 !important; box-shadow:none !important; }
+}
+@media (max-width:760px) {
+  html body #desktopDrawer, html body #desktopDrawerOverlay, html body #desktopNavToggle { display:none !important; }
+}
+</style>
+
 </head>
 
-<body>
+<body class="nav-pending">
+  <script>if(window.__appnetickAppleDevice || window.__appnetickCachedPremium){document.body.classList.add("app-premium-navigation");document.body.classList.remove("nav-pending");}</script>
 
   <!-- HEADER -->
 
   <header class="topbar">
+
+    <form class="desktop-top-search search" id="globalSearchForm" role="search">
+      <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+      <input id="globalSearchInput" type="search" placeholder="Search products..." aria-label="Search products" autocomplete="off" maxlength="100">
+    </form>
+    <button type="button" class="desktop-top-avatar" id="desktopTopAvatar" aria-label="My profile" title="My profile">U</button>
+
 
     <a href="/home.html" class="guest-header-brand" aria-label="Shoppy home">Shoppy.</a>
     <div class="guest-header-actions" id="guestHeaderActions" aria-label="Account actions">
@@ -1650,6 +3034,16 @@
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </button>
 
+      <button class="location-chip premium-toolbar-control" id="headerLocationButton" type="button" data-open-location aria-label="Change location" title="Change location">
+        <i class="ph-fill ph-map-pin" aria-hidden="true"></i>
+        <span id="headerLocationLabel">Select state</span>
+      </button>
+
+      <button class="nav-icon premium-toolbar-control" id="notifButton" type="button" aria-label="Notifications" title="Notifications">
+        <i class="ph ph-bell" aria-hidden="true"></i>
+        <span class="shoppy-notification-badge" id="notifBadge" aria-label="Unread notifications">0</span>
+      </button>
+
     </nav>
 
     <a href="/home.html" class="brand" aria-label="Shoppy home">
@@ -1665,53 +3059,28 @@
   <aside class="desktop-drawer" id="desktopDrawer" aria-label="Desktop navigation">
 
     <div class="desktop-drawer-head">
-
-      <button
-        class="desktop-drawer-toggle"
-        id="desktopDrawerToggle"
-        type="button"
-        aria-label="Expand navigation"
-        aria-expanded="false"
-      >
+      <button class="desktop-drawer-toggle" id="desktopDrawerToggle" type="button"
+        aria-label="Expand navigation" aria-expanded="false">
         <i class="ph ph-list" aria-hidden="true"></i>
       </button>
-
-      <a href="/home.html" class="brand">Shoppy.</a>
-
+      <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
     </div>
 
-    <nav class="desktop-nav-links">
-
-      <button class="desktop-nav-link active" type="button" data-desktop-nav="home">
-        <i class="ph-fill ph-house" aria-hidden="true"></i>
-        <span>Home</span>
-      </button>
-
-      <button class="desktop-nav-link" type="button" data-desktop-nav="search">
-        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-        <span>Search</span>
-      </button>
-
-      <button class="desktop-nav-link" type="button" data-desktop-nav="explore">
-        <i class="ph ph-compass" aria-hidden="true"></i>
-        <span>Explore</span>
-      </button>
-
+    <nav class="desktop-nav-links" aria-label="Desktop navigation links">
+      <button class="desktop-nav-link active" type="button" data-desktop-nav="home" title="Home"><i class="ph-fill ph-house" aria-hidden="true"></i><span>Home</span></button>
+      <button class="desktop-nav-link" type="button" data-desktop-nav="search" title="Search"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><span>Search</span></button>
+      <button class="desktop-nav-link" type="button" data-desktop-nav="explore" title="Explore"><i class="ph ph-compass" aria-hidden="true"></i><span>Explore</span></button>
+      <button class="desktop-nav-link" type="button" data-desktop-nav="cart" title="My Cart"><i class="ph ph-shopping-cart" aria-hidden="true"></i><span>My Cart</span></button>
+      <button class="desktop-nav-link" type="button" data-desktop-nav="account" title="Account"><i class="ph ph-user-circle" aria-hidden="true"></i><span>Account</span></button>
+      <button class="desktop-nav-link" type="button" id="drawerLocationButton" data-open-location title="Change location"><i class="ph ph-map-pin" aria-hidden="true"></i><span id="drawerLocationLabel">Select state</span></button>
+      <button class="desktop-nav-link" type="button" id="drawerNotifButton" title="Notifications"><i class="ph ph-bell" aria-hidden="true"></i><span>Notifications</span><span class="shoppy-notification-badge" id="drawerNotifBadge" aria-label="Unread notifications">0</span></button>
+      <a class="desktop-nav-link desktop-drawer-page-link" href="/orders.html" title="My Orders"><i class="ph ph-package" aria-hidden="true"></i><span>My Orders</span></a>
+      <a class="desktop-nav-link desktop-drawer-page-link" href="/addresses.html" title="Saved Addresses"><i class="ph ph-map-pin-line" aria-hidden="true"></i><span>Saved Addresses</span></a>
+      <a class="desktop-nav-link desktop-drawer-page-link" href="/coupons.html" title="Coupons &amp; Offers"><i class="ph ph-ticket" aria-hidden="true"></i><span>Coupons &amp; Offers</span></a>
+      <a class="desktop-nav-link desktop-drawer-page-link" href="/payments.html" title="My Payments"><i class="ph ph-credit-card" aria-hidden="true"></i><span>My Payments</span></a>
     </nav>
 
-    <div class="desktop-drawer-bottom">
-
-      <button class="desktop-nav-link" type="button" data-desktop-nav="cart">
-        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
-        <span>My Cart</span>
-      </button>
-
-      <button class="desktop-nav-link" type="button" data-desktop-nav="account">
-        <i class="ph ph-user-circle" aria-hidden="true"></i>
-        <span>Account</span>
-      </button>
-
-    </div>
+    <div class="desktop-drawer-bottom"></div>
 
   </aside>
 
@@ -1958,10 +3327,9 @@
         <h2>Order Summary</h2>
         <div class="app-summary-line"><span>Items</span><strong id="appSummaryQuantity">0</strong></div>
         <div class="app-summary-line"><span>Subtotal</span><strong id="appSummarySubtotal">₹0.00</strong></div>
-        <div class="app-summary-line"><span>Shipping</span><strong>Calculated at checkout</strong></div>
+        <div id="appSummaryCharges" aria-live="polite"></div>
         <div class="app-summary-total"><span>Total</span><strong id="appSummaryTotal">₹0.00</strong></div>
         <button id="appCheckoutButton" class="app-primary-button" type="button" disabled>Continue to Checkout</button>
-        <button id="appContinueShopping" class="app-secondary-button" type="button">Continue Shopping</button>
         <button id="appClearCartButton" class="app-danger-button" type="button" hidden>Clear Cart</button>
       </aside>
     </div>
@@ -1978,16 +3346,36 @@
     <div id="appProfileLayout" class="app-profile-layout" hidden>
       <aside class="app-profile-aside">
         <div id="appAvatar" class="app-avatar">U</div>
-        <h2 id="appUserName" class="app-profile-name">User</h2>
+        <h2 id="appUserName" class="app-profile-name"><span id="appUserNameText">User</span><i id="appVerifiedBadge" class="ph-fill ph-seal-check app-verified-badge" aria-label="Verified Premium member" title="Verified Premium member" hidden></i></h2>
         <p id="appUserEmail" class="app-profile-email"></p>
-        <div class="app-member-badge">✓ &nbsp; SHOPPING MEMBER</div>
+        <div id="appMembershipBadge" class="app-member-badge">✓ &nbsp; SHOPPING MEMBER</div>
+        <div id="appMembershipSummary" class="app-membership-summary" hidden>
+          <strong id="appMembershipTitle">Shoppy Premium</strong>
+          <small id="appMembershipPlan">Premium plan active</small>
+          <small id="appMembershipExpiry">Membership expiry</small>
+        </div>
         <div style="height:1px;background:var(--divider);margin:24px 0 0"></div>
         <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong></span><i class="ph ph-caret-right"></i></a>
         <a href="/wishlist.html" class="app-profile-row"><i class="ph ph-heart"></i><span><strong>My Wishlist</strong></span><i class="ph ph-caret-right"></i></a>
         <button type="button" class="app-profile-row" id="appProfileCartShortcut" style="width:100%;border-top:0;border-left:0;border-right:0;background:transparent;text-align:left"><i class="ph ph-shopping-cart"></i><span><strong>My Cart</strong></span><i class="ph ph-caret-right"></i></button>
       </aside>
+      <aside class="app-profile-promo" aria-label="Special discount offer">
+        <span class="app-profile-promo-eyebrow"><i class="ph-fill ph-sparkle" aria-hidden="true"></i> Shoppy Special</span>
+        <strong>50% <span>Off</span></strong>
+        <p>Discover more for less. Shop your favourites and enjoy a special saving.</p>
+        <button type="button" class="app-profile-promo-button" onclick="handleNavigation('explore')">Explore offers <i class="ph ph-arrow-up-right" aria-hidden="true"></i></button>
+        <i class="ph ph-seal-percent app-profile-promo-art" aria-hidden="true"></i>
+      </aside>
       <section>
         <h2 class="app-section-heading">Your Shopping</h2>
+        <div id="premiumUiPreferenceRow" class="premium-ui-preference-row" hidden>
+          <div class="premium-ui-preference-copy"><strong>Premium UI</strong><small>Switch between Premium and Basic design on this device.</small></div>
+          <label class="premium-ui-switch" for="premiumUiPreferenceToggle" aria-label="Use Premium UI">
+            <input type="checkbox" id="premiumUiPreferenceToggle" role="switch" aria-label="Use Premium UI">
+            <span class="premium-ui-switch-track"></span>
+          </label>
+        </div>
+        <a href="/membership.html" class="app-profile-row" id="appMembershipRow"><i class="ph ph-crown"></i><span><strong id="appMembershipRowTitle">Premium Membership</strong><small id="appMembershipRowDescription">Explore Premium plans and membership benefits.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong><small>View orders, track shipments and check delivery status.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/home.html" class="app-profile-row" id="appBuyAgain"><i class="ph ph-arrow-clockwise"></i><span><strong>Buy Again</strong><small>Quickly find products you purchased before.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/wishlist.html" class="app-profile-row"><i class="ph ph-heart"></i><span><strong>My Wishlist</strong><small>Products you saved for later.</small></span><i class="ph ph-caret-right"></i></a>
@@ -2072,14 +3460,76 @@
 
   </div>
 
+  <!-- NOTIFICATIONS BOTTOM SHEET -->
+
+  <div class="sheet-overlay" id="notifSheetOverlay" aria-hidden="true">
+
+    <section class="category-sheet" role="dialog" aria-modal="true" aria-labelledby="notifSheetTitle">
+
+      <div class="sheet-handle-wrap">
+        <div class="sheet-handle"></div>
+      </div>
+
+      <div class="sheet-header">
+
+        <div>
+          <h2 id="notifSheetTitle">Notifications</h2>
+          <p>Stay updated on orders and offers.</p>
+        </div>
+
+        <button type="button" class="sheet-close" id="notifSheetClose" aria-label="Close notifications">
+          <i class="ph ph-x" aria-hidden="true"></i>
+        </button>
+
+      </div>
+
+      <div class="notif-list" id="notifList"></div>
+
+    </section>
+
+  </div>
+
+  <!-- LOCATION (STATE) BOTTOM SHEET -->
+
+  <div class="sheet-overlay" id="locationSheetOverlay" aria-hidden="true">
+
+    <section class="category-sheet" role="dialog" aria-modal="true" aria-labelledby="locationSheetTitle">
+
+      <div class="sheet-handle-wrap">
+        <div class="sheet-handle"></div>
+      </div>
+
+      <div class="sheet-header">
+
+        <div>
+          <h2 id="locationSheetTitle">Choose Location</h2>
+          <p>Select your state.</p>
+        </div>
+
+        <button type="button" class="sheet-close" id="locationSheetClose" aria-label="Close locations">
+          <i class="ph ph-x" aria-hidden="true"></i>
+        </button>
+
+      </div>
+
+      <div class="sheet-categories" id="locationList"></div>
+
+    </section>
+
+  </div>
+
+
   <!-- MOBILE BOTTOM NAVIGATION -->
 
   <nav class="bottom-nav" id="bottomNav" aria-label="Bottom navigation">
+
+    <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
 
     <button
       type="button"
       class="bottom-nav-item active"
       data-bottom-nav="home"
+      aria-label="Home"
       aria-current="page"
     >
       <span class="nav-item-icon">
@@ -2092,6 +3542,7 @@
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="search"
+      aria-label="Search"
     >
       <span class="nav-item-icon">
         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
@@ -2103,6 +3554,7 @@
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="explore"
+      aria-label="Explore"
     >
       <span class="nav-item-icon">
         <i class="ph ph-compass" aria-hidden="true"></i>
@@ -2114,6 +3566,7 @@
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="cart"
+      aria-label="My Cart"
     >
       <span class="nav-item-icon">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
@@ -2125,11 +3578,26 @@
       type="button"
       class="bottom-nav-item"
       data-bottom-nav="account"
+      aria-label="Account"
     >
       <span class="nav-item-icon">
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </span>
       <span>Account</span>
+    </button>
+
+    <!-- Desktop-only sheet tabs. Hidden on mobile to preserve the existing five-item layout. -->
+    <button type="button" class="bottom-nav-item desktop-sheet-nav-item" data-bottom-nav="location" aria-label="Location" title="Location">
+      <span class="nav-item-icon"><i class="ph ph-map-pin" aria-hidden="true"></i></span>
+      <span>Location</span>
+    </button>
+    <button type="button" class="bottom-nav-item desktop-sheet-nav-item" data-bottom-nav="notifications" aria-label="Notifications" title="Notifications">
+      <span class="nav-item-icon"><i class="ph ph-bell" aria-hidden="true"></i></span>
+      <span>Notifications</span>
+    </button>
+
+    <button type="button" id="desktopNavExpandToggle" class="desktop-nav-expand-toggle" aria-label="Expand navigation" title="Expand navigation" aria-expanded="false">
+      <i class="ph ph-caret-right" aria-hidden="true"></i><span>Expand navigation</span>
     </button>
 
   </nav>
@@ -2192,6 +3660,9 @@
 
     const PAGE_SIZE = 24;
     const CART_STORAGE_KEY = "shoppy_cart";
+    const CART_CACHE_KEY = "shoppy_cart_cache_v2";
+    const PROFILE_CACHE_KEY = "shoppy_profile_cache_v1";
+    const PROFILE_CACHE_TTL = 24 * 60 * 60 * 1000;
     const PRODUCT_ID_PATTERN = /^[A-Za-z0-9]{40}$/;
 
     let currentCategory = "";
@@ -2275,10 +3746,8 @@
 
     function writeCart(items) {
       try {
-        localStorage.setItem(
-          CART_STORAGE_KEY,
-          JSON.stringify(items)
-        );
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+        localStorage.setItem(CART_CACHE_KEY, JSON.stringify({ items: items, expiresAt: Date.now() + PROFILE_CACHE_TTL }));
       } catch (error) {
         console.warn("Could not update local cart cache:", error);
       }
@@ -2327,18 +3796,14 @@
       const isAdded = Boolean(id) && cartProductIds.has(id);
 
       button.classList.toggle("added", isAdded);
-      button.textContent = isAdded ? "Added" : "Add";
-
+      button.innerHTML = `<i class="ph ${isAdded ? "ph-check" : "ph-plus"}" aria-hidden="true"></i>`;
       button.setAttribute(
         "aria-label",
         isAdded
           ? `${product.title} is in your cart`
           : `Add ${product.title} to cart`
       );
-
-      button.title = isAdded
-        ? "Already in cart"
-        : "Add to cart";
+      button.title = isAdded ? "Already in cart" : "Add to cart";
     }
 
     function refreshVisibleCartButtons() {
@@ -2359,6 +3824,21 @@
     }
 
     async function loadCart() {
+      // Paint the last known cart immediately after refresh; the server remains authoritative.
+      if (!cartIsLoaded) {
+        let cachedItems = null;
+        try {
+          const cache = JSON.parse(localStorage.getItem(CART_CACHE_KEY) || "null");
+          if (cache && Array.isArray(cache.items) && Number(cache.expiresAt) > Date.now()) cachedItems = cache.items;
+        } catch (e) {}
+        if (!cachedItems) cachedItems = readCart();
+        if (Array.isArray(cachedItems)) {
+          const validCached = cachedItems.filter(item => item && isValidProductId(String(item.id)));
+          cartProductIds = new Set(validCached.map(item => String(item.id)));
+          updateCartBadge(validCached);
+          refreshVisibleCartButtons();
+        }
+      }
       try {
         const response = await fetch("/api/cart", {
           method: "GET",
@@ -2374,6 +3854,7 @@
         if (response.status === 401) {
           cartIsLoaded = false;
           cartProductIds = new Set();
+          try { localStorage.removeItem(CART_CACHE_KEY); localStorage.removeItem(CART_STORAGE_KEY); } catch (e) {}
           actualCartCount.hidden = true;
 
           refreshVisibleCartButtons();
@@ -2400,6 +3881,7 @@
         );
 
         writeCart(validItems);
+        try { localStorage.setItem(CART_CACHE_KEY, JSON.stringify({ items: validItems, expiresAt: Date.now() + PROFILE_CACHE_TTL })); } catch (e) {}
         updateCartBadge(validItems);
 
         cartIsLoaded = true;
@@ -2800,7 +4282,7 @@
                 title="${
                   isAdded ? "Already in cart" : "Add to cart"
                 }"
-              >${isAdded ? "Added" : "Add"}</button>` : ""}
+              ><i class="ph ${isAdded ? "ph-check" : "ph-plus"}" aria-hidden="true"></i></button>` : ""}
 
             </div>
 
@@ -3323,7 +4805,37 @@
 
     }
 
+    // Keep the live notification badge in the header on mobile; relocate it to the vertical bell on desktop.
+    (function manageDesktopNotificationBadge() {
+      const badge = document.getElementById("notifBadge");
+      const headerButton = document.getElementById("notifButton");
+      const desktopBell = document.querySelector('#bottomNav [data-bottom-nav="notifications"] .nav-item-icon');
+      if (!badge || !headerButton || !desktopBell) return;
+      const placeBadge = () => {
+        if (window.innerWidth > 760) {
+          if (badge.parentElement !== desktopBell) desktopBell.appendChild(badge);
+        } else if (badge.parentElement !== headerButton) {
+          headerButton.appendChild(badge);
+        }
+      };
+      placeBadge();
+      window.addEventListener("resize", placeBadge, { passive:true });
+      const observer = new MutationObserver(placeBadge);
+      observer.observe(document.body, { attributes:true, attributeFilter:["class"] });
+    })();
+
+    const ACTIVE_NAV_STORAGE_KEY = "shoppy_home_active_tab_v1";
+    let previousRegularNavTab = "home";
+    try {
+      const savedRegularTab = localStorage.getItem(ACTIVE_NAV_STORAGE_KEY);
+      if (["home", "search", "explore", "cart", "account"].includes(savedRegularTab)) previousRegularNavTab = savedRegularTab;
+    } catch (error) { /* storage may be unavailable */ }
+
     function updateNavigationState(active) {
+      if (["home", "search", "explore", "cart", "account"].includes(active)) {
+        previousRegularNavTab = active;
+        try { localStorage.setItem(ACTIVE_NAV_STORAGE_KEY, active); } catch (error) { /* storage may be unavailable */ }
+      }
       document.querySelectorAll("[data-bottom-nav]").forEach(button => {
         const isActive = button.dataset.bottomNav === active;
 
@@ -3338,7 +4850,9 @@
           search: "magnifying-glass",
           explore: "compass",
           cart: "shopping-cart",
-          account: "user-circle"
+          account: "user-circle",
+          location: "map-pin",
+          notifications: "bell"
         };
 
         if (icon) {
@@ -3352,6 +4866,26 @@
         }
       });
 
+      const premiumIndicator = document.getElementById("navIndicator");
+      const premiumNav = document.getElementById("bottomNav");
+      const premiumActive = premiumNav && premiumNav.querySelector("[data-bottom-nav].active");
+      if (premiumIndicator && premiumNav && premiumActive && (window.innerWidth > 760 || document.body.classList.contains("app-premium-navigation"))) {
+        const navRect = premiumNav.getBoundingClientRect();
+        const itemRect = premiumActive.getBoundingClientRect();
+        if (window.innerWidth > 760) {
+          const h = Math.min(itemRect.height, premiumNav.clientHeight - 16);
+          const y = Math.max(0, Math.min(premiumNav.clientHeight - h, itemRect.top - navRect.top - premiumNav.clientTop));
+          premiumIndicator.style.width = Math.min(itemRect.width, premiumNav.clientWidth - 12) + "px";
+          premiumIndicator.style.height = h + "px";
+          premiumIndicator.style.transform = "translate3d(0," + y + "px,0)";
+        } else {
+          const width = Math.min(Math.max(0, itemRect.width), premiumNav.clientWidth);
+          const x = Math.max(0, Math.min(premiumNav.clientWidth - width, itemRect.left - navRect.left - premiumNav.clientLeft));
+          premiumIndicator.style.width = width + "px";
+          premiumIndicator.style.transform = "translate3d(" + x + "px,0,0)";
+        }
+      }
+
       document.querySelectorAll("[data-desktop-nav]").forEach(button => {
         const isActive = button.dataset.desktopNav === active;
 
@@ -3362,7 +4896,9 @@
           search: "magnifying-glass",
           explore: "compass",
           cart: "shopping-cart",
-          account: "user-circle"
+          account: "user-circle",
+          location: "map-pin",
+          notifications: "bell"
         };
 
         const icon = button.querySelector("i");
@@ -3375,7 +4911,7 @@
       });
     }
 
-    function handleNavigation(action) {
+    window.handleNavigation = function handleNavigation(action) {
       if (action === "home") {
         showHomeView();
         return;
@@ -3416,6 +4952,22 @@
         return;
       }
 
+      if (action === "location") {
+        updateNavigationState("location");
+        if (typeof openLocationSheet === "function") openLocationSheet();
+        return;
+      }
+
+      if (action === "notifications") {
+        updateNavigationState("notifications");
+        const overlay = document.getElementById("notifSheetOverlay");
+        if (overlay && typeof openSheetOverlay === "function") {
+          openSheetOverlay(overlay);
+          if (typeof loadNotifications === "function") loadNotifications();
+        }
+        return;
+      }
+
       if (action === "account") {
         currentView = "account";
         homeContent.hidden = true;
@@ -3426,10 +4978,16 @@
         document.body.classList.remove("explore-mode");
         document.getElementById("exploreFilterRow").hidden = true;
         updateNavigationState("account");
+        const guestAccountPanel = document.getElementById("guestAccountPanel");
+        if (guestAccountPanel) guestAccountPanel.hidden = authStatus !== "guest";
+        if (authStatus === "guest") {
+          document.getElementById("appProfileLayout").hidden = true;
+          document.getElementById("appProfileLoading").hidden = true;
+        }
         window.scrollTo({ top: 0, behavior: "smooth" });
         window.ShoppyInPageProfile && window.ShoppyInPageProfile.load();
       }
-    }
+    };
 
     bottomNav.querySelectorAll("[data-bottom-nav]").forEach(button => {
       button.addEventListener("click", () => {
@@ -3442,6 +5000,10 @@
         handleNavigation(button.dataset.desktopNav);
         closeDesktopDrawer();
       });
+    });
+
+    document.querySelectorAll(".desktop-drawer-page-link").forEach(link => {
+      link.addEventListener("click", () => closeDesktopDrawer());
     });
 
     document.querySelectorAll("[data-top-nav]").forEach(button => button.addEventListener("click", () => handleNavigation(button.dataset.topNav)));
@@ -3634,38 +5196,34 @@
 
     function openDesktopDrawer() {
       if (window.innerWidth <= 760) return;
-
       desktopDrawer.classList.add("expanded");
-      desktopDrawerOverlay.classList.add("open");
-
+      document.body.classList.add("desktop-drawer-expanded");
       desktopDrawerToggle.setAttribute("aria-expanded", "true");
-      desktopDrawerToggle.setAttribute("aria-label", "Collapse navigation");
-
+      desktopDrawerToggle.setAttribute("aria-label", "Main menu");
       desktopNavToggle.setAttribute("aria-expanded", "true");
     }
 
+    /* Desktop navigation stays expanded; the menu icon is a fixed header control, not a collapse toggle. */
     function closeDesktopDrawer() {
+      if (window.innerWidth > 760) {
+        openDesktopDrawer();
+        return;
+      }
       desktopDrawer.classList.remove("expanded");
-      desktopDrawerOverlay.classList.remove("open");
-
+      document.body.classList.remove("desktop-drawer-expanded");
       desktopDrawerToggle.setAttribute("aria-expanded", "false");
-      desktopDrawerToggle.setAttribute("aria-label", "Expand navigation");
-
+      desktopDrawerToggle.setAttribute("aria-label", "Main menu");
       desktopNavToggle.setAttribute("aria-expanded", "false");
     }
 
     function toggleDesktopDrawer() {
-      if (desktopDrawer.classList.contains("expanded")) {
-        closeDesktopDrawer();
-      } else {
-        openDesktopDrawer();
-      }
+      if (window.innerWidth > 760) openDesktopDrawer();
     }
 
     desktopDrawerToggle.addEventListener("click", toggleDesktopDrawer);
     desktopNavToggle.addEventListener("click", toggleDesktopDrawer);
 
-    desktopDrawerOverlay.addEventListener("click", closeDesktopDrawer);
+    /* The desktop drawer is a floating navigation rail; no overlay is used. */
 
     function updateResponsiveNavigation() {
       const desktop = window.innerWidth > 760;
@@ -3678,6 +5236,17 @@
     }
 
     window.addEventListener("resize", updateResponsiveNavigation);
+    if (window.innerWidth > 760) openDesktopDrawer();
+    window.addEventListener("resize", () => {
+      const active = document.querySelector("[data-bottom-nav].active");
+      if (active) {
+        const nav = document.getElementById("bottomNav");
+        const indicator = document.getElementById("navIndicator");
+        if (nav && indicator && typeof positionNavIndicator === "function") {
+          positionNavIndicator(true);
+        }
+      }
+    });
 
     /* CART REFRESH */
 
@@ -3692,21 +5261,134 @@
     });
 
     /* AUTH STATE: browsing is public; cart, wishlist and product detail actions require login. */
+    const PREMIUM_CACHE_KEY = window.__appnetickMembershipCacheKey || "shoppy_verified_premium_cache_v2";
+    const isAppleDevice = !!window.__appnetickAppleDevice;
+    let lastVerifiedMembership = null;
+
+    function expiryTimestamp(value) {
+      const n = Number(value);
+      if (Number.isFinite(n) && n > 0) return n;
+      const parsed = Date.parse(value || "");
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    const PREMIUM_UI_PREFERENCE_KEY = "shoppy_premium_ui_preference_v1";
+    let lastMembershipForPresentation = null;
+    function getPremiumUiPreference() {
+      try { return localStorage.getItem(PREMIUM_UI_PREFERENCE_KEY) || ""; } catch (e) { return ""; }
+    }
+    function syncPremiumUiPreferenceControl(active) {
+      const row = document.getElementById("premiumUiPreferenceRow");
+      const toggle = document.getElementById("premiumUiPreferenceToggle");
+      if (!row || !toggle) return;
+      row.hidden = !active;
+      toggle.checked = active && getPremiumUiPreference() !== "basic";
+    }
+    function setPremiumPresentation(membership, verified) {
+      lastMembershipForPresentation = membership && typeof membership === "object" ? membership : {};
+      const expiry = membership ? expiryTimestamp(membership.expiresAt) : 0;
+      const active = !!(verified && membership && membership.active === true && expiry > Date.now());
+      if (active) {
+        lastVerifiedMembership = { active: true, expiresAt: expiry, checkedAt: Date.now() };
+        try { localStorage.setItem(PREMIUM_CACHE_KEY, JSON.stringify(lastVerifiedMembership)); } catch (e) {}
+      } else if (verified) {
+        lastVerifiedMembership = null;
+        try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {}
+      }
+      // Paid members can persistently choose either visual style on iOS and Android.
+      // Non-members retain the existing iOS visual treatment where applicable.
+      const preference = getPremiumUiPreference();
+      const usePremiumSkin = active ? preference !== "basic" : isAppleDevice;
+      syncPremiumUiPreferenceControl(active);
+      const hadPremiumSkin = document.body.classList.contains("app-premium-navigation");
+      if (hadPremiumSkin !== usePremiumSkin) {
+        document.body.classList.toggle("app-premium-navigation", usePremiumSkin);
+        requestAnimationFrame(() => positionNavIndicator(true));
+      }
+      document.body.classList.toggle("app-basic-navigation", !usePremiumSkin);
+      updateBrowserThemeColor(usePremiumSkin);
+      return active;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("premiumUiPreferenceToggle");
+      if (!toggle) return;
+      toggle.addEventListener("change", () => {
+        const preference = toggle.checked ? "premium" : "basic";
+        try { localStorage.setItem(PREMIUM_UI_PREFERENCE_KEY, preference); } catch (e) {}
+        setPremiumPresentation(lastMembershipForPresentation || {}, true);
+        requestAnimationFrame(() => positionNavIndicator(true));
+      });
+    });
+
+    function updateBrowserThemeColor(usePremiumTheme) {
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (!meta) return;
+      let color = "#ffffff";
+      if (usePremiumTheme) {
+        const primary = getComputedStyle(document.documentElement).getPropertyValue("--primary").trim();
+        color = /^#[0-9a-f]{3,8}$/i.test(primary) ? primary : "#2962FF";
+      }
+      meta.setAttribute("content", color);
+      meta.removeAttribute("media");
+    }
+
     async function checkShoppyAuth() {
+      let verified = false;
       try {
         const response = await fetch("/api/profile", {
           method: "GET", credentials: "same-origin", cache: "no-store",
           headers: { Accept: "application/json" }
         });
         const data = await response.json().catch(() => ({}));
-        authStatus = response.ok && data.success === true && data.user
-          ? "logged-in" : "guest";
+        if (response.status === 401) {
+          verified = true;
+          authStatus = "guest";
+          setPremiumPresentation({}, true);
+          try { localStorage.removeItem(PROFILE_CACHE_KEY); localStorage.removeItem(CART_CACHE_KEY); localStorage.removeItem(CART_STORAGE_KEY); } catch (e) {}
+        } else if (!response.ok) {
+          // A temporary server failure is not proof that the session or membership was revoked.
+          authStatus = "unknown";
+        } else if (data.success === true && data.user) {
+          verified = true;
+          authStatus = "logged-in";
+          const membership = data.membership && typeof data.membership === "object" ? data.membership : {};
+          setPremiumPresentation(membership, true);
+          try { localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ user: { name: data.user.name || "User", email: data.user.email || "" }, membership: membership, expiresAt: Date.now() + PROFILE_CACHE_TTL })); } catch (e) {}
+        } else {
+          // Only an explicit, successful response without a user can invalidate cached state.
+          verified = true;
+          authStatus = "guest";
+          setPremiumPresentation({}, true);
+          try { localStorage.removeItem(PROFILE_CACHE_KEY); localStorage.removeItem(CART_CACHE_KEY); localStorage.removeItem(CART_STORAGE_KEY); } catch (e) {}
+        }
       } catch (error) {
-        // Fail closed for write actions if the session cannot be verified.
-        authStatus = "guest";
+        // Keep a not-yet-expired verified cache on temporary network failure; do not trust it for API permissions.
+        authStatus = "unknown";
+        let cache = null;
+        try { cache = JSON.parse(localStorage.getItem(PREMIUM_CACHE_KEY) || "null"); } catch (e) {}
+        const expiry = cache ? expiryTimestamp(cache.expiresAt) : 0;
+        const cacheValid = !!(cache && cache.active === true && expiry > Date.now());
+        if (!cacheValid) { try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {} }
+        document.body.classList.toggle("app-premium-navigation", isAppleDevice || cacheValid);
+        document.body.classList.toggle("app-basic-navigation", !isAppleDevice && !cacheValid);
+        updateBrowserThemeColor(isAppleDevice || cacheValid);
       }
+
+      let savedTab = "home";
+      try {
+        const candidate = localStorage.getItem(ACTIVE_NAV_STORAGE_KEY);
+        if (["home", "search", "explore", "cart", "account"].includes(candidate)) savedTab = candidate;
+      } catch (error) {}
+      if (savedTab !== "home") handleNavigation(savedTab);
+      else updateNavigationState("home");
+      /* data-start-tab is only for first paint; keeping it permanently would !important-hide tabs after clicks. */
+      document.documentElement.removeAttribute("data-start-tab");
+
+      document.body.classList.remove("nav-pending");
       document.body.classList.toggle("guest-mode", authStatus !== "logged-in");
-      const guest = authStatus !== "logged-in";
+      requestAnimationFrame(() => requestAnimationFrame(() => positionNavIndicator(true)));
+      const guest = authStatus === "guest";
       document.getElementById("guestCartPanel").hidden = !guest;
       document.getElementById("appCartLayout").hidden = guest;
       document.getElementById("guestAccountPanel").hidden = !guest;
@@ -3716,35 +5398,720 @@
       }
     }
 
+    // Membership-only silent recheck: never rerun auth/navigation initialization in the background.
+    let membershipCheckInFlight = false;
+    async function refreshMembershipInBackground() {
+      if (membershipCheckInFlight) return;
+      membershipCheckInFlight = true;
+      try {
+        const response = await fetch("/api/profile", { method:"GET", credentials:"same-origin", cache:"no-store", headers:{Accept:"application/json"} });
+        if (response.status === 401) {
+          try { localStorage.removeItem(PROFILE_CACHE_KEY); localStorage.removeItem(CART_CACHE_KEY); localStorage.removeItem(CART_STORAGE_KEY); } catch(e) {}
+          authStatus = "guest";
+          setPremiumPresentation({}, true);
+          document.body.classList.add("guest-mode");
+          document.getElementById("guestCartPanel").hidden = false;
+          document.getElementById("appCartLayout").hidden = true;
+          document.getElementById("guestAccountPanel").hidden = false;
+          document.getElementById("appProfileLoading").hidden = true;
+          document.getElementById("appProfileLayout").hidden = true;
+          return;
+        }
+        if (!response.ok) return; // temporary server errors must not flicker UI or erase a valid cache
+        const data = await response.json().catch(() => null);
+        if (!data) return;
+        if (data.success !== true || !data.user) {
+          // A successful 200 response explicitly confirming no session invalidates the saved profile/cart.
+          if (response.status === 200) {
+            try { localStorage.removeItem(PROFILE_CACHE_KEY); localStorage.removeItem(CART_CACHE_KEY); localStorage.removeItem(CART_STORAGE_KEY); } catch (e) {}
+            authStatus = "guest";
+            setPremiumPresentation({}, true);
+            document.body.classList.add("guest-mode");
+            document.getElementById("guestCartPanel").hidden = false;
+            document.getElementById("appCartLayout").hidden = true;
+            document.getElementById("guestAccountPanel").hidden = false;
+            document.getElementById("appProfileLoading").hidden = true;
+            document.getElementById("appProfileLayout").hidden = true;
+          }
+          return;
+        }
+        const membership = data.membership && typeof data.membership === "object" ? data.membership : {};
+        try { localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ user:{name:data.user.name||"User",email:data.user.email||""}, membership, expiresAt:Date.now()+PROFILE_CACHE_TTL })); } catch(e) {}
+        setPremiumPresentation(membership, true);
+      } catch (error) {
+        // Preserve an unexpired verified cache while offline; no navigation/layout changes.
+      } finally { membershipCheckInFlight = false; }
+    }
+    setInterval(() => { if (!document.hidden) refreshMembershipInBackground(); }, 60000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshMembershipInBackground(); });
+    window.addEventListener("pageshow", () => { refreshMembershipInBackground(); });
+
+
+    const navIndicator = document.getElementById("navIndicator");
+    function positionNavIndicator(instant) {
+      const activeItem = bottomNav && bottomNav.querySelector(".bottom-nav-item.active");
+      if (!navIndicator || !activeItem || !activeItem.offsetWidth) return;
+      if (instant) navIndicator.classList.add("no-anim");
+      const navWidth = bottomNav.clientWidth;
+      const navRect = bottomNav.getBoundingClientRect();
+      const itemRect = activeItem.getBoundingClientRect();
+      const verticalDesktop = window.innerWidth > 760;
+      if (verticalDesktop) {
+        const h = Math.min(activeItem.offsetHeight, bottomNav.clientHeight - 16);
+        const y = Math.max(0, Math.min(bottomNav.clientHeight - h, itemRect.top - navRect.top - bottomNav.clientTop));
+        navIndicator.style.width = Math.min(activeItem.offsetWidth, navWidth - 12) + "px";
+        navIndicator.style.height = h + "px";
+        navIndicator.style.transform = "translate3d(0," + y + "px,0)";
+      } else {
+        const width = Math.min(itemRect.width, navWidth);
+        const x = Math.max(0, Math.min(navWidth - width, itemRect.left - navRect.left - bottomNav.clientLeft));
+        navIndicator.style.width = width + "px";
+        navIndicator.style.height = Math.min(activeItem.offsetHeight, bottomNav.clientHeight - 12) + "px";
+        navIndicator.style.transform = "translate3d(" + x + "px,0,0)";
+      }
+      if (instant) {
+        void navIndicator.offsetWidth;
+        navIndicator.classList.remove("no-anim");
+      }
+    }
+    window.addEventListener("resize", () => positionNavIndicator(true));
+    window.addEventListener("load", () => positionNavIndicator(true));
+    positionNavIndicator(true);
+
+    /* LOCATION (STATE) + NOTIFICATION BOTTOM SHEETS */
+
+    const LOCATION_KEY = "shoppy_location_state";
+
+    const INDIAN_STATES = [
+      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+      "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+      "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+      "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+      "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+      "Andaman and Nicobar Islands", "Chandigarh",
+      "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir",
+      "Ladakh", "Lakshadweep", "Puducherry"
+    ];
+
+    const locationSheetOverlay = document.getElementById("locationSheetOverlay");
+    const locationList = document.getElementById("locationList");
+    const notifSheetOverlay = document.getElementById("notifSheetOverlay");
+    const notifList = document.getElementById("notifList");
+    const headerLocationLabel = document.getElementById("headerLocationLabel");
+    const drawerLocationLabel = document.getElementById("drawerLocationLabel");
+
+    let currentLocation = "";
+
+    function openSheetOverlay(overlay) {
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("sheet-open");
+    }
+
+    function closeSheetOverlay(overlay) {
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
+
+      if (!document.querySelector(".sheet-overlay.open")) {
+        document.body.classList.remove("sheet-open");
+      }
+
+      // Desktop sheet tabs are temporary actions: restore the page tab that was active before opening.
+      if (window.innerWidth > 760) {
+        const activeTab = document.querySelector("#bottomNav [data-bottom-nav].active");
+        const activeName = activeTab && activeTab.dataset.bottomNav;
+        const closingLocation = overlay && overlay.id === "locationSheetOverlay";
+        const closingNotifications = overlay && overlay.id === "notifSheetOverlay";
+        if ((closingLocation && activeName === "location") || (closingNotifications && activeName === "notifications")) {
+          updateNavigationState(previousRegularNavTab || "home");
+        }
+      }
+    }
+
+    function normalizeStateName(name) {
+      return String(name || "").toLowerCase().replace(/[^a-z]/g, "");
+    }
+
+    function matchState(name) {
+      const wanted = normalizeStateName(name);
+
+      if (!wanted) return "";
+
+      if (wanted.includes("delhi")) return "Delhi";
+      if (wanted === "orissa") return "Odisha";
+
+      return INDIAN_STATES.find(state =>
+        normalizeStateName(state) === wanted
+      ) || INDIAN_STATES.find(state => {
+        const normalized = normalizeStateName(state);
+        return normalized.includes(wanted) || wanted.includes(normalized);
+      }) || "";
+    }
+
+    function setLocation(state, persist = true) {
+      currentLocation = state || "";
+
+      const label = currentLocation || "Select state";
+
+      headerLocationLabel.textContent = label;
+      drawerLocationLabel.textContent = label;
+
+      document.getElementById("headerLocationButton").title =
+        currentLocation ? `Location: ${currentLocation}` : "Change location";
+
+      document.getElementById("drawerLocationButton").title =
+        currentLocation ? `Location: ${currentLocation}` : "Change location";
+
+      if (persist && currentLocation) {
+        try {
+          localStorage.setItem(LOCATION_KEY, currentLocation);
+        } catch (error) {
+          console.warn("Could not save location:", error);
+        }
+      }
+    }
+
+    function renderLocationList() {
+      locationList.innerHTML = `
+        <button type="button" class="sheet-category" data-detect-location>
+          <span class="sheet-category-name">
+            <i class="ph ph-crosshair" aria-hidden="true"></i>
+            <span>Use my current location</span>
+          </span>
+        </button>
+      ` + INDIAN_STATES.map(state => {
+        const active = state === currentLocation;
+
+        return `
+          <button
+            type="button"
+            class="sheet-category ${active ? "active" : ""}"
+            data-state="${escapeHTML(state)}"
+            aria-pressed="${active}"
+          >
+            <span class="sheet-category-name">
+              <i class="ph ph-map-pin" aria-hidden="true"></i>
+              <span>${escapeHTML(state)}</span>
+            </span>
+
+            ${
+              active
+                ? '<i class="ph-fill ph-check-circle sheet-category-check" aria-hidden="true"></i>'
+                : ""
+            }
+          </button>
+        `;
+      }).join("");
+    }
+
+    function openLocationSheet() {
+      renderLocationList();
+      openSheetOverlay(locationSheetOverlay);
+      closeDesktopDrawer();
+    }
+
+    function detectLocation(silent) {
+      if (!navigator.geolocation) {
+        if (!silent) showToast("Location is not supported on this device.");
+        return;
+      }
+
+      if (!silent) showToast("Detecting your location...");
+
+      navigator.geolocation.getCurrentPosition(async position => {
+        try {
+          const url =
+            "https://api.bigdatacloud.net/data/reverse-geocode-client" +
+            `?latitude=${encodeURIComponent(position.coords.latitude)}` +
+            `&longitude=${encodeURIComponent(position.coords.longitude)}` +
+            "&localityLanguage=en";
+
+          const response = await fetch(url, { cache: "no-store" });
+          const data = await response.json();
+          const match = matchState(data.principalSubdivision);
+
+          if (data.countryCode === "IN" && match) {
+            setLocation(match);
+            if (!silent) showToast(`Location set to ${match}`);
+          } else if (!silent) {
+            showToast("Could not detect your state. Please choose it.");
+          }
+        } catch (error) {
+          if (!silent) showToast("Could not detect your state. Please choose it.");
+        }
+      }, () => {
+        if (!silent) showToast("Location permission denied. Please choose your state.");
+      }, {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 600000
+      });
+    }
+
+    async function initLocation() {
+      let saved = "";
+
+      try {
+        saved = localStorage.getItem(LOCATION_KEY) || "";
+      } catch (error) {
+        saved = "";
+      }
+
+      if (saved) {
+        setLocation(saved, false);
+        return;
+      }
+
+      setLocation("", false);
+
+      // Only auto-detect silently when the browser already has permission.
+      try {
+        const permission = await navigator.permissions.query({ name: "geolocation" });
+
+        if (permission.state === "granted") {
+          detectLocation(true);
+        }
+      } catch (error) {
+        /* permissions API unavailable: user picks a state manually */
+      }
+    }
+
+    document.querySelectorAll("[data-open-location]").forEach(button => {
+      button.addEventListener("click", openLocationSheet);
+    });
+
+    locationList.addEventListener("click", event => {
+      if (event.target.closest("[data-detect-location]")) {
+        closeSheetOverlay(locationSheetOverlay);
+        detectLocation(false);
+        return;
+      }
+
+      const option = event.target.closest("[data-state]");
+
+      if (!option) return;
+
+      setLocation(option.dataset.state);
+      closeSheetOverlay(locationSheetOverlay);
+    });
+
+    document.getElementById("locationSheetClose").addEventListener("click", () => {
+      closeSheetOverlay(locationSheetOverlay);
+    });
+
+    locationSheetOverlay.addEventListener("click", event => {
+      if (event.target === locationSheetOverlay) {
+        closeSheetOverlay(locationSheetOverlay);
+      }
+    });
+
+    /* NOTIFICATIONS: cached rendering + background refresh + server-side read receipts */
+
+    function formatNotificationTime(value) {
+      if (value === null || value === undefined || value === "") return "";
+      let timestamp = value;
+      if (typeof timestamp === "number" && timestamp > 0 && timestamp < 1e12) timestamp *= 1000;
+      const date = new Date(timestamp);
+      if (Number.isNaN(date.getTime())) return "";
+      const seconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+      if (seconds < 60) return "just now";
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      if (days < 7) return `${days}d ago`;
+      return date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+    }
+
+    function notificationIcon(category, type) {
+      const key = String(category || type || "system").toLowerCase();
+      const icons = { orders:"ph-package", order:"ph-package", payments:"ph-credit-card", payment:"ph-credit-card", shipping:"ph-truck", delivery:"ph-check-circle", returns:"ph-arrow-counter-clockwise", refunds:"ph-currency-inr", cancellations:"ph-x-circle", discounts:"ph-tag", promotions:"ph-confetti", cart:"ph-shopping-cart", wishlist:"ph-heart", account:"ph-user-circle", security:"ph-shield-check", support:"ph-headset", system:"ph-bell" };
+      return icons[key] || "ph-bell";
+    }
+
+    const NOTIFICATION_CACHE_TTL = 5 * 60 * 1000;
+    const NOTIFICATION_POLL_VISIBLE = 15000;
+    const NOTIFICATION_POLL_HIDDEN = 60000;
+    let customerNotifications = [];
+    let notificationRefreshInFlight = false;
+    let notificationPollTimer = null;
+    const notificationReadInFlight = new Set();
+
+    function notificationCacheKey() {
+      let email = "guest";
+      try {
+        const profile = JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY) || "null");
+        email = String(profile && profile.user && profile.user.email || "guest").trim().toLowerCase();
+      } catch (e) {}
+      return `shoppy_notifications_cache_v1:${email || "guest"}`;
+    }
+
+    function saveNotificationCache() {
+      try { localStorage.setItem(notificationCacheKey(), JSON.stringify({ items: customerNotifications, savedAt: Date.now() })); } catch (e) {}
+    }
+
+    function readNotificationCache() {
+      try {
+        const cached = JSON.parse(localStorage.getItem(notificationCacheKey()) || "null");
+        if (!cached || !Array.isArray(cached.items)) return false;
+        customerNotifications = cached.items;
+        updateNotificationBadge();
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function updateNotificationBadge() {
+      const totalCount = customerNotifications.length;
+      const unreadCount = customerNotifications.reduce((count, item) => count + (item && item.read !== true ? 1 : 0), 0);
+      [document.getElementById("notifBadge"), document.getElementById("drawerNotifBadge")].forEach(badge => {
+        if (!badge) return;
+        badge.textContent = totalCount > 99 ? "99+" : String(totalCount);
+        badge.style.display = totalCount > 0 ? "inline-flex" : "none";
+        badge.setAttribute("aria-label", `${totalCount} total notifications${unreadCount ? `, ${unreadCount} unread` : ""}`);
+      });
+      const button = document.getElementById("notifButton");
+      if (button) {
+        button.setAttribute("aria-label", totalCount ? `Notifications, ${totalCount} total${unreadCount ? `, ${unreadCount} unread` : ""}` : "Notifications");
+        button.title = totalCount ? `${totalCount} notification${totalCount === 1 ? "" : "s"}${unreadCount ? ` (${unreadCount} unread)` : ""}` : "Notifications";
+      }
+    }
+
+    function renderNotificationsEmpty(message) {
+      notifList.innerHTML = `<div class="notif-empty"><i class="ph ph-bell-slash" aria-hidden="true"></i>${escapeHTML(message)}</div><a class="notif-all" href="/notifications.html">View all notifications</a>`;
+    }
+
+    function renderNotifications() {
+      updateNotificationBadge();
+      if (!customerNotifications.length) {
+        renderNotificationsEmpty("You're all caught up. No new notifications.");
+        return;
+      }
+      notifList.innerHTML = customerNotifications.slice(0, 20).map(item => {
+        const titleText = item.title || item.heading || "Notification";
+        const messageText = item.message || item.body || item.text || "";
+        const timeText = formatNotificationTime(item.createdAt || item.time || item.date);
+        const title = escapeHTML(titleText), message = escapeHTML(messageText), time = escapeHTML(timeText);
+        const icon = escapeHTML(notificationIcon(item.category, item.type));
+        const unread = item.read === true ? "" : " notif-unread";
+        const id = escapeHTML(String(item.id || item.notificationId || ""));
+        return `<div class="notif-item${unread}" data-notification-id="${id}" role="button" tabindex="0" aria-label="${escapeHTML(titleText)}${item.read === true ? ", read" : ", unread"}"><i class="ph ${icon}" aria-hidden="true"></i><div class="notif-copy"><strong>${title}${time ? `<span class="notif-time"> • ${time}</span>` : ""}</strong>${message ? `<p>${message}</p>` : ""}</div></div>`;
+      }).join("") + '<a class="notif-all" href="/notifications.html">View all notifications</a>';
+    }
+
+    async function requestNotificationAction(action, extra = {}) {
+      const response = await fetch("/api/profile", { method:"POST", credentials:"same-origin", cache:"no-store", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify({ action, ...extra }) });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.success !== true) throw new Error(data.message || `Notification request failed (HTTP ${response.status}).`);
+      return data;
+    }
+
+    async function markNotificationRead(item) {
+      if (!item || item.read === true) return;
+      const id = String(item.id || item.notificationId || "");
+      if (!id) return;
+      const token = `${id}:${String(item.source || "")}`;
+      if (notificationReadInFlight.has(token)) return;
+      item.read = true;
+      updateNotificationBadge();
+      saveNotificationCache();
+      if (notifList.querySelector(`[data-notification-id="${CSS.escape(id)}"]`)) renderNotifications();
+      notificationReadInFlight.add(token);
+      try {
+        await requestNotificationAction("mark-notification-read", { notificationId:id, source:item.source || "", id });
+      } catch (error) {
+        // Keep the optimistic local state; next successful server refresh reconciles it.
+        console.warn("Could not sync notification read receipt:", error.message);
+      } finally { notificationReadInFlight.delete(token); }
+    }
+
+    async function markVisibleNotificationsRead() {
+      const visible = customerNotifications.slice(0, 20).filter(item => item && item.read !== true);
+      if (!visible.length) return;
+      // markNotificationRead applies the optimistic read state and syncs it to the server.
+      await Promise.allSettled(visible.map(markNotificationRead));
+    }
+
+    async function refreshNotifications({ render = false } = {}) {
+      if (authStatus !== "logged-in" || notificationRefreshInFlight) return;
+      notificationRefreshInFlight = true;
+      try {
+        const data = await requestNotificationAction("list-notifications");
+        const items = Array.isArray(data.notifications) ? data.notifications : (Array.isArray(data.items) ? data.items : []);
+        // The server remains authoritative for read status and broadcast read receipts.
+        customerNotifications = items.map(item => ({ ...item, read: item.read === true }));
+        saveNotificationCache();
+        updateNotificationBadge();
+        if (render || notifSheetOverlay.classList.contains("open")) {
+          renderNotifications();
+          // If the sheet is open, the newly rendered notifications have been seen.
+          if (notifSheetOverlay.classList.contains("open")) {
+            const unseen = customerNotifications.slice(0, 20).filter(item => item.read !== true);
+            unseen.forEach(item => { item.read = true; });
+            if (unseen.length) { saveNotificationCache(); renderNotifications(); await Promise.allSettled(unseen.map(item => { item.read = false; return markNotificationRead(item); })); }
+          }
+        }
+      } catch (error) {
+        // Cached notifications remain visible when the network is temporarily unavailable.
+        if (render && !customerNotifications.length) renderNotificationsEmpty("Notifications couldn't be loaded right now. Please try again.");
+        console.warn("Notifications refresh failed:", error.message);
+      } finally {
+        notificationRefreshInFlight = false;
+      }
+    }
+
+    function scheduleNotificationPoll() {
+      if (notificationPollTimer) clearTimeout(notificationPollTimer);
+      notificationPollTimer = setTimeout(async () => {
+        await refreshNotifications();
+        scheduleNotificationPoll();
+      }, document.hidden ? NOTIFICATION_POLL_HIDDEN : NOTIFICATION_POLL_VISIBLE);
+    }
+
+    function startNotificationUpdates() {
+      readNotificationCache();
+      if (authStatus === "logged-in") refreshNotifications();
+      scheduleNotificationPoll();
+    }
+
+    async function loadNotifications() {
+      if (authStatus !== "logged-in") {
+        renderNotificationsEmpty("Login to see your notifications.");
+        notifList.insertAdjacentHTML("beforeend", '<a class="notif-all" href="/login.html">Login</a>');
+        return;
+      }
+      // Render cached data immediately, then refresh from the server in the background.
+      readNotificationCache();
+      renderNotifications();
+      refreshNotifications({ render:true });
+      // Opening the sheet marks the notifications the customer can see as read.
+      await markVisibleNotificationsRead();
+    }
+
+    function handleNotificationClick(event) {
+      const row = event.target.closest("[data-notification-id]");
+      if (!row) return;
+      const id = row.getAttribute("data-notification-id");
+      const item = customerNotifications.find(n => String(n.id || n.notificationId || "") === id);
+      if (item) markNotificationRead(item);
+    }
+    notifList.addEventListener("click", handleNotificationClick);
+    notifList.addEventListener("keydown", event => { if ((event.key === "Enter" || event.key === " ") && event.target.closest("[data-notification-id]")) { event.preventDefault(); handleNotificationClick(event); } });
+
+    document.getElementById("notifButton").addEventListener("click", () => { openSheetOverlay(notifSheetOverlay); loadNotifications(); });
+    const drawerNotifButton = document.getElementById("drawerNotifButton");
+    if (drawerNotifButton) drawerNotifButton.addEventListener("click", () => { openSheetOverlay(notifSheetOverlay); loadNotifications(); closeDesktopDrawer(); });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) { refreshNotifications({ render:notifSheetOverlay.classList.contains("open") }); scheduleNotificationPoll(); }
+      else scheduleNotificationPoll();
+    });
+    window.addEventListener("focus", () => { refreshNotifications({ render:notifSheetOverlay.classList.contains("open") }); });
+
+    document.getElementById("notifSheetClose").addEventListener("click", () => {
+      closeSheetOverlay(notifSheetOverlay);
+    });
+
+    notifSheetOverlay.addEventListener("click", event => {
+      if (event.target === notifSheetOverlay) {
+        closeSheetOverlay(notifSheetOverlay);
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key !== "Escape") return;
+
+      [locationSheetOverlay, notifSheetOverlay].forEach(overlay => {
+        if (overlay.classList.contains("open")) {
+          closeSheetOverlay(overlay);
+        }
+      });
+    });
+
+    /* iOS-STYLE PRESS-AND-HOLD DRAG OF THE SELECTED BOTTOM-NAV TAB */
+
+    (function () {
+      let state = null;
+      let holdTimer = null;
+      let suppressClick = false;
+
+      const getItems = () =>
+        [...bottomNav.querySelectorAll(".bottom-nav-item")];
+
+      function moveBubble(clientX, clientY) {
+        const items = getItems();
+        const first = items[0];
+        const rect = bottomNav.getBoundingClientRect();
+        const verticalDesktop = window.innerWidth > 760;
+        let bubbleCenter;
+        if (verticalDesktop) {
+          const bubbleHeight = navIndicator.offsetHeight || first.offsetHeight;
+          let y = clientY - rect.top - bottomNav.clientTop - bubbleHeight / 2;
+          y = Math.max(0, Math.min(Math.max(0, bottomNav.clientHeight - bubbleHeight), y));
+          navIndicator.style.transform = `translate3d(0, ${y}px, 0)`;
+          bubbleCenter = y + bubbleHeight / 2;
+        } else {
+          const bubbleWidth = navIndicator.offsetWidth || first.offsetWidth;
+          let x = clientX - rect.left - bottomNav.clientLeft - bubbleWidth / 2;
+          x = Math.max(0, Math.min(Math.max(0, bottomNav.clientWidth - bubbleWidth), x));
+          navIndicator.style.transform = `translate3d(${x}px, 0, 0)`;
+          bubbleCenter = x + bubbleWidth / 2;
+        }
+        let nearest = first;
+        let best = Infinity;
+        items.forEach(item => {
+          const itemCenter = verticalDesktop ? item.offsetTop + item.offsetHeight / 2 : item.offsetLeft + item.offsetWidth / 2;
+          const distance = Math.abs(itemCenter - bubbleCenter);
+          if (distance < best) { best = distance; nearest = item; }
+        });
+        items.forEach(item => item.classList.toggle("drag-over", item === nearest));
+        state.target = nearest;
+      }
+
+      function beginDrag() {
+        if (!state) return;
+
+        state.dragging = true;
+        suppressClick = true;
+
+        try {
+          bottomNav.setPointerCapture(state.id);
+        } catch (error) { /* ignore */ }
+
+        navIndicator.classList.add("dragging");
+        bottomNav.classList.add("nav-dragging");
+
+        if (navigator.vibrate) {
+          try { navigator.vibrate(12); } catch (error) { /* ignore */ }
+        }
+
+        moveBubble(state.x, state.y);
+      }
+
+      function endDrag(commit) {
+        clearTimeout(holdTimer);
+
+        if (!state) return;
+
+        const finished = state;
+        state = null;
+
+        if (!finished.dragging) return;
+
+        try {
+          bottomNav.releasePointerCapture(finished.id);
+        } catch (error) { /* ignore */ }
+
+        navIndicator.classList.remove("dragging");
+        bottomNav.classList.remove("nav-dragging");
+
+        getItems().forEach(item => item.classList.remove("drag-over"));
+
+        void navIndicator.offsetWidth;
+
+        const target = commit ? finished.target : null;
+        const current = bottomNav.querySelector(".bottom-nav-item.active");
+
+        if (target && target !== current && target.dataset.bottomNav) {
+          handleNavigation(target.dataset.bottomNav);
+        } else {
+          positionNavIndicator();
+        }
+
+        setTimeout(() => { suppressClick = false; }, 80);
+      }
+
+      bottomNav.addEventListener("pointerdown", event => {
+        if (!document.body.classList.contains("app-premium-navigation")) return;
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        if (!event.target.closest(".bottom-nav-item.active")) return;
+
+        state = {
+          id: event.pointerId,
+          startX: event.clientX,
+          x: event.clientX,
+          y: event.clientY,
+          startY: event.clientY,
+          dragging: false,
+          target: null
+        };
+
+        clearTimeout(holdTimer);
+        holdTimer = setTimeout(beginDrag, 220);
+      });
+
+      window.addEventListener("pointermove", event => {
+        if (!state || event.pointerId !== state.id) return;
+
+        state.x = event.clientX;
+        state.y = event.clientY;
+
+        if (state.dragging) {
+          event.preventDefault();
+          moveBubble(event.clientX, event.clientY);
+        } else if (Math.abs(event.clientX - state.startX) > 10 || Math.abs(event.clientY - state.startY) > 10) {
+          clearTimeout(holdTimer);
+          state = null;
+        }
+      });
+
+      window.addEventListener("pointerup", event => {
+        if (state && event.pointerId === state.id) endDrag(true);
+      });
+
+      window.addEventListener("pointercancel", event => {
+        if (state && event.pointerId === state.id) endDrag(false);
+      });
+
+      bottomNav.addEventListener("click", event => {
+        if (suppressClick) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
+      }, true);
+
+      bottomNav.addEventListener("contextmenu", event => {
+        event.preventDefault();
+      });
+    })();
+
+
     /* INITIALIZATION */
 
     async function initializeHomePage() {
       updateResponsiveNavigation();
+      initLocation();
       await checkShoppyAuth();
+      startNotificationUpdates();
       await loadCart();
       await loadProducts();
     }
 
     initializeHomePage();
+    updateBrowserThemeColor(isAppleDevice || window.__appnetickCachedPremium);
 
 
     /* IN-PAGE CART: preserves /api/cart endpoints and checkout route */
     (function(){
       const root=document.getElementById("cartPage"); if(!root)return;
-      const itemsEl=document.getElementById("appCartItems"), qtyEl=document.getElementById("appSummaryQuantity"), subEl=document.getElementById("appSummarySubtotal"), totalEl=document.getElementById("appSummaryTotal"), checkout=document.getElementById("appCheckoutButton"), clear=document.getElementById("appClearCartButton");
-      let items=[],busy=false,loaded=false;
+      const itemsEl=document.getElementById("appCartItems"), qtyEl=document.getElementById("appSummaryQuantity"), subEl=document.getElementById("appSummarySubtotal"), totalEl=document.getElementById("appSummaryTotal"), chargesEl=document.getElementById("appSummaryCharges"), checkout=document.getElementById("appCheckoutButton"), clear=document.getElementById("appClearCartButton");
+      let items=[],busy=false,loaded=false,taxSettings=[{id:"shipping",title:"Shipping",percent:2},{id:"packaging",title:"Packaging",percent:3},{id:"platform-fee",title:"Platform fee",percent:1},{id:"delivery-charges",title:"Delivery charges",percent:2},{id:"gst",title:"GST",percent:18}],eligibleDiscounts=[];
       const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
       const price=v=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",minimumFractionDigits:2,maximumFractionDigits:2}).format((Number(v)||0)*85);
+      async function loadTaxSettings(){try{const r=await fetch("https://apisequizeshoplite.vercel.app/api/admin/taxes",{method:"GET",headers:{Accept:"application/json"},cache:"no-store"});const d=await r.json();if(r.ok&&d.success&&Array.isArray(d.taxes))taxSettings=d.taxes.filter(t=>t&&String(t.title||"").trim()&&Number.isFinite(Number(t.percent))&&Number(t.percent)>=0&&Number(t.percent)<=100);}catch(e){console.warn("Cart charge settings unavailable; using defaults.",e)}}
+      async function loadDiscountSettings(){try{let email="";try{const p=JSON.parse(localStorage.getItem("shoppy_profile_cache_v1")||"null");if(p&&p.user&&p.user.email&&Number(p.expiresAt)>Date.now())email=String(p.user.email).trim().toLowerCase();}catch(e){}if(!email){try{const pr=await fetch("/api/profile",{method:"GET",credentials:"same-origin",headers:{Accept:"application/json"},cache:"no-store"});const pd=await pr.json().catch(()=>({}));if(pr.ok&&pd.success&&pd.user&&pd.user.email)email=String(pd.user.email).trim().toLowerCase();}catch(e){}}const url="https://apisequizeshoplite.vercel.app/api/admin/discounts"+(email?"?email="+encodeURIComponent(email):"");const r=await fetch(url,{method:"GET",headers:{Accept:"application/json"},cache:"no-store"});const d=await r.json();if(r.ok&&d.success&&Array.isArray(d.discounts))eligibleDiscounts=d.discounts.filter(x=>x&&Number(x.percent)>0&&Number(x.percent)<=100);}catch(e){console.warn("Customer discounts unavailable.",e)}}
+      function getAppliedDiscount(){if(!eligibleDiscounts.length)return null;return eligibleDiscounts.slice().sort((a,b)=>Number(b.percent)-Number(a.percent))[0]}
       async function request(method,body){const o={method,headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"};if(body!==undefined){o.headers["Content-Type"]="application/json";o.body=JSON.stringify(body);}const r=await fetch("/api/cart",o);const t=await r.text();let d;try{d=JSON.parse(t)}catch{throw Error(`Cart API response invalid (HTTP ${r.status}).`)}if(r.status===401){authStatus="guest";document.body.classList.add("guest-mode");document.getElementById("guestCartPanel").hidden=false;document.getElementById("appCartLayout").hidden=true;throw Error("Login required.")}if(!r.ok||d.success!==true)throw Error(d.message||"Cart request failed.");return d;}
-      function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);qtyEl.textContent=count;subEl.textContent=price(subtotal);totalEl.textContent=price(subtotal);checkout.disabled=!items.length||busy;clear.hidden=!items.length;clear.disabled=busy;
+      function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);const discount=getAppliedDiscount(),discountAmount=discount?subtotal*(Number(discount.percent)||0)/100:0,chargeBase=Math.max(0,subtotal-discountAmount);const charges=taxSettings.map(t=>({...t,amount:chargeBase*(Number(t.percent)||0)/100}));const total=chargeBase+charges.reduce((n,t)=>n+t.amount,0);qtyEl.textContent=count;subEl.textContent=price(subtotal);totalEl.textContent=price(total);chargesEl.innerHTML=(discount?`<div class="app-summary-line"><span>${esc(discount.title||"Discount")} (${Number(discount.percent).toFixed(2).replace(/\.?0+$/,'')}% off)</span><strong>−${price(discountAmount)}</strong></div>`:"")+charges.map(t=>`<div class="app-summary-line"><span>${esc(t.title)} (${Number(t.percent).toFixed(2).replace(/\.?0+$/,'')}%)</span><strong>${price(t.amount)}</strong></div>`).join("");checkout.disabled=!items.length||busy;clear.hidden=!items.length;clear.disabled=busy;
         if(!items.length){itemsEl.innerHTML='<div class="app-status"><i class="ph ph-shopping-cart"></i><h2>Your cart is empty</h2><p>Looks like you haven\'t added any products yet.</p><button type="button" class="app-primary-button" id="appStartShopping">Start Shopping</button></div>';document.getElementById("appStartShopping").onclick=()=>handleNavigation("home");return;}
         itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),title=esc(x.title||"Product"),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="app-cart-item"><div class="app-cart-image"><img src="${img}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="app-cart-info"><h3 class="app-cart-title">${title}</h3><p class="app-cart-price">${price(p)} each</p><div class="app-cart-controls"><div class="app-qty"><button type="button" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div><button class="app-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div></div><div class="app-cart-total">${price(p*q)}</div></article>`}).join("");
         itemsEl.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>act(b.dataset.action,b.dataset.id));
       }
-      async function load(){if(!root||root.hidden&&loaded)return;loaded=true;itemsEl.setAttribute("aria-busy","true");itemsEl.innerHTML='<div class="app-status">Loading your cart...</div>';try{const d=await request("GET");items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items))}catch{}render();}catch(e){if(e.message==="Login required.")return;itemsEl.innerHTML=`<div class="app-status"><i class="ph ph-warning-circle"></i><h2>Unable to load cart</h2><p>${esc(e.message)}</p><button class="app-primary-button" id="appRetryCart" type="button">Try Again</button></div>`;document.getElementById("appRetryCart").onclick=()=>{loaded=false;load()};}finally{itemsEl.setAttribute("aria-busy","false")}}
+      async function load(){if(!root||root.hidden&&loaded)return;loaded=true;itemsEl.setAttribute("aria-busy","true");let cacheShown=false;try{const cache=JSON.parse(localStorage.getItem("shoppy_cart_cache_v2")||"null");if(cache&&Array.isArray(cache.items)&&Number(cache.expiresAt)>Date.now()){items=cache.items;render();cacheShown=true;}else{const old=JSON.parse(localStorage.getItem("shoppy_cart")||"null");if(Array.isArray(old)){items=old;render();cacheShown=true;}}}catch(e){}if(!cacheShown)itemsEl.innerHTML='<div class="app-status">Loading your cart...</div>';try{const d=await request("GET");items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items));localStorage.setItem("shoppy_cart_cache_v2",JSON.stringify({items,expiresAt:Date.now()+86400000}));}catch{}render();}catch(e){if(e.message==="Login required.")return;if(!cacheShown){itemsEl.innerHTML=`<div class="app-status"><i class="ph ph-warning-circle"></i><h2>Unable to load cart</h2><p>${esc(e.message)}</p><button class="app-primary-button" id="appRetryCart" type="button">Try Again</button></div>`;document.getElementById("appRetryCart").onclick=()=>{loaded=false;load()};}}finally{itemsEl.setAttribute("aria-busy","false")}}
       async function act(action,id){if(busy)return;const item=items.find(x=>String(x.id)===String(id));if(!item)return;busy=true;render();try{let d;if(action==="increase"||action==="decrease"){let q=Number(item.quantity)||1;q=action==="increase"?Math.min(99,q+1):Math.max(1,q-1);d=await request("PATCH",{id,quantity:q});}else d=await request("DELETE",{id});items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items))}catch{}if(window.ShoppyInPageCartBadge)window.ShoppyInPageCartBadge();}catch(e){if(e.message!=="Login required.")alert(e.message||"Cart update failed.")}finally{busy=false;render()}}
       clear.onclick=async()=>{if(busy||!items.length||!confirm("Kya aap apne cart ke saare products remove karna chahte hain?"))return;busy=true;render();try{const d=await request("DELETE",{clear:true});items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items))}catch{}if(window.ShoppyInPageCartBadge)window.ShoppyInPageCartBadge();}catch(e){if(e.message!=="Login required.")alert(e.message||"Cart clear failed.")}finally{busy=false;render()}};
-      checkout.onclick=()=>{if(items.length&&!busy)location.href="/addresses.html?mode=checkout"};document.getElementById("appContinueShopping").onclick=()=>handleNavigation("home");
+      checkout.onclick=()=>{if(items.length&&!busy)location.href="/addresses.html?mode=checkout"};
+      Promise.all([loadTaxSettings(),loadDiscountSettings()]).then(()=>{if(items.length)render()});
       window.ShoppyInPageCart={load};
     })();
 
@@ -3752,7 +6119,57 @@
     (function(){
       const loading=document.getElementById("appProfileLoading"),layout=document.getElementById("appProfileLayout");let loaded=false;
       function initials(name){const w=String(name||"").trim().split(/\s+/).filter(Boolean);if(!w.length)return"U";if(w.length===1)return Array.from(w[0]).slice(0,2).join("").toUpperCase();return(Array.from(w[0])[0]+Array.from(w[1])[0]).toUpperCase();}
-      async function load(){if(loaded)return;loaded=true;loading.textContent="Loading your profile...";try{const r=await fetch("/api/profile",{method:"GET",credentials:"same-origin",cache:"no-store"});const d=await r.json();if(r.status===401){authStatus="guest";document.body.classList.add("guest-mode");document.getElementById("guestAccountPanel").hidden=false;loading.hidden=true;layout.hidden=true;return;}if(!r.ok||!d.success||!d.user)throw Error(d.message||"Unable to load profile");authStatus="logged-in";const u=d.user;document.getElementById("appUserName").textContent=u.name||"User";document.getElementById("appUserEmail").textContent=u.email||"";document.getElementById("appAvatar").textContent=initials(u.name);loading.hidden=true;layout.hidden=false;}catch(e){loaded=false;loading.textContent="Unable to load your profile.";const b=document.createElement("button");b.className="app-primary-button";b.textContent="Try Again";b.onclick=load;loading.appendChild(b);}}
+      function formatMembershipDate(value){const time=Number(value);if(!Number.isFinite(time)||time<=0)return"Not available";return new Date(time).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});}
+      function renderMembership(membership){
+        const m=membership&&typeof membership==="object"?membership:{};
+        const isActive=m.active===true&&expiryTimestamp(m.expiresAt)>Date.now();
+        const badge=document.getElementById("appMembershipBadge");
+        const summary=document.getElementById("appMembershipSummary");
+        const profileLayout=document.getElementById("appProfileLayout");
+        const rowTitle=document.getElementById("appMembershipRowTitle");
+        const rowDescription=document.getElementById("appMembershipRowDescription");
+        setPremiumPresentation(m, true);
+        const verifiedBadge=document.getElementById("appVerifiedBadge");
+        if(verifiedBadge) verifiedBadge.hidden=!isActive;
+        if(isActive){
+          profileLayout.classList.add("app-premium-active");
+          badge.classList.add("app-premium-badge");
+          badge.textContent="★  SHOPPY PREMIUM";
+          summary.hidden=false;
+          document.getElementById("appMembershipTitle").textContent="Premium Membership Active";
+          document.getElementById("appMembershipPlan").textContent=(m.planName||m.plan||"Premium")+" plan";
+          document.getElementById("appMembershipExpiry").textContent="Valid until "+formatMembershipDate(m.expiresAt);
+          rowTitle.textContent="Manage Premium Membership";
+          rowDescription.textContent=(m.planName||m.plan||"Premium")+" is active until "+formatMembershipDate(m.expiresAt)+".";
+        }else{
+          profileLayout.classList.remove("app-premium-active");
+          badge.classList.remove("app-premium-badge");
+          badge.textContent="✓  SHOPPING MEMBER";
+          summary.hidden=true;
+          rowTitle.textContent="Premium Membership";
+          rowDescription.textContent=m.status==="expired"?"Your Premium membership has expired. Choose a plan to renew.":"Explore Premium plans and membership benefits.";
+        }
+      }
+      async function load(){
+        if(loaded)return;
+        loaded=true;
+        const applyProfile=(u,m)=>{document.getElementById("appUserNameText").textContent=u.name||"User";document.getElementById("appUserEmail").textContent=u.email||"";document.getElementById("appAvatar").textContent=initials(u.name);renderMembership(m);loading.hidden=true;layout.hidden=false;};
+        let cached=null;
+        try{cached=JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY)||"null");}catch(e){}
+        const cacheValid=!!(cached&&cached.user&&Number(cached.expiresAt)>Date.now());
+        if(cacheValid){applyProfile(cached.user,cached.membership||{});}
+        else {loading.hidden=false;loading.textContent="Loading your profile...";}
+        try{
+          const r=await fetch("/api/profile",{method:"GET",credentials:"same-origin",cache:"no-store"});
+          const d=await r.json().catch(()=>({}));
+          if(r.status===401){loaded=false;authStatus="guest";try{localStorage.removeItem(PROFILE_CACHE_KEY);localStorage.removeItem(CART_CACHE_KEY);localStorage.removeItem(CART_STORAGE_KEY);}catch(e){}document.body.classList.add("guest-mode");document.getElementById("guestAccountPanel").hidden=false;loading.hidden=true;layout.hidden=true;return;}
+          if(!r.ok)throw Error(d.message||"Profile temporarily unavailable");
+          if(!d.success||!d.user)throw Error(d.message||"Unable to load profile");
+          authStatus="logged-in";const u=d.user,m=d.membership||{};
+          try{localStorage.setItem(PROFILE_CACHE_KEY,JSON.stringify({user:{name:u.name||"User",email:u.email||""},membership:m,expiresAt:Date.now()+PROFILE_CACHE_TTL}));}catch(e){}
+          applyProfile(u,m);
+        }catch(e){if(!cacheValid){loaded=false;loading.hidden=false;loading.textContent="Unable to refresh your profile. Check your connection and try again.";const b=document.createElement("button");b.className="app-primary-button";b.textContent="Try Again";b.onclick=load;loading.appendChild(b);}}
+      }
       async function logout(){const b=document.getElementById("appLogoutButton");if(b.disabled)return;b.disabled=true;try{const r=await fetch("/api/logout",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"logout"}),cache:"no-store"});const d=await r.json();if(r.ok&&d.success){location.replace(d.redirect||"/login.html");return;}b.disabled=false;alert(d.message||"Unable to log out.");}catch(e){b.disabled=false;alert("Server se connect nahi ho paya.");console.error("Logout error:",e);}}
       document.getElementById("appLogoutButton").addEventListener("click",logout);document.getElementById("appProfileCartShortcut").onclick=()=>handleNavigation("cart");document.getElementById("appProfileCartRow").onclick=()=>handleNavigation("cart");
       window.ShoppyInPageProfile={load};
@@ -3760,5 +6177,262 @@
 
   </script>
 
+
+<script>
+/* Desktop floating navigation: route clicks directly and remove first-paint state that can mask views. */
+(function () {
+  const nav = document.getElementById("bottomNav");
+  if (!nav) return;
+  nav.addEventListener("click", function (event) {
+    if (window.innerWidth < 761) return;
+    const item = event.target.closest("[data-bottom-nav]");
+    if (!item || !nav.contains(item)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    document.documentElement.removeAttribute("data-start-tab");
+    if (typeof window.handleNavigation === "function") window.handleNavigation(item.dataset.bottomNav);
+    else item.dispatchEvent(new Event("shoppy-navigation", { bubbles: true }));
+  }, true);
+})();
+</script>
+
+<script id="desktop-nav-expand-behavior">
+(function(){
+  const nav=document.getElementById('bottomNav');
+  const toggle=document.getElementById('desktopNavExpandToggle');
+  if(!nav||!toggle)return;
+  toggle.addEventListener('click',function(event){
+    event.preventDefault(); event.stopPropagation();
+    if(window.innerWidth<761)return;
+    const expanded=nav.classList.toggle('nav-expanded');
+    toggle.setAttribute('aria-expanded',String(expanded));
+    toggle.setAttribute('aria-label',expanded?'Collapse navigation':'Expand navigation');
+    toggle.setAttribute('title',expanded?'Collapse navigation':'Expand navigation');
+    const label=toggle.querySelector('span'); if(label)label.textContent=expanded?'Collapse navigation':'Expand navigation';
+    const icon=toggle.querySelector('i'); if(icon)icon.className='ph '+(expanded?'ph-caret-left':'ph-caret-right');
+    requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
+  });
+  window.addEventListener('resize',()=>{if(window.innerWidth<761){nav.classList.remove('nav-expanded');toggle.setAttribute('aria-expanded','false');}} ,{passive:true});
+})();
+</script>
+
+
+<style id="desktop-content-left-alignment-fix">
+@media (min-width:761px) {
+  /* Keep the existing right gutter, but remove the oversized blank area to the left of every page.
+     The 226px body offset is the fixed desktop drawer; content begins just 24px after it. */
+  html body:not(.nav-pending) #homeContent .search-bar-wrap,
+  html body:not(.nav-pending) #homeContent .hero-wrap,
+  html body:not(.nav-pending) #homeContent .offers-wrap,
+  html body:not(.nav-pending) #homeContent .container,
+  html body:not(.nav-pending) #searchPage,
+  html body:not(.nav-pending) .app-view {
+    width:calc(100% - 48px) !important;
+    max-width:none !important;
+    margin-left:24px !important;
+    margin-right:24px !important;
+    box-sizing:border-box !important;
+  }
+  html body:not(.nav-pending) #homeContent .search-bar-wrap { margin-top:20px !important; }
+  html body:not(.nav-pending) #homeContent .hero-wrap { margin-top:28px !important; }
+}
+</style>
+
+<style id="final-desktop-floating-and-mobile-profile-promo-fix">
+/* Desktop: make the floating rail start in the correct position immediately and stay there. */
+@media (min-width:761px) {
+  html body #bottomNav,
+  html body.app-premium-navigation #bottomNav,
+  html body.app-basic-navigation #bottomNav {
+    position:fixed !important;
+    top:8px !important;
+    bottom:8px !important;
+    left:16px !important;
+    right:auto !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    width:64px !important;
+    transform:none !important;
+    margin:0 !important;
+    padding:7px 5px !important;
+    box-sizing:border-box !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    align-content:center !important;
+    z-index:1500 !important;
+    box-shadow:none !important;
+    animation:none !important;
+    transition:none !important;
+  }
+  /* Remove the Premium UI switch from desktop Account completely. */
+  html body #premiumUiPreferenceRow,
+  html body #appProfileLayout #premiumUiPreferenceRow,
+  html body .premium-ui-preference-row { display:none !important; }
+  /* Compact the rail vertically while keeping all navigation options reachable. */
+  html body #bottomNav > .bottom-nav-item { min-height:48px !important; }
+}
+/* Mobile: place the 50% OFF promo immediately after the profile card. */
+@media (max-width:760px) {
+  #appProfileLayout { display:flex !important; flex-direction:column !important; gap:16px !important; }
+  #appProfileLayout > .app-profile-aside { order:1 !important; width:100% !important; box-sizing:border-box !important; }
+  #appProfileLayout > .app-profile-promo {
+    display:block !important;
+    order:2 !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+    margin:0 !important;
+  }
+  #appProfileLayout > section { order:3 !important; width:100% !important; box-sizing:border-box !important; }
+}
+</style>
+
+
+<style id="desktop-drawer-fullheight-divider-final">
+@media (min-width:761px) {
+  /* Full-height drawer pinned to the very top, flush left, no shadow, no rounded floating card. */
+  html body #desktopDrawer,
+  html body.nav-pending #desktopDrawer,
+  html body.app-premium-navigation #desktopDrawer,
+  html body.app-basic-navigation #desktopDrawer {
+    position:fixed !important; top:0 !important; left:0 !important; bottom:0 !important; right:auto !important;
+    width:226px !important; height:100vh !important; height:100dvh !important; max-height:none !important;
+    margin:0 !important; padding:0 !important; border:0 !important; border-radius:0 !important;
+    box-shadow:none !important; filter:none !important; transform:none !important;
+    display:flex !important; flex-direction:column !important; justify-content:flex-start !important;
+    align-items:stretch !important; align-content:flex-start !important; gap:0 !important;
+    overflow:hidden !important; background:#fff !important; z-index:9999 !important;
+  }
+  /* Content starts at the top of the drawer. */
+  html body #desktopDrawer .desktop-drawer-head { margin:0 !important; padding-top:0 !important; flex:0 0 68px !important; }
+  html body #desktopDrawer .desktop-nav-links {
+    flex:1 1 auto !important; margin:0 !important; padding:12px 10px 18px !important;
+    justify-content:flex-start !important; align-content:flex-start !important;
+  }
+  /* Vertical divider between the drawer and the pages (full viewport height). */
+  html body:not(.nav-pending)::before {
+    content:""; position:fixed; top:0; bottom:0; left:226px; width:1px; background:#e5e7eb;
+    z-index:10000; pointer-events:none;
+  }
+}
+@media (max-width:760px) { html body::before { display:none !important; } }
+</style>
+
+<style id="desktop-fixed-topbar-search-profile">
+.desktop-top-search, .desktop-top-avatar { display:none; }
+@media (min-width:761px) {
+  html body:not(.nav-pending) { padding-top:68px !important; }
+  /* Fixed header: never scrolls with the page. */
+  html body .topbar, html body.app-premium-navigation .topbar, html body.app-basic-navigation .topbar {
+    position:fixed !important; top:0 !important; left:226px !important; right:0 !important;
+    width:auto !important; height:68px !important; min-height:68px !important; margin:0 !important;
+    padding:0 24px !important; display:flex !important; align-items:center !important;
+    justify-content:flex-start !important; gap:12px !important; background:#fff !important;
+    border:0 !important; border-radius:0 !important; box-shadow:none !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    overflow:visible !important; pointer-events:auto !important; z-index:1000 !important;
+  }
+  html body .topbar::before { display:none !important; }
+  html body .desktop-top-search {
+    display:flex !important; flex:1 1 auto; width:auto; max-width:640px; height:44px; margin:0;
+  }
+  html body .desktop-top-avatar {
+    display:flex !important; align-items:center; justify-content:center; flex:0 0 42px;
+    width:42px; height:42px; padding:0; border:0; border-radius:50%;
+    background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:15px; font-weight:800;
+    cursor:pointer;
+  }
+  html body .desktop-top-avatar:hover { background:var(--primary-hover); }
+  html body.guest-mode .desktop-top-avatar { display:none !important; }
+  html body.guest-mode .guest-header-actions { margin-left:auto; }
+  /* Search bar is common for all pages: remove the in-page copies on desktop. */
+  html body #homeSearchWrap, html body #searchPage .search-bar-wrap { display:none !important; }
+  html body:not(.nav-pending) #homeContent .hero-wrap { margin-top:24px !important; }
+  html body:not(.nav-pending) #searchPage, html body:not(.nav-pending) .app-view { margin-top:24px !important; }
+  html body #productsSection, html body.explore-mode #productsSection { margin-top:24px !important; }
+  html body .app-summary { top:92px !important; }
+  html { scroll-padding-top:92px; }
+  /* Drawer: header line moves to a full-width line across drawer + page. */
+  html body #desktopDrawer .desktop-drawer-head { border-bottom:0 !important; }
+  html body:not(.nav-pending)::after {
+    content:""; position:fixed; top:67px; left:0; right:0; height:1px; background:#e5e7eb;
+    z-index:9999; pointer-events:none;
+  }
+}
+@media (max-width:760px) { html body::after { display:none !important; } }
+</style>
+<script id="desktop-topbar-search-profile">
+(function(){
+  const form=document.getElementById("globalSearchForm"), input=document.getElementById("globalSearchInput");
+  const avatar=document.getElementById("desktopTopAvatar");
+  if(!form||!input||!avatar) return;
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    const d=document.getElementById("dedicatedSearchInput");
+    if(d) d.value=input.value.trim();
+    if(typeof window.handleNavigation==="function") window.handleNavigation("search");
+    if(typeof loadSearchProducts==="function") loadSearchProducts();
+  });
+  input.addEventListener("search",function(){
+    if(!input.value.trim() && typeof currentView!=="undefined" && currentView==="search"){
+      const d=document.getElementById("dedicatedSearchInput"); if(d) d.value="";
+      if(typeof loadSearchProducts==="function") loadSearchProducts();
+    }
+  });
+  avatar.addEventListener("click",function(){ if(typeof window.handleNavigation==="function") window.handleNavigation("account"); });
+  function initials(name){
+    const w=String(name||"").trim().split(/\s+/).filter(Boolean);
+    if(!w.length) return "U";
+    if(w.length===1) return Array.from(w[0]).slice(0,2).join("").toUpperCase();
+    return (Array.from(w[0])[0]+Array.from(w[1])[0]).toUpperCase();
+  }
+  function refreshAvatar(){
+    try{
+      const c=JSON.parse(localStorage.getItem("shoppy_profile_cache_v1")||"null");
+      const t=initials(c&&c.user&&c.user.name);
+      if(avatar.textContent!==t) avatar.textContent=t;
+    }catch(e){}
+  }
+  refreshAvatar();
+  setInterval(refreshAvatar,1500);
+})();
+</script>
+
+<style id="desktop-topbar-fixed-solid-aligned">
+@media (min-width:761px) {
+  /* Very high specificity so older topbar rules (relative / padding-left:180px / flex-end) can never win. */
+  html body:not(.nav-pending) header.topbar,
+  html body.nav-pending header.topbar,
+  html body.app-premium-navigation:not(.nav-pending) header.topbar,
+  html body.app-basic-navigation:not(.nav-pending) header.topbar {
+    position:fixed !important; top:0 !important; left:226px !important; right:0 !important; bottom:auto !important;
+    width:auto !important; max-width:none !important; height:68px !important; min-height:68px !important;
+    margin:0 !important; box-sizing:border-box !important;
+    /* content starts at 226 (drawer) + 20 (body offset) + 24 (page margin) = 270px */
+    padding:0 24px 0 44px !important;
+    display:flex !important; flex-direction:row !important; align-items:center !important;
+    justify-content:flex-start !important; gap:12px !important;
+    background:#ffffff !important; background-image:none !important; opacity:1 !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    border:0 !important; border-radius:0 !important; box-shadow:none !important;
+    transform:none !important; overflow:visible !important; z-index:1000 !important;
+  }
+  html body:not(.nav-pending) header.topbar .desktop-top-search { flex:1 1 auto !important; max-width:640px !important; margin:0 !important; }
+  html body:not(.nav-pending) header.topbar .desktop-top-avatar { flex:0 0 42px !important; margin:0 !important; }
+  html body.guest-mode:not(.nav-pending) header.topbar .guest-header-actions { margin-left:auto !important; }
+}
+</style>
+
+<style id="desktop-body-top-offset-fix">
+@media (min-width:761px) {
+  /* An older rule set padding-top:0 with higher specificity; this one wins so content starts below the 68px header. */
+  html body:not(.zz):not(.yy):not(.nav-pending),
+  html body:not(.zz):not(.yy):not(.nav-pending).desktop-drawer-expanded,
+  html body.app-premium-navigation:not(.zz):not(.nav-pending),
+  html body.app-basic-navigation:not(.zz):not(.nav-pending) {
+    padding-top:68px !important;
+  }
+}
+</style>
 </body>
 </html>
