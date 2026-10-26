@@ -193,8 +193,8 @@
 
     .product-layout {
       display: grid;
-      grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1fr);
-      column-gap: 16px;
+      grid-template-columns: minmax(0, 0.35fr) minmax(0, 0.65fr);
+      column-gap: 32px;
       row-gap: 0;
       align-items: start;
       width: 100%;
@@ -242,6 +242,32 @@
       padding: 18px;
       display: block;
     }
+
+    .wishlist-overlay {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 50%;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 22px;
+      line-height: 1;
+      transition: background .2s, color .2s, transform .2s;
+    }
+
+    .wishlist-overlay:hover:not(:disabled) { transform: scale(1.04); }
+    .wishlist-overlay.active {
+      background: var(--primary);
+      color: #fff;
+    }
+    .wishlist-overlay:disabled { opacity: .75; }
 
     .image-counter {
       position: absolute;
@@ -358,11 +384,7 @@
       color: var(--text-secondary);
     }
 
-    .product-divider {
-      height: 1px;
-      background: var(--divider);
-      margin: 24px 0;
-    }
+    .product-divider { display: none; }
 
     .price-block {
       display: flex;
@@ -571,54 +593,48 @@
       width: 100%;
       margin-top: 14px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      align-content: start;
       padding-top: 0;
     }
 
     .service-grid .section-heading {
-      margin: 0 0 8px;
+      grid-column: 1 / -1;
+      margin: 0 0 2px;
       font-size: 19px;
       letter-spacing: -.4px;
     }
 
     .service-card {
       display: flex;
+      flex-direction: column;
       align-items: flex-start;
-      gap: 10px;
-      padding: 14px 0;
-      border-bottom: 0;
+      justify-content: flex-start;
+      gap: 7px;
+      padding: 13px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
       min-width: 0;
+      min-height: 94px;
     }
-
-    .service-card + .service-card {
-      border-top: 1px solid var(--divider);
-    }
-
-    .service-card:last-child { padding-bottom: 0; }
 
     .service-card > i {
-      font-size: 22px;
+      font-size: 23px;
       flex-shrink: 0;
       color: var(--primary);
-      margin-top: 1px;
+      line-height: 1;
     }
 
     .service-card strong {
       display: block;
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.5;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.4;
     }
 
-    .service-card span {
-      display: block;
-      margin-top: 4px;
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      overflow-wrap: anywhere;
-    }
+    .service-card span { display: none; }
 
     /* SECTIONS */
 
@@ -653,6 +669,9 @@
       font-size: 14px;
       line-height: 1.7;
     }
+
+    .detail-row:last-child,
+    .detail-row:nth-last-child(2) { border-bottom: 0; }
 
     .detail-row span {
       color: var(--text-secondary);
@@ -693,6 +712,8 @@
       border-bottom: 1px solid var(--divider);
       min-width: 0;
     }
+
+    .review-card:last-child { border-bottom: 0; }
 
     .review-top {
       display: flex;
@@ -1004,8 +1025,8 @@
         grid-row: 3;
         max-width: none;
         margin-top: 12px;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
       }
 
       .product-title {
@@ -1545,6 +1566,15 @@
                 `
             }
 
+            <button
+              id="wishlistButton"
+              class="wishlist-overlay"
+              type="button"
+              aria-label="Add to wishlist"
+              aria-pressed="false"
+              title="Add to wishlist"
+            ><i class="ph ph-heart" aria-hidden="true"></i></button>
+
             <span class="image-counter">
               ${images.length ? selectedImageIndex + 1 : 1}
               /
@@ -1583,34 +1613,30 @@
             <h2 class="section-heading" id="shippingPoliciesHeading">Shipping &amp; Policies</h2>
 
             <div class="service-card">
-              <i class="ph ph-truck"></i>
+              <i class="ph-fill ph-truck"></i>
               <div>
                 <strong>Shipping Information</strong>
-                <span>${escapeHTML(product.shippingInformation || "See checkout for delivery details.")}</span>
               </div>
             </div>
 
             <div class="service-card">
-              <i class="ph ph-shield-check"></i>
+              <i class="ph-fill ph-shield-check"></i>
               <div>
                 <strong>Warranty</strong>
-                <span>${escapeHTML(product.warrantyInformation || "Check product warranty details.")}</span>
               </div>
             </div>
 
             <div class="service-card">
-              <i class="ph ph-arrow-u-up-left"></i>
+              <i class="ph-fill ph-arrow-u-up-left"></i>
               <div>
                 <strong>Return Policy</strong>
-                <span>${escapeHTML(product.returnPolicy || "Check return eligibility at checkout.")}</span>
               </div>
             </div>
 
             <div class="service-card">
-              <i class="ph ph-lock-key"></i>
+              <i class="ph-fill ph-lock-key"></i>
               <div>
                 <strong>Secure Shopping</strong>
-                <span>Keep your account details private.</span>
               </div>
             </div>
         </section>
@@ -1618,7 +1644,9 @@
     }
 
     function renderProduct() {
-      const displayedPrice = Math.max(0, Number(product.price) || 0);
+      const listedPrice = Math.max(0, Number(product.price) || 0);
+      const discountPercent = getDiscountPercent(product);
+      const displayedPrice = getDiscountedPrice(product);
 
       const inStock =
         Number(product.stock) > 0 &&
@@ -1639,30 +1667,27 @@
               ${escapeHTML(product.title)}
             </h1>
 
-            <p class="product-brand">
-              Brand:
-              <strong>${escapeHTML(product.brand || "Generic")}</strong>
-            </p>
+            <div class="price-block">
+              <span class="current-price">
+                ${formatPrice(displayedPrice)}
+              </span>
+              ${discountPercent > 0 ? `
+                <span class="original-price">${formatPrice(listedPrice)}</span>
+                <span class="discount-badge">${Number(discountPercent.toFixed(2)).toString()}% OFF</span>
+              ` : ""}
+            </div>
 
             <div class="rating-row">
               <span class="rating-badge">
                 <i class="ph-fill ph-star"></i>
                 ${(Number(product.rating) || 0).toFixed(1)}
               </span>
-
-              <span class="muted">
-                ${product.reviews.length} customer reviews
-              </span>
+              <span class="muted">${product.reviews.length} customer reviews</span>
             </div>
 
-            <div class="product-divider"></div>
-
-            <div class="price-block">
-              <span class="current-price">
-                ${formatPrice(displayedPrice)}
-              </span>
-
-            </div>
+            <p class="product-brand">
+              Brand: <strong>${escapeHTML(product.brand || "Generic")}</strong>
+            </p>
 
             <p class="tax-note">
               Price displayed in INR. Final payable amount should be verified at checkout.
@@ -1723,13 +1748,6 @@
                 ${!inStock ? "disabled" : ""}
               >Buy Now</button>
 
-              <button
-                id="wishlistButton"
-                class="purchase-button wishlist-button"
-                type="button"
-                aria-label="Add to wishlist"
-                aria-pressed="false"
-              >Add to Wishlist</button>
             </div>
 
             <button
@@ -2022,15 +2040,10 @@
       button.classList.toggle("active", exists);
       button.setAttribute("aria-pressed", String(exists));
 
-      button.setAttribute(
-        "aria-label",
-        exists ? "Remove from wishlist" : "Add to wishlist"
-      );
-
-      button.textContent = exists
-        ? "Remove from Wishlist"
-        : "Add to Wishlist";
-
+      const label = exists ? "Remove from wishlist" : "Add to wishlist";
+      button.setAttribute("aria-label", label);
+      button.setAttribute("title", label);
+      button.innerHTML = `<i class="${exists ? "ph-fill" : "ph"} ph-heart" aria-hidden="true"></i>`;
       button.disabled = wishlistBusy;
     }
 
