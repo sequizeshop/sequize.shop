@@ -193,8 +193,8 @@
 
     .product-layout {
       display: grid;
-      grid-template-columns: minmax(0, 0.76fr) minmax(360px, 1fr);
-      column-gap: 21px;
+      grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1fr);
+      column-gap: 16px;
       row-gap: 0;
       align-items: start;
       width: 100%;
@@ -218,14 +218,14 @@
     .gallery {
       min-width: 0;
       width: 100%;
-      max-width: 470px;
-      justify-self: start;
+      max-width: none;
+      justify-self: stretch;
     }
 
     .main-image-wrap {
       width: 100%;
-      aspect-ratio: 1 / 0.78;
-      max-height: 370px;
+      aspect-ratio: 1 / 1;
+      max-height: none;
       border-radius: var(--radius-md);
       background: var(--surface-secondary);
       position: relative;
@@ -239,7 +239,7 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      padding: 28px;
+      padding: 18px;
       display: block;
     }
 
@@ -288,6 +288,8 @@
     /* PRODUCT INFO */
 
     .product-info {
+      grid-column: 2;
+      grid-row: 1 / span 2;
       min-width: 0;
       width: 100%;
       position: sticky;
@@ -561,25 +563,21 @@
       color: var(--primary);
     }
 
-    /* SERVICE LIST (dividers, no cards) */
+    /* SHIPPING & POLICIES: starts immediately below the gallery */
 
     .service-grid {
       grid-column: 1;
       grid-row: 2;
-      align-self: start;
       width: 100%;
-      max-width: 470px;
       margin-top: 14px;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px 16px;
-      border-top: 1px solid var(--divider);
-      padding-top: 8px;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      padding-top: 0;
     }
 
     .service-grid .section-heading {
-      grid-column: 1 / -1;
-      margin: 0 0 2px;
+      margin: 0 0 8px;
       font-size: 19px;
       letter-spacing: -.4px;
     }
@@ -587,33 +585,38 @@
     .service-card {
       display: flex;
       align-items: flex-start;
-      gap: 9px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--divider);
+      gap: 10px;
+      padding: 14px 0;
+      border-bottom: 0;
       min-width: 0;
     }
 
-    .service-card:last-child { padding-bottom: 10px; }
+    .service-card + .service-card {
+      border-top: 1px solid var(--divider);
+    }
+
+    .service-card:last-child { padding-bottom: 0; }
 
     .service-card > i {
       font-size: 22px;
       flex-shrink: 0;
       color: var(--primary);
+      margin-top: 1px;
     }
 
     .service-card strong {
       display: block;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       line-height: 1.5;
     }
 
     .service-card span {
       display: block;
-      margin-top: 2px;
-      font-size: 13px;
+      margin-top: 4px;
+      font-size: 14px;
       color: var(--text-secondary);
-      line-height: 1.6;
+      line-height: 1.7;
       overflow-wrap: anywhere;
     }
 
@@ -621,8 +624,8 @@
 
     .details-section {
       margin-top: 27px;
-      padding-top: 27px;
-      border-top: 1px solid var(--divider);
+      padding-top: 0;
+      border-top: 0;
     }
 
     .section-heading {
@@ -994,13 +997,13 @@
         row-gap: 20px;
       }
 
-      .product-info { position: static; grid-column: 1; grid-row: 2; }
       .gallery { grid-column: 1; grid-row: 1; }
+      .product-info { position: static; grid-column: 1; grid-row: 2; }
       .service-grid {
         grid-column: 1;
         grid-row: 3;
         max-width: none;
-        margin-top: 0;
+        margin-top: 12px;
         grid-template-columns: minmax(0, 1fr);
         gap: 0;
       }
@@ -1568,7 +1571,49 @@
               `).join("")
             }
           </div>
+
+
         </div>
+      `;
+    }
+
+    function renderShippingPolicies() {
+      return `
+        <section class="service-grid" aria-labelledby="shippingPoliciesHeading">
+            <h2 class="section-heading" id="shippingPoliciesHeading">Shipping &amp; Policies</h2>
+
+            <div class="service-card">
+              <i class="ph ph-truck"></i>
+              <div>
+                <strong>Shipping Information</strong>
+                <span>${escapeHTML(product.shippingInformation || "See checkout for delivery details.")}</span>
+              </div>
+            </div>
+
+            <div class="service-card">
+              <i class="ph ph-shield-check"></i>
+              <div>
+                <strong>Warranty</strong>
+                <span>${escapeHTML(product.warrantyInformation || "Check product warranty details.")}</span>
+              </div>
+            </div>
+
+            <div class="service-card">
+              <i class="ph ph-arrow-u-up-left"></i>
+              <div>
+                <strong>Return Policy</strong>
+                <span>${escapeHTML(product.returnPolicy || "Check return eligibility at checkout.")}</span>
+              </div>
+            </div>
+
+            <div class="service-card">
+              <i class="ph ph-lock-key"></i>
+              <div>
+                <strong>Secure Shopping</strong>
+                <span>Keep your account details private.</span>
+              </div>
+            </div>
+        </section>
       `;
     }
 
@@ -1695,48 +1740,7 @@
 
           </div>
 
-          <div class="service-grid">
-              <h2 class="section-heading">Shipping &amp; Policies</h2>
-
-              <div class="service-card">
-                <i class="ph ph-truck"></i>
-                <div>
-                  <strong>Shipping Information</strong>
-                  <span>
-                    ${escapeHTML(product.shippingInformation || "See checkout for delivery details.")}
-                  </span>
-                </div>
-              </div>
-
-              <div class="service-card">
-                <i class="ph ph-shield-check"></i>
-                <div>
-                  <strong>Warranty</strong>
-                  <span>
-                    ${escapeHTML(product.warrantyInformation || "Check product warranty details.")}
-                  </span>
-                </div>
-              </div>
-
-              <div class="service-card">
-                <i class="ph ph-arrow-u-up-left"></i>
-                <div>
-                  <strong>Return Policy</strong>
-                  <span>
-                    ${escapeHTML(product.returnPolicy || "Check return eligibility at checkout.")}
-                  </span>
-                </div>
-              </div>
-
-              <div class="service-card">
-                <i class="ph ph-lock-key"></i>
-                <div>
-                  <strong>Secure Shopping</strong>
-                  <span>Keep your account details private.</span>
-                </div>
-              </div>
-
-          </div>
+          ${renderShippingPolicies()}
         </div>
       `;
 
