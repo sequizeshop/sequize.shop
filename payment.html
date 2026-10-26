@@ -449,23 +449,56 @@
         padding-left: 0;
       }
     }
+
+    /* Keep the payment header consistent with the addresses page. */
+    .topbar {
+      height: 64px !important;
+      min-height: 64px !important;
+      padding: 0 5% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      background: #fff !important;
+      border-bottom: 1px solid #E5E7EB !important;
+      box-shadow: none !important;
+    }
+    .payment-back {
+      display: flex !important;
+      width: 40px !important;
+      height: 40px !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 8px !important;
+      border: 0 !important;
+      border-radius: 9px !important;
+      background: transparent !important;
+      color: #1E1F1C !important;
+      font-size: 24px !important;
+      line-height: 1 !important;
+      box-shadow: none !important;
+    }
+    .payment-back:hover { background: #F5F5F2 !important; }
+    .discount-row { display: none !important; }
+    .topbar .brand {
+      margin-left: auto !important;
+      font-family: "Manrope", sans-serif !important;
+      font-size: 22px !important;
+      font-weight: 800 !important;
+      line-height: 1.4 !important;
+      letter-spacing: -.7px !important;
+      color: #2962FF !important;
+    }
+
   </style>
 </head>
 
 <body>
 
   <header class="topbar">
-
-    <!-- Navigation icon -->
-    <a href="/"
-       class="bag-link"
-       aria-label="Continue shopping"
-       title="Continue shopping">
-      <i class="ph ph-bag-simple"></i>
+    <a href="javascript:history.back()" class="payment-back nav-icon" aria-label="Go back" title="Go back">
+      <i class="ph ph-arrow-left" aria-hidden="true"></i>
     </a>
-
-    <a href="/" class="brand">Shoppy.</a>
-
+    <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
   </header>
 
   <main>
@@ -571,13 +604,13 @@
           <div class="section-divider"></div>
 
           <div class="price-row">
-            <span>Original price</span>
+            <span>Subtotal</span>
             <strong id="originalPrice">₹0.00</strong>
           </div>
 
           <div class="price-row discount-row">
-            <span>Discount (95% OFF)</span>
-            <strong id="discountAmount">−₹0.00</strong>
+            <span>Discount</span>
+            <strong id="discountAmount">₹0.00</strong>
           </div>
 
           <div class="price-row">
@@ -590,9 +623,7 @@
             <strong id="totalPrice">₹0.00</strong>
           </div>
 
-          <div id="savingsText" class="savings-box">
-            You save 95% on this order.
-          </div>
+          <div id="savingsText" class="savings-box" hidden></div>
 
           <button id="payButton" class="pay-button" disabled>
             <i class="ph ph-lock-key"></i>
@@ -622,7 +653,6 @@
     "use strict";
 
     const USD_TO_INR = 85;
-    const DISCOUNT_PERCENT = 95;
     const CASHFREE_MODE = "production";
 
     const ORDER_STATUS_URL = "/order-status.html";
@@ -817,12 +847,12 @@
           getOriginalUnitPrice(item) * getQuantity(item);
       }
 
-      const discount = original * DISCOUNT_PERCENT / 100;
+      const discount = 0;
 
       return {
         original,
         discount,
-        total: Math.max(0, original - discount)
+        total: original
       };
     }
 
@@ -853,11 +883,7 @@
         const quantity = getQuantity(item);
 
         const originalUnit = getOriginalUnitPrice(item);
-        const discountedUnit =
-          originalUnit * (1 - DISCOUNT_PERCENT / 100);
-
         const originalTotal = originalUnit * quantity;
-        const discountedTotal = discountedUnit * quantity;
 
         const imageMarkup = thumbnail
           ? `
@@ -903,21 +929,15 @@
                 Quantity: ${quantity}
               </div>
 
-              <span class="product-discount">
-                95% OFF
-              </span>
 
             </div>
 
             <div class="product-pricing">
 
               <span class="product-final-price">
-                ${money(discountedTotal)}
-              </span>
-
-              <span class="product-original-price">
                 ${money(originalTotal)}
               </span>
+
 
             </div>
 
@@ -933,11 +953,10 @@
       const totals = getTotals();
 
       $("originalPrice").textContent = money(totals.original);
-      $("discountAmount").textContent = `−${money(totals.discount)}`;
+      $("discountAmount").textContent = money(0);
       $("totalPrice").textContent = money(totals.total);
 
-      $("savingsText").textContent =
-        `You save ${DISCOUNT_PERCENT}% (${money(totals.discount)}) on this order.`;
+      $("savingsText").hidden = true;
     }
 
     function getAddressId(address) {
