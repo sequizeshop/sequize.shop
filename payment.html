@@ -16,122 +16,25 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
 
+  <!-- Phosphor Regular Icons -->
   <link rel="stylesheet"
     href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
 
+  <!-- Cashfree Payment SDK -->
   <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
+  <!-- Global design -->
   <link rel="stylesheet" href="/global.css">
 
   <style>
-    :root {
-      --payment-blue: #2962FF;
-      --payment-green: #15803D;
-      --payment-line: #E5E7EB;
-      --payment-muted: #6B7280;
-      --payment-ink: #1E1F1C;
-      --payment-bg: #FFFFFF;
-      --payment-side-padding: clamp(18px, 4vw, 64px);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      min-height: 100%;
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: var(--payment-bg);
-      color: var(--payment-ink);
-      font-family: "DM Sans", sans-serif;
-    }
-
-    /* =========================
-       HEADER
-    ========================= */
-
-    .topbar {
-      position: relative;
-      z-index: 20;
-      width: 100% !important;
-      height: 64px !important;
-      min-height: 64px !important;
-      padding: 0 var(--payment-side-padding) !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      background: #fff !important;
-      border-bottom: 1px solid var(--payment-line) !important;
-      box-shadow: none !important;
-    }
-
-    .payment-back {
-      display: inline-flex !important;
-      flex: 0 0 40px;
-      width: 40px !important;
-      height: 40px !important;
-      align-items: center !important;
-      justify-content: center !important;
-      padding: 0 !important;
-      border: 0 !important;
-      border-radius: 9px !important;
-      background: transparent !important;
-      color: var(--payment-ink) !important;
-      font-size: 24px !important;
-      line-height: 1 !important;
-      text-decoration: none !important;
-      box-shadow: none !important;
-      cursor: pointer;
-    }
-
-    /*
-     * Important:
-     * Icon font ka ::before pseudo-element hide nahi karna.
-     * Phosphor arrow isi se render hota hai.
-     */
-    .payment-back::before,
-    .payment-back::after {
-      content: none !important;
-      display: none !important;
-    }
-
-    .payment-back i {
-      display: inline-flex !important;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px !important;
-      line-height: 1 !important;
-      font-style: normal !important;
-    }
-
-    .payment-back:hover {
-      background: #F5F5F2 !important;
-    }
-
-    .topbar .brand {
-      margin-left: auto !important;
-      color: var(--payment-blue) !important;
-      font-family: "Manrope", sans-serif !important;
-      font-size: 22px !important;
-      font-weight: 800 !important;
-      letter-spacing: -.7px !important;
-      text-decoration: none !important;
-    }
-
-    /* =========================
-       FULL-WIDTH PAGE LAYOUT
-    ========================= */
+    /* Sirf is page ka layout. Baaki sab global.css se aata hai */
 
     main {
-      width: 100% !important;
-      max-width: none !important;
-      margin: 0 !important;
-      padding: 34px var(--payment-side-padding) 65px !important;
+      width: 100%;
+      max-width: none;
+      box-sizing: border-box;
+      padding: 0 max(5%, calc((100% - 1050px) / 2));
+      margin: 34px 0 65px;
     }
 
     .page-heading {
@@ -139,47 +42,35 @@
     }
 
     .page-heading h1 {
-      margin: 0 0 8px;
       font-family: "Manrope", sans-serif;
       font-size: clamp(27px, 4vw, 36px);
       font-weight: 800;
       letter-spacing: -1.2px;
+      margin: 0 0 8px;
     }
 
     .page-heading p {
       margin: 0;
-      color: var(--payment-muted);
+      color: var(--muted);
       font-size: 14px;
       line-height: 1.7;
     }
 
     .checkout-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(320px, .75fr);
-      gap: clamp(28px, 4vw, 64px);
+      grid-template-columns: minmax(0, 1.3fr) minmax(300px, .8fr);
+      gap: 32px;
       align-items: start;
-      width: 100%;
-    }
-
-    .checkout-main,
-    .summary-column {
-      min-width: 0;
-      width: 100%;
     }
 
     .checkout-section {
-      min-width: 0;
-      margin: 0;
       padding: 0;
+      margin: 0;
+      background: transparent;
       border: 0;
       border-radius: 0;
-      background: transparent;
       box-shadow: none;
     }
-
-    /* =========================
-       SECTION HEADINGS
-    ========================= */
 
     .section-heading {
       display: flex;
@@ -190,29 +81,27 @@
     }
 
     .section-heading h2 {
-      margin: 0;
       font-family: "Manrope", sans-serif;
       font-size: 18px;
       font-weight: 800;
       letter-spacing: -.4px;
+      margin: 0;
     }
 
-    /*
-     * Numbered section labels are no longer used.
-     */
     .section-number {
-      display: none !important;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 7px;
     }
 
     .section-divider {
       height: 1px;
+      background: var(--line);
       margin: 27px 0;
-      background: var(--payment-line);
     }
 
-    /* =========================
-       DELIVERY ADDRESSES
-    ========================= */
+    /* ADDRESS OPTIONS */
 
     .address-list {
       display: grid;
@@ -223,26 +112,26 @@
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      padding: 15px;
-      border: 1px solid var(--payment-line);
+      border: 1px solid #e5e7eb;
       border-radius: 12px;
+      padding: 15px;
       cursor: pointer;
       transition: border-color .2s, background .2s;
     }
 
     .address-option:hover {
-      border-color: #B9C8FA;
+      border-color: #b9c8fa;
     }
 
     .address-option:has(input:checked) {
-      border-color: var(--payment-blue);
-      background: #F8FAFF;
+      border-color: var(--blue);
+      background: #f8faff;
     }
 
     .address-option input {
-      flex-shrink: 0;
+      accent-color: var(--blue);
       margin-top: 4px;
-      accent-color: var(--payment-blue);
+      flex-shrink: 0;
     }
 
     .address-content {
@@ -252,13 +141,13 @@
 
     .address-name {
       display: block;
-      margin-bottom: 5px;
       font-size: 13px;
       font-weight: 700;
+      margin-bottom: 5px;
     }
 
     .address-text {
-      color: var(--payment-muted);
+      color: var(--muted);
       font-size: 12px;
       line-height: 1.7;
       overflow-wrap: anywhere;
@@ -267,38 +156,22 @@
     .address-phone {
       display: block;
       margin-top: 5px;
+      color: var(--ink);
       font-size: 12px;
     }
 
     .address-tag {
       display: inline-block;
-      margin-top: 8px;
       padding: 5px 8px;
+      margin-top: 8px;
       border-radius: 5px;
-      background: #EDF2FF;
-      color: var(--payment-blue);
+      background: #edf2ff;
+      color: var(--blue);
       font-size: 10px;
       font-weight: 800;
     }
 
-    .text-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      margin-top: 15px;
-      color: var(--payment-blue);
-      font-size: 12px;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    .text-link:hover {
-      text-decoration: underline;
-    }
-
-    /* =========================
-       PAYMENT METHOD
-    ========================= */
+    /* PAYMENT METHOD */
 
     .payment-option {
       display: flex;
@@ -306,9 +179,9 @@
       justify-content: space-between;
       gap: 12px;
       padding: 15px;
-      border: 1px solid var(--payment-blue);
+      border: 1px solid var(--blue);
+      background: #f8faff;
       border-radius: 12px;
-      background: #F8FAFF;
     }
 
     .payment-method-left {
@@ -319,15 +192,15 @@
     }
 
     .payment-icon {
-      display: grid;
-      flex-shrink: 0;
       width: 42px;
       height: 42px;
+      display: grid;
       place-items: center;
+      background: #edf2ff;
       border-radius: 10px;
-      background: #EDF2FF;
-      color: var(--payment-blue);
+      color: var(--blue);
       font-size: 23px;
+      flex-shrink: 0;
     }
 
     .payment-method-title {
@@ -338,25 +211,107 @@
 
     .payment-method-description {
       margin-top: 5px;
-      color: var(--payment-muted);
       font-size: 11px;
+      color: var(--muted);
       line-height: 1.6;
     }
 
     .secure-badge {
-      color: var(--payment-green);
+      color: var(--green);
       font-size: 10px;
       font-weight: 800;
       white-space: nowrap;
     }
 
-    /* =========================
-       PAYMENT SUMMARY
-    ========================= */
+    /* PRODUCT LIST */
 
-    .summary-column {
-      position: relative;
+    .product-list {
+      display: grid;
     }
+
+    .product-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .product-item:first-child {
+      padding-top: 0;
+    }
+
+    .product-item:last-child {
+      border-bottom: 0;
+    }
+
+    .product-image-wrap {
+      position: relative;
+      flex-shrink: 0;
+      width: 76px;
+      height: 88px;
+      overflow: hidden;
+      border-radius: 9px;
+      background: #f5f5f2;
+    }
+
+    .product-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    .product-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .product-name {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .product-meta {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .product-discount {
+      display: inline-block;
+      margin-top: 7px;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .product-pricing {
+      text-align: right;
+      flex-shrink: 0;
+      padding-left: 5px;
+    }
+
+    .product-final-price {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .product-original-price {
+      display: block;
+      margin-top: 5px;
+      font-size: 11px;
+      color: #969991;
+      text-decoration: line-through;
+      white-space: nowrap;
+    }
+
+    /* SUMMARY */
 
     .summary-heading {
       margin-bottom: 20px;
@@ -364,36 +319,31 @@
 
     .price-row {
       display: flex;
-      align-items: flex-start;
       justify-content: space-between;
+      align-items: flex-start;
       gap: 15px;
       margin: 15px 0;
-      color: #666960;
       font-size: 13px;
+      color: #666960;
     }
 
     .price-row strong {
-      color: var(--payment-ink);
+      color: var(--ink);
       font-weight: 700;
       text-align: right;
       white-space: nowrap;
     }
 
     .discount-row strong {
-      color: var(--payment-green);
-    }
-
-    .tax-list {
-      display: grid;
-      gap: 0;
+      color: var(--green);
     }
 
     .total-row {
-      align-items: center;
-      margin-top: 18px;
       padding-top: 18px;
-      border-top: 1px solid var(--payment-line);
-      color: var(--payment-ink);
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+      align-items: center;
+      color: var(--ink);
       font-size: 15px;
       font-weight: 800;
     }
@@ -406,173 +356,53 @@
     }
 
     .savings-box {
-      margin: 18px 0;
       padding: 12px 14px;
+      margin: 18px 0;
       border-radius: 9px;
-      background: #ECFDF3;
+      background: #ecfdf3;
       color: #166534;
       font-size: 12px;
       font-weight: 700;
       line-height: 1.6;
     }
 
-    .loading,
-    .empty-state {
-      color: var(--payment-muted);
-      font-size: 13px;
-      line-height: 1.8;
-    }
-
-    /* =========================
-       NOTICES
-    ========================= */
-
-    .notice {
-      display: none;
-      margin: 0 0 22px;
-      padding: 13px 15px;
-      border-radius: 9px;
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .notice.show {
-      display: block;
-    }
-
-    .notice.error {
-      background: #FEF2F2;
-      color: #991B1B;
-    }
-
-    .notice.info {
-      background: #EFF6FF;
-      color: #1D4ED8;
-    }
-
-    .notice.success {
-      background: #ECFDF3;
-      color: #166534;
-    }
-
-    /* =========================
-       PAY BUTTON
-    ========================= */
-
-    .mobile-pay-sticky {
-      width: 100%;
-      min-width: 0;
-    }
-
-    .pay-button {
-      display: flex;
-      width: 100%;
-      min-height: 49px;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      margin-top: 20px;
-      padding: 13px 17px;
-      border: 0;
-      border-radius: 10px;
-      background: var(--payment-blue);
-      color: #fff;
-      font-family: "DM Sans", sans-serif;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: opacity .2s;
-    }
-
-    .pay-button i {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      line-height: 1;
-    }
-
-    .pay-button:hover:not(:disabled) {
-      opacity: .9;
-    }
-
-    .pay-button:disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
-
     .order-reference {
-      margin-top: 12px;
-      color: var(--payment-muted);
+      color: var(--muted);
       font-size: 10px;
       line-height: 1.7;
       overflow-wrap: anywhere;
       text-align: center;
+      margin-top: 12px;
+    }
+
+    .payment-footnote {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.8;
+      text-align: center;
+      margin-top: 15px;
     }
 
     .orders-link {
       display: block;
       margin-top: 17px;
-      color: var(--payment-blue);
+      color: var(--blue);
       font-size: 12px;
       font-weight: 700;
-      text-align: center;
       text-decoration: none;
-    }
-
-    .payment-footnote {
-      margin-top: 15px;
-      color: var(--payment-muted);
-      font-size: 11px;
-      line-height: 1.8;
       text-align: center;
     }
 
-    /* =========================
-       DESKTOP
-    ========================= */
-
-    @media (min-width: 761px) {
-      .summary-column {
-        position: sticky;
-        top: 25px;
-      }
-
-      .mobile-pay-sticky {
-        position: static;
-        background: transparent;
-        border: 0;
-        box-shadow: none;
-      }
+    .orders-link:hover {
+      text-decoration: underline;
     }
-
-    /* =========================
-       MOBILE
-    ========================= */
 
     @media (max-width: 760px) {
-      :root {
-        --payment-side-padding: 18px;
-      }
-
-      .topbar {
-        height: 58px !important;
-        min-height: 58px !important;
-      }
-
       main {
-        width: 100% !important;
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 25px 18px 36px !important;
-      }
-
-      .page-heading {
-        margin-bottom: 23px;
-      }
-
-      .page-heading h1 {
-        font-size: 29px;
+        width: 100%;
+        padding-left: 5%;
+        padding-right: 5%;
+        margin-top: 25px;
       }
 
       .checkout-layout {
@@ -580,14 +410,6 @@
         gap: 30px;
       }
 
-      .checkout-main,
-      .summary-column {
-        width: 100%;
-      }
-
-      /*
-       * Summary first on mobile.
-       */
       .summary-column {
         order: -1;
       }
@@ -596,191 +418,343 @@
         margin: 24px 0;
       }
 
-      /*
-       * The pay button wrapper becomes sticky only while
-       * the user scrolls downward. JavaScript removes the
-       * sticky state when the user scrolls upward.
-       */
-      .mobile-pay-sticky {
-        position: relative;
-        z-index: 100;
-        width: 100%;
-        background: #fff;
-        transition: box-shadow .18s ease;
+      .product-image-wrap {
+        width: 70px;
+        height: 82px;
       }
 
-      .mobile-pay-sticky.is-sticky {
-        position: fixed;
-        z-index: 999;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
-        background: #fff;
-        border-top: 1px solid #E5E7EB;
-        box-shadow: 0 -5px 18px rgba(0, 0, 0, .045);
-      }
-
-      .mobile-pay-sticky .pay-button {
-        margin-top: 0;
-        min-height: 50px;
-      }
-
-      /*
-       * Keep enough room for the fixed button so it
-       * doesn't cover the last part of the page.
-       */
-      body.mobile-pay-visible main {
-        padding-bottom: 115px !important;
-      }
-
-      .payment-option {
-        padding: 13px;
-      }
-
-      .payment-method-left {
-        gap: 10px;
-      }
-
-      .payment-method-description {
-        max-width: 250px;
-      }
-
-      .total-row strong {
-        font-size: 23px;
+      .page-heading h1 {
+        font-size: 29px;
       }
     }
 
-    @media (max-width: 360px) {
-      :root {
-        --payment-side-padding: 14px;
+    @media (min-width: 761px) {
+      .summary-column {
+        position: sticky;
+        /* fixed header ke neeche */
+        top: calc(var(--header-h) + 25px);
+      }
+    }
+
+    @media (max-width: 380px) {
+      .product-image-wrap {
+        width: 60px;
+        height: 74px;
       }
 
+      .product-name {
+        font-size: 12px;
+      }
+
+      .product-final-price {
+        font-size: 12px;
+      }
+
+      .product-pricing {
+        padding-left: 0;
+      }
+    }
+
+    /* Keep the payment header consistent with the addresses page. */
+    .topbar {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      width: 100% !important;
+      height: 64px !important;
+      min-height: 64px !important;
+      max-height: 64px !important;
+      box-sizing: border-box !important;
+      padding: 0 24px !important;
+      margin: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      background: #fff !important;
+      border-bottom: 1px solid #E5E7EB !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+    .payment-back {
+      display: flex !important;
+      width: 40px !important;
+      height: 40px !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 8px !important;
+      border: 0 !important;
+      border-radius: 9px !important;
+      background: transparent !important;
+      color: #1E1F1C !important;
+      font-size: 24px !important;
+      line-height: 1 !important;
+      box-shadow: none !important;
+      text-decoration: none !important;
+      border-bottom: 0 !important;
+      outline-offset: 2px !important;
+      position: relative !important;
+    }
+    .payment-back::before, .payment-back::after { content: none !important; display: none !important; }
+    .payment-back i { display: block !important; border: 0 !important; text-decoration: none !important; box-shadow: none !important; background: none !important; }
+    .topbar .payment-back, .topbar .payment-back:visited, .topbar .payment-back:hover, .topbar .payment-back:active {
+      border: 0 !important; border-bottom: 0 !important; text-decoration: none !important;
+      background-image: none !important; box-shadow: none !important;
+    }
+    .payment-back:hover { background: #F5F5F2 !important; }
+    .discount-row[hidden], .tax-rows:empty { display: none !important; }
+    .tax-rows { margin: 0; }
+    .tax-row { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:8px 0; color:var(--muted); font-size:13px; }
+    .tax-row strong { color:var(--ink); font-weight:700; white-space:nowrap; }
+    .payment-summary-section { border:1px solid var(--line); border-radius:16px; padding:22px; background:var(--surface, #fff); }
+    @media (min-width: 761px) {
+      .checkout-layout { grid-template-columns: minmax(0, 1fr) minmax(330px, .72fr); gap: clamp(24px, 3vw, 44px); }
+      .summary-column { min-width:0; }
+    }
+    .topbar .brand {
+      margin-left: auto !important;
+      font-family: "Manrope", sans-serif !important;
+      font-size: 22px !important;
+      font-weight: 800 !important;
+      line-height: 1.2 !important;
+      letter-spacing: -.7px !important;
+      color: #2962FF !important;
+    }
+
+    /* Keep the desktop summary aligned with the page title. */
+    .section-number { display: none !important; }
+    .mobile-pay-sticky { display: none; }
+
+    @media (min-width: 761px) {
+      .topbar { padding-left: 24px !important; padding-right: 24px !important; }
       main {
-        padding-right: 14px !important;
-        padding-left: 14px !important;
+        width: 100% !important;
+        max-width: none !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+        margin: 34px 0 65px !important;
       }
-
-      .mobile-pay-sticky.is-sticky {
-        padding-right: 14px;
-        padding-left: 14px;
+      .checkout-layout {
+        grid-template-columns: minmax(0, 1fr) minmax(320px, .72fr) !important;
+        gap: clamp(24px, 3vw, 44px) !important;
+        align-items: start !important;
       }
+      .summary-column {
+        min-width: 0 !important;
+        margin-top: -102px !important;
+        top: calc(var(--header-h, 64px) + 25px) !important;
+      }
+      .payment-summary-section { box-sizing: border-box !important; }
+    }
 
-      .secure-badge {
-        font-size: 9px;
+    /* The mobile bar uses CSS sticky only: no fixed-position JS jumps. */
+    @media (max-width: 760px) {
+      .topbar {
+        position: relative !important;
+        height: 58px !important;
+        min-height: 58px !important;
+        max-height: 58px !important;
+        padding: 0 16px !important;
+      }
+      .topbar .payment-back {
+        flex: 0 0 40px !important;
+        width: 40px !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        padding: 0 !important;
+      }
+      main {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 20px 16px 30px !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+      }
+      .checkout-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 28px !important;
+      }
+      .summary-column {
+        order: -1 !important;
+        width: 100% !important;
+        position: static !important;
+        margin: 0 !important;
+      }
+      .checkout-main { order: 1 !important; width: 100% !important; }
+      .payment-summary-section {
+        position: relative !important;
+        overflow: visible !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 18px 16px !important;
+        margin: 0 !important;
+      }
+      /* Original button stays in the desktop card; the mobile twin is sticky. */
+      #payButton { display: none !important; }
+      .mobile-pay-sticky {
+        display: block !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 1000 !important;
+        order: 0 !important;
+        flex: 0 0 auto !important;
+        width: calc(100% + 32px) !important;
+        box-sizing: border-box !important;
+        margin: -28px -16px 0 !important;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) !important;
+        background: #FFFFFF !important;
+        border-top: 1px solid #E5E7EB !important;
+        box-shadow: 0 -8px 18px rgba(0,0,0,.05) !important;
+      }
+      .mobile-pay-sticky #mobilePayButton {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 9px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 50px !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+      }
+      .mobile-pay-sticky #mobilePayButton:disabled { opacity: .78; }
+      .section-divider { margin: 22px 0 !important; }
+    }
+
+    @media (max-width: 380px) {
+      main { padding-left: 12px !important; padding-right: 12px !important; }
+      .topbar { padding-left: 12px !important; padding-right: 12px !important; }
+      .payment-summary-section { padding-left: 12px !important; padding-right: 12px !important; }
+      .mobile-pay-sticky {
+        width: calc(100% + 24px) !important;
+        margin-left: -12px !important;
+        margin-right: -12px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
       }
     }
+
   </style>
 </head>
 
 <body>
 
-<header class="topbar">
-  <a href="javascript:history.back()"
-     class="payment-back nav-icon"
-     aria-label="Go back">
-    <i class="ph ph-arrow-left" aria-hidden="true"></i>
-  </a>
+  <header class="topbar">
+    <a href="javascript:history.back()" class="payment-back nav-icon" aria-label="Go back" title="Go back">
+      <i class="ph ph-arrow-left" aria-hidden="true"></i>
+    </a>
+    <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
+  </header>
 
-  <a href="/home.html" class="brand">Shoppy.</a>
-</header>
+  <main>
 
-<main>
+    <div class="page-heading">
+      <h1>Complete your order</h1>
+      <p>Review your order details and complete your secure payment.</p>
+    </div>
 
-  <div class="page-heading">
-    <h1>Complete your order</h1>
-    <p>Review your payment details and complete your secure payment.</p>
-  </div>
+    <div id="pageNotice" class="notice"></div>
 
-  <div id="pageNotice" class="notice"></div>
+    <div class="checkout-layout">
 
-  <div class="checkout-layout">
+      <!-- LEFT SIDE -->
+      <section class="checkout-main">
 
-    <section class="checkout-main">
+        <!-- ADDRESS SECTION -->
+        <section class="checkout-section">
 
-      <section class="checkout-section">
+          <div class="section-heading">
+            <h2>
+              <span class="section-number">01</span>
+              Delivery address
+            </h2>
+          </div>
 
-        <div class="section-heading">
-          <h2>Delivery address</h2>
-        </div>
+          <div id="addressLoading" class="loading">
+            Loading saved addresses...
+          </div>
 
-        <div id="addressLoading" class="loading">
-          Loading saved addresses...
-        </div>
+          <div id="addressList" class="address-list"></div>
 
-        <div id="addressList" class="address-list"></div>
+          <div id="addressEmpty" class="empty-state" hidden>
+            No saved delivery address was found.
+          </div>
 
-        <div id="addressEmpty" class="empty-state" hidden>
-          No saved delivery address was found.
-        </div>
+          <a href="/user/account/redirect?mode=checkout"
+             class="text-link">
+            <i class="ph ph-plus-circle"></i>
+            Manage delivery addresses
+          </a>
 
-        <a href="/user/account/redirect?mode=checkout"
-           class="text-link">
-          <i class="ph ph-plus-circle" aria-hidden="true"></i>
-          Manage delivery addresses
-        </a>
+        </section>
 
-      </section>
+        <div class="section-divider"></div>
 
-      <div class="section-divider"></div>
+        <!-- PAYMENT METHOD SECTION -->
+        <section class="checkout-section">
 
-      <section class="checkout-section">
+          <div class="section-heading">
+            <h2>
+              <span class="section-number">02</span>
+              Payment method
+            </h2>
+          </div>
 
-        <div class="section-heading">
-          <h2>Payment method</h2>
-        </div>
+          <div class="payment-option">
 
-        <div class="payment-option">
+            <div class="payment-method-left">
 
-          <div class="payment-method-left">
-
-            <div class="payment-icon">
-              <i class="ph ph-shield-check" aria-hidden="true"></i>
-            </div>
-
-            <div>
-              <span class="payment-method-title">
-                Cashfree Payments
-              </span>
-
-              <div class="payment-method-description">
-                Secure online payment using the methods available at checkout.
+              <div class="payment-icon">
+                <i class="ph ph-shield-check"></i>
               </div>
+
+              <div>
+                <span class="payment-method-title">
+                  Cashfree Payments
+                </span>
+
+                <div class="payment-method-description">
+                  Secure online payment using the methods available at checkout.
+                </div>
+              </div>
+
             </div>
+
+            <span class="secure-badge">SECURE</span>
 
           </div>
 
-          <span class="secure-badge">SECURE</span>
-
-        </div>
+        </section>
 
       </section>
 
-    </section>
-
-    <aside class="summary-column">
-
-      <section class="checkout-section">
-
-        <div class="section-heading summary-heading">
-          <h2>Payment summary</h2>
-        </div>
-
-        <div id="pricingLoading" class="loading">
-          Loading current taxes and discounts...
-        </div>
-
-        <div id="pricingSummary" hidden>
+      <!-- PAYMENT DETAILS: no product/order list; cart page already shows products -->
+      <aside class="summary-column">
+        <section class="checkout-section payment-summary-section">
+          <div class="section-heading summary-heading">
+            <h2>Payment details</h2>
+          </div>
 
           <div class="price-row">
             <span>Subtotal</span>
             <strong id="originalPrice">₹0.00</strong>
           </div>
 
-          <div id="discountRows"></div>
+          <div id="discountRow" class="price-row discount-row" hidden>
+            <span id="discountLabel">Discount</span>
+            <strong id="discountAmount">−₹0.00</strong>
+          </div>
 
-          <div id="taxRows" class="tax-list"></div>
+          <div id="taxRows" class="tax-rows"></div>
+
+          <div class="price-row delivery-row">
+            <span>Delivery</span>
+            <strong>FREE</strong>
+          </div>
 
           <div class="price-row total-row">
             <span>Total to pay</span>
@@ -789,1079 +763,898 @@
 
           <div id="savingsText" class="savings-box" hidden></div>
 
-        </div>
-
-        <div class="mobile-pay-sticky" id="mobilePaySticky">
           <button id="payButton" class="pay-button" disabled>
-            <i class="ph ph-lock-key" aria-hidden="true"></i>
+            <i class="ph ph-lock-key"></i>
             <span>Loading checkout...</span>
           </button>
-        </div>
 
-        <div id="orderReference" class="order-reference"></div>
-
-        <a href="/orders.html" class="orders-link">
-          View my orders
-        </a>
-
-        <p class="payment-footnote">
-          Your payment is processed securely by Cashfree.
-          The final payment amount is verified by our server.
-        </p>
-
-      </section>
-
-    </aside>
-
-  </div>
-
-</main>
-
-<script>
-"use strict";
-
-const USD_TO_INR = 85;
-const CASHFREE_MODE = "production";
-const ORDER_STATUS_URL = "/order-status.html";
-
-const ADMIN_API = "https://apisequizeshoplite.vercel.app";
-
-const API = {
-  cart: "/api/cart",
-  addresses: "/api/addresses",
-  profile: "/api/profile",
-  checkout: "/api/checkout/order"
-};
-
-let cartItems = [];
-let addresses = [];
-let selectedAddressId = null;
-let currentOrder = null;
-
-let taxes = [];
-let eligibleDiscounts = [];
-let appliedDiscount = null;
-
-let pricingLoaded = false;
-let loadingData = true;
-let checkoutStarted = false;
-
-/* =========================
-   HELPERS
-========================= */
-
-const $ = id => document.getElementById(id);
-
-function money(value) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(Number(value) || 0);
-}
-
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
-
-function showNotice(message, type = "info") {
-  const notice = $("pageNotice");
-  notice.textContent = message;
-  notice.className = `notice show ${type}`;
-}
-
-function hideNotice() {
-  $("pageNotice").textContent = "";
-  $("pageNotice").className = "notice";
-}
-
-async function requestJSON(url, options = {}) {
-  const response = await fetch(url, {
-    credentials: "same-origin",
-    cache: "no-store",
-    ...options,
-    headers: {
-      Accept: "application/json",
-      ...(options.headers || {})
-    }
-  });
-
-  const raw = await response.text();
-  let data;
-
-  try {
-    data = raw ? JSON.parse(raw) : {};
-  } catch (_) {
-    throw new Error("The server returned an invalid response.");
-  }
-
-  if (!response.ok || data.success === false) {
-    const error = new Error(
-      data.message ||
-      data.error ||
-      `Request failed (${response.status}).`
-    );
-
-    error.status = response.status;
-    error.data = data;
-    throw error;
-  }
-
-  return data;
-}
-
-/* =========================
-   CUSTOMER EMAIL
-========================= */
-
-async function getCustomerEmail() {
-  try {
-    const cached = JSON.parse(
-      localStorage.getItem("shoppy_profile_cache_v1") || "null"
-    );
-
-    if (
-      cached &&
-      cached.user &&
-      cached.user.email &&
-      Number(cached.expiresAt) > Date.now()
-    ) {
-      return String(cached.user.email)
-        .trim()
-        .toLowerCase();
-    }
-  } catch (_) {}
-
-  try {
-    const profile = await requestJSON(API.profile, {
-      method: "GET"
-    });
-
-    if (profile.user && profile.user.email) {
-      return String(profile.user.email)
-        .trim()
-        .toLowerCase();
-    }
-  } catch (error) {
-    console.warn(
-      "Customer profile email unavailable:",
-      error.message
-    );
-  }
-
-  return "";
-}
-
-/* =========================
-   TAXES AND DISCOUNTS
-========================= */
-
-async function loadPricingSettings() {
-  const email = await getCustomerEmail();
-
-  const discountURL =
-    `${ADMIN_API}/api/admin/discounts` +
-    (
-      email
-        ? `?email=${encodeURIComponent(email)}`
-        : ""
-    );
-
-  const [taxData, discountData] = await Promise.all([
-    requestJSON(`${ADMIN_API}/api/admin/taxes`, {
-      method: "GET"
-    }),
-
-    requestJSON(discountURL, {
-      method: "GET"
-    })
-  ]);
-
-  if (!Array.isArray(taxData.taxes)) {
-    throw new Error("Admin tax settings are invalid.");
-  }
-
-  if (!Array.isArray(discountData.discounts)) {
-    throw new Error("Admin discount settings are invalid.");
-  }
-
-  taxes = taxData.taxes.filter(tax =>
-    tax &&
-    String(tax.title || "").trim() &&
-    Number.isFinite(Number(tax.percent)) &&
-    Number(tax.percent) >= 0 &&
-    Number(tax.percent) <= 100
-  );
-
-  eligibleDiscounts = discountData.discounts.filter(item =>
-    item &&
-    Number(item.percent) > 0 &&
-    Number(item.percent) <= 100
-  );
-
-  /*
-   * Preserve the current cart discount selection rule.
-   */
-  eligibleDiscounts.sort(
-    (a, b) => Number(b.percent) - Number(a.percent)
-  );
-
-  appliedDiscount = eligibleDiscounts[0] || null;
-
-  pricingLoaded = true;
-}
-
-/* =========================
-   PREVIEW CALCULATION
-========================= */
-
-function getQuantity(item) {
-  const quantity = Number(
-    item?.quantity ?? item?.qty ?? 1
-  );
-
-  if (
-    !Number.isInteger(quantity) ||
-    quantity < 1 ||
-    quantity > 99
-  ) {
-    throw new Error("Your cart contains an invalid quantity.");
-  }
-
-  return quantity;
-}
-
-function getItemPriceUSD(item) {
-  const price = Number(
-    item?.price ??
-    item?.unitPrice ??
-    item?.unit_price ??
-    0
-  );
-
-  if (!Number.isFinite(price) || price < 0) {
-    throw new Error("Your cart contains an invalid product price.");
-  }
-
-  return price;
-}
-
-function calculatePreview() {
-  const subtotalUSD = cartItems.reduce(
-    (sum, item) =>
-      sum + getItemPriceUSD(item) * getQuantity(item),
-    0
-  );
-
-  const discountPercent = appliedDiscount
-    ? Number(appliedDiscount.percent) || 0
-    : 0;
-
-  const discountUSD =
-    subtotalUSD * discountPercent / 100;
-
-  const discountedUSD = Math.max(
-    0,
-    subtotalUSD - discountUSD
-  );
-
-  const taxLines = taxes.map(tax => {
-    const percent = Number(tax.percent) || 0;
-    const amountUSD = discountedUSD * percent / 100;
-
-    return {
-      id: String(tax.id || tax.key || ""),
-      title: String(tax.title),
-      percent,
-      amountUSD,
-      amountINR: Number(
-        (amountUSD * USD_TO_INR).toFixed(2)
-      )
-    };
-  });
-
-  /*
-   * Sum the rounded tax lines so the displayed tax
-   * breakdown matches the displayed tax total.
-   */
-  const taxTotalINR = Number(
-    taxLines.reduce(
-      (sum, tax) => sum + tax.amountINR,
-      0
-    ).toFixed(2)
-  );
-
-  const subtotalINR = Number(
-    (subtotalUSD * USD_TO_INR).toFixed(2)
-  );
-
-  const discountINR = Number(
-    (discountUSD * USD_TO_INR).toFixed(2)
-  );
-
-  const totalINR = Number(
-    (
-      discountedUSD * USD_TO_INR +
-      taxTotalINR
-    ).toFixed(2)
-  );
-
-  return {
-    subtotalUSD,
-    subtotalINR,
-    discountUSD,
-    discountINR,
-    discountPercent,
-    discountedUSD,
-    taxes: taxLines,
-    taxTotalINR,
-    totalINR
-  };
-}
-
-/* =========================
-   RENDER PRICING
-========================= */
-
-function renderTotals(serverOrder = null) {
-  const summary = $("pricingSummary");
-  const loading = $("pricingLoading");
-
-  loading.hidden = true;
-  summary.hidden = false;
-
-  let totals;
-
-  /*
-   * Once the backend has created the order, display
-   * saved server totals instead of applying the
-   * preview discount a second time.
-   */
-  if (
-    serverOrder &&
-    Number.isFinite(Number(serverOrder.totalINR))
-  ) {
-    const savedDiscount = serverOrder.discount || {};
-
-    totals = {
-      subtotalINR: Number(serverOrder.subtotalINR) || 0,
-      discountINR: Number(savedDiscount.amountINR) || 0,
-      discountPercent: Number(savedDiscount.percent) || 0,
-      discountTitle: String(
-        savedDiscount.title || "Discount"
-      ),
-      taxes: Array.isArray(serverOrder.taxes)
-        ? serverOrder.taxes.map(tax => ({
-            title: tax.title,
-            percent: Number(tax.percent) || 0,
-            amountINR: Number(tax.amountINR) || 0
-          }))
-        : [],
-      totalINR: Number(serverOrder.totalINR)
-    };
-  } else {
-    totals = calculatePreview();
-
-    totals.discountTitle = appliedDiscount
-      ? String(appliedDiscount.title || "Discount")
-      : "Discount";
-  }
-
-  $("originalPrice").textContent =
-    money(totals.subtotalINR);
-
-  $("totalPrice").textContent =
-    money(totals.totalINR);
-
-  /* Admin discount row */
-  const discountContainer = $("discountRows");
-
-  if (totals.discountINR > 0) {
-    discountContainer.innerHTML = `
-      <div class="price-row discount-row">
-        <span>
-          ${escapeHTML(totals.discountTitle)}
-          (${Number(totals.discountPercent)
-            .toFixed(2)
-            .replace(/\.?0+$/, "")}% off)
-        </span>
-
-        <strong>−${money(totals.discountINR)}</strong>
+          <div id="orderReference" class="order-reference"></div>
+
+          <a href="/orders.html" class="orders-link">View my orders</a>
+
+          <p class="payment-footnote">
+            Your payment is processed securely by Cashfree.
+            Payment confirmation is verified by our server.
+          </p>
+        </section>
+      </aside>
+
+      <!-- Mobile-only sticky twin. The desktop button remains inside the summary card. -->
+      <div class="mobile-pay-sticky" aria-label="Secure payment action">
+        <button id="mobilePayButton" class="pay-button" disabled>
+          <i class="ph ph-lock-key"></i>
+          <span>Loading checkout...</span>
+        </button>
       </div>
-    `;
-  } else {
-    discountContainer.innerHTML = "";
-  }
-
-  /* Admin tax rows */
-  $("taxRows").innerHTML = totals.taxes.map(tax => `
-    <div class="price-row">
-      <span>
-        ${escapeHTML(tax.title)}
-        (${Number(tax.percent)
-          .toFixed(2)
-          .replace(/\.?0+$/, "")}%)
-      </span>
-
-      <strong>${money(tax.amountINR)}</strong>
     </div>
-  `).join("");
 
-  /* Savings message */
-  const savings = $("savingsText");
+  </main>
 
-  if (totals.discountINR > 0) {
-    savings.hidden = false;
-    savings.textContent =
-      `You saved ${money(totals.discountINR)} with ` +
-      `${totals.discountTitle}.`;
-  } else {
-    savings.hidden = true;
-    savings.textContent = "";
-  }
+  <script>
+    "use strict";
 
-  updatePayButton();
-}
+    const USD_TO_INR = 85;
+    const CASHFREE_MODE = "production";
 
-/* =========================
-   ADDRESS HELPERS
-========================= */
+    const ORDER_STATUS_URL = "/order-status.html";
 
-function getAddressId(address) {
-  return address?.addressId ||
-    address?.address_id ||
-    address?.id ||
-    address?.key ||
-    null;
-}
+    const API = {
+      cart: "/api/cart",
+      addresses: "/api/addresses",
+      checkout: "/api/checkout/order"
+    };
 
-function normalizeAddresses(data) {
-  if (Array.isArray(data)) return data;
+    let cartItems = [];
+    let addresses = [];
+    let selectedAddressId = null;
+    let currentOrder = null;
 
-  if (Array.isArray(data.addresses)) {
-    return data.addresses;
-  }
+    let checkoutStarted = false;
+    let loadingData = true;
 
-  if (Array.isArray(data.data)) {
-    return data.data;
-  }
+    const $ = (id) => document.getElementById(id);
 
-  return [];
-}
-
-function getAddressLine(address) {
-  return [
-    address?.addressLine1 ||
-      address?.address1 ||
-      address?.street,
-
-    address?.addressLine2 ||
-      address?.address2,
-
-    address?.landmark,
-    address?.city,
-    address?.state,
-
-    address?.pincode ||
-      address?.postalCode ||
-      address?.zip,
-
-    address?.country
-  ].filter(Boolean).join(", ") || address?.address || "";
-}
-
-/* =========================
-   RENDER ADDRESSES
-========================= */
-
-function renderAddresses() {
-  $("addressLoading").hidden = true;
-
-  const container = $("addressList");
-
-  if (!addresses.length) {
-    container.innerHTML = "";
-    $("addressEmpty").hidden = false;
-    updatePayButton();
-    return;
-  }
-
-  $("addressEmpty").hidden = true;
-
-  if (!selectedAddressId) {
-    const defaultAddress = addresses.find(address =>
-      address.default === true ||
-      address.isDefault === true ||
-      address.is_default === true
-    );
-
-    selectedAddressId = getAddressId(
-      defaultAddress || addresses[0]
-    );
-  }
-
-  container.innerHTML = addresses.map(address => {
-    const id = getAddressId(address);
-
-    const name =
-      address.name ||
-      address.fullName ||
-      address.full_name ||
-      address.recipient ||
-      "Delivery address";
-
-    const phone =
-      address.phone ||
-      address.mobile ||
-      address.phoneNumber ||
-      "";
-
-    const selected =
-      String(id) === String(selectedAddressId);
-
-    const isDefault =
-      address.default === true ||
-      address.isDefault === true ||
-      address.is_default === true;
-
-    return `
-      <label class="address-option">
-        <input
-          type="radio"
-          name="selectedAddress"
-          value="${escapeHTML(id || "")}"
-          ${selected ? "checked" : ""}
-          ${id ? "" : "disabled"}
-        >
-
-        <div class="address-content">
-          <span class="address-name">
-            ${escapeHTML(name)}
-          </span>
-
-          <div class="address-text">
-            ${escapeHTML(getAddressLine(address))}
-          </div>
-
-          ${
-            phone
-              ? `<span class="address-phone">${escapeHTML(phone)}</span>`
-              : ""
-          }
-
-          ${
-            isDefault
-              ? `<span class="address-tag">DEFAULT ADDRESS</span>`
-              : ""
-          }
-        </div>
-      </label>
-    `;
-  }).join("");
-
-  container.querySelectorAll(
-    'input[name="selectedAddress"]'
-  ).forEach(radio => {
-    radio.addEventListener("change", () => {
-      selectedAddressId = radio.value;
-      updatePayButton();
-    });
-  });
-
-  updatePayButton();
-}
-
-/* =========================
-   PAY BUTTON STATE
-========================= */
-
-function setButton(
-  label,
-  disabled,
-  icon = "ph-lock-key"
-) {
-  $("payButton").disabled = disabled;
-
-  $("payButton").innerHTML = `
-    <i class="ph ${icon}" aria-hidden="true"></i>
-    <span>${escapeHTML(label)}</span>
-  `;
-}
-
-function getOrderId(order) {
-  return order?.orderId ||
-    order?.order_id ||
-    order?.id ||
-    order?.order?.orderId ||
-    order?.order?.order_id ||
-    null;
-}
-
-function updatePayButton() {
-  if (checkoutStarted) {
-    setButton(
-      "Opening Cashfree checkout...",
-      true,
-      "ph-spinner"
-    );
-    return;
-  }
-
-  if (loadingData || !pricingLoaded) {
-    setButton("Loading checkout...", true);
-    return;
-  }
-
-  if (!cartItems.length && !currentOrder) {
-    setButton(
-      "Your cart is empty",
-      true,
-      "ph-shopping-bag"
-    );
-    return;
-  }
-
-  if (!currentOrder && !selectedAddressId) {
-    setButton(
-      "Select delivery address",
-      true,
-      "ph-map-pin"
-    );
-    return;
-  }
-
-  setButton(
-    currentOrder
-      ? "Continue to payment"
-      : `Pay ${$("totalPrice").textContent}`,
-    false
-  );
-}
-
-/* =========================
-   LOAD CART
-========================= */
-
-async function loadCart() {
-  const data = await requestJSON(API.cart, {
-    method: "GET"
-  });
-
-  cartItems = Array.isArray(data.items)
-    ? data.items
-    : Array.isArray(data.cart)
-      ? data.cart
-      : Array.isArray(data.products)
-        ? data.products
-        : Array.isArray(data.data)
-          ? data.data
-          : [];
-
-  if (!cartItems.length) {
-    throw new Error("Your cart is empty.");
-  }
-}
-
-/* =========================
-   LOAD ADDRESSES
-========================= */
-
-async function loadAddresses() {
-  const data = await requestJSON(API.addresses, {
-    method: "GET"
-  });
-
-  addresses = normalizeAddresses(data);
-  renderAddresses();
-}
-
-/* =========================
-   ORDER STATUS
-========================= */
-
-function redirectToOrderStatus(orderId) {
-  if (!orderId) {
-    showNotice(
-      "Order ID is missing. Please check My Orders.",
-      "error"
-    );
-    return;
-  }
-
-  window.location.assign(
-    `${ORDER_STATUS_URL}?orderId=${encodeURIComponent(orderId)}`
-  );
-}
-
-/* =========================
-   CREATE ORDER
-========================= */
-
-async function createOrderOnce() {
-  if (currentOrder && getOrderId(currentOrder)) {
-    return currentOrder;
-  }
-
-  const data = await requestJSON(API.checkout, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      addressId: selectedAddressId
-    })
-  });
-
-  const order =
-    data.order ||
-    data.data?.order ||
-    data;
-
-  const orderId = getOrderId(order);
-
-  if (!orderId) {
-    throw new Error(
-      data.message ||
-      "The server did not return an order ID."
-    );
-  }
-
-  currentOrder = {
-    ...order,
-    orderId
-  };
-
-  $("orderReference").textContent =
-    `Order ID: ${orderId}`;
-
-  /*
-   * Show actual saved server values after order creation.
-   */
-  renderTotals(currentOrder);
-
-  return currentOrder;
-}
-
-/* =========================
-   CASHFREE PAYMENT SESSION
-========================= */
-
-async function createCashfreePaymentSession(orderId) {
-  const data = await requestJSON(API.checkout, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      action: "create-payment",
-      orderId
-    })
-  });
-
-  const paymentSessionId =
-    data.paymentSessionId ||
-    data.payment_session_id ||
-    data.data?.paymentSessionId ||
-    data.data?.payment_session_id;
-
-  if (!paymentSessionId) {
-    throw new Error(
-      data.message ||
-      "Cashfree did not return a payment session."
-    );
-  }
-
-  return paymentSessionId;
-}
-
-/* =========================
-   VERIFY PAYMENT
-========================= */
-
-async function verifyPaymentOnServer(orderId) {
-  return requestJSON(API.checkout, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      action: "verify-payment",
-      orderId
-    })
-  });
-}
-
-/* =========================
-   OPEN CASHFREE
-========================= */
-
-async function openCashfreeGateway(paymentSessionId) {
-  if (typeof window.Cashfree !== "function") {
-    throw new Error(
-      "Cashfree SDK did not load. Refresh and try again."
-    );
-  }
-
-  const cashfree = window.Cashfree({
-    mode: CASHFREE_MODE
-  });
-
-  return cashfree.checkout({
-    paymentSessionId,
-    redirectTarget: "_modal"
-  });
-}
-
-/* =========================
-   HANDLE PAYMENT
-========================= */
-
-async function handlePayClick() {
-  if (checkoutStarted) return;
-
-  hideNotice();
-
-  if (!pricingLoaded) {
-    showNotice(
-      "Tax and discount settings are unavailable. Please refresh and try again.",
-      "error"
-    );
-    return;
-  }
-
-  if (!currentOrder && !selectedAddressId) {
-    showNotice(
-      "Please select a delivery address first.",
-      "error"
-    );
-    return;
-  }
-
-  if (!currentOrder && !cartItems.length) {
-    showNotice("Your cart is empty.", "error");
-    return;
-  }
-
-  checkoutStarted = true;
-  updatePayButton();
-
-  let orderId = null;
-
-  try {
-    const order = await createOrderOnce();
-
-    orderId = getOrderId(order);
-
-    if (!orderId) {
-      throw new Error("Order ID was not returned.");
+    function money(value) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(Number(value) || 0);
     }
 
-    const paymentSessionId =
-      await createCashfreePaymentSession(orderId);
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
 
-    try {
-      await openCashfreeGateway(paymentSessionId);
-    } catch (gatewayError) {
-      /*
-       * The user may close the modal after payment succeeds.
-       * The server is still asked to verify the order.
-       */
-      console.warn(
-        "Cashfree checkout returned:",
-        gatewayError
+    function showNotice(message, type = "info") {
+      const notice = $("pageNotice");
+
+      notice.textContent = message;
+      notice.className = `notice show ${type}`;
+    }
+
+    function hideNotice() {
+      $("pageNotice").className = "notice";
+      $("pageNotice").textContent = "";
+    }
+
+    async function apiRequest(url, options = {}) {
+      const response = await fetch(url, {
+        credentials: "same-origin",
+        cache: "no-store",
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
+
+      const raw = await response.text();
+
+      let data;
+
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        throw new Error("The server returned an invalid response.");
+      }
+
+      if (!response.ok || data.success === false) {
+        const error = new Error(
+          data.message ||
+          data.error ||
+          `Request failed (${response.status})`
+        );
+
+        error.status = response.status;
+        error.data = data;
+
+        throw error;
+      }
+
+      return data;
+    }
+
+    function getOrderId(order) {
+      return order?.orderId ||
+        order?.order_id ||
+        order?.id ||
+        order?.order?.orderId ||
+        order?.order?.order_id ||
+        null;
+    }
+
+    function getPaymentStatus(data) {
+      return String(
+        data?.paymentStatus ||
+        data?.payment_status ||
+        data?.order?.paymentStatus ||
+        data?.order?.payment_status ||
+        data?.status ||
+        ""
+      ).toUpperCase();
+    }
+
+    function redirectToOrderStatus(orderId) {
+      if (!orderId) {
+        showNotice(
+          "The order ID is missing. Please check My Orders before trying again.",
+          "error"
+        );
+
+        return;
+      }
+
+      window.location.assign(
+        `${ORDER_STATUS_URL}?orderId=${encodeURIComponent(orderId)}`
       );
     }
-
-    try {
-      await verifyPaymentOnServer(orderId);
-    } catch (verificationError) {
-      console.error(
-        "Payment verification request failed:",
-        verificationError
-      );
-    }
-
-    redirectToOrderStatus(orderId);
-
-  } catch (error) {
-    console.error(
-      "Checkout initialization failed:",
-      error
-    );
-
-    showNotice(
-      error.message ||
-      "Unable to start checkout. Please try again.",
-      "error"
-    );
-
-    checkoutStarted = false;
-    updatePayButton();
-  }
-}
-
-$("payButton").addEventListener(
-  "click",
-  handlePayClick
-);
-
-/* =========================
-   MOBILE STICKY PAY BUTTON
-========================= */
-
-(function setupMobilePayButton() {
-  const wrapper = $("mobilePaySticky");
-
-  if (!wrapper) return;
-
-  let previousScrollY = window.scrollY;
-  let ticking = false;
-
-  function isMobile() {
-    return window.matchMedia(
-      "(max-width: 760px)"
-    ).matches;
-  }
-
-  function updateStickyState() {
-    ticking = false;
-
-    if (!isMobile()) {
-      wrapper.classList.remove("is-sticky");
-      document.body.classList.remove("mobile-pay-visible");
-      previousScrollY = window.scrollY;
-      return;
-    }
-
-    const currentY = window.scrollY;
-    const difference = currentY - previousScrollY;
 
     /*
-     * Scroll down: keep Pay button fixed at the bottom.
-     * Scroll up: return it to its normal content position.
+     * PRODUCT DATA
+     *
+     * Uses the cart item's thumbnail first, preserving the original
+     * product-image field. Additional image fields are fallbacks.
      */
-    if (difference > 3 && currentY > 100) {
-      wrapper.classList.add("is-sticky");
-      document.body.classList.add("mobile-pay-visible");
-    } else if (difference < -3) {
-      wrapper.classList.remove("is-sticky");
-      document.body.classList.remove("mobile-pay-visible");
+
+    function getProductName(item) {
+      return item?.name ||
+        item?.title ||
+        item?.productName ||
+        item?.product?.name ||
+        "Product";
     }
 
-    if (currentY <= 60) {
-      wrapper.classList.remove("is-sticky");
-      document.body.classList.remove("mobile-pay-visible");
+    function getProductThumbnail(item) {
+      return item?.thumbnail ||
+        item?.product?.thumbnail ||
+        item?.image ||
+        item?.imageUrl ||
+        item?.image_url ||
+        item?.product?.image ||
+        "";
     }
 
-    previousScrollY = currentY;
-  }
-
-  window.addEventListener("scroll", () => {
-    if (!ticking) {
-      window.requestAnimationFrame(updateStickyState);
-      ticking = true;
-    }
-  }, { passive: true });
-
-  window.addEventListener("resize", () => {
-    if (!isMobile()) {
-      wrapper.classList.remove("is-sticky");
-      document.body.classList.remove("mobile-pay-visible");
-    }
-
-    previousScrollY = window.scrollY;
-  });
-})();
-
-/* =========================
-   INITIALIZE CHECKOUT
-========================= */
-
-async function init() {
-  try {
-    /*
-     * Load cart, saved addresses, and current admin
-     * taxes/discount settings.
-     */
-    const results = await Promise.allSettled([
-      loadCart(),
-      loadAddresses(),
-      loadPricingSettings()
-    ]);
-
-    const cartResult = results[0];
-    const addressResult = results[1];
-    const pricingResult = results[2];
-
-    if (cartResult.status === "rejected") {
-      console.error(
-        "Cart loading error:",
-        cartResult.reason
+    function getQuantity(item) {
+      const quantity = Number(
+        item?.quantity ??
+        item?.qty ??
+        1
       );
 
-      showNotice(
-        cartResult.reason.message ||
-        "Unable to load your cart.",
-        "error"
-      );
+      return Number.isFinite(quantity) && quantity > 0
+        ? quantity
+        : 1;
     }
 
-    if (addressResult.status === "rejected") {
-      console.error(
-        "Address loading error:",
-        addressResult.reason
+    function getProductPrice(item) {
+      const price = Number(
+        item?.price ??
+        item?.product?.price ??
+        item?.unitPrice ??
+        item?.unit_price ??
+        0
       );
 
-      $("addressLoading").hidden = true;
-      $("addressEmpty").hidden = false;
-      $("addressEmpty").textContent =
-        "Unable to load saved addresses. Please try again.";
+      return Number.isFinite(price) && price > 0 ? price : 0;
     }
 
-    if (pricingResult.status === "rejected") {
-      console.error(
-        "Pricing settings error:",
-        pricingResult.reason
-      );
+    function getOriginalUnitPrice(item) {
+      const price = getProductPrice(item);
 
-      $("pricingLoading").textContent =
-        "Unable to load taxes and discounts. Please refresh and try again.";
+      const currency = String(
+        item?.currency ||
+        item?.product?.currency ||
+        "USD"
+      ).toUpperCase();
 
-      showNotice(
-        "Current tax and discount settings could not be loaded. Payment is disabled to prevent an incorrect total.",
-        "error"
-      );
-    } else {
+      return currency === "USD"
+        ? price * USD_TO_INR
+        : price;
+    }
+
+    let taxSettings = [
+      { id: "shipping", title: "Shipping", percent: 2 },
+      { id: "packaging", title: "Packaging", percent: 3 },
+      { id: "platform-fee", title: "Platform fee", percent: 1 },
+      { id: "delivery-charges", title: "Delivery charges", percent: 2 },
+      { id: "gst", title: "GST", percent: 18 }
+    ];
+    let eligibleDiscounts = [];
+
+    function getAppliedDiscount() {
+      if (!eligibleDiscounts.length) return null;
+      return eligibleDiscounts.slice().sort((a, b) => Number(b.percent) - Number(a.percent))[0];
+    }
+
+    async function getCustomerEmail() {
+      try {
+        const cached = JSON.parse(localStorage.getItem("shoppy_profile_cache_v1") || "null");
+        if (cached?.user?.email && Number(cached.expiresAt) > Date.now()) {
+          return String(cached.user.email).trim().toLowerCase();
+        }
+      } catch (_) {}
+      try {
+        const response = await fetch("/api/profile", {
+          method: "GET", credentials: "same-origin", cache: "no-store",
+          headers: { Accept: "application/json" }
+        });
+        const data = await response.json().catch(() => ({}));
+        if (response.ok && data.success && data.user?.email) {
+          return String(data.user.email).trim().toLowerCase();
+        }
+      } catch (_) {}
+      return "";
+    }
+
+    async function loadPricingSettings() {
+      const email = await getCustomerEmail();
+      const tasks = [
+        fetch("https://apisequizeshoplite.vercel.app/api/admin/taxes", {
+          method: "GET", headers: { Accept: "application/json" }, cache: "no-store"
+        }).then(async response => {
+          const data = await response.json().catch(() => ({}));
+          if (response.ok && data.success && Array.isArray(data.taxes)) {
+            const valid = data.taxes.filter(t => t && String(t.title || "").trim() &&
+              Number.isFinite(Number(t.percent)) && Number(t.percent) >= 0 && Number(t.percent) <= 100);
+            if (valid.length) taxSettings = valid;
+          }
+        }).catch(error => console.warn("Tax settings unavailable; using cart defaults.", error)),
+        fetch("https://apisequizeshoplite.vercel.app/api/admin/discounts" +
+          (email ? "?email=" + encodeURIComponent(email) : ""), {
+          method: "GET", headers: { Accept: "application/json" }, cache: "no-store"
+        }).then(async response => {
+          const data = await response.json().catch(() => ({}));
+          if (response.ok && data.success && Array.isArray(data.discounts)) {
+            eligibleDiscounts = data.discounts.filter(item => item &&
+              Number(item.percent) > 0 && Number(item.percent) <= 100);
+          }
+        }).catch(error => console.warn("Discount settings unavailable.", error))
+      ];
+      await Promise.all(tasks);
+    }
+
+    function getTotals() {
+      const subtotal = cartItems.reduce((sum, item) =>
+        sum + getOriginalUnitPrice(item) * getQuantity(item), 0);
+      const discount = getAppliedDiscount();
+      const discountAmount = discount ? subtotal * (Number(discount.percent) || 0) / 100 : 0;
+      const chargeBase = Math.max(0, subtotal - discountAmount);
+      const taxes = taxSettings.map(tax => ({
+        ...tax,
+        amount: chargeBase * (Number(tax.percent) || 0) / 100
+      }));
+      const total = chargeBase + taxes.reduce((sum, tax) => sum + tax.amount, 0);
+      return { subtotal, discount, discountAmount, taxes, total, saved: discountAmount };
+    }
+
+    function renderCart() {
       renderTotals();
+      updatePayButton();
     }
 
-  } catch (error) {
-    console.error(
-      "Checkout initialization error:",
-      error
-    );
+    function renderTotals() {
+      const totals = getTotals();
+      $("originalPrice").textContent = money(totals.subtotal);
+      const discountRow = $("discountRow");
+      discountRow.hidden = !totals.discount || totals.discountAmount <= 0;
+      if (totals.discount) {
+        const percent = Number(totals.discount.percent).toFixed(2).replace(/\.?0+$/, "");
+        $("discountLabel").textContent = `${totals.discount.title || "Discount"} (${percent}% off)`;
+      }
+      $("discountAmount").textContent = "−" + money(totals.discountAmount);
+      $("taxRows").innerHTML = totals.taxes.map(tax => `
+        <div class="tax-row">
+          <span>${escapeHTML(tax.title)} (${Number(tax.percent).toFixed(2).replace(/\.?0+$/, "")}%)</span>
+          <strong>${money(tax.amount)}</strong>
+        </div>
+      `).join("");
+      $("totalPrice").textContent = money(totals.total);
+      const savings = $("savingsText");
+      savings.hidden = !totals.discount || totals.discountAmount <= 0;
+      savings.textContent = savings.hidden ? "" : `You save ${money(totals.discountAmount)} with ${totals.discount.title || "this discount"}.`;
+    }
 
-    showNotice(
-      error.message ||
-      "Unable to load checkout information.",
-      "error"
-    );
+    function getAddressId(address) {
+      return address?.addressId ||
+        address?.address_id ||
+        address?.id ||
+        address?.key ||
+        null;
+    }
 
-  } finally {
-    loadingData = false;
-    updatePayButton();
-  }
-}
+    function normalizeAddresses(data) {
+      if (Array.isArray(data)) return data;
 
-init();
-</script>
+      if (Array.isArray(data.addresses)) return data.addresses;
+
+      if (Array.isArray(data.data)) return data.data;
+
+      return [];
+    }
+
+    function getAddressLine(address) {
+      return [
+        address?.addressLine1 || address?.address1 || address?.street,
+        address?.addressLine2 || address?.address2,
+        address?.landmark,
+        address?.city,
+        address?.state,
+        address?.pincode || address?.postalCode || address?.zip,
+        address?.country
+      ].filter(Boolean).join(", ") ||
+        address?.address ||
+        "";
+    }
+
+    function renderAddresses() {
+      $("addressLoading").hidden = true;
+
+      const container = $("addressList");
+      const empty = $("addressEmpty");
+
+      if (!addresses.length) {
+        container.innerHTML = "";
+        empty.hidden = false;
+        updatePayButton();
+        return;
+      }
+
+      empty.hidden = true;
+
+      if (!selectedAddressId) {
+        const defaultAddress = addresses.find((address) =>
+          address.default === true ||
+          address.isDefault === true ||
+          address.is_default === true
+        );
+
+        selectedAddressId = getAddressId(
+          defaultAddress || addresses[0]
+        );
+      }
+
+      container.innerHTML = addresses.map((address) => {
+        const id = getAddressId(address);
+
+        const name =
+          address.name ||
+          address.fullName ||
+          address.full_name ||
+          address.recipient ||
+          "Delivery address";
+
+        const phone =
+          address.phone ||
+          address.mobile ||
+          address.phoneNumber ||
+          "";
+
+        const selected =
+          String(id) === String(selectedAddressId);
+
+        const defaultAddress =
+          address.default === true ||
+          address.isDefault === true ||
+          address.is_default === true;
+
+        return `
+          <label class="address-option">
+
+            <input
+              type="radio"
+              name="selectedAddress"
+              value="${escapeHTML(id || "")}"
+              ${selected ? "checked" : ""}
+              ${id ? "" : "disabled"}
+            >
+
+            <div class="address-content">
+
+              <span class="address-name">
+                ${escapeHTML(name)}
+              </span>
+
+              <div class="address-text">
+                ${escapeHTML(getAddressLine(address))}
+              </div>
+
+              ${
+                phone
+                  ? `<span class="address-phone">${escapeHTML(phone)}</span>`
+                  : ""
+              }
+
+              ${
+                defaultAddress
+                  ? `<span class="address-tag">DEFAULT ADDRESS</span>`
+                  : ""
+              }
+
+            </div>
+
+          </label>
+        `;
+      }).join("");
+
+      container.querySelectorAll(
+        'input[name="selectedAddress"]'
+      ).forEach((radio) => {
+        radio.addEventListener("change", () => {
+          selectedAddressId = radio.value;
+          updatePayButton();
+        });
+      });
+
+      updatePayButton();
+    }
+
+    function setButton(text, disabled, icon = "ph-lock-key") {
+      const buttons = [$("payButton"), $("mobilePayButton")].filter(Boolean);
+      const markup = `
+        <i class="ph ${icon}"></i>
+        <span>${escapeHTML(text)}</span>
+      `;
+
+      buttons.forEach((button) => {
+        button.disabled = disabled;
+        button.innerHTML = markup;
+      });
+    }
+
+    function updatePayButton() {
+      if (checkoutStarted) {
+        setButton("Opening Cashfree checkout...", true, "ph-spinner");
+        return;
+      }
+
+      if (loadingData) {
+        setButton("Loading checkout...", true);
+        return;
+      }
+
+      if (!cartItems.length && !currentOrder) {
+        setButton("Your cart is empty", true, "ph-shopping-bag");
+        return;
+      }
+
+      if (!currentOrder && !selectedAddressId) {
+        setButton("Select delivery address", true, "ph-map-pin");
+        return;
+      }
+
+      const existingOrderId = getOrderId(currentOrder);
+
+      if (existingOrderId) {
+        setButton("Continue to payment", false, "ph-lock-key");
+        return;
+      }
+
+      setButton(
+        `Pay ${$("totalPrice").textContent}`,
+        false,
+        "ph-lock-key"
+      );
+    }
+
+    async function loadCart() {
+      const data = await apiRequest(API.cart);
+
+      /*
+       * Preserve the original cart API response:
+       * { success, items, totalPrice }
+       */
+      cartItems = Array.isArray(data.items)
+        ? data.items
+        : Array.isArray(data.cart)
+          ? data.cart
+          : Array.isArray(data.products)
+            ? data.products
+            : Array.isArray(data.data)
+              ? data.data
+              : Array.isArray(data)
+                ? data
+                : [];
+
+      renderCart();
+    }
+
+    async function loadAddresses() {
+      const data = await apiRequest(API.addresses);
+
+      addresses = normalizeAddresses(data);
+
+      renderAddresses();
+    }
+
+    async function loadExistingOrder() {
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get("orderId");
+
+      if (!orderId) return;
+
+      /*
+       * If a specific order was requested, load its current status.
+       * Do not navigate away merely because an orderId is present.
+       */
+      try {
+        const data = await apiRequest(API.checkout, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "verify-payment",
+            orderId
+          })
+        });
+
+        const status = getPaymentStatus(data);
+
+        if (
+          status === "PAID" ||
+          status === "SUCCESS" ||
+          status === "SUCCESSFUL" ||
+          status === "COMPLETED"
+        ) {
+          redirectToOrderStatus(orderId);
+          return;
+        }
+
+        currentOrder = {
+          orderId,
+          paymentStatus: status
+        };
+
+        $("orderReference").textContent = `Order ID: ${orderId}`;
+
+      } catch (error) {
+        console.error("Existing order verification failed:", error);
+
+        /*
+         * Don't redirect automatically if verification fails.
+         * The user can retry through the Pay button.
+         */
+        showNotice(
+          "We could not verify the existing order. Please try again.",
+          "info"
+        );
+      }
+    }
+
+    function applyServerPricing(order) {
+      if (!order || !Number.isFinite(Number(order.totalINR))) return;
+      if (Number.isFinite(Number(order.subtotalINR))) {
+        $("originalPrice").textContent = money(order.subtotalINR);
+      }
+      const discount = order.discount;
+      const discountRow = $("discountRow");
+      discountRow.hidden = !discount || !(Number(discount.amountINR) > 0);
+      if (discount) {
+        const percent = Number(discount.percent || 0).toFixed(2).replace(/\.?0+$/, "");
+        $("discountLabel").textContent = `${discount.title || "Discount"} (${percent}% off)`;
+        $("discountAmount").textContent = "−" + money(discount.amountINR);
+      } else {
+        $("discountAmount").textContent = "−" + money(0);
+      }
+      $("taxRows").innerHTML = (Array.isArray(order.taxes) ? order.taxes : []).map(tax => `
+        <div class="tax-row">
+          <span>${escapeHTML(tax.title)} (${Number(tax.percent || 0).toFixed(2).replace(/\.?0+$/, "")}%)</span>
+          <strong>${money(tax.amountINR)}</strong>
+        </div>
+      `).join("");
+      $("totalPrice").textContent = money(order.totalINR);
+      const savings = $("savingsText");
+      savings.hidden = !discount || !(Number(discount.amountINR) > 0);
+      savings.textContent = savings.hidden ? "" : `You save ${money(discount.amountINR)} with ${discount.title || "this discount"}.`;
+      updatePayButton();
+    }
+
+    async function createOrderOnce() {
+      if (currentOrder && getOrderId(currentOrder)) {
+        return currentOrder;
+      }
+
+      const data = await apiRequest(API.checkout, {
+        method: "POST",
+        body: JSON.stringify({
+          addressId: selectedAddressId
+        })
+      });
+
+      /*
+       * The checkout API returns the created order.
+       * Expected fields include orderId, totalINR, items and discount data.
+       */
+      const order = data.order || data.data?.order || data;
+      const orderId = getOrderId(order);
+
+      if (!orderId) {
+        throw new Error(
+          data.message ||
+          "The server did not return an order ID."
+        );
+      }
+
+      currentOrder = {
+        ...order,
+        orderId
+      };
+
+      applyServerPricing(currentOrder);
+      $("orderReference").textContent = `Order ID: ${orderId}`;
+
+      return currentOrder;
+    }
+
+    async function createCashfreePaymentSession(orderId) {
+      const data = await apiRequest(API.checkout, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "create-payment",
+          orderId
+        })
+      });
+
+      const paymentSessionId =
+        data.paymentSessionId ||
+        data.payment_session_id ||
+        data.paymentSession?.paymentSessionId ||
+        data.payment_session?.payment_session_id ||
+        data.data?.paymentSessionId ||
+        data.data?.payment_session_id;
+
+      if (!paymentSessionId) {
+        throw new Error(
+          data.message ||
+          data.error ||
+          "Cashfree did not return a payment session."
+        );
+      }
+
+      return paymentSessionId;
+    }
+
+    async function verifyPaymentOnServer(orderId) {
+      return apiRequest(API.checkout, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "verify-payment",
+          orderId
+        })
+      });
+    }
+
+    async function openCashfreeGateway(paymentSessionId) {
+      if (typeof window.Cashfree !== "function") {
+        throw new Error(
+          "Cashfree SDK did not load. Please refresh the page and try again."
+        );
+      }
+
+      const cashfree = window.Cashfree({
+        mode: CASHFREE_MODE
+      });
+
+      /*
+       * IMPORTANT:
+       *
+       * Cashfree is opened FIRST.
+       * We wait for its checkout promise to resolve or reject.
+       * Only after that does the caller verify the result and navigate.
+       *
+       * Do not redirect to order-status before this promise settles.
+       */
+      return cashfree.checkout({
+        paymentSessionId,
+        redirectTarget: "_modal"
+      });
+    }
+
+    async function handlePayClick() {
+      if (checkoutStarted) return;
+
+      hideNotice();
+
+      if (!currentOrder && !selectedAddressId) {
+        showNotice("Please select a delivery address first.", "error");
+        return;
+      }
+
+      if (!currentOrder && !cartItems.length) {
+        showNotice("Your cart is empty.", "error");
+        return;
+      }
+
+      checkoutStarted = true;
+      updatePayButton();
+
+      let orderId = null;
+      let gatewayReturned = false;
+
+      try {
+        /*
+         * STEP 1: Create or reuse the order.
+         */
+        const order = await createOrderOnce();
+
+        orderId = getOrderId(order);
+
+        if (!orderId) {
+          throw new Error("Order ID was not returned.");
+        }
+
+        /*
+         * STEP 2: Ask the server to create the Cashfree payment session.
+         */
+        const paymentSessionId =
+          await createCashfreePaymentSession(orderId);
+
+        /*
+         * STEP 3: Open Cashfree Gateway.
+         * This MUST happen before navigating to order-status.
+         */
+        try {
+          const checkoutResult =
+            await openCashfreeGateway(paymentSessionId);
+
+          gatewayReturned = true;
+
+          console.log(
+            "Cashfree checkout returned:",
+            checkoutResult
+          );
+
+        } catch (gatewayError) {
+          /*
+           * Cashfree can reject its checkout promise when the user
+           * closes the modal or when checkout encounters an error.
+           *
+           * Still verify with the server: the payment could have
+           * succeeded before the modal closed or an error occurred.
+           */
+          gatewayReturned = true;
+
+          console.warn(
+            "Cashfree checkout closed or returned an error:",
+            gatewayError
+          );
+        }
+
+        /*
+         * STEP 4: Only after Cashfree returns, verify on the server.
+         * Never trust only a frontend success response.
+         */
+        if (gatewayReturned) {
+          try {
+            const verification =
+              await verifyPaymentOnServer(orderId);
+
+            console.log(
+              "Server payment verification:",
+              verification
+            );
+
+          } catch (verificationError) {
+            /*
+             * A verification network error is not proof of payment
+             * failure. The status page will retry verification.
+             */
+            console.error(
+              "Payment verification request failed:",
+              verificationError
+            );
+          }
+
+          /*
+           * STEP 5: Open Order Status Page AFTER the Cashfree result.
+           */
+          redirectToOrderStatus(orderId);
+          return;
+        }
+
+      } catch (error) {
+        console.error("Checkout initialization failed:", error);
+
+        /*
+         * If we have an order ID but failed before Cashfree opened,
+         * do NOT redirect straight to the status page.
+         * Show the error so the customer can retry.
+         */
+        showNotice(
+          error.message ||
+          "Unable to start Cashfree checkout. Please try again.",
+          "error"
+        );
+
+        checkoutStarted = false;
+        updatePayButton();
+      }
+    }
+
+    $("payButton").addEventListener("click", handlePayClick);
+    $("mobilePayButton").addEventListener("click", handlePayClick);
+
+    async function init() {
+      try {
+        /*
+         * Load data before enabling Pay Now.
+         */
+        const results = await Promise.allSettled([
+          loadPricingSettings(),
+          loadCart(),
+          loadAddresses()
+        ]);
+
+        const cartResult = results[1];
+        const addressResult = results[2];
+
+        if (cartResult.status === "rejected") {
+          console.error("Cart loading error:", cartResult.reason);
+
+          showNotice(
+            "Unable to load your cart. Please refresh and try again.",
+            "error"
+          );
+        }
+
+        renderTotals();
+
+        if (addressResult.status === "rejected") {
+          console.error(
+            "Address loading error:",
+            addressResult.reason
+          );
+
+          $("addressLoading").hidden = true;
+          $("addressEmpty").hidden = false;
+
+          $("addressEmpty").textContent =
+            "Unable to load saved addresses. Please sign in and try again.";
+        }
+
+        await loadExistingOrder();
+
+      } catch (error) {
+        console.error("Checkout initialization error:", error);
+
+        showNotice(
+          "Unable to load checkout information. Please refresh the page.",
+          "error"
+        );
+
+      } finally {
+        loadingData = false;
+        updatePayButton();
+      }
+    }
+
+    init();
+  </script>
 
 </body>
 </html>
