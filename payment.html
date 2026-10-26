@@ -16,21 +16,17 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
 
-  <!-- Phosphor Regular Icons -->
   <link rel="stylesheet"
     href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
 
-  <!-- Cashfree Payment SDK -->
   <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
-  <!-- Global design -->
   <link rel="stylesheet" href="/global.css">
 
   <style>
-    /* Sirf is page ka layout. Baaki sab global.css se aata hai */
-
     main {
       width: min(1050px, 90%);
+      max-width: 1050px;
       margin: 34px auto 65px;
     }
 
@@ -56,7 +52,7 @@
     .checkout-layout {
       display: grid;
       grid-template-columns: minmax(0, 1.3fr) minmax(300px, .8fr);
-      gap: 58px;
+      gap: 32px;
       align-items: start;
     }
 
@@ -97,8 +93,6 @@
       background: var(--line);
       margin: 27px 0;
     }
-
-    /* ADDRESS OPTIONS */
 
     .address-list {
       display: grid;
@@ -168,8 +162,6 @@
       font-weight: 800;
     }
 
-    /* PAYMENT METHOD */
-
     .payment-option {
       display: flex;
       align-items: center;
@@ -219,8 +211,6 @@
       font-weight: 800;
       white-space: nowrap;
     }
-
-    /* PRODUCT LIST */
 
     .product-list {
       display: grid;
@@ -278,14 +268,6 @@
       margin-top: 5px;
     }
 
-    .product-discount {
-      display: inline-block;
-      margin-top: 7px;
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--green);
-    }
-
     .product-pricing {
       text-align: right;
       flex-shrink: 0;
@@ -298,17 +280,6 @@
       font-weight: 800;
       white-space: nowrap;
     }
-
-    .product-original-price {
-      display: block;
-      margin-top: 5px;
-      font-size: 11px;
-      color: #969991;
-      text-decoration: line-through;
-      white-space: nowrap;
-    }
-
-    /* SUMMARY */
 
     .summary-heading {
       margin-bottom: 20px;
@@ -331,10 +302,6 @@
       white-space: nowrap;
     }
 
-    .discount-row strong {
-      color: var(--green);
-    }
-
     .total-row {
       padding-top: 18px;
       margin-top: 18px;
@@ -350,17 +317,6 @@
       font-size: 25px;
       font-weight: 800;
       letter-spacing: -.7px;
-    }
-
-    .savings-box {
-      padding: 12px 14px;
-      margin: 18px 0;
-      border-radius: 9px;
-      background: #ecfdf3;
-      color: #166534;
-      font-size: 12px;
-      font-weight: 700;
-      line-height: 1.6;
     }
 
     .order-reference {
@@ -426,7 +382,6 @@
     @media (min-width: 761px) {
       .summary-column {
         position: sticky;
-        /* fixed header ke neeche */
         top: calc(var(--header-h) + 25px);
       }
     }
@@ -450,11 +405,11 @@
       }
     }
 
-    /* Keep the payment header consistent with the addresses page. */
     .topbar {
+      width: 100% !important;
       height: 64px !important;
       min-height: 64px !important;
-      padding: 0 5% !important;
+      padding: 0 max(5%, calc((100% - 1050px) / 2)) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
@@ -462,6 +417,7 @@
       border-bottom: 1px solid #E5E7EB !important;
       box-shadow: none !important;
     }
+
     .payment-back {
       display: flex !important;
       width: 40px !important;
@@ -476,9 +432,56 @@
       font-size: 24px !important;
       line-height: 1 !important;
       box-shadow: none !important;
+      text-decoration: none !important;
+      border-bottom: 0 !important;
+      outline-offset: 2px !important;
+      position: relative !important;
     }
-    .payment-back:hover { background: #F5F5F2 !important; }
-    .discount-row { display: none !important; }
+
+    .payment-back::before,
+    .payment-back::after,
+    .payment-back i::before,
+    .payment-back i::after {
+      content: none !important;
+      display: none !important;
+    }
+
+    .payment-back i {
+      display: block !important;
+      border: 0 !important;
+      text-decoration: none !important;
+      box-shadow: none !important;
+      background: none !important;
+    }
+
+    .topbar .payment-back,
+    .topbar .payment-back:visited,
+    .topbar .payment-back:hover,
+    .topbar .payment-back:active {
+      border: 0 !important;
+      border-bottom: 0 !important;
+      text-decoration: none !important;
+      background-image: none !important;
+      box-shadow: none !important;
+    }
+
+    .payment-back:hover {
+      background: #F5F5F2 !important;
+    }
+
+    .discount-row {
+      display: none !important;
+    }
+
+    @media (min-width: 761px) {
+      main {
+        width: min(1050px, 90%) !important;
+        max-width: 1050px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+    }
+
     .topbar .brand {
       margin-left: auto !important;
       font-family: "Manrope", sans-serif !important;
@@ -488,1015 +491,20 @@
       letter-spacing: -.7px !important;
       color: #2962FF !important;
     }
-
   </style>
 </head>
 
 <body>
 
   <header class="topbar">
-    <a href="javascript:history.back()" class="payment-back nav-icon" aria-label="Go back" title="Go back">
+    <a href="javascript:history.back()"
+       class="payment-back nav-icon"
+       aria-label="Go back"
+       title="Go back">
       <i class="ph ph-arrow-left" aria-hidden="true"></i>
     </a>
-    <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
+
+    <a href="/home.html" class="brand" aria-label="Shoppy home">
+      Shoppy.
+    </a>
   </header>
-
-  <main>
-
-    <div class="page-heading">
-      <h1>Complete your order</h1>
-      <p>Review your order details and complete your secure payment.</p>
-    </div>
-
-    <div id="pageNotice" class="notice"></div>
-
-    <div class="checkout-layout">
-
-      <!-- LEFT SIDE -->
-      <section class="checkout-main">
-
-        <!-- ADDRESS SECTION -->
-        <section class="checkout-section">
-
-          <div class="section-heading">
-            <h2>
-              <span class="section-number">01</span>
-              Delivery address
-            </h2>
-          </div>
-
-          <div id="addressLoading" class="loading">
-            Loading saved addresses...
-          </div>
-
-          <div id="addressList" class="address-list"></div>
-
-          <div id="addressEmpty" class="empty-state" hidden>
-            No saved delivery address was found.
-          </div>
-
-          <a href="/user/account/redirect?mode=checkout"
-             class="text-link">
-            <i class="ph ph-plus-circle"></i>
-            Manage delivery addresses
-          </a>
-
-        </section>
-
-        <div class="section-divider"></div>
-
-        <!-- PAYMENT METHOD SECTION -->
-        <section class="checkout-section">
-
-          <div class="section-heading">
-            <h2>
-              <span class="section-number">02</span>
-              Payment method
-            </h2>
-          </div>
-
-          <div class="payment-option">
-
-            <div class="payment-method-left">
-
-              <div class="payment-icon">
-                <i class="ph ph-shield-check"></i>
-              </div>
-
-              <div>
-                <span class="payment-method-title">
-                  Cashfree Payments
-                </span>
-
-                <div class="payment-method-description">
-                  Secure online payment using the methods available at checkout.
-                </div>
-              </div>
-
-            </div>
-
-            <span class="secure-badge">SECURE</span>
-
-          </div>
-
-        </section>
-
-      </section>
-
-      <!-- RIGHT SIDE -->
-      <aside class="summary-column">
-
-        <section class="checkout-section">
-
-          <div class="section-heading summary-heading">
-            <h2>
-              <span class="section-number">03</span>
-              Order summary
-            </h2>
-          </div>
-
-          <div id="cartLoading" class="loading">
-            Loading your products...
-          </div>
-
-          <div id="cartItems" class="product-list"></div>
-
-          <div class="section-divider"></div>
-
-          <div class="price-row">
-            <span>Subtotal</span>
-            <strong id="originalPrice">₹0.00</strong>
-          </div>
-
-          <div class="price-row discount-row">
-            <span>Discount</span>
-            <strong id="discountAmount">₹0.00</strong>
-          </div>
-
-          <div class="price-row">
-            <span>Delivery</span>
-            <strong>FREE</strong>
-          </div>
-
-          <div class="price-row total-row">
-            <span>Total to pay</span>
-            <strong id="totalPrice">₹0.00</strong>
-          </div>
-
-          <div id="savingsText" class="savings-box" hidden></div>
-
-          <button id="payButton" class="pay-button" disabled>
-            <i class="ph ph-lock-key"></i>
-            <span>Loading checkout...</span>
-          </button>
-
-          <div id="orderReference" class="order-reference"></div>
-
-          <a href="/orders.html" class="orders-link">
-            View my orders
-          </a>
-
-          <p class="payment-footnote">
-            Your payment is processed securely by Cashfree.
-            Payment confirmation is verified by our server.
-          </p>
-
-        </section>
-
-      </aside>
-
-    </div>
-
-  </main>
-
-  <script>
-    "use strict";
-
-    const USD_TO_INR = 85;
-    const CASHFREE_MODE = "production";
-
-    const ORDER_STATUS_URL = "/order-status.html";
-
-    const API = {
-      cart: "/api/cart",
-      addresses: "/api/addresses",
-      checkout: "/api/checkout/order"
-    };
-
-    let cartItems = [];
-    let addresses = [];
-    let selectedAddressId = null;
-    let currentOrder = null;
-
-    let checkoutStarted = false;
-    let loadingData = true;
-
-    const $ = (id) => document.getElementById(id);
-
-    function money(value) {
-      return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(Number(value) || 0);
-    }
-
-    function escapeHTML(value) {
-      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      })[char]);
-    }
-
-    function showNotice(message, type = "info") {
-      const notice = $("pageNotice");
-
-      notice.textContent = message;
-      notice.className = `notice show ${type}`;
-    }
-
-    function hideNotice() {
-      $("pageNotice").className = "notice";
-      $("pageNotice").textContent = "";
-    }
-
-    async function apiRequest(url, options = {}) {
-      const response = await fetch(url, {
-        credentials: "same-origin",
-        cache: "no-store",
-        ...options,
-        headers: {
-          "Content-Type": "application/json",
-          ...(options.headers || {})
-        }
-      });
-
-      const raw = await response.text();
-
-      let data;
-
-      try {
-        data = raw ? JSON.parse(raw) : {};
-      } catch {
-        throw new Error("The server returned an invalid response.");
-      }
-
-      if (!response.ok || data.success === false) {
-        const error = new Error(
-          data.message ||
-          data.error ||
-          `Request failed (${response.status})`
-        );
-
-        error.status = response.status;
-        error.data = data;
-
-        throw error;
-      }
-
-      return data;
-    }
-
-    function getOrderId(order) {
-      return order?.orderId ||
-        order?.order_id ||
-        order?.id ||
-        order?.order?.orderId ||
-        order?.order?.order_id ||
-        null;
-    }
-
-    function getPaymentStatus(data) {
-      return String(
-        data?.paymentStatus ||
-        data?.payment_status ||
-        data?.order?.paymentStatus ||
-        data?.order?.payment_status ||
-        data?.status ||
-        ""
-      ).toUpperCase();
-    }
-
-    function redirectToOrderStatus(orderId) {
-      if (!orderId) {
-        showNotice(
-          "The order ID is missing. Please check My Orders before trying again.",
-          "error"
-        );
-
-        return;
-      }
-
-      window.location.assign(
-        `${ORDER_STATUS_URL}?orderId=${encodeURIComponent(orderId)}`
-      );
-    }
-
-    /*
-     * PRODUCT DATA
-     *
-     * Uses the cart item's thumbnail first, preserving the original
-     * product-image field. Additional image fields are fallbacks.
-     */
-
-    function getProductName(item) {
-      return item?.name ||
-        item?.title ||
-        item?.productName ||
-        item?.product?.name ||
-        "Product";
-    }
-
-    function getProductThumbnail(item) {
-      return item?.thumbnail ||
-        item?.product?.thumbnail ||
-        item?.image ||
-        item?.imageUrl ||
-        item?.image_url ||
-        item?.product?.image ||
-        "";
-    }
-
-    function getQuantity(item) {
-      const quantity = Number(
-        item?.quantity ??
-        item?.qty ??
-        1
-      );
-
-      return Number.isFinite(quantity) && quantity > 0
-        ? quantity
-        : 1;
-    }
-
-    function getProductPrice(item) {
-      const price = Number(
-        item?.price ??
-        item?.product?.price ??
-        item?.unitPrice ??
-        item?.unit_price ??
-        0
-      );
-
-      return Number.isFinite(price) && price > 0 ? price : 0;
-    }
-
-    function getOriginalUnitPrice(item) {
-      const price = getProductPrice(item);
-
-      const currency = String(
-        item?.currency ||
-        item?.product?.currency ||
-        "INR"
-      ).toUpperCase();
-
-      return currency === "USD"
-        ? price * USD_TO_INR
-        : price;
-    }
-
-    function getTotals() {
-      let original = 0;
-
-      for (const item of cartItems) {
-        original +=
-          getOriginalUnitPrice(item) * getQuantity(item);
-      }
-
-      const discount = 0;
-
-      return {
-        original,
-        discount,
-        total: original
-      };
-    }
-
-    function renderCart() {
-      $("cartLoading").hidden = true;
-
-      const container = $("cartItems");
-
-      if (!cartItems.length) {
-        container.innerHTML = `
-          <div class="empty-state">
-            Your cart is empty.
-            <br>
-            <a href="/" class="text-link">
-              Continue shopping
-            </a>
-          </div>
-        `;
-
-        renderTotals();
-        updatePayButton();
-        return;
-      }
-
-      container.innerHTML = cartItems.map((item) => {
-        const name = getProductName(item);
-        const thumbnail = getProductThumbnail(item);
-        const quantity = getQuantity(item);
-
-        const originalUnit = getOriginalUnitPrice(item);
-        const originalTotal = originalUnit * quantity;
-
-        const imageMarkup = thumbnail
-          ? `
-            <img
-              class="product-image"
-              src="${escapeHTML(thumbnail)}"
-              alt="${escapeHTML(name)}"
-              loading="lazy"
-              onerror="
-                this.onerror=null;
-                this.style.display='none';
-                this.parentElement.innerHTML='<div style=&quot;width:100%;height:100%;display:grid;place-items:center;color:#9ca3af;font-size:25px&quot;><i class=&quot;ph ph-image&quot;></i></div>';
-              "
-            >
-          `
-          : `
-            <div style="
-              width:100%;
-              height:100%;
-              display:grid;
-              place-items:center;
-              color:#9ca3af;
-              font-size:25px;
-            ">
-              <i class="ph ph-image"></i>
-            </div>
-          `;
-
-        return `
-          <article class="product-item">
-
-            <div class="product-image-wrap">
-              ${imageMarkup}
-            </div>
-
-            <div class="product-details">
-
-              <div class="product-name">
-                ${escapeHTML(name)}
-              </div>
-
-              <div class="product-meta">
-                Quantity: ${quantity}
-              </div>
-
-
-            </div>
-
-            <div class="product-pricing">
-
-              <span class="product-final-price">
-                ${money(originalTotal)}
-              </span>
-
-
-            </div>
-
-          </article>
-        `;
-      }).join("");
-
-      renderTotals();
-      updatePayButton();
-    }
-
-    function renderTotals() {
-      const totals = getTotals();
-
-      $("originalPrice").textContent = money(totals.original);
-      $("discountAmount").textContent = money(0);
-      $("totalPrice").textContent = money(totals.total);
-
-      $("savingsText").hidden = true;
-    }
-
-    function getAddressId(address) {
-      return address?.addressId ||
-        address?.address_id ||
-        address?.id ||
-        address?.key ||
-        null;
-    }
-
-    function normalizeAddresses(data) {
-      if (Array.isArray(data)) return data;
-
-      if (Array.isArray(data.addresses)) return data.addresses;
-
-      if (Array.isArray(data.data)) return data.data;
-
-      return [];
-    }
-
-    function getAddressLine(address) {
-      return [
-        address?.addressLine1 || address?.address1 || address?.street,
-        address?.addressLine2 || address?.address2,
-        address?.landmark,
-        address?.city,
-        address?.state,
-        address?.pincode || address?.postalCode || address?.zip,
-        address?.country
-      ].filter(Boolean).join(", ") ||
-        address?.address ||
-        "";
-    }
-
-    function renderAddresses() {
-      $("addressLoading").hidden = true;
-
-      const container = $("addressList");
-      const empty = $("addressEmpty");
-
-      if (!addresses.length) {
-        container.innerHTML = "";
-        empty.hidden = false;
-        updatePayButton();
-        return;
-      }
-
-      empty.hidden = true;
-
-      if (!selectedAddressId) {
-        const defaultAddress = addresses.find((address) =>
-          address.default === true ||
-          address.isDefault === true ||
-          address.is_default === true
-        );
-
-        selectedAddressId = getAddressId(
-          defaultAddress || addresses[0]
-        );
-      }
-
-      container.innerHTML = addresses.map((address) => {
-        const id = getAddressId(address);
-
-        const name =
-          address.name ||
-          address.fullName ||
-          address.full_name ||
-          address.recipient ||
-          "Delivery address";
-
-        const phone =
-          address.phone ||
-          address.mobile ||
-          address.phoneNumber ||
-          "";
-
-        const selected =
-          String(id) === String(selectedAddressId);
-
-        const defaultAddress =
-          address.default === true ||
-          address.isDefault === true ||
-          address.is_default === true;
-
-        return `
-          <label class="address-option">
-
-            <input
-              type="radio"
-              name="selectedAddress"
-              value="${escapeHTML(id || "")}"
-              ${selected ? "checked" : ""}
-              ${id ? "" : "disabled"}
-            >
-
-            <div class="address-content">
-
-              <span class="address-name">
-                ${escapeHTML(name)}
-              </span>
-
-              <div class="address-text">
-                ${escapeHTML(getAddressLine(address))}
-              </div>
-
-              ${
-                phone
-                  ? `<span class="address-phone">${escapeHTML(phone)}</span>`
-                  : ""
-              }
-
-              ${
-                defaultAddress
-                  ? `<span class="address-tag">DEFAULT ADDRESS</span>`
-                  : ""
-              }
-
-            </div>
-
-          </label>
-        `;
-      }).join("");
-
-      container.querySelectorAll(
-        'input[name="selectedAddress"]'
-      ).forEach((radio) => {
-        radio.addEventListener("change", () => {
-          selectedAddressId = radio.value;
-          updatePayButton();
-        });
-      });
-
-      updatePayButton();
-    }
-
-    function setButton(text, disabled, icon = "ph-lock-key") {
-      const button = $("payButton");
-
-      button.disabled = disabled;
-
-      button.innerHTML = `
-        <i class="ph ${icon}"></i>
-        <span>${escapeHTML(text)}</span>
-      `;
-    }
-
-    function updatePayButton() {
-      if (checkoutStarted) {
-        setButton("Opening Cashfree checkout...", true, "ph-spinner");
-        return;
-      }
-
-      if (loadingData) {
-        setButton("Loading checkout...", true);
-        return;
-      }
-
-      if (!cartItems.length && !currentOrder) {
-        setButton("Your cart is empty", true, "ph-shopping-bag");
-        return;
-      }
-
-      if (!currentOrder && !selectedAddressId) {
-        setButton("Select delivery address", true, "ph-map-pin");
-        return;
-      }
-
-      const existingOrderId = getOrderId(currentOrder);
-
-      if (existingOrderId) {
-        setButton("Continue to payment", false, "ph-lock-key");
-        return;
-      }
-
-      setButton(
-        `Pay ${$("totalPrice").textContent}`,
-        false,
-        "ph-lock-key"
-      );
-    }
-
-    async function loadCart() {
-      const data = await apiRequest(API.cart);
-
-      /*
-       * Preserve the original cart API response:
-       * { success, items, totalPrice }
-       */
-      cartItems = Array.isArray(data.items)
-        ? data.items
-        : Array.isArray(data.cart)
-          ? data.cart
-          : Array.isArray(data.products)
-            ? data.products
-            : Array.isArray(data.data)
-              ? data.data
-              : Array.isArray(data)
-                ? data
-                : [];
-
-      renderCart();
-    }
-
-    async function loadAddresses() {
-      const data = await apiRequest(API.addresses);
-
-      addresses = normalizeAddresses(data);
-
-      renderAddresses();
-    }
-
-    async function loadExistingOrder() {
-      const params = new URLSearchParams(window.location.search);
-      const orderId = params.get("orderId");
-
-      if (!orderId) return;
-
-      /*
-       * If a specific order was requested, load its current status.
-       * Do not navigate away merely because an orderId is present.
-       */
-      try {
-        const data = await apiRequest(API.checkout, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "verify-payment",
-            orderId
-          })
-        });
-
-        const status = getPaymentStatus(data);
-
-        if (
-          status === "PAID" ||
-          status === "SUCCESS" ||
-          status === "SUCCESSFUL" ||
-          status === "COMPLETED"
-        ) {
-          redirectToOrderStatus(orderId);
-          return;
-        }
-
-        currentOrder = {
-          orderId,
-          paymentStatus: status
-        };
-
-        $("orderReference").textContent = `Order ID: ${orderId}`;
-
-      } catch (error) {
-        console.error("Existing order verification failed:", error);
-
-        /*
-         * Don't redirect automatically if verification fails.
-         * The user can retry through the Pay button.
-         */
-        showNotice(
-          "We could not verify the existing order. Please try again.",
-          "info"
-        );
-      }
-    }
-
-    async function createOrderOnce() {
-      if (currentOrder && getOrderId(currentOrder)) {
-        return currentOrder;
-      }
-
-      const data = await apiRequest(API.checkout, {
-        method: "POST",
-        body: JSON.stringify({
-          addressId: selectedAddressId
-        })
-      });
-
-      /*
-       * The checkout API returns the created order.
-       * Expected fields include orderId, totalINR, items and discount data.
-       */
-      const order = data.order || data.data?.order || data;
-      const orderId = getOrderId(order);
-
-      if (!orderId) {
-        throw new Error(
-          data.message ||
-          "The server did not return an order ID."
-        );
-      }
-
-      currentOrder = {
-        ...order,
-        orderId
-      };
-
-      $("orderReference").textContent = `Order ID: ${orderId}`;
-
-      return currentOrder;
-    }
-
-    async function createCashfreePaymentSession(orderId) {
-      const data = await apiRequest(API.checkout, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "create-payment",
-          orderId
-        })
-      });
-
-      const paymentSessionId =
-        data.paymentSessionId ||
-        data.payment_session_id ||
-        data.paymentSession?.paymentSessionId ||
-        data.payment_session?.payment_session_id ||
-        data.data?.paymentSessionId ||
-        data.data?.payment_session_id;
-
-      if (!paymentSessionId) {
-        throw new Error(
-          data.message ||
-          data.error ||
-          "Cashfree did not return a payment session."
-        );
-      }
-
-      return paymentSessionId;
-    }
-
-    async function verifyPaymentOnServer(orderId) {
-      return apiRequest(API.checkout, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "verify-payment",
-          orderId
-        })
-      });
-    }
-
-    async function openCashfreeGateway(paymentSessionId) {
-      if (typeof window.Cashfree !== "function") {
-        throw new Error(
-          "Cashfree SDK did not load. Please refresh the page and try again."
-        );
-      }
-
-      const cashfree = window.Cashfree({
-        mode: CASHFREE_MODE
-      });
-
-      /*
-       * IMPORTANT:
-       *
-       * Cashfree is opened FIRST.
-       * We wait for its checkout promise to resolve or reject.
-       * Only after that does the caller verify the result and navigate.
-       *
-       * Do not redirect to order-status before this promise settles.
-       */
-      return cashfree.checkout({
-        paymentSessionId,
-        redirectTarget: "_modal"
-      });
-    }
-
-    async function handlePayClick() {
-      if (checkoutStarted) return;
-
-      hideNotice();
-
-      if (!currentOrder && !selectedAddressId) {
-        showNotice("Please select a delivery address first.", "error");
-        return;
-      }
-
-      if (!currentOrder && !cartItems.length) {
-        showNotice("Your cart is empty.", "error");
-        return;
-      }
-
-      checkoutStarted = true;
-      updatePayButton();
-
-      let orderId = null;
-      let gatewayReturned = false;
-
-      try {
-        /*
-         * STEP 1: Create or reuse the order.
-         */
-        const order = await createOrderOnce();
-
-        orderId = getOrderId(order);
-
-        if (!orderId) {
-          throw new Error("Order ID was not returned.");
-        }
-
-        /*
-         * STEP 2: Ask the server to create the Cashfree payment session.
-         */
-        const paymentSessionId =
-          await createCashfreePaymentSession(orderId);
-
-        /*
-         * STEP 3: Open Cashfree Gateway.
-         * This MUST happen before navigating to order-status.
-         */
-        try {
-          const checkoutResult =
-            await openCashfreeGateway(paymentSessionId);
-
-          gatewayReturned = true;
-
-          console.log(
-            "Cashfree checkout returned:",
-            checkoutResult
-          );
-
-        } catch (gatewayError) {
-          /*
-           * Cashfree can reject its checkout promise when the user
-           * closes the modal or when checkout encounters an error.
-           *
-           * Still verify with the server: the payment could have
-           * succeeded before the modal closed or an error occurred.
-           */
-          gatewayReturned = true;
-
-          console.warn(
-            "Cashfree checkout closed or returned an error:",
-            gatewayError
-          );
-        }
-
-        /*
-         * STEP 4: Only after Cashfree returns, verify on the server.
-         * Never trust only a frontend success response.
-         */
-        if (gatewayReturned) {
-          try {
-            const verification =
-              await verifyPaymentOnServer(orderId);
-
-            console.log(
-              "Server payment verification:",
-              verification
-            );
-
-          } catch (verificationError) {
-            /*
-             * A verification network error is not proof of payment
-             * failure. The status page will retry verification.
-             */
-            console.error(
-              "Payment verification request failed:",
-              verificationError
-            );
-          }
-
-          /*
-           * STEP 5: Open Order Status Page AFTER the Cashfree result.
-           */
-          redirectToOrderStatus(orderId);
-          return;
-        }
-
-      } catch (error) {
-        console.error("Checkout initialization failed:", error);
-
-        /*
-         * If we have an order ID but failed before Cashfree opened,
-         * do NOT redirect straight to the status page.
-         * Show the error so the customer can retry.
-         */
-        showNotice(
-          error.message ||
-          "Unable to start Cashfree checkout. Please try again.",
-          "error"
-        );
-
-        checkoutStarted = false;
-        updatePayButton();
-      }
-    }
-
-    $("payButton").addEventListener("click", handlePayClick);
-
-    async function init() {
-      try {
-        /*
-         * Load data before enabling Pay Now.
-         */
-        const results = await Promise.allSettled([
-          loadCart(),
-          loadAddresses()
-        ]);
-
-        const cartResult = results[0];
-        const addressResult = results[1];
-
-        if (cartResult.status === "rejected") {
-          console.error("Cart loading error:", cartResult.reason);
-
-          showNotice(
-            "Unable to load your cart. Please refresh and try again.",
-            "error"
-          );
-        }
-
-        if (addressResult.status === "rejected") {
-          console.error(
-            "Address loading error:",
-            addressResult.reason
-          );
-
-          $("addressLoading").hidden = true;
-          $("addressEmpty").hidden = false;
-
-          $("addressEmpty").textContent =
-            "Unable to load saved addresses. Please sign in and try again.";
-        }
-
-        await loadExistingOrder();
-
-      } catch (error) {
-        console.error("Checkout initialization error:", error);
-
-        showNotice(
-          "Unable to load checkout information. Please refresh the page.",
-          "error"
-        );
-
-      } finally {
-        loadingData = false;
-        updatePayButton();
-      }
-    }
-
-    init();
-  </script>
-
-</body>
-</html>
