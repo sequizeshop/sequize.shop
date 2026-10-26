@@ -6152,21 +6152,13 @@
           method: "GET", headers: { Accept: "application/json" }, cache: "no-store"
         });
         const data = await response.json().catch(() => ({}));
-        // Only use a valid percentage explicitly returned by the admin discounts API.
-        // Never fall back to a product-feed discount or a hard-coded/default percentage.
         const discounts = response.ok && data.success && Array.isArray(data.discounts)
-          ? data.discounts.filter(item => {
-              if (!item || item.percent == null || item.percent === "") return false;
-              if (item.active === false || item.enabled === false || item.status === "inactive" || item.status === "expired") return false;
-              const value = Number(item.percent);
-              return Number.isFinite(value) && value > 0 && value <= 100;
-            })
+          ? data.discounts.filter(item => item && Number(item.percent) > 0 && Number(item.percent) <= 100)
           : [];
         const numericPercentages = discounts
           .map(item => Number(item.percent))
-          .filter(value => Number.isFinite(value) && value > 0 && value <= 100);
-        // Use the first valid API offer in API order; do not accidentally select
-        // a different, larger percentage (for example 60%) from the list.
+          .filter(value => Number.isFinite(value) && value > 0 && value <= 100)
+          .sort((a, b) => b - a);
         homeAdminDiscountPercent = numericPercentages.length ? numericPercentages[0] : 0;
 
         if (!numericPercentages.length) {
@@ -6183,12 +6175,7 @@
         if (allProducts.length) renderProducts(allProducts);
         if (searchProducts.length) renderSearchProducts(searchProducts);
       } catch (error) {
-        homeAdminDiscountPercent = 0;
         line.hidden = true;
-        line.textContent = "";
-        // If the API is unavailable, show only each product's listed/original price.
-        if (allProducts.length) renderProducts(allProducts);
-        if (searchProducts.length) renderSearchProducts(searchProducts);
         console.warn("Home discount offers unavailable.", error);
       }
     }
