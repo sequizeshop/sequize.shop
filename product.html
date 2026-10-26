@@ -170,25 +170,6 @@
       background: transparent;
     }
 
-    .breadcrumbs {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 28px;
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .breadcrumbs a:hover {
-      color: var(--primary);
-    }
-
-    .breadcrumbs i {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
     /* PRODUCT LAYOUT */
 
     .product-layout {
@@ -655,29 +636,43 @@
     /* DETAILS (divider rows) */
 
     .details-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 58px;
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      overflow: hidden;
     }
 
     .detail-row {
       display: grid;
-      grid-template-columns: minmax(110px, .8fr) minmax(0, 1.2fr);
-      gap: 12px;
-      padding: 15px 0;
+      grid-template-columns: minmax(150px, .8fr) minmax(0, 1.2fr);
+      gap: 16px;
+      align-items: center;
+      padding: 15px 18px;
       border-bottom: 1px solid var(--divider);
       font-size: 14px;
-      line-height: 1.7;
+      line-height: 1.6;
     }
 
-    .detail-row:last-child,
-    .detail-row:nth-last-child(2) { border-bottom: 0; }
+    .detail-row:last-child { border-bottom: 0; }
 
-    .detail-row span {
+    .detail-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
       color: var(--text-secondary);
     }
 
+    .detail-label i {
+      width: 20px;
+      flex: 0 0 20px;
+      color: var(--primary);
+      font-size: 19px;
+    }
+
     .detail-row strong {
+      color: var(--text-primary);
       font-weight: 600;
       overflow-wrap: anywhere;
     }
@@ -708,12 +703,12 @@
     }
 
     .review-card {
-      padding: 15px 0;
-      border-bottom: 1px solid var(--divider);
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
       min-width: 0;
     }
-
-    .review-card:last-child { border-bottom: 0; }
 
     .review-top {
       display: flex;
@@ -1044,10 +1039,16 @@
         padding-top: 24px;
       }
 
-      .details-grid,
+      .details-grid { display: block; }
       .reviews-grid {
         grid-template-columns: minmax(0, 1fr);
         column-gap: 0;
+        row-gap: 12px;
+      }
+      .detail-row {
+        grid-template-columns: minmax(115px, .85fr) minmax(0, 1.15fr);
+        gap: 10px;
+        padding: 13px 12px;
       }
 
       .related-grid,
@@ -1093,14 +1094,6 @@
   </header>
 
   <main class="container">
-
-    <nav class="breadcrumbs" aria-label="Breadcrumb">
-      <a href="/home.html">Home</a>
-      <i class="ph ph-caret-right"></i>
-      <span id="breadcrumbCategory">Product</span>
-      <i class="ph ph-caret-right"></i>
-      <span id="breadcrumbTitle">Details</span>
-    </nav>
 
     <div id="adminDiscountBar" class="admin-discount-bar" hidden aria-live="polite"></div>
 
@@ -1240,6 +1233,7 @@
     let wishlistItems = [];
     let wishlistLoaded = false;
     let wishlistBusy = false;
+    let adminDiscountPercent = 0;
 
     document.getElementById("year").textContent =
       new Date().getFullYear();
@@ -1283,7 +1277,8 @@
     }
 
     function getDiscountPercent(item) {
-      return Math.max(0, Math.min(100, Number(item && item.discountPercentage) || 0));
+      const productDiscount = Math.max(0, Math.min(100, Number(item && item.discountPercentage) || 0));
+      return adminDiscountPercent > 0 ? adminDiscountPercent : productDiscount;
     }
 
     function getDiscountedPrice(item) {
@@ -1418,8 +1413,14 @@
           : [];
         const unique = [...new Set(offers)].sort((a, b) => b - a);
         if (!unique.length) { bar.hidden = true; bar.textContent = ""; return; }
+        adminDiscountPercent = unique[0];
         bar.textContent = `Offer available: ${unique.map(x => `${Number(x.toFixed(2)).toString()}%`).join(" · ")}`;
         bar.hidden = false;
+        if (product) {
+          renderProduct();
+          loadDetails();
+          loadRelatedProducts();
+        }
       } catch (error) {
         bar.hidden = true;
         console.warn("Admin discounts unavailable:", error);
@@ -1473,12 +1474,6 @@
           : [];
 
         updateProductMetadata(product);
-
-        document.getElementById("breadcrumbCategory").textContent =
-          product.category || "Products";
-
-        document.getElementById("breadcrumbTitle").textContent =
-          product.title;
 
         renderProduct();
 
@@ -2145,70 +2140,104 @@
 
     function loadDetails() {
       const dimensions = product.dimensions || {};
+      const rows = [];
+      const addRow = (label, value, icon) => {
+        if (value === undefined || value === null || String(value).trim() === "" || String(value) === "—") return;
+        if (Array.isArray(value)) value = value.join(", ");
+        if (typeof value === "object") value = Object.entries(value).map(([k, v]) => `${humanizeKey(k)}: ${typeof v === "object" ? JSON.stringify(v) : v}`).join(" · ");
+        rows.push({ label, value: String(value), icon });
+      };
 
-      const rows = [
-        ["Brand", product.brand || "Generic"],
-        ["Category", product.category || "—"],
-        ["SKU", product.sku || "—"],
-        [
-          "Availability",
-          product.availabilityStatus || "Check availability"
-        ],
-        [
-          "Stock",
-          `${Number(product.stock) || 0} units`
-        ],
-        [
-          "Minimum Order",
-          `${Number(product.minimumOrderQuantity) || 1} unit(s)`
-        ],
-        [
-          "Weight",
-          product.weight == null ? "—" : `${product.weight} g`
-        ],
-        [
-          "Dimensions",
-          dimensions.width != null
-            ? `${dimensions.width} × ${dimensions.height} × ${dimensions.depth} cm`
-            : "—"
-        ],
-        [
-          "Warranty",
-          product.warrantyInformation || "Not specified"
-        ],
-        [
-          "Shipping",
-          product.shippingInformation || "Not specified"
-        ],
-        [
-          "Returns",
-          product.returnPolicy || "Not specified"
-        ],
-        [
-          "Tags",
-          Array.isArray(product.tags) && product.tags.length
-            ? product.tags.join(", ")
-            : "—"
-        ]
-      ];
+      addRow("Brand", product.brand || "Generic", "ph-tag");
+      addRow("Category", product.category, "ph-squares-four");
+      addRow("SKU", product.sku, "ph-barcode");
+      addRow("Availability", product.availabilityStatus, "ph-check-circle");
+      addRow("Stock", Number.isFinite(Number(product.stock)) ? `${Number(product.stock)} units` : null, "ph-package");
+      addRow("Minimum Order", product.minimumOrderQuantity != null ? `${Number(product.minimumOrderQuantity) || 1} unit(s)` : null, "ph-shopping-bag");
+      addRow("Weight", product.weight != null ? `${product.weight} g` : null, "ph-scales");
+      if (dimensions.width != null || dimensions.height != null || dimensions.depth != null) {
+        addRow("Dimensions", [dimensions.width, dimensions.height, dimensions.depth].filter(v => v != null).join(" × ") + " cm", "ph-ruler");
+      }
+      addRow("Warranty", product.warrantyInformation, "ph-shield-check");
+      addRow("Shipping", product.shippingInformation, "ph-truck");
+      addRow("Returns", product.returnPolicy, "ph-arrow-u-up-left");
+
+      // Product-specific specifications are shown only when supplied by the product API.
+      const specs = [product.specifications, product.attributes, product.features, product.details]
+        .filter(value => value && typeof value === "object");
+      const ignored = new Set(["id", "title", "name", "price", "originalPriceUSD", "discountPercentage", "thumbnail", "images", "reviews", "description", "brand", "category", "stock", "rating", "tags", "dimensions", "weight", "warrantyInformation", "shippingInformation", "returnPolicy", "availabilityStatus", "minimumOrderQuantity", "sku"]);
+      for (const key of Object.keys(product)) {
+        if (ignored.has(key) || product[key] == null || product[key] === "" || typeof product[key] === "object") continue;
+        if (/^(processor|cpu|display|displaySize|screenSize|ram|memory|storage|battery|camera|operatingSystem|os|connectivity|color|colour|material|model|resolution|refreshRate|graphics|gpu|network|sim|waterResistance|compatibility|capacity)$/i.test(key)) {
+          addRow(humanizeKey(key), product[key], iconForDetail(key));
+        }
+      }
+      for (const group of specs) {
+        if (Array.isArray(group)) {
+          for (const item of group) {
+            if (!item || typeof item !== "object") continue;
+            const key = item.name || item.label || item.key || item.title;
+            const value = item.value ?? item.text ?? item.description;
+            if (key && value != null && value !== "") addRow(humanizeKey(key), value, iconForDetail(key));
+          }
+        } else {
+          for (const [key, value] of Object.entries(group)) {
+            if (value == null || value === "" || ignored.has(key)) continue;
+            addRow(humanizeKey(key), value, iconForDetail(key));
+          }
+        }
+      }
+      if (Array.isArray(product.tags) && product.tags.length) addRow("Tags", product.tags.join(", "), "ph-hash");
+
+      // Keep the table clean if the API has duplicate spec fields.
+      const seen = new Set();
+      const uniqueRows = rows.filter(row => {
+        const key = row.label.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
 
       detailsSection.innerHTML = `
         <h2 class="section-heading">Product Information</h2>
-
         <div class="details-grid">
-          ${rows.map(([label, value]) => `
+          ${uniqueRows.map(row => `
             <div class="detail-row">
-              <span>${escapeHTML(label)}</span>
-              <strong>${escapeHTML(value)}</strong>
+              <span class="detail-label"><i class="ph-fill ${escapeHTML(row.icon)}" aria-hidden="true"></i><span>${escapeHTML(row.label)}</span></span>
+              <strong>${escapeHTML(row.value)}</strong>
             </div>
           `).join("")}
         </div>
       `;
-
       detailsSection.setAttribute("aria-busy", "false");
     }
 
-    /* CUSTOMER REVIEWS */
+    function humanizeKey(key) {
+      return String(key).replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").replace(/^./, char => char.toUpperCase());
+    }
+
+    function iconForDetail(key) {
+      const value = String(key).toLowerCase();
+      if (/brand|manufacturer/.test(value)) return "ph-tag";
+      if (/processor|cpu|gpu|graphics/.test(value)) return "ph-cpu";
+      if (/display|screen|resolution|refresh/.test(value)) return "ph-device-mobile";
+      if (/ram|memory|storage|capacity/.test(value)) return "ph-memory";
+      if (/battery/.test(value)) return "ph-battery-charging";
+      if (/camera/.test(value)) return "ph-camera";
+      if (/operating|system|os/.test(value)) return "ph-gear";
+      if (/color|colour/.test(value)) return "ph-palette";
+      if (/weight|scale/.test(value)) return "ph-scales";
+      if (/dimension|size|length|width|height/.test(value)) return "ph-ruler";
+      if (/warranty|secure|protection/.test(value)) return "ph-shield-check";
+      if (/shipping|delivery/.test(value)) return "ph-truck";
+      if (/return/.test(value)) return "ph-arrow-u-up-left";
+      if (/stock|quantity|package/.test(value)) return "ph-package";
+      if (/sku|barcode|model/.test(value)) return "ph-barcode";
+      if (/connectivity|network|sim|wireless/.test(value)) return "ph-wifi-high";
+      return "ph-info";
+    }
+
+        /* CUSTOMER REVIEWS */
 
     function loadReviews() {
       const reviews = Array.isArray(product.reviews)
@@ -2307,7 +2336,10 @@
               <h3 class="product-title">${escapeHTML(item.title || "Product")}</h3>
               <p class="product-description">${escapeHTML(item.description || "")}</p>
               <div class="product-rating"><i class="ph-fill ph-star" aria-hidden="true"></i><span>${rating ? rating.toFixed(1) : "No rating"}</span></div>
-              <div class="product-bottom"><span class="product-price">${formatPrice(item.price)}</span></div>
+              <div class="product-bottom">
+                <span class="product-price">${formatPrice(getDiscountedPrice(item))}${getDiscountPercent(item) > 0 ? ` <span class="product-original-price">${formatPrice(item.price)}</span>` : ""}</span>
+                ${getDiscountPercent(item) > 0 ? `<span class="discount">${Number(getDiscountPercent(item).toFixed(2)).toString()}% OFF</span>` : ""}
+              </div>
             </div>
           </article>`;
       }).join("");
