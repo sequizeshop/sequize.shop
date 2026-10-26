@@ -3056,7 +3056,7 @@
     html body #cartPage .app-cart-price, html body #cartPage .app-remove { font-size:12px !important; }
   }
 </style>
-\n</head>
+</head>
 
 <body class="nav-pending">
   <script>if(window.__appnetickAppleDevice || window.__appnetickCachedPremium){document.body.classList.add("app-premium-navigation");document.body.classList.remove("nav-pending");}</script>
@@ -3260,15 +3260,14 @@
 
       </div>
 
-      <div class="section-head">
+      <div class="section-head" id="productsSectionHead">
 
-        <div>
+        <div class="products-heading-copy">
           <h2 id="productsHeading">Popular Products</h2>
           <p id="productsSubtitle">Discover something you'll love.</p>
           <p id="homeDiscountOffers" class="home-discount-offers" hidden aria-live="polite"></p>
+          <span id="productCount" class="product-count"></span>
         </div>
-
-        <span id="productCount" class="product-count"></span>
 
       </div>
 
@@ -6152,13 +6151,21 @@
           method: "GET", headers: { Accept: "application/json" }, cache: "no-store"
         });
         const data = await response.json().catch(() => ({}));
+        // Only use a valid percentage explicitly returned by the admin discounts API.
+        // Never fall back to a product-feed discount or a hard-coded/default percentage.
         const discounts = response.ok && data.success && Array.isArray(data.discounts)
-          ? data.discounts.filter(item => item && Number(item.percent) > 0 && Number(item.percent) <= 100)
+          ? data.discounts.filter(item => {
+              if (!item || item.percent == null || item.percent === "") return false;
+              if (item.active === false || item.enabled === false || item.status === "inactive" || item.status === "expired") return false;
+              const value = Number(item.percent);
+              return Number.isFinite(value) && value > 0 && value <= 100;
+            })
           : [];
         const numericPercentages = discounts
           .map(item => Number(item.percent))
-          .filter(value => Number.isFinite(value) && value > 0 && value <= 100)
-          .sort((a, b) => b - a);
+          .filter(value => Number.isFinite(value) && value > 0 && value <= 100);
+        // Use the first valid API offer in API order; do not accidentally select
+        // a different, larger percentage (for example 60%) from the list.
         homeAdminDiscountPercent = numericPercentages.length ? numericPercentages[0] : 0;
 
         if (!numericPercentages.length) {
@@ -6175,7 +6182,12 @@
         if (allProducts.length) renderProducts(allProducts);
         if (searchProducts.length) renderSearchProducts(searchProducts);
       } catch (error) {
+        homeAdminDiscountPercent = 0;
         line.hidden = true;
+        line.textContent = "";
+        // If the API is unavailable, show only each product's listed/original price.
+        if (allProducts.length) renderProducts(allProducts);
+        if (searchProducts.length) renderSearchProducts(searchProducts);
         console.warn("Home discount offers unavailable.", error);
       }
     }
@@ -6538,6 +6550,55 @@
     padding-top:68px !important;
   }
 }
+
+
+    /* Product heading/count layout fixes for mobile and desktop. */
+    #productsSectionHead {
+      display: block !important;
+      width: 100%;
+      min-width: 0;
+      margin-bottom: 18px;
+    }
+    #productsSectionHead .products-heading-copy {
+      min-width: 0;
+      width: 100%;
+    }
+    #productsSectionHead #homeDiscountOffers {
+      max-width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+    #productsSectionHead #productCount {
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      margin-top: 4px;
+      padding: 0;
+      white-space: nowrap;
+      line-height: 1.45;
+      font-size: 12px;
+    }
+
+    /* Keep add-to-cart controls perfectly circular on narrow screens. */
+    @media (max-width: 760px) {
+      #productGrid .add-button {
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        flex: 0 0 32px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        font-size: 16px !important;
+        box-sizing: border-box !important;
+        aspect-ratio: 1 / 1;
+      }
+      #productGrid .add-button i {
+        font-size: 16px !important;
+        line-height: 1 !important;
+      }
+    }
 </style>
 </body>
 </html>
