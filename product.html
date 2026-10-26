@@ -18,6 +18,8 @@
   <meta property="og:url" id="ogUrl" content="https://shopingweb-zeta.vercel.app/product.html">
   <meta property="og:image" id="ogImage" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
   <meta property="og:image:alt" id="ogImageAlt" content="Shoppy product">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" id="twitterTitle" content="Product Details — Shoppy">
@@ -114,12 +116,14 @@
 
     .topbar {
       position: sticky;
-      top: 0;
+      top: 0 !important;
+      margin-top: 0 !important;
+      transform: none;
       z-index: 100;
       width: 100%;
       height: var(--header-h);
       min-height: var(--header-h);
-      padding: 0 5%;
+      padding: 0 max(2%, calc((100% - 1440px) / 2));
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -160,9 +164,10 @@
     /* PAGE */
 
     .container {
-      width: min(1050px, 90%);
-      max-width: 1050px;
+      width: min(1440px, 96%);
+      max-width: 1440px;
       margin: 34px auto 65px;
+      background: transparent;
     }
 
     .breadcrumbs {
@@ -756,6 +761,49 @@
       font-size: 12px;
     }
 
+    /* EXPLORE MORE: match the Home page product cards */
+    .related-grid.product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 24px 18px;
+    }
+    .related-card.product-card {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      cursor: pointer;
+    }
+    .related-card .product-image {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      background: var(--surface-secondary);
+      transition: background .2s;
+    }
+    .related-card:hover .product-image { background: var(--primary-selected); }
+    .related-card .product-image img { display:block; width:100%; height:100%; object-fit:contain; }
+    .related-card .product-info { min-width:0; flex:1; display:flex; flex-direction:column; padding:12px 0 0; position:static; }
+    .related-card .product-category { color:var(--text-muted); font-size:12px; font-weight:600; text-transform:capitalize; margin:0; letter-spacing:0; }
+    .related-card .product-title { min-height:42px; margin:2px 0 0; color:var(--text-primary); font-family:var(--font-heading); font-size:14px; font-weight:700; line-height:1.5; letter-spacing:0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .related-card:hover .product-title { color:var(--primary); }
+    .related-card .product-description { min-height:42px; margin:4px 0 0; color:var(--text-secondary); font-size:13px; line-height:1.6; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .related-card .product-rating { display:flex; align-items:center; gap:5px; margin-top:8px; color:var(--text-secondary); font-size:13px; }
+    .related-card .product-rating i { color:var(--star); font-size:14px; }
+    .related-card .product-bottom { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:auto; padding-top:12px; }
+    .related-card .product-price { min-width:0; color:var(--text-primary); font-family:var(--font-heading); font-size:16px; font-weight:800; letter-spacing:-.35px; overflow-wrap:anywhere; }
+    .related-card .product-original-price { margin-right:5px; color:var(--text-muted); font-size:12px; font-weight:500; text-decoration:line-through; }
+    .related-card .discount { align-self:flex-start; padding:2px 8px; border-radius:var(--radius-sm); background:var(--success-bg); color:var(--success); font-size:12px; font-weight:700; }
+    .related-card .product-image { flex-direction:column; }
+    .related-card .product-image img { flex:1; min-height:0; }
+
     /* SKELETON */
 
     .skeleton {
@@ -903,8 +951,10 @@
     /* RESPONSIVE */
 
     @media (max-width: 760px) {
+      .topbar { padding-left: 3%; padding-right: 3%; }
       .container {
         width: 90%;
+        max-width: none;
         margin-top: 25px;
       }
 
@@ -938,9 +988,10 @@
       }
 
       .related-grid,
+      .related-grid.product-grid,
       .skeleton-related {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 15px;
+        gap: 18px 12px;
       }
 
       .section-heading {
@@ -971,19 +1022,10 @@
 
   <header class="topbar">
     <nav class="nav-actions" aria-label="Main navigation">
-      <a class="nav-icon" href="/home.html" aria-label="Home">
-        <i class="ph ph-house" aria-hidden="true"></i>
-      </a>
-
-      <a class="nav-icon" href="/cart.html" aria-label="Cart">
-        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
-      </a>
-
-      <a class="nav-icon" href="/profile.html" aria-label="Profile">
-        <i class="ph ph-user-circle" aria-hidden="true"></i>
+      <a class="nav-icon" href="javascript:history.back()" aria-label="Back to previous page" title="Back">
+        <i class="ph ph-arrow-left" aria-hidden="true"></i>
       </a>
     </nav>
-
     <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
   </header>
 
@@ -1067,34 +1109,17 @@
       </div>
     </section>
 
-    <!-- RELATED PRODUCTS -->
+    <!-- EXPLORE MORE PRODUCTS -->
 
     <section class="details-section" id="relatedSection" aria-busy="true">
-      <h2 class="section-heading">You May Also Like</h2>
-
-      <div class="skeleton-related">
-        <div>
-          <div class="skeleton skeleton-product-image"></div>
-          <div class="skeleton skeleton-product-title"></div>
-          <div class="skeleton skeleton-product-price"></div>
-        </div>
-
-        <div>
-          <div class="skeleton skeleton-product-image"></div>
-          <div class="skeleton skeleton-product-title"></div>
-          <div class="skeleton skeleton-product-price"></div>
-        </div>
-
-        <div>
-          <div class="skeleton skeleton-product-image"></div>
-          <div class="skeleton skeleton-product-title"></div>
-          <div class="skeleton skeleton-product-price"></div>
-        </div>
-
-        <div>
-          <div class="skeleton skeleton-product-image"></div>
-          <div class="skeleton skeleton-product-title"></div>
-          <div class="skeleton skeleton-product-price"></div>
+      <h2 class="section-heading">Explore More</h2>
+      <p style="color:var(--text-secondary);margin:-8px 0 22px;">You may also like these products.</p>
+      <div class="related-grid product-grid" id="relatedProductGrid" aria-live="polite">
+        <div class="skeleton-related">
+          <div><div class="skeleton skeleton-product-image"></div><div class="skeleton skeleton-product-title"></div><div class="skeleton skeleton-product-price"></div></div>
+          <div><div class="skeleton skeleton-product-image"></div><div class="skeleton skeleton-product-title"></div><div class="skeleton skeleton-product-price"></div></div>
+          <div><div class="skeleton skeleton-product-image"></div><div class="skeleton skeleton-product-title"></div><div class="skeleton skeleton-product-price"></div></div>
+          <div><div class="skeleton skeleton-product-image"></div><div class="skeleton skeleton-product-title"></div><div class="skeleton skeleton-product-price"></div></div>
         </div>
       </div>
     </section>
@@ -1185,14 +1210,13 @@
       }, 2400);
     }
 
-    function getDiscountedPrice(item) {
-      const price = Number(item.price) || 0;
-      const discount = Math.max(
-        0,
-        Math.min(100, Number(item.discountPercentage) || 0)
-      );
+    function getDiscountPercent(item) {
+      return Math.max(0, Math.min(100, Number(item && item.discountPercentage) || 0));
+    }
 
-      return price * (1 - discount / 100);
+    function getDiscountedPrice(item) {
+      const price = Math.max(0, Number(item && item.price) || 0);
+      return price * (1 - getDiscountPercent(item) / 100);
     }
 
     function safeImage(url) {
@@ -1226,7 +1250,9 @@
         item.description || `Explore ${item.title} on Shoppy.`
       ).slice(0, 300);
 
-      const image = safeImage(item.thumbnail) || DEFAULT_IMAGE;
+      const image = safeImage(item.thumbnail) ||
+        safeImage(Array.isArray(item.images) ? item.images[0] : "") ||
+        DEFAULT_IMAGE;
       const canonical =
         `${SITE_URL}/product.html?id=${encodeURIComponent(item.id)}`;
       const pageUrl = window.location.href;
@@ -1239,6 +1265,8 @@
       updateMeta("#ogUrl", pageUrl);
       updateMeta("#ogImage", image);
       updateMeta("#ogImageAlt", item.title);
+      updateMeta('meta[property="og:image:width"]', "1200");
+      updateMeta('meta[property="og:image:height"]', "630");
       updateMeta("#twitterTitle", title);
       updateMeta("#twitterDescription", description);
       updateMeta("#twitterImage", image);
@@ -1512,7 +1540,7 @@
                     </span>
 
                     <span class="discount-badge">
-                      ${discount.toFixed(0)}% OFF
+                      ${discount.toFixed(1).replace(/\.?0+$/, "")}% OFF
                     </span>
                   `
                   : ""
@@ -2175,85 +2203,57 @@
       reviewsSection.setAttribute("aria-busy", "false");
     }
 
-    /* RELATED PRODUCTS */
-
+    /* EXPLORE MORE: load at least 100 products and use Home-style cards. */
     async function loadRelatedProducts() {
+      const grid = document.getElementById("relatedProductGrid");
+      if (!grid) return;
       try {
-        const relatedParams = new URLSearchParams({
-          category: product.category || ""
+        const data = await fetchJSON("/api/products");
+        const products = (Array.isArray(data.products) ? data.products : [])
+          .filter(item => String(item.id) !== String(product.id))
+          .slice(0, 100);
+
+        grid.className = "related-grid product-grid";
+        grid.innerHTML = products.length ? products.map(item => {
+          const id = String(item.id || "");
+          const image = safeImage(item.thumbnail) || safeImage(Array.isArray(item.images) ? item.images[0] : "") || "https://placehold.co/400x400/f5f5f2/969991?text=Product";
+          const discount = getDiscountPercent(item);
+          const currentPrice = getDiscountedPrice(item);
+          const rating = Number(item.rating) || 0;
+          return `
+            <article class="related-card product-card" data-product-id="${escapeHTML(id)}" tabindex="0" aria-label="View details for ${escapeHTML(item.title || "Product")}">
+              <div class="product-image">
+                ${discount > 0 ? `<span class="discount">${discount.toFixed(1).replace(/\.?0+$/, "")}% OFF</span>` : ""}
+                <img src="${escapeHTML(image)}" alt="${escapeHTML(item.title || "Product")}" loading="lazy">
+              </div>
+              <div class="product-info">
+                <div class="product-category">${escapeHTML(item.category || "Other").replace(/-/g, " ")}</div>
+                <h3 class="product-title">${escapeHTML(item.title || "Product")}</h3>
+                <p class="product-description">${escapeHTML(item.description || "")}</p>
+                <div class="product-rating"><i class="ph-fill ph-star" aria-hidden="true"></i><span>${rating ? rating.toFixed(1) : "No rating"}</span></div>
+                <div class="product-bottom"><span class="product-price">${discount > 0 ? `<span class="product-original-price">${formatPrice(item.price)}</span>` : ""}${formatPrice(currentPrice)}</span></div>
+              </div>
+            </article>`;
+        }).join("") : `<div class="empty-reviews">No more products found.</div>`;
+
+        grid.querySelectorAll(".related-card[data-product-id]").forEach(card => {
+          const openProduct = () => {
+            const id = String(card.dataset.productId || "");
+            if (id) window.location.href = `/product.html?id=${encodeURIComponent(id)}`;
+          };
+          card.addEventListener("click", event => {
+            if (event.target.closest("button")) return;
+            openProduct();
+          });
+          card.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault(); openProduct();
+            }
+          });
         });
-
-        const data = await fetchJSON(
-          `/api/products?${relatedParams.toString()}`
-        );
-
-        const products = (
-          Array.isArray(data.products) ? data.products : []
-        )
-          .filter(
-            item => String(item.id) !== String(product.id)
-          )
-          .slice(0, 4);
-
-        relatedSection.innerHTML = `
-          <h2 class="section-heading">You May Also Like</h2>
-
-          ${
-            products.length
-              ? `
-                <div class="related-grid">
-                  ${products.map(item => `
-                    <a
-                      class="related-card"
-                      href="/product.html?id=${encodeURIComponent(item.id)}"
-                    >
-                      <div class="related-image">
-                        <img
-                          src="${escapeHTML(
-                            safeImage(item.thumbnail) ||
-                            "https://placehold.co/300x300/f5f5f2/969991?text=Product"
-                          )}"
-                          alt="${escapeHTML(item.title)}"
-                          loading="lazy"
-                        >
-                      </div>
-
-                      <div class="related-info">
-                        <h3 class="related-title">
-                          ${escapeHTML(item.title)}
-                        </h3>
-
-                        <div class="related-price">
-                          ${formatPrice(getDiscountedPrice(item))}
-                        </div>
-
-                        <div class="related-rating">
-                          <i class="ph-fill ph-star" style="color:var(--star)"></i>
-                          ${(Number(item.rating) || 0).toFixed(1)}
-                        </div>
-                      </div>
-                    </a>
-                  `).join("")}
-                </div>
-              `
-              : `
-                <div class="empty-reviews">
-                  No related products found.
-                </div>
-              `
-          }
-        `;
-
       } catch (error) {
-        console.error("Related products error:", error);
-
-        relatedSection.innerHTML = `
-          <h2 class="section-heading">You May Also Like</h2>
-          <div class="empty-reviews">
-            Related products could not be loaded.
-          </div>
-        `;
-
+        console.error("Explore More products error:", error);
+        grid.innerHTML = `<div class="empty-reviews">More products could not be loaded. Please refresh and try again.</div>`;
       } finally {
         relatedSection.setAttribute("aria-busy", "false");
       }
