@@ -1,4 +1,5 @@
 const { getSession } = require("../../lib/auth");
+
 const {
   getDatabase,
   cashfreeBase,
@@ -11,10 +12,6 @@ const PRODUCT_ID_PATTERN = ID_PATTERN;
 
 const USD_TO_INR = 85;
 
-// 95% discount: customer pays only 5% of the original price.
-const DISCOUNT_PERCENT = 95;
-const DISCOUNT_MULTIPLIER = (100 - DISCOUNT_PERCENT) / 100;
-
 function sendError(res, status, message) {
   return res.status(status).json({
     success: false,
@@ -22,6 +19,12 @@ function sendError(res, status, message) {
   });
 }
 
+/*
+ * Get verified product price from Firebase.
+ *
+ * Prefer originalPriceUSD when available.
+ * Otherwise convert the database price from INR to USD.
+ */
 function getVerifiedPrice(product) {
   const usd = Number(product.originalPriceUSD);
 
@@ -43,16 +46,6 @@ function getVerifiedPrice(product) {
   throw new Error("Invalid product price.");
 }
 
-/*
- * Apply a 95% discount to the original product price.
- * The customer pays only 5% of the original price.
- */
-function getDiscountedPrice(originalPriceUSD) {
-  return Number(
-    (originalPriceUSD * DISCOUNT_MULTIPLIER).toFixed(2)
-  );
-}
-
 function getSiteUrl(req) {
   const configured = (process.env.SITE_URL || "")
     .trim()
@@ -61,7 +54,9 @@ function getSiteUrl(req) {
   return configured || `https://${req.headers.host}`;
 }
 
-/* Load the order and make sure it belongs to the signed-in user. */
+/*
+ * Load the order and make sure it belongs to the signed-in user.
+ */
 async function loadOwnOrder(db, uid, orderId) {
   const orderRef = db.ref(`users/${uid}/orders/${orderId}`);
   const snapshot = await orderRef.get();
@@ -98,8 +93,8 @@ async function loadOwnOrder(db, uid, orderId) {
  * FAILED -> failure notification
  * PENDING -> no notification
  *
- * Uses a fixed notification ID for each order and result,
- * preventing duplicate notifications for the same result.
+ * A fixed notification ID prevents duplicate notifications
+ * for the same order and payment result.
  */
 async function sendPaymentNotification(db, uid, order, status) {
   try {
@@ -163,10 +158,10 @@ async function sendPaymentNotification(db, uid, order, status) {
 }
 
 /*
- * Create a Cashfree order (payment session) for an existing order.
- * The amount always comes from our database, never from the browser.
+ * Create a Cashfree payment session for an existing order.
  *
- * The database order total already includes the 95% discount.
+ * The payment amount comes from the database order.
+ * The browser cannot choose or modify the payment amount.
  */
 async function createPayment(req, res, session) {
   const orderId =
@@ -210,19 +205,19 @@ async function createPayment(req, res, session) {
     );
   }
 
-  // Uses the discounted total saved in the database.
+  // Use the full order total without an artificial discount.
   const amountPaise = Math.round(
     Number(order.totalINR) * 100
   );
 
   if (
-    !Number.isInteger(amountPaise) ||
+    !Number.isSafeInteger(amountPaise) ||
     amountPaise <= 0
   ) {
     return sendError(res, 400, "Invalid order amount.");
   }
 
-  // Cashfree needs the customer's phone (10 digits).
+  // Cashfree requires a valid 10-digit phone number.
   const addressSnap = await db
     .ref(`users/${uid}/addresses/${order.addressId}`)
     .get();
@@ -239,15 +234,17 @@ async function createPayment(req, res, session) {
     );
   }
 
-  // Every attempt gets its own Cashfree order ID.
+  // Each payment attempt has its own Cashfree order ID.
   const cfOrderId =
     `${orderId}_${Date.now().toString(36)}`.slice(0, 50);
 
   const body = {
     order_id: cfOrderId,
+
     order_amount: Number(
       (amountPaise / 100).toFixed(2)
     ),
+
     order_currency: "INR",
 
     customer_details: {
@@ -335,7 +332,7 @@ async function createPayment(req, res, session) {
 
   const now = Date.now();
 
-  // The webhook and verify step use this record to find the order.
+  // The webhook and verification process use this record.
   await db.ref(`paymentIndex/${cfOrderId}`).set({
     uid,
     orderId,
@@ -362,7 +359,7 @@ async function createPayment(req, res, session) {
 }
 
 /*
- * Ask Cashfree what really happened, then update our order.
+ * Ask Cashfree for the actual payment status.
  */
 async function verifyPayment(req, res, session) {
   const orderId =
@@ -402,16 +399,9 @@ async function verifyPayment(req, res, session) {
   }
 
   if (!order.lastPaymentId) {
-    await sendPaymentNotification(
-      db,
-      uid,
-      order,
-      "FAILED"
-    );
-
     return res.status(200).json({
       success: true,
-      paymentStatus: "FAILED"
+      paymentStatus: "PENDING"
     });
   }
 
@@ -433,6 +423,9 @@ async function verifyPayment(req, res, session) {
   });
 }
 
+/*
+ * Main API handler.
+ */
 module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "private, no-store");
 
@@ -555,8 +548,7 @@ module.exports = async function handler(req, res) {
 
     const items = [];
 
-    let originalTotalUSD = 0;
-    let discountedTotalUSD = 0;
+    let totalUSD = 0;
 
     for (const [productId, cartItem] of entries) {
       if (!PRODUCT_ID_PATTERN.test(productId)) {
@@ -607,66 +599,31 @@ module.exports = async function handler(req, res) {
         );
       }
 
-      // Original verified price from the database.
-      const originalUnitPriceUSD = Number(
+      // Verified original product price from Firebase.
+      const unitPriceUSD = Number(
         getVerifiedPrice(product).toFixed(2)
       );
 
-      // Apply the 95% discount to EACH product.
-      const discountedUnitPriceUSD =
-        getDiscountedPrice(originalUnitPriceUSD);
-
-      // Calculate the discounted line total.
-      const originalLineTotalUSD = Number(
-        (
-          originalUnitPriceUSD * quantity
-        ).toFixed(2)
-      );
-
-      const discountedLineTotalUSD = Number(
-        (
-          discountedUnitPriceUSD * quantity
-        ).toFixed(2)
+      const lineTotalUSD = Number(
+        (unitPriceUSD * quantity).toFixed(2)
       );
 
       items.push({
         productId,
         title: product.title.slice(0, 200),
         quantity,
-
-        // Original price before discount.
-        originalUnitPriceUSD,
-
-        // Actual discounted unit price.
-        unitPriceUSD: discountedUnitPriceUSD,
-
-        // Original total for this product line.
-        originalLineTotalUSD,
-
-        // Actual discounted total for this product line.
-        lineTotalUSD: discountedLineTotalUSD,
-
-        discountPercent: DISCOUNT_PERCENT
+        unitPriceUSD,
+        lineTotalUSD
       });
 
-      originalTotalUSD = Number(
-        (
-          originalTotalUSD +
-          originalLineTotalUSD
-        ).toFixed(2)
-      );
-
-      discountedTotalUSD = Number(
-        (
-          discountedTotalUSD +
-          discountedLineTotalUSD
-        ).toFixed(2)
+      totalUSD = Number(
+        (totalUSD + lineTotalUSD).toFixed(2)
       );
     }
 
     if (
-      !Number.isFinite(discountedTotalUSD) ||
-      discountedTotalUSD <= 0
+      !Number.isFinite(totalUSD) ||
+      totalUSD <= 0
     ) {
       return sendError(
         res,
@@ -675,24 +632,22 @@ module.exports = async function handler(req, res) {
       );
     }
 
-    // The Cashfree payment amount is based on the discounted total.
+    // Convert the full product total to INR.
+    // No fake discount or automatic tax is applied.
     const totalINR = Number(
-      (
-        discountedTotalUSD * USD_TO_INR
-      ).toFixed(2)
+      (totalUSD * USD_TO_INR).toFixed(2)
     );
 
-    const originalTotalINR = Number(
-      (
-        originalTotalUSD * USD_TO_INR
-      ).toFixed(2)
-    );
-
-    const discountAmountINR = Number(
-      (
-        originalTotalINR - totalINR
-      ).toFixed(2)
-    );
+    if (
+      !Number.isFinite(totalINR) ||
+      totalINR <= 0
+    ) {
+      return sendError(
+        res,
+        400,
+        "Order total is invalid."
+      );
+    }
 
     const orderRef = db
       .ref(`users/${uid}/orders`)
@@ -709,16 +664,7 @@ module.exports = async function handler(req, res) {
       currency: "INR",
       exchangeRate: USD_TO_INR,
 
-      // Original totals before discount.
-      originalTotalUSD,
-      originalTotalINR,
-
-      // Discount information.
-      discountPercent: DISCOUNT_PERCENT,
-      discountAmountINR,
-
-      // Final discounted totals.
-      totalUSD: discountedTotalUSD,
+      totalUSD,
       totalINR,
 
       paymentStatus: "PENDING",
@@ -737,13 +683,8 @@ module.exports = async function handler(req, res) {
       order: {
         orderId: order.orderId,
         currency: order.currency,
-
-        originalTotalINR: order.originalTotalINR,
-        discountPercent: order.discountPercent,
-        discountAmountINR: order.discountAmountINR,
-
+        totalUSD: order.totalUSD,
         totalINR: order.totalINR,
-
         paymentStatus: order.paymentStatus,
         orderStatus: order.orderStatus
       }
