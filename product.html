@@ -193,24 +193,39 @@
 
     .product-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.8fr);
-      column-gap: 58px;
+      grid-template-columns: minmax(0, 0.88fr) minmax(360px, 1fr);
+      column-gap: 42px;
       row-gap: 0;
       align-items: start;
       width: 100%;
       min-width: 0;
     }
 
+    .admin-discount-bar {
+      margin: 14px 0 22px;
+      padding: 10px 14px;
+      border: 1px solid #D8E4FF;
+      border-radius: var(--radius-md);
+      background: #F5F8FF;
+      color: #1747B8;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .admin-discount-bar[hidden] { display: none; }
+
     /* GALLERY */
 
     .gallery {
       min-width: 0;
       width: 100%;
+      max-width: 560px;
+      justify-self: start;
     }
 
     .main-image-wrap {
       width: 100%;
-      aspect-ratio: 1 / 1;
+      aspect-ratio: 1 / 0.86;
+      max-height: 520px;
       border-radius: var(--radius-md);
       background: var(--surface-secondary);
       position: relative;
@@ -224,7 +239,7 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      padding: 28px;
+      padding: 44px;
       display: block;
     }
 
@@ -972,6 +987,8 @@
         font-size: 29px;
       }
 
+      .gallery { max-width: none; }
+      .main-image-wrap { aspect-ratio: 1 / 1; max-height: none; }
       .main-image {
         padding: 22px;
       }
@@ -1038,6 +1055,8 @@
       <i class="ph ph-caret-right"></i>
       <span id="breadcrumbTitle">Details</span>
     </nav>
+
+    <div id="adminDiscountBar" class="admin-discount-bar" hidden aria-live="polite"></div>
 
     <!-- PRODUCT AREA -->
 
@@ -1246,9 +1265,16 @@
 
     function updateProductMetadata(item) {
       const title = `${item.title} — Shoppy`;
-      const description = String(
-        item.description || `Explore ${item.title} on Shoppy.`
-      ).slice(0, 300);
+      const apiDiscount = getDiscountPercent(item);
+      const priceText = formatPrice(getDiscountedPrice(item));
+      const descriptionParts = [
+        item.description || `Explore ${item.title} on Shoppy.`,
+        `Category: ${item.category || "Products"}.`,
+        `Price: ${priceText}.`,
+        apiDiscount > 0 ? `Product offer: ${apiDiscount.toFixed(1).replace(/\.?0+$/, "")}% off.` : "",
+        item.brand ? `Brand: ${item.brand}.` : ""
+      ].filter(Boolean);
+      const description = descriptionParts.join(" ").slice(0, 300);
 
       const image = safeImage(item.thumbnail) ||
         safeImage(Array.isArray(item.images) ? item.images[0] : "") ||
@@ -1310,6 +1336,43 @@
       }
 
       return data;
+    }
+
+    /* ADMIN-MANAGED OFFERS: show once in the top bar, never on every product card. */
+    async function loadAdminDiscountBar() {
+      const bar = document.getElementById("adminDiscountBar");
+      if (!bar) return;
+      try {
+        let email = "";
+        try {
+          const cached = JSON.parse(localStorage.getItem("shoppy_profile_cache_v1") || "null");
+          if (cached && cached.user && cached.user.email && Number(cached.expiresAt) > Date.now()) {
+            email = String(cached.user.email).trim().toLowerCase();
+          }
+        } catch (_) {}
+        if (!email) {
+          try {
+            const profileResponse = await fetch("/api/profile", { credentials: "same-origin", headers: { Accept: "application/json" }, cache: "no-store" });
+            const profileData = await profileResponse.json().catch(() => ({}));
+            if (profileResponse.ok && profileData.success && profileData.user && profileData.user.email) {
+              email = String(profileData.user.email).trim().toLowerCase();
+            }
+          } catch (_) {}
+        }
+        const endpoint = "https://apisequizeshoplite.vercel.app/api/admin/discounts" + (email ? "?email=" + encodeURIComponent(email) : "");
+        const response = await fetch(endpoint, { headers: { Accept: "application/json" }, cache: "no-store" });
+        const data = await response.json().catch(() => ({}));
+        const offers = response.ok && data.success && Array.isArray(data.discounts)
+          ? data.discounts.map(x => Number(x && x.percent)).filter(x => Number.isFinite(x) && x > 0 && x <= 100)
+          : [];
+        const unique = [...new Set(offers)].sort((a, b) => b - a);
+        if (!unique.length) { bar.hidden = true; bar.textContent = ""; return; }
+        bar.textContent = `Admin offers available: ${unique.map(x => `${Number(x.toFixed(2)).toString()}%`).join(" · ")} — applicable offers are calculated at checkout.`;
+        bar.hidden = false;
+      } catch (error) {
+        bar.hidden = true;
+        console.warn("Admin discounts unavailable:", error);
+      }
     }
 
     /* LOAD PRODUCT */
@@ -2223,7 +2286,6 @@
           return `
             <article class="related-card product-card" data-product-id="${escapeHTML(id)}" tabindex="0" aria-label="View details for ${escapeHTML(item.title || "Product")}">
               <div class="product-image">
-                ${discount > 0 ? `<span class="discount">${discount.toFixed(1).replace(/\.?0+$/, "")}% OFF</span>` : ""}
                 <img src="${escapeHTML(image)}" alt="${escapeHTML(item.title || "Product")}" loading="lazy">
               </div>
               <div class="product-info">
@@ -2261,6 +2323,7 @@
 
     /* INITIALIZE */
 
+    loadAdminDiscountBar();
     loadProduct();
   </script>
 
