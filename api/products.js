@@ -15,37 +15,19 @@ function generateProductId() {
 }
 
 function initializeFirebase() {
-  if (admin.apps.length) {
-    return admin.database();
-  }
+  if (admin.apps.length) return admin.database();
 
-  const serviceAccountValue = process.env.FIREBASE_SERVICE_ACCOUNT;
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
+  if (!raw) throw new Error("FIREBASE_SERVICE_ACCOUNT is missing.");
 
-  if (!serviceAccountValue) {
-    throw new Error(
-      "FIREBASE_SERVICE_ACCOUNT environment variable is missing."
-    );
-  }
+  const account = JSON.parse(raw);
 
-  let serviceAccount;
-
-  try {
-    serviceAccount = JSON.parse(serviceAccountValue);
-  } catch {
-    throw new Error(
-      "FIREBASE_SERVICE_ACCOUNT must contain valid JSON."
-    );
-  }
-
-  if (serviceAccount.private_key) {
-    serviceAccount.private_key = serviceAccount.private_key.replace(
-      /\\n/g,
-      "\n"
-    );
+  if (account.private_key) {
+    account.private_key = account.private_key.replace(/\\n/g, "\n");
   }
 
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(account),
     databaseURL: DATABASE_URL
   });
 
@@ -57,15 +39,11 @@ function mapProduct(product, customId, INR_RATE) {
     (Number(product.price || 0) * INR_RATE).toFixed(2)
   );
 
-  const discountedPrice = Number(
-    (originalPrice * 0.40).toFixed(2)
-  );
-
   return {
     id: customId,
     title: product.title || "",
     description: product.description || "",
-    price: discountedPrice,
+    price: Number((originalPrice * 0.4).toFixed(2)),
     originalPrice,
     originalPriceUSD: Number(product.price || 0),
     discountPercentage: 60,
@@ -98,17 +76,12 @@ module.exports = async function handler(req, res) {
 
   try {
     const INR_RATE = 85;
-    const search = String(req.query.search || "")
-      .trim()
-      .toLowerCase();
+    const search = String(req.query.search || "").trim().toLowerCase();
+    const category = String(req.query.category || "").trim().toLowerCase();
 
-    const category = String(req.query.category || "")
-      .trim()
-      .toLowerCase();
-
-    const database = initializeFirebase();
-    const sourceMapRef = database.ref("productSourceMap");
-    const productsRef = database.ref("products");
+    const db = initializeFirebase();
+    const sourceMapRef = db.ref("productSourceMap");
+    const productsRef = db.ref("products");
 
     const response = await fetch(
       "https://dummyjson.com/products?limit=0"
@@ -119,7 +92,6 @@ module.exports = async function handler(req, res) {
     }
 
     const result = await response.json();
-
     const sourceProducts = Array.isArray(result.products)
       ? result.products
       : [];
@@ -130,57 +102,49 @@ module.exports = async function handler(req, res) {
     const productUpdates = {};
     const mappedProducts = [];
 
-    await Promise.all(
-      sourceProducts.map(async product => {
-        const sourceId = String(product.id || "");
+    await Promise.all(sourceProducts.map(async product => {
+      const sourceId = String(product.id || "");
 
-        if (!sourceId || !/^\d+$/.test(sourceId)) {
-          return;
-        }
+      if (!sourceId || !/^\d+$/.test(sourceId)) return;
 
-        let customId = existingMappings[sourceId];
+      let customId = existingMappings[sourceId];
 
-        if (!isValidProductId(customId)) {
-          const candidateId = generateProductId();
+      if (!isValidProductId(customId)) {
+        const candidateId = generateProductId();
 
-          const transaction = await sourceMapRef
-            .child(sourceId)
-            .transaction(currentValue => {
-              return isValidProductId(currentValue)
-                ? currentValue
-                : candidateId;
-            });
-
-          customId = transaction.snapshot
-            ? transaction.snapshot.val()
-            : null;
-        }
-
-        if (!isValidProductId(customId)) {
-          throw new Error(
-            `Could not create a valid ID for source product ${sourceId}.`
+        const transaction = await sourceMapRef
+          .child(sourceId)
+          .transaction(currentValue =>
+            isValidProductId(currentValue)
+              ? currentValue
+              : candidateId
           );
-        }
 
-        const mappedProduct = mapProduct(
-          product,
-          customId,
-          INR_RATE
-        );
+        customId = transaction.snapshot.val();
+      }
 
-        // Database mein original INR price store hota hai.
-        // API response mein 60% discounted price milti hai.
-        productUpdates[customId] = {
-          ...mappedProduct,
-          price: mappedProduct.originalPrice,
-          sourceId
-        };
+      if (!isValidProductId(customId)) {
+        throw new Error(`Invalid product ID for ${sourceId}`);
+      }
 
-        mappedProducts.push(mappedProduct);
-      })
-    );
+      const mappedProduct = mapProduct(
+        product,
+        customId,
+        INR_RATE
+      );
 
-    if (Object.keys(productUpdates).length > 0) {
+      // Database mein original price store hogi.
+      // API response mein discounted price return hogi.
+      productUpdates[customId] = {
+        ...mappedProduct,
+        price: mappedProduct.originalPrice,
+        sourceId
+      };
+
+      mappedProducts.push(mappedProduct);
+    }));
+
+    if (Object.keys(productUpdates).length) {
       await productsRef.update(productUpdates);
     }
 
@@ -193,10 +157,8 @@ module.exports = async function handler(req, res) {
           product.description,
           product.category,
           product.brand,
-          ...(Array.isArray(product.tags) ? product.tags : [])
-        ]
-          .join(" ")
-          .toLowerCase();
+          ...(product.tags || [])
+        ].join(" ").toLowerCase();
 
         return searchable.includes(search);
       });
