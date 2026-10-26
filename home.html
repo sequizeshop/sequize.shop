@@ -425,6 +425,16 @@
 
     /* OFFERS */
 
+    .home-discount-offers {
+      margin: 7px 0 0;
+      color: var(--blue, #2457d6);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+    .home-discount-offers[hidden] { display: none !important; }
+
     .offers-wrap {
       width: min(1050px, 90%);
       margin: 24px auto 0;
@@ -3148,33 +3158,6 @@
 
     </section>
 
-    <!-- DISCOUNT OFFERS -->
-
-    <section class="offers-wrap" id="offersSection" aria-label="Discount offers">
-
-      <h2 class="offers-heading">Special Offers</h2>
-
-      <div class="offers-grid">
-
-        <div class="offer-card">
-          <span class="offer-value">30% OFF</span>
-          <span class="offer-label">Special Discount</span>
-        </div>
-
-        <div class="offer-card">
-          <span class="offer-value">40% OFF</span>
-          <span class="offer-label">Special Discount</span>
-        </div>
-
-        <div class="offer-card">
-          <span class="offer-value">50% OFF</span>
-          <span class="offer-label">Special Discount</span>
-        </div>
-
-      </div>
-
-    </section>
-
     <!-- PRODUCTS -->
 
     <main class="container" id="productsSection">
@@ -3222,6 +3205,7 @@
         <div>
           <h2 id="productsHeading">Popular Products</h2>
           <p id="productsSubtitle">Discover something you'll love.</p>
+          <p id="homeDiscountOffers" class="home-discount-offers" hidden aria-live="polite"></p>
         </div>
 
         <span id="productCount" class="product-count"></span>
@@ -4207,9 +4191,6 @@
       const description = escapeHTML(product.description);
       const category = escapeHTML(product.category || "Other");
 
-      const discount =
-        Number(product.discountPercentage) || 0;
-
       const rating = Number(product.rating) || 0;
       const isAdded = cartProductIds.has(id);
 
@@ -4221,16 +4202,6 @@
           aria-label="View details for ${title}"
         >
           <div class="product-image">
-
-            ${
-              discount > 0
-                ? `
-                  <span class="discount">
-                    -${Math.round(discount)}%
-                  </span>
-                `
-                : ""
-            }
 
             <img
               class="is-loading"
@@ -4537,6 +4508,8 @@
           `Products matching "${currentSearch}"`;
 
       } else if (currentCategory) {
+        const offerLine = document.getElementById("homeDiscountOffers");
+        if (offerLine) offerLine.hidden = true;
         productsHeading.textContent =
           currentCategory
             .replace(/-/g, " ")
@@ -4550,6 +4523,7 @@
 
         productsSubtitle.textContent =
           "Discover something you'll love.";
+        loadHomeDiscountOffers();
       }
     }
 
@@ -6076,12 +6050,68 @@
     })();
 
 
+    /* ADMIN-MANAGED DISCOUNT OFFERS: use the same discount source as the cart. */
+    async function loadHomeDiscountOffers() {
+      const line = document.getElementById("homeDiscountOffers");
+      if (!line) return;
+      try {
+        let email = "";
+        try {
+          const profile = JSON.parse(localStorage.getItem("shoppy_profile_cache_v1") || "null");
+          if (profile && profile.user && profile.user.email && Number(profile.expiresAt) > Date.now()) {
+            email = String(profile.user.email).trim().toLowerCase();
+          }
+        } catch (_) {}
+        if (!email) {
+          try {
+            const response = await fetch("/api/profile", {
+              method: "GET", credentials: "same-origin",
+              headers: { Accept: "application/json" }, cache: "no-store"
+            });
+            const profileData = await response.json().catch(() => ({}));
+            if (response.ok && profileData.success && profileData.user && profileData.user.email) {
+              email = String(profileData.user.email).trim().toLowerCase();
+            }
+          } catch (_) {}
+        }
+        const endpoint = "https://apisequizeshoplite.vercel.app/api/admin/discounts" +
+          (email ? "?email=" + encodeURIComponent(email) : "");
+        const response = await fetch(endpoint, {
+          method: "GET", headers: { Accept: "application/json" }, cache: "no-store"
+        });
+        const data = await response.json().catch(() => ({}));
+        const discounts = response.ok && data.success && Array.isArray(data.discounts)
+          ? data.discounts.filter(item => item && Number(item.percent) > 0 && Number(item.percent) <= 100)
+          : [];
+        if (!discounts.length) {
+          line.hidden = true;
+          line.textContent = "";
+          return;
+        }
+        const percentages = discounts
+          .map(item => Number(item.percent))
+          .filter(value => Number.isFinite(value) && value > 0 && value <= 100)
+          .sort((a, b) => b - a)
+          .map(value => `${Number(value.toFixed(2)).toString()}%`);
+        if (!percentages.length) {
+          line.hidden = true;
+          return;
+        }
+        line.textContent = `Special offers for you: ${percentages.join(" + ")}`;
+        line.hidden = false;
+      } catch (error) {
+        line.hidden = true;
+        console.warn("Home discount offers unavailable.", error);
+      }
+    }
+
     /* INITIALIZATION */
 
     async function initializeHomePage() {
       updateResponsiveNavigation();
       initLocation();
       await checkShoppyAuth();
+      loadHomeDiscountOffers();
       startNotificationUpdates();
       await loadCart();
       await loadProducts();
