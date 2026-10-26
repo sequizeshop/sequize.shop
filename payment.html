@@ -31,24 +31,37 @@
       --payment-muted: #6B7280;
       --payment-ink: #1E1F1C;
       --payment-bg: #FFFFFF;
+      --payment-side-padding: clamp(18px, 4vw, 64px);
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      min-height: 100%;
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
+      min-height: 100vh;
       background: var(--payment-bg);
       color: var(--payment-ink);
       font-family: "DM Sans", sans-serif;
     }
 
+    /* =========================
+       HEADER
+    ========================= */
+
     .topbar {
+      position: relative;
+      z-index: 20;
       width: 100% !important;
       height: 64px !important;
       min-height: 64px !important;
-      padding: 0 max(5%, calc((100% - 1050px) / 2)) !important;
+      padding: 0 var(--payment-side-padding) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
@@ -58,27 +71,42 @@
     }
 
     .payment-back {
-      display: flex !important;
+      display: inline-flex !important;
+      flex: 0 0 40px;
       width: 40px !important;
       height: 40px !important;
       align-items: center !important;
       justify-content: center !important;
-      padding: 8px !important;
+      padding: 0 !important;
       border: 0 !important;
       border-radius: 9px !important;
       background: transparent !important;
       color: var(--payment-ink) !important;
       font-size: 24px !important;
+      line-height: 1 !important;
       text-decoration: none !important;
       box-shadow: none !important;
+      cursor: pointer;
     }
 
+    /*
+     * Important:
+     * Icon font ka ::before pseudo-element hide nahi karna.
+     * Phosphor arrow isi se render hota hai.
+     */
     .payment-back::before,
-    .payment-back::after,
-    .payment-back i::before,
-    .payment-back i::after {
+    .payment-back::after {
       content: none !important;
       display: none !important;
+    }
+
+    .payment-back i {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px !important;
+      line-height: 1 !important;
+      font-style: normal !important;
     }
 
     .payment-back:hover {
@@ -95,9 +123,15 @@
       text-decoration: none !important;
     }
 
+    /* =========================
+       FULL-WIDTH PAGE LAYOUT
+    ========================= */
+
     main {
-      width: min(1050px, 90%);
-      margin: 34px auto 65px;
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 34px var(--payment-side-padding) 65px !important;
     }
 
     .page-heading {
@@ -121,12 +155,20 @@
 
     .checkout-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(300px, .8fr);
-      gap: 38px;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, .75fr);
+      gap: clamp(28px, 4vw, 64px);
       align-items: start;
+      width: 100%;
+    }
+
+    .checkout-main,
+    .summary-column {
+      min-width: 0;
+      width: 100%;
     }
 
     .checkout-section {
+      min-width: 0;
       margin: 0;
       padding: 0;
       border: 0;
@@ -134,6 +176,10 @@
       background: transparent;
       box-shadow: none;
     }
+
+    /* =========================
+       SECTION HEADINGS
+    ========================= */
 
     .section-heading {
       display: flex;
@@ -151,11 +197,11 @@
       letter-spacing: -.4px;
     }
 
+    /*
+     * Numbered section labels are no longer used.
+     */
     .section-number {
-      margin-right: 7px;
-      color: var(--payment-muted);
-      font-size: 12px;
-      font-weight: 700;
+      display: none !important;
     }
 
     .section-divider {
@@ -163,6 +209,10 @@
       margin: 27px 0;
       background: var(--payment-line);
     }
+
+    /* =========================
+       DELIVERY ADDRESSES
+    ========================= */
 
     .address-list {
       display: grid;
@@ -246,6 +296,10 @@
       text-decoration: underline;
     }
 
+    /* =========================
+       PAYMENT METHOD
+    ========================= */
+
     .payment-option {
       display: flex;
       align-items: center;
@@ -296,8 +350,12 @@
       white-space: nowrap;
     }
 
+    /* =========================
+       PAYMENT SUMMARY
+    ========================= */
+
     .summary-column {
-      min-width: 0;
+      position: relative;
     }
 
     .summary-heading {
@@ -365,6 +423,10 @@
       line-height: 1.8;
     }
 
+    /* =========================
+       NOTICES
+    ========================= */
+
     .notice {
       display: none;
       margin: 0 0 22px;
@@ -393,6 +455,15 @@
       color: #166534;
     }
 
+    /* =========================
+       PAY BUTTON
+    ========================= */
+
+    .mobile-pay-sticky {
+      width: 100%;
+      min-width: 0;
+    }
+
     .pay-button {
       display: flex;
       width: 100%;
@@ -411,6 +482,14 @@
       font-weight: 800;
       cursor: pointer;
       transition: opacity .2s;
+    }
+
+    .pay-button i {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      line-height: 1;
     }
 
     .pay-button:hover:not(:disabled) {
@@ -449,17 +528,51 @@
       text-align: center;
     }
 
+    /* =========================
+       DESKTOP
+    ========================= */
+
     @media (min-width: 761px) {
       .summary-column {
         position: sticky;
-        top: calc(var(--header-h, 64px) + 25px);
+        top: 25px;
+      }
+
+      .mobile-pay-sticky {
+        position: static;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
       }
     }
 
+    /* =========================
+       MOBILE
+    ========================= */
+
     @media (max-width: 760px) {
+      :root {
+        --payment-side-padding: 18px;
+      }
+
+      .topbar {
+        height: 58px !important;
+        min-height: 58px !important;
+      }
+
       main {
-        width: 90%;
-        margin-top: 25px;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 25px 18px 36px !important;
+      }
+
+      .page-heading {
+        margin-bottom: 23px;
+      }
+
+      .page-heading h1 {
+        font-size: 29px;
       }
 
       .checkout-layout {
@@ -467,6 +580,14 @@
         gap: 30px;
       }
 
+      .checkout-main,
+      .summary-column {
+        width: 100%;
+      }
+
+      /*
+       * Summary first on mobile.
+       */
       .summary-column {
         order: -1;
       }
@@ -475,8 +596,79 @@
         margin: 24px 0;
       }
 
-      .page-heading h1 {
-        font-size: 29px;
+      /*
+       * The pay button wrapper becomes sticky only while
+       * the user scrolls downward. JavaScript removes the
+       * sticky state when the user scrolls upward.
+       */
+      .mobile-pay-sticky {
+        position: relative;
+        z-index: 100;
+        width: 100%;
+        background: #fff;
+        transition: box-shadow .18s ease;
+      }
+
+      .mobile-pay-sticky.is-sticky {
+        position: fixed;
+        z-index: 999;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+        background: #fff;
+        border-top: 1px solid #E5E7EB;
+        box-shadow: 0 -5px 18px rgba(0, 0, 0, .045);
+      }
+
+      .mobile-pay-sticky .pay-button {
+        margin-top: 0;
+        min-height: 50px;
+      }
+
+      /*
+       * Keep enough room for the fixed button so it
+       * doesn't cover the last part of the page.
+       */
+      body.mobile-pay-visible main {
+        padding-bottom: 115px !important;
+      }
+
+      .payment-option {
+        padding: 13px;
+      }
+
+      .payment-method-left {
+        gap: 10px;
+      }
+
+      .payment-method-description {
+        max-width: 250px;
+      }
+
+      .total-row strong {
+        font-size: 23px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      :root {
+        --payment-side-padding: 14px;
+      }
+
+      main {
+        padding-right: 14px !important;
+        padding-left: 14px !important;
+      }
+
+      .mobile-pay-sticky.is-sticky {
+        padding-right: 14px;
+        padding-left: 14px;
+      }
+
+      .secure-badge {
+        font-size: 9px;
       }
     }
   </style>
@@ -510,10 +702,7 @@
       <section class="checkout-section">
 
         <div class="section-heading">
-          <h2>
-            <span class="section-number">01</span>
-            Delivery address
-          </h2>
+          <h2>Delivery address</h2>
         </div>
 
         <div id="addressLoading" class="loading">
@@ -528,7 +717,7 @@
 
         <a href="/user/account/redirect?mode=checkout"
            class="text-link">
-          <i class="ph ph-plus-circle"></i>
+          <i class="ph ph-plus-circle" aria-hidden="true"></i>
           Manage delivery addresses
         </a>
 
@@ -539,10 +728,7 @@
       <section class="checkout-section">
 
         <div class="section-heading">
-          <h2>
-            <span class="section-number">02</span>
-            Payment method
-          </h2>
+          <h2>Payment method</h2>
         </div>
 
         <div class="payment-option">
@@ -550,7 +736,7 @@
           <div class="payment-method-left">
 
             <div class="payment-icon">
-              <i class="ph ph-shield-check"></i>
+              <i class="ph ph-shield-check" aria-hidden="true"></i>
             </div>
 
             <div>
@@ -578,10 +764,7 @@
       <section class="checkout-section">
 
         <div class="section-heading summary-heading">
-          <h2>
-            <span class="section-number">03</span>
-            Payment summary
-          </h2>
+          <h2>Payment summary</h2>
         </div>
 
         <div id="pricingLoading" class="loading">
@@ -608,10 +791,12 @@
 
         </div>
 
-        <button id="payButton" class="pay-button" disabled>
-          <i class="ph ph-lock-key"></i>
-          <span>Loading checkout...</span>
-        </button>
+        <div class="mobile-pay-sticky" id="mobilePaySticky">
+          <button id="payButton" class="pay-button" disabled>
+            <i class="ph ph-lock-key" aria-hidden="true"></i>
+            <span>Loading checkout...</span>
+          </button>
+        </div>
 
         <div id="orderReference" class="order-reference"></div>
 
@@ -660,6 +845,10 @@ let appliedDiscount = null;
 let pricingLoaded = false;
 let loadingData = true;
 let checkoutStarted = false;
+
+/* =========================
+   HELPERS
+========================= */
 
 const $ = id => document.getElementById(id);
 
@@ -728,9 +917,10 @@ async function requestJSON(url, options = {}) {
   return data;
 }
 
-/*
- * Keep the same email lookup strategy as the cart.
- */
+/* =========================
+   CUSTOMER EMAIL
+========================= */
+
 async function getCustomerEmail() {
   try {
     const cached = JSON.parse(
@@ -760,16 +950,19 @@ async function getCustomerEmail() {
         .toLowerCase();
     }
   } catch (error) {
-    console.warn("Customer profile email unavailable:", error.message);
+    console.warn(
+      "Customer profile email unavailable:",
+      error.message
+    );
   }
 
   return "";
 }
 
-/*
- * Load admin taxes and discounts exactly from their APIs.
- * No hardcoded fallback settings.
- */
+/* =========================
+   TAXES AND DISCOUNTS
+========================= */
+
 async function loadPricingSettings() {
   const email = await getCustomerEmail();
 
@@ -814,7 +1007,7 @@ async function loadPricingSettings() {
   );
 
   /*
-   * Same selection rule as the cart.
+   * Preserve the current cart discount selection rule.
    */
   eligibleDiscounts.sort(
     (a, b) => Number(b.percent) - Number(a.percent)
@@ -825,12 +1018,14 @@ async function loadPricingSettings() {
   pricingLoaded = true;
 }
 
-/*
- * Cart API prices are USD, matching the cart page's
- * INR conversion: price × 85.
- */
+/* =========================
+   PREVIEW CALCULATION
+========================= */
+
 function getQuantity(item) {
-  const quantity = Number(item?.quantity ?? item?.qty ?? 1);
+  const quantity = Number(
+    item?.quantity ?? item?.qty ?? 1
+  );
 
   if (
     !Number.isInteger(quantity) ||
@@ -892,6 +1087,10 @@ function calculatePreview() {
     };
   });
 
+  /*
+   * Sum the rounded tax lines so the displayed tax
+   * breakdown matches the displayed tax total.
+   */
   const taxTotalINR = Number(
     taxLines.reduce(
       (sum, tax) => sum + tax.amountINR,
@@ -927,6 +1126,10 @@ function calculatePreview() {
   };
 }
 
+/* =========================
+   RENDER PRICING
+========================= */
+
 function renderTotals(serverOrder = null) {
   const summary = $("pricingSummary");
   const loading = $("pricingLoading");
@@ -937,17 +1140,23 @@ function renderTotals(serverOrder = null) {
   let totals;
 
   /*
-   * Once the backend has created the order, display the
-   * exact saved server values rather than recalculating.
+   * Once the backend has created the order, display
+   * saved server totals instead of applying the
+   * preview discount a second time.
    */
-  if (serverOrder && Number.isFinite(Number(serverOrder.totalINR))) {
-    const savedDiscount = serverOrder.discount;
+  if (
+    serverOrder &&
+    Number.isFinite(Number(serverOrder.totalINR))
+  ) {
+    const savedDiscount = serverOrder.discount || {};
 
     totals = {
       subtotalINR: Number(serverOrder.subtotalINR) || 0,
-      discountINR: Number(savedDiscount?.amountINR) || 0,
-      discountPercent: Number(savedDiscount?.percent) || 0,
-      discountTitle: String(savedDiscount?.title || "Discount"),
+      discountINR: Number(savedDiscount.amountINR) || 0,
+      discountPercent: Number(savedDiscount.percent) || 0,
+      discountTitle: String(
+        savedDiscount.title || "Discount"
+      ),
       taxes: Array.isArray(serverOrder.taxes)
         ? serverOrder.taxes.map(tax => ({
             title: tax.title,
@@ -965,9 +1174,13 @@ function renderTotals(serverOrder = null) {
       : "Discount";
   }
 
-  $("originalPrice").textContent = money(totals.subtotalINR);
-  $("totalPrice").textContent = money(totals.totalINR);
+  $("originalPrice").textContent =
+    money(totals.subtotalINR);
 
+  $("totalPrice").textContent =
+    money(totals.totalINR);
+
+  /* Admin discount row */
   const discountContainer = $("discountRows");
 
   if (totals.discountINR > 0) {
@@ -975,9 +1188,11 @@ function renderTotals(serverOrder = null) {
       <div class="price-row discount-row">
         <span>
           ${escapeHTML(totals.discountTitle)}
-          (${Number(totals.discountPercent).toFixed(2)
+          (${Number(totals.discountPercent)
+            .toFixed(2)
             .replace(/\.?0+$/, "")}% off)
         </span>
+
         <strong>−${money(totals.discountINR)}</strong>
       </div>
     `;
@@ -985,17 +1200,21 @@ function renderTotals(serverOrder = null) {
     discountContainer.innerHTML = "";
   }
 
+  /* Admin tax rows */
   $("taxRows").innerHTML = totals.taxes.map(tax => `
     <div class="price-row">
       <span>
         ${escapeHTML(tax.title)}
-        (${Number(tax.percent).toFixed(2)
+        (${Number(tax.percent)
+          .toFixed(2)
           .replace(/\.?0+$/, "")}%)
       </span>
+
       <strong>${money(tax.amountINR)}</strong>
     </div>
   `).join("");
 
+  /* Savings message */
   const savings = $("savingsText");
 
   if (totals.discountINR > 0) {
@@ -1011,6 +1230,10 @@ function renderTotals(serverOrder = null) {
   updatePayButton();
 }
 
+/* =========================
+   ADDRESS HELPERS
+========================= */
+
 function getAddressId(address) {
   return address?.addressId ||
     address?.address_id ||
@@ -1021,22 +1244,42 @@ function getAddressId(address) {
 
 function normalizeAddresses(data) {
   if (Array.isArray(data)) return data;
-  if (Array.isArray(data.addresses)) return data.addresses;
-  if (Array.isArray(data.data)) return data.data;
+
+  if (Array.isArray(data.addresses)) {
+    return data.addresses;
+  }
+
+  if (Array.isArray(data.data)) {
+    return data.data;
+  }
+
   return [];
 }
 
 function getAddressLine(address) {
   return [
-    address?.addressLine1 || address?.address1 || address?.street,
-    address?.addressLine2 || address?.address2,
+    address?.addressLine1 ||
+      address?.address1 ||
+      address?.street,
+
+    address?.addressLine2 ||
+      address?.address2,
+
     address?.landmark,
     address?.city,
     address?.state,
-    address?.pincode || address?.postalCode || address?.zip,
+
+    address?.pincode ||
+      address?.postalCode ||
+      address?.zip,
+
     address?.country
   ].filter(Boolean).join(", ") || address?.address || "";
 }
+
+/* =========================
+   RENDER ADDRESSES
+========================= */
 
 function renderAddresses() {
   $("addressLoading").hidden = true;
@@ -1135,11 +1378,19 @@ function renderAddresses() {
   updatePayButton();
 }
 
-function setButton(label, disabled, icon = "ph-lock-key") {
+/* =========================
+   PAY BUTTON STATE
+========================= */
+
+function setButton(
+  label,
+  disabled,
+  icon = "ph-lock-key"
+) {
   $("payButton").disabled = disabled;
 
   $("payButton").innerHTML = `
-    <i class="ph ${icon}"></i>
+    <i class="ph ${icon}" aria-hidden="true"></i>
     <span>${escapeHTML(label)}</span>
   `;
 }
@@ -1155,7 +1406,11 @@ function getOrderId(order) {
 
 function updatePayButton() {
   if (checkoutStarted) {
-    setButton("Opening Cashfree checkout...", true, "ph-spinner");
+    setButton(
+      "Opening Cashfree checkout...",
+      true,
+      "ph-spinner"
+    );
     return;
   }
 
@@ -1165,12 +1420,20 @@ function updatePayButton() {
   }
 
   if (!cartItems.length && !currentOrder) {
-    setButton("Your cart is empty", true, "ph-shopping-bag");
+    setButton(
+      "Your cart is empty",
+      true,
+      "ph-shopping-bag"
+    );
     return;
   }
 
   if (!currentOrder && !selectedAddressId) {
-    setButton("Select delivery address", true, "ph-map-pin");
+    setButton(
+      "Select delivery address",
+      true,
+      "ph-map-pin"
+    );
     return;
   }
 
@@ -1181,6 +1444,10 @@ function updatePayButton() {
     false
   );
 }
+
+/* =========================
+   LOAD CART
+========================= */
 
 async function loadCart() {
   const data = await requestJSON(API.cart, {
@@ -1202,6 +1469,10 @@ async function loadCart() {
   }
 }
 
+/* =========================
+   LOAD ADDRESSES
+========================= */
+
 async function loadAddresses() {
   const data = await requestJSON(API.addresses, {
     method: "GET"
@@ -1210,6 +1481,10 @@ async function loadAddresses() {
   addresses = normalizeAddresses(data);
   renderAddresses();
 }
+
+/* =========================
+   ORDER STATUS
+========================= */
 
 function redirectToOrderStatus(orderId) {
   if (!orderId) {
@@ -1224,6 +1499,10 @@ function redirectToOrderStatus(orderId) {
     `${ORDER_STATUS_URL}?orderId=${encodeURIComponent(orderId)}`
   );
 }
+
+/* =========================
+   CREATE ORDER
+========================= */
 
 async function createOrderOnce() {
   if (currentOrder && getOrderId(currentOrder)) {
@@ -1240,12 +1519,17 @@ async function createOrderOnce() {
     })
   });
 
-  const order = data.order || data.data?.order || data;
+  const order =
+    data.order ||
+    data.data?.order ||
+    data;
+
   const orderId = getOrderId(order);
 
   if (!orderId) {
     throw new Error(
-      data.message || "The server did not return an order ID."
+      data.message ||
+      "The server did not return an order ID."
     );
   }
 
@@ -1254,15 +1538,20 @@ async function createOrderOnce() {
     orderId
   };
 
-  $("orderReference").textContent = `Order ID: ${orderId}`;
+  $("orderReference").textContent =
+    `Order ID: ${orderId}`;
 
   /*
-   * Render the server-saved order totals.
+   * Show actual saved server values after order creation.
    */
   renderTotals(currentOrder);
 
   return currentOrder;
 }
+
+/* =========================
+   CASHFREE PAYMENT SESSION
+========================= */
 
 async function createCashfreePaymentSession(orderId) {
   const data = await requestJSON(API.checkout, {
@@ -1284,12 +1573,17 @@ async function createCashfreePaymentSession(orderId) {
 
   if (!paymentSessionId) {
     throw new Error(
-      data.message || "Cashfree did not return a payment session."
+      data.message ||
+      "Cashfree did not return a payment session."
     );
   }
 
   return paymentSessionId;
 }
+
+/* =========================
+   VERIFY PAYMENT
+========================= */
 
 async function verifyPaymentOnServer(orderId) {
   return requestJSON(API.checkout, {
@@ -1303,6 +1597,10 @@ async function verifyPaymentOnServer(orderId) {
     })
   });
 }
+
+/* =========================
+   OPEN CASHFREE
+========================= */
 
 async function openCashfreeGateway(paymentSessionId) {
   if (typeof window.Cashfree !== "function") {
@@ -1320,6 +1618,10 @@ async function openCashfreeGateway(paymentSessionId) {
     redirectTarget: "_modal"
   });
 }
+
+/* =========================
+   HANDLE PAYMENT
+========================= */
 
 async function handlePayClick() {
   if (checkoutStarted) return;
@@ -1368,8 +1670,8 @@ async function handlePayClick() {
       await openCashfreeGateway(paymentSessionId);
     } catch (gatewayError) {
       /*
-       * The user may close the modal after the payment succeeds.
-       * Verify payment status with the server anyway.
+       * The user may close the modal after payment succeeds.
+       * The server is still asked to verify the order.
        */
       console.warn(
         "Cashfree checkout returned:",
@@ -1389,7 +1691,10 @@ async function handlePayClick() {
     redirectToOrderStatus(orderId);
 
   } catch (error) {
-    console.error("Checkout initialization failed:", error);
+    console.error(
+      "Checkout initialization failed:",
+      error
+    );
 
     showNotice(
       error.message ||
@@ -1402,12 +1707,88 @@ async function handlePayClick() {
   }
 }
 
-$("payButton").addEventListener("click", handlePayClick);
+$("payButton").addEventListener(
+  "click",
+  handlePayClick
+);
+
+/* =========================
+   MOBILE STICKY PAY BUTTON
+========================= */
+
+(function setupMobilePayButton() {
+  const wrapper = $("mobilePaySticky");
+
+  if (!wrapper) return;
+
+  let previousScrollY = window.scrollY;
+  let ticking = false;
+
+  function isMobile() {
+    return window.matchMedia(
+      "(max-width: 760px)"
+    ).matches;
+  }
+
+  function updateStickyState() {
+    ticking = false;
+
+    if (!isMobile()) {
+      wrapper.classList.remove("is-sticky");
+      document.body.classList.remove("mobile-pay-visible");
+      previousScrollY = window.scrollY;
+      return;
+    }
+
+    const currentY = window.scrollY;
+    const difference = currentY - previousScrollY;
+
+    /*
+     * Scroll down: keep Pay button fixed at the bottom.
+     * Scroll up: return it to its normal content position.
+     */
+    if (difference > 3 && currentY > 100) {
+      wrapper.classList.add("is-sticky");
+      document.body.classList.add("mobile-pay-visible");
+    } else if (difference < -3) {
+      wrapper.classList.remove("is-sticky");
+      document.body.classList.remove("mobile-pay-visible");
+    }
+
+    if (currentY <= 60) {
+      wrapper.classList.remove("is-sticky");
+      document.body.classList.remove("mobile-pay-visible");
+    }
+
+    previousScrollY = currentY;
+  }
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(updateStickyState);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  window.addEventListener("resize", () => {
+    if (!isMobile()) {
+      wrapper.classList.remove("is-sticky");
+      document.body.classList.remove("mobile-pay-visible");
+    }
+
+    previousScrollY = window.scrollY;
+  });
+})();
+
+/* =========================
+   INITIALIZE CHECKOUT
+========================= */
 
 async function init() {
   try {
     /*
-     * Load cart, addresses, and current admin settings.
+     * Load cart, saved addresses, and current admin
+     * taxes/discount settings.
      */
     const results = await Promise.allSettled([
       loadCart(),
@@ -1420,7 +1801,10 @@ async function init() {
     const pricingResult = results[2];
 
     if (cartResult.status === "rejected") {
-      console.error("Cart loading error:", cartResult.reason);
+      console.error(
+        "Cart loading error:",
+        cartResult.reason
+      );
 
       showNotice(
         cartResult.reason.message ||
@@ -1430,7 +1814,10 @@ async function init() {
     }
 
     if (addressResult.status === "rejected") {
-      console.error("Address loading error:", addressResult.reason);
+      console.error(
+        "Address loading error:",
+        addressResult.reason
+      );
 
       $("addressLoading").hidden = true;
       $("addressEmpty").hidden = false;
@@ -1456,7 +1843,10 @@ async function init() {
     }
 
   } catch (error) {
-    console.error("Checkout initialization error:", error);
+    console.error(
+      "Checkout initialization error:",
+      error
+    );
 
     showNotice(
       error.message ||
