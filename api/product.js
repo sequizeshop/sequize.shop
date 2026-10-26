@@ -1,5 +1,4 @@
-
- // api/product.js
+// api/product.js
 
 const admin = require("firebase-admin");
 
@@ -14,7 +13,8 @@ function initializeFirebase() {
     return admin.database();
   }
 
-  const serviceAccountValue = process.env.FIREBASE_SERVICE_ACCOUNT;
+  const serviceAccountValue =
+    process.env.FIREBASE_SERVICE_ACCOUNT;
 
   if (!serviceAccountValue) {
     throw new Error(
@@ -25,7 +25,9 @@ function initializeFirebase() {
   let serviceAccount;
 
   try {
-    serviceAccount = JSON.parse(serviceAccountValue);
+    serviceAccount = JSON.parse(
+      serviceAccountValue
+    );
   } catch {
     throw new Error(
       "FIREBASE_SERVICE_ACCOUNT must contain valid JSON."
@@ -33,10 +35,8 @@ function initializeFirebase() {
   }
 
   if (serviceAccount.private_key) {
-    serviceAccount.private_key = serviceAccount.private_key.replace(
-      /\\n/g,
-      "\n"
-    );
+    serviceAccount.private_key =
+      serviceAccount.private_key.replace(/\\n/g, "\n");
   }
 
   admin.initializeApp({
@@ -49,11 +49,17 @@ function initializeFirebase() {
 
 function validNumber(value, fallback = 0) {
   const number = Number(value);
-  return Number.isFinite(number) ? number : fallback;
+
+  return Number.isFinite(number)
+    ? number
+    : fallback;
 }
 
 module.exports = async function handler(req, res) {
-  res.setHeader("Cache-Control", "public, max-age=0, s-maxage=60");
+  res.setHeader(
+    "Cache-Control",
+    "public, max-age=0, s-maxage=60"
+  );
 
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
@@ -79,8 +85,11 @@ module.exports = async function handler(req, res) {
   try {
     const db = initializeFirebase();
 
-    // Only look up the exact custom ID. Never treat it as a numeric source ID.
-    const productSnapshot = await db.ref("products").child(rawId).once("value");
+    // Look up only the exact persistent custom product ID.
+    const productSnapshot = await db
+      .ref("products")
+      .child(rawId)
+      .once("value");
 
     if (!productSnapshot.exists()) {
       return res.status(404).json({
@@ -103,7 +112,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // The source ID is read from the verified Firebase record, not the URL.
+    // Resolve provider details using the source ID stored in Firebase.
     let sourceProduct = {};
 
     try {
@@ -118,58 +127,91 @@ module.exports = async function handler(req, res) {
 
         if (
           fetchedProduct &&
-          String(fetchedProduct.id) === String(savedProduct.sourceId)
+          String(fetchedProduct.id) ===
+            String(savedProduct.sourceId)
         ) {
           sourceProduct = fetchedProduct;
         }
       }
     } catch (error) {
-      // Core product details remain available from Firebase if the
-      // external product provider is temporarily unavailable.
-      console.error("Product provider request failed:", error.message);
+      console.error(
+        "Product provider request failed:",
+        error.message
+      );
     }
 
     const savedPrice = Number(savedProduct.price);
-    const sourcePrice = validNumber(sourceProduct.price, 0) * INR_RATE;
+
+    const sourcePrice = Number(
+      (
+        validNumber(sourceProduct.price, 0) *
+        INR_RATE
+      ).toFixed(2)
+    );
+
+    /*
+     * Firebase is the primary source for the saved INR price.
+     * The provider price is only a fallback.
+     */
+    const originalPrice =
+      Number.isFinite(savedPrice) && savedPrice >= 0
+        ? savedPrice
+        : sourcePrice;
 
     const product = {
-      // Always return the persistent 40-character ID.
+      // Always return the persistent custom product ID.
       id: rawId,
 
-      title: savedProduct.title || sourceProduct.title || "",
+      title:
+        savedProduct.title ||
+        sourceProduct.title ||
+        "",
+
       description:
-        savedProduct.description || sourceProduct.description || "",
+        savedProduct.description ||
+        sourceProduct.description ||
+        "",
 
       category:
-        savedProduct.category || sourceProduct.category || "",
+        savedProduct.category ||
+        sourceProduct.category ||
+        "",
 
       brand:
-        savedProduct.brand || sourceProduct.brand || "Generic",
+        savedProduct.brand ||
+        sourceProduct.brand ||
+        "Generic",
 
-      // Keep detail-page pricing consistent with the homepage API (INR).
-      price:
-        Number.isFinite(savedPrice) && savedPrice >= 0
-          ? savedPrice
-          : Number(sourcePrice.toFixed(2)),
+      // No automatic discount is applied.
+      price: originalPrice,
+
+      originalPrice: originalPrice,
 
       originalPriceUSD: validNumber(
         savedProduct.originalPriceUSD,
         validNumber(sourceProduct.price, 0)
       ),
 
-      discountPercentage: validNumber(
-        savedProduct.discountPercentage,
-        validNumber(sourceProduct.discountPercentage, 0)
-      ),
+      /*
+       * Do not trust old stored discountPercentage values or the
+       * provider's default discount percentage.
+       *
+       * Admin discounts must be validated and applied separately
+       * when the admin discount integration is implemented.
+       */
+      discountPercentage: 0,
 
       rating: validNumber(
         savedProduct.rating,
         validNumber(sourceProduct.rating, 0)
       ),
 
-      stock: validNumber(
-        savedProduct.stock,
-        validNumber(sourceProduct.stock, 0)
+      stock: Math.max(
+        0,
+        validNumber(
+          savedProduct.stock,
+          validNumber(sourceProduct.stock, 0)
+        )
       ),
 
       availabilityStatus:
@@ -178,7 +220,9 @@ module.exports = async function handler(req, res) {
         "",
 
       thumbnail:
-        savedProduct.thumbnail || sourceProduct.thumbnail || "",
+        savedProduct.thumbnail ||
+        sourceProduct.thumbnail ||
+        "",
 
       images: Array.isArray(savedProduct.images)
         ? savedProduct.images
@@ -192,27 +236,48 @@ module.exports = async function handler(req, res) {
           ? sourceProduct.tags
           : [],
 
-      sku: savedProduct.sku || sourceProduct.sku || "",
+      sku:
+        savedProduct.sku ||
+        sourceProduct.sku ||
+        "",
 
       weight: sourceProduct.weight ?? null,
-      dimensions: sourceProduct.dimensions || null,
 
-      warrantyInformation: sourceProduct.warrantyInformation || "",
-      shippingInformation: sourceProduct.shippingInformation || "",
-      returnPolicy: sourceProduct.returnPolicy || "",
+      dimensions:
+        sourceProduct.dimensions || null,
+
+      warrantyInformation:
+        sourceProduct.warrantyInformation || "",
+
+      shippingInformation:
+        sourceProduct.shippingInformation || "",
+
+      returnPolicy:
+        sourceProduct.returnPolicy || "",
 
       minimumOrderQuantity:
-        validNumber(sourceProduct.minimumOrderQuantity, 1) || 1,
+        validNumber(
+          sourceProduct.minimumOrderQuantity,
+          1
+        ) || 1,
 
       reviews: Array.isArray(sourceProduct.reviews)
         ? sourceProduct.reviews.map(review => ({
             rating: validNumber(review.rating),
-            comment: String(review.comment || ""),
+
+            comment: String(
+              review.comment || ""
+            ),
+
             date: review.date || "",
+
             reviewerName: String(
               review.reviewerName || "Customer"
             ),
-            reviewerEmail: String(review.reviewerEmail || "")
+
+            reviewerEmail: String(
+              review.reviewerEmail || ""
+            )
           }))
         : []
     };
@@ -229,11 +294,15 @@ module.exports = async function handler(req, res) {
       product
     });
   } catch (error) {
-    console.error("Product API error:", error);
+    console.error(
+      "Product API error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: "Something went wrong while loading the product."
+      message:
+        "Something went wrong while loading the product."
     });
   }
 };
