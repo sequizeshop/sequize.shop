@@ -51,7 +51,15 @@
       box-sizing: border-box;
     }
 
+    html {
+      margin: 0 !important;
+      padding: 0 !important;
+      scroll-padding-top: 0;
+    }
+
     body {
+      margin: 0 !important;
+      padding: 0 !important;
       width: 100%;
       min-height: 100vh;
       font-family: var(--font-body);
@@ -88,7 +96,9 @@
 
     .topbar {
       position: sticky;
-      top: 0;
+      top: 0 !important;
+      margin-top: 0 !important;
+      transform: none;
       z-index: 100;
       width: 100%;
       height: var(--header-h);
@@ -374,7 +384,6 @@
     /* BUTTONS (text only) */
 
     .checkout-button,
-    .continue-button,
     .clear-cart-button {
       width: 100%;
       min-height: 48px;
@@ -406,17 +415,6 @@
       border-color: var(--disabled-bg);
       color: var(--disabled-text);
       cursor: not-allowed;
-    }
-
-    .continue-button {
-      margin-top: 12px;
-      background: var(--primary-soft);
-      border: 1px solid var(--primary-soft);
-      color: var(--primary);
-    }
-
-    .continue-button:hover {
-      border-color: var(--primary);
     }
 
     .clear-cart-button {
@@ -638,11 +636,6 @@
           <strong id="summarySubtotal">₹0.00</strong>
         </div>
 
-        <div class="summary-line">
-          <span>Shipping</span>
-          <strong>Calculated at checkout</strong>
-        </div>
-
         <div id="summaryAdjustments" aria-live="polite"></div>
 
         <div class="summary-total total-row">
@@ -653,10 +646,6 @@
         <button id="checkoutButton" class="checkout-button" type="button" disabled>
           Continue to Checkout
         </button>
-
-        <a href="/home.html" class="continue-button">
-          Continue Shopping
-        </a>
 
         <button id="clearCartButton" class="clear-cart-button" type="button" hidden>
           Clear Cart
