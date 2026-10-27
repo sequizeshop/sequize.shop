@@ -91,7 +91,7 @@ h1{
   font-size:clamp(31px,7vw,46px);
   line-height:1.06;
   letter-spacing:-1.8px;
-  margin:12px 0 12px;
+  margin:12px 0;
   max-width:510px
 }
 
@@ -219,7 +219,8 @@ h1{
   margin-top:12px;
   font-size:12px;
   line-height:1.5;
-  color:var(--muted)
+  color:var(--muted);
+  overflow-wrap:anywhere
 }
 
 .status.success{color:var(--success)}
@@ -298,7 +299,6 @@ h1{
   .offers{gap:8px}
   .offer{padding:12px}
   .card{border-radius:17px}
-
   .linkrow{flex-direction:column}
   .copy{width:100%}
   .actions{grid-template-columns:1fr}
@@ -459,10 +459,12 @@ h1{
 (function () {
   "use strict";
 
-  // Same-origin Shoppy API.
-  // It verifies the existing shop_session cookie on the server,
-  // then securely calls the separate referral backend.
-  const PROFILE_ENDPOINT = "/api/referrals/profile";
+  /*
+   * IMPORTANT:
+   * This is the existing Shoppy login API.
+   * No new frontend/backend file is required.
+   */
+  const PROFILE_ENDPOINT = "/api/login";
 
   const TRACK_ENDPOINT =
     "https://apisequizeshoplite.vercel.app/api/referrals/track";
@@ -478,29 +480,6 @@ h1{
   function setStatus(message, kind) {
     status.textContent = message;
     status.className = "status" + (kind ? " " + kind : "");
-  }
-
-  function readableError(data, fallback) {
-    if (typeof data === "string" && data.trim()) {
-      return data.trim();
-    }
-
-    if (data && typeof data === "object") {
-      for (const key of [
-        "message",
-        "error_description",
-        "error",
-        "details"
-      ]) {
-        const value = data[key];
-
-        if (typeof value === "string" && value.trim()) {
-          return value.trim();
-        }
-      }
-    }
-
-    return fallback;
   }
 
   function setBusy(busy) {
@@ -564,11 +543,15 @@ h1{
         method: "POST",
         credentials: "same-origin",
         cache: "no-store",
+
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({})
+
+        body: JSON.stringify({
+          action: "referralProfile"
+        })
       });
 
       let data = {};
@@ -581,61 +564,47 @@ h1{
 
       if (response.status === 401) {
         throw new Error(
-          "Your Shoppy login session could not be verified. " +
-          "Please sign in again. If this continues, check the " +
-          "Shoppy session configuration."
+          "Please sign in to your Shoppy account, then try again."
         );
       }
 
       if (response.status === 403) {
         throw new Error(
-          "Your referral request was not authorized. Please contact support."
-        );
-      }
-
-      if (response.status === 404) {
-        throw new Error(
-          "The Shoppy referral API was not found. " +
-          "Check that the existing /api/referrals/profile API is deployed."
+          "Your referral request was not authorized. Please try again later."
         );
       }
 
       if (!response.ok) {
         throw new Error(
-          readableError(
-            data,
-            "Could not generate the link (HTTP " +
-              response.status +
-              "). Please try again."
-          )
+          data.message ||
+          data.error ||
+          "Could not generate your referral link. Please try again."
         );
       }
 
       if (data.success !== true) {
         throw new Error(
-          readableError(data, "Could not generate your referral link.")
+          data.message ||
+          "Could not verify your Shoppy account."
         );
       }
 
-      const p = data.profile || data;
+      const p = data.profile;
 
       if (!validProfile(p)) {
         throw new Error(
-          "The profile API did not return a valid Shoppy referral link. " +
-          "Check the backend profile response and referral URL."
+          "The referral profile is incomplete or its link is invalid. Please try again."
         );
       }
 
       renderProfile(p);
     } catch (error) {
-      const message =
-        error &&
-        typeof error.message === "string" &&
-        error.message.trim()
-          ? error.message.trim()
-          : "Could not generate the link. Check your connection and try again.";
-
-      setStatus(message, "error");
+      setStatus(
+        error && error.message
+          ? error.message
+          : "Could not generate the link. Check your connection and try again.",
+        "error"
+      );
     } finally {
       setBusy(false);
     }
@@ -691,7 +660,10 @@ h1{
       if (navigator.share) {
         await navigator.share(shareData);
 
-        setStatus("Invitation ready to share.", "success");
+        setStatus(
+          "Invitation ready to share.",
+          "success"
+        );
       } else {
         await copyLink();
       }
@@ -705,7 +677,9 @@ h1{
     }
   }
 
-  // Preserve and track visits made through a referral invitation.
+  /*
+   * Track visits made through an invitation link.
+   */
   const params = new URLSearchParams(location.search);
 
   const invitationId = (
@@ -744,13 +718,16 @@ h1{
 
       fetch(TRACK_ENDPOINT, {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json"
         },
+
         body: JSON.stringify({
           invitationId,
           visitorId
         }),
+
         keepalive: true
       }).catch(function () {});
     } catch (_) {
@@ -762,7 +739,7 @@ h1{
   copyBtn.addEventListener("click", copyLink);
   shareBtn.addEventListener("click", shareLink);
 
-  // Automatically retrieve the referral profile on page load.
+  // Automatically load the profile when the page opens.
   generateLink();
 })();
 </script>
