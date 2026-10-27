@@ -1,8 +1,13 @@
+```js
+"use strict";
 
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const { db } = require("../lib/firebase");
 const { setSessionCookie } = require("../lib/auth");
+
+const REFERRAL_PROFILE_URL =
+  "https://apisequizeshoplite.vercel.app/api/referrals/profile";
 
 // Send JSON response
 function sendJson(res, statusCode, data) {
@@ -44,6 +49,51 @@ function hashEmail(email) {
     .digest("hex");
 }
 
+// Create or retrieve the user's referral profile.
+// Referral failure must not prevent a valid login.
+async function getReferralProfile(uid) {
+  const secret = process.env.REFERRAL_SERVICE_SECRET;
+
+  if (
+    typeof secret !== "string" ||
+    Buffer.byteLength(secret, "utf8") < 32
+  ) {
+    console.error(
+      "Referral profile skipped: REFERRAL_SERVICE_SECRET is missing or invalid."
+    );
+    return null;
+  }
+
+  try {
+    const response = await fetch(REFERRAL_PROFILE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${secret}`
+      },
+      body: JSON.stringify({ uid })
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data.success !== true) {
+      console.error(
+        "Referral profile request failed with status:",
+        response.status
+      );
+      return null;
+    }
+
+    return data.profile || data;
+  } catch (error) {
+    console.error(
+      "Referral profile request failed:",
+      error.message
+    );
+    return null;
+  }
+}
+
 module.exports = async function handler(req, res) {
   // Only allow POST
   if (req.method !== "POST") {
@@ -82,7 +132,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 1. Hash email to find its database mapping
+    // 1. Find the database mapping using the email hash
     const emailHash = hashEmail(email);
 
     const mappingSnapshot = await db
@@ -96,10 +146,7 @@ module.exports = async function handler(req, res) {
     // Support legacy format: userEmails/{hash} = "UID"
     if (typeof mapping === "string" && mapping.length > 0) {
       uid = mapping;
-    }
-
-    // Support current format: userEmails/{hash} = { uid, status }
-    else if (
+    } else if (
       mapping &&
       typeof mapping === "object" &&
       !Array.isArray(mapping) &&
@@ -107,6 +154,7 @@ module.exports = async function handler(req, res) {
       typeof mapping.uid === "string" &&
       mapping.uid.length > 0
     ) {
+      // Support current format: userEmails/{hash} = { uid, status }
       uid = mapping.uid;
     }
 
@@ -136,7 +184,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 3. Verify password against the bcrypt hash
+    // 3. Verify password
     let passwordMatches = false;
 
     try {
@@ -163,18 +211,23 @@ module.exports = async function handler(req, res) {
     if (blockedSnapshot.val() === true) {
       return sendJson(res, 403, {
         success: false,
-        message: "This account is unavailable. Please contact support."
+        message:
+          "This account is unavailable. Please contact support."
       });
     }
 
-    // 5. Create the session cookie using lib/auth.js
+    // 5. Create the existing Shoppy login session
     await setSessionCookie(res, {
       uid: user.uid,
       email: user.email,
       name: user.name || ""
     });
 
-    // 6. Login successful
+    // 6. Create or retrieve the referral profile for this UID
+    // The referral API remains in apisequizeshoplite.vercel.app.
+    const referralProfile = await getReferralProfile(user.uid);
+
+    // 7. Login successful
     return sendJson(res, 200, {
       success: true,
       message: "Login successful.",
@@ -183,10 +236,11 @@ module.exports = async function handler(req, res) {
         uid: user.uid,
         name: user.name || "",
         email: user.email
-      }
+      },
+      referralProfile
     });
   } catch (error) {
-    // Keep sensitive server details out of the response.
+    // Keep sensitive server details out of the response
     console.error("Login API error:", error);
 
     return sendJson(res, 500, {
@@ -195,3 +249,4 @@ module.exports = async function handler(req, res) {
     });
   }
 };
+```
