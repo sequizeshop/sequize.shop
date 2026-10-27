@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2979ff">
+<title>Invite friends · Shoppy</title>
+<style>
+:root{color-scheme:light;--blue:#2979ff;--ink:#17191d;--muted:#6f7785;--line:#e8ebf0;--bg:#f5f7fb;--card:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);min-height:100vh}
+.wrap{width:min(100% - 28px,520px);margin:0 auto;padding:18px 0 38px}.top{display:flex;align-items:center;justify-content:space-between;padding:8px 2px 22px}.brand{font-size:22px;font-weight:850;letter-spacing:-.7px}.brand span{color:var(--blue)}.pill{font-size:12px;font-weight:700;color:var(--blue);background:#eaf1ff;border-radius:99px;padding:8px 11px}
+.hero{position:relative;overflow:hidden;border-radius:28px;background:linear-gradient(145deg,#1765ed,#5797ff);color:#fff;padding:28px 24px 26px;box-shadow:0 16px 38px #2979ff2b}.hero:before,.hero:after{content:"";position:absolute;border:1px solid #ffffff35;border-radius:50%;width:210px;height:210px;right:-75px;top:-95px}.hero:after{width:145px;height:145px;right:-35px;top:-63px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:1.6px;font-weight:800;opacity:.84}.hero h1{font-size:35px;line-height:1.06;letter-spacing:-1.2px;margin:13px 0 12px;max-width:330px}.hero p{font-size:15px;line-height:1.55;color:#edf4ff;margin:0;max-width:350px}.offer{display:flex;gap:12px;margin-top:24px}.offerbox{flex:1;border:1px solid #ffffff55;background:#ffffff18;border-radius:16px;padding:13px 14px}.offerbox strong{display:block;font-size:28px;letter-spacing:-1px}.offerbox small{display:block;margin-top:3px;font-size:12px;color:#edf4ff}
+.card{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 5px 20px #18233a08}.card h2{font-size:17px;margin:0 0 7px;letter-spacing:-.3px}.sub{font-size:13px;line-height:1.5;color:var(--muted);margin:0 0 16px}.steps{display:grid;gap:15px}.step{display:flex;align-items:flex-start;gap:12px}.num{flex:0 0 31px;height:31px;border-radius:11px;display:grid;place-items:center;background:#edf3ff;color:var(--blue);font-weight:800;font-size:13px}.step strong{display:block;font-size:14px;margin:1px 0 4px}.step span{display:block;font-size:12px;color:var(--muted);line-height:1.45}
+.actions{display:grid;gap:10px;margin-top:17px}.btn{width:100%;border:0;border-radius:14px;min-height:50px;padding:13px 16px;font-size:14px;font-weight:800;cursor:pointer}.primary{background:var(--blue);color:white;box-shadow:0 7px 16px #2979ff30}.secondary{background:#f0f3f8;color:#222936}.note{font-size:11px;line-height:1.55;color:#818896;text-align:center;margin:14px 5px 0}.status{font-size:12px;min-height:17px;text-align:center;color:var(--muted);margin-top:8px}.footer{text-align:center;color:#89909b;font-size:11px;margin-top:22px}
+@media(min-width:480px){.wrap{padding-top:26px}.hero{padding:34px 30px}.hero h1{font-size:40px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="top"><div class="brand">Shop<span>py</span></div><div class="pill">FRIEND REFERRAL</div></header>
+  <section class="hero">
+    <div class="eyebrow">Good things are better shared</div>
+    <h1>Share Shoppy.<br>Save together.</h1>
+    <p>Invite a friend to shop with Shoppy. Your friend can get a referral discount, and you can earn a reward after their eligible order is paid.</p>
+    <div class="offer">
+      <div class="offerbox"><strong>40% OFF</strong><small>For your invited friend*</small></div>
+      <div class="offerbox"><strong>10%</strong><small>Reward for you*</small></div>
+    </div>
+  </section>
+  <section class="card">
+    <h2>How it works</h2>
+    <p class="sub">Three simple steps to share the benefit.</p>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div><strong>Open your invite link</strong><span>This page keeps the invitation details on this device.</span></div></div>
+      <div class="step"><div class="num">2</div><div><strong>Your friend shops</strong><span>The referral must be attached to the friend's account and eligible checkout.</span></div></div>
+      <div class="step"><div class="num">3</div><div><strong>Payment is verified</strong><span>Your reward is recorded only after the order payment is confirmed by the server.</span></div></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="continueBtn">Continue to Shoppy</button>
+      <button class="btn secondary" id="shareBtn">Share this invitation</button>
+    </div>
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+    <p class="note">*Referral benefits are subject to eligibility, order validation and the terms shown at checkout. Self-referrals and duplicate rewards are not allowed.</p>
+  </section>
+  <div class="footer">© Shoppy · Shop smarter, together</div>
+</main>
+<script>
+(function(){
+  "use strict";
+  const BACKEND = "https://apisequizeshoplite.vercel.app";
+  const params = new URLSearchParams(location.search);
+  const invitationId = (params.get("invitationId") || "").trim();
+  const inviterUserId = (params.get("userId") || "").trim();
+  const status = document.getElementById("status");
+  const safeId = /^[A-Za-z0-9_-]{1,128}$/;
+
+  function say(message){ status.textContent = message; }
+  function randomVisitorId(){
+    try {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      return Array.from(bytes, b => b.toString(16).padStart(2,"0")).join("");
+    } catch(e) {
+      return "v" + Date.now().toString(16) + Math.random().toString(16).slice(2,12);
+    }
+  }
+
+  if (invitationId && safeId.test(invitationId) &&
+      inviterUserId && safeId.test(inviterUserId)) {
+    const savedVisitor = localStorage.getItem("shoppy_referral_visitor") || randomVisitorId();
+    localStorage.setItem("shoppy_referral_visitor", savedVisitor);
+    localStorage.setItem("shoppy_referral_invitation", JSON.stringify({
+      invitationId: invitationId,
+      inviterUserId: inviterUserId,
+      savedAt: Date.now()
+    }));
+
+    fetch(BACKEND + "/api/referrals/track", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ invitationId: invitationId, visitorId: savedVisitor }),
+      keepalive: true
+    }).catch(function(){});
+
+    say("Invitation detected. Continue to Shoppy to explore.");
+  } else {
+    say("This invite link is incomplete. You can still continue to Shoppy.");
+  }
+
+  document.getElementById("continueBtn").addEventListener("click", function(){
+    location.href = "https://shopingweb-zeta.vercel.app/";
+  });
+
+  document.getElementById("shareBtn").addEventListener("click", async function(){
+    const shareUrl = location.href;
+    const shareData = {
+      title: "Join me on Shoppy",
+      text: "Use my Shoppy invitation to check available referral benefits.",
+      url: shareUrl
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+        say("Invitation link copied.");
+      } else {
+        window.prompt("Copy your invitation link:", shareUrl);
+      }
+    } catch (e) {
+      if (e && e.name !== "AbortError") say("Unable to share right now.");
+    }
+  });
+})();
+</script>
+</body>
+</html>
