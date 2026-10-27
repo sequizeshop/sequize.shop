@@ -306,6 +306,19 @@ h1{
   .linkvalue{width:100%}
 }
 
+/* Invitee landing view */
+.invited-cta{display:none;margin-top:14px;border:1px solid var(--line);border-radius:20px;padding:clamp(20px,5vw,30px);text-align:center;background:#fff}
+.invited-cta h2{font-size:22px;letter-spacing:-.6px;margin:0 0 9px}
+.invited-cta p{font-size:14px;line-height:1.65;color:var(--muted);margin:0 auto 20px;max-width:440px}
+.invited-cta .btn{width:100%;max-width:360px}
+body.invited .owner-only{display:none!important}
+body.invited .invited-cta{display:block}
+body.invited .hero h1{max-width:none}
+body.invited .hero .offers{grid-template-columns:1fr}
+body.invited .hero .offer:nth-child(2){display:none}
+body.invited .hero{text-align:center}
+body.invited .hero p{margin-left:auto;margin-right:auto}
+
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{
     scroll-behavior:auto!important;
@@ -325,11 +338,11 @@ h1{
   </header>
 
   <section class="hero">
-    <div class="eyebrow">Good things are better shared</div>
+    <div class="eyebrow" id="heroEyebrow">Good things are better shared</div>
 
-    <h1>Invite friends.<br>Earn together.</h1>
+    <h1 id="heroTitle">Invite friends.<br>Earn together.</h1>
 
-    <p>
+    <p id="heroDescription">
       Share your personal Shoppy referral link with friends.
       Eligible referral benefits are applied according to the
       terms shown at checkout.
@@ -348,7 +361,13 @@ h1{
     </div>
   </section>
 
-  <section class="card" aria-labelledby="invite-heading">
+  <section class="invited-cta" id="invitedCta" aria-labelledby="invitedHeading">
+    <h2 id="invitedHeading">Your invitation is ready</h2>
+    <p>Continue to Shoppy to explore products. If your referral is eligible, the 40% discount will be applied according to the offer terms at checkout.</p>
+    <button class="btn primary" id="continueShoppingBtn" type="button">Continue to Shopping</button>
+  </section>
+
+  <section class="card owner-only" aria-labelledby="invite-heading">
     <h2 id="invite-heading">Your referral link</h2>
 
     <p class="sub">
@@ -409,7 +428,7 @@ h1{
     </p>
   </section>
 
-  <section class="card">
+  <section class="card owner-only">
     <h2>How it works</h2>
     <p class="sub">Three simple steps to share the benefit.</p>
 
@@ -468,6 +487,8 @@ h1{
 
   const TRACK_ENDPOINT =
     "https://apisequizeshoplite.vercel.app/api/referrals/track";
+
+  const SHOP_URL = "https://shopingweb-zeta.vercel.app/";
 
   const linkInput = document.getElementById("referralLink");
   const generateBtn = document.getElementById("generateBtn");
@@ -686,12 +707,27 @@ h1{
     params.get("invitationId") || ""
   ).trim();
 
+  const validInvitation = Boolean(
+    invitationId && /^[A-Za-z0-9_-]{1,128}$/.test(invitationId)
+  );
+
+  // Invitation visitors see the discount offer, not the link-generator form.
+  if (validInvitation) {
+    document.body.classList.add("invited");
+    document.getElementById("heroEyebrow").textContent = "YOU'RE INVITED";
+    document.getElementById("heroTitle").textContent = "Enjoy 40% OFF*";
+    document.getElementById("heroDescription").textContent =
+      "A friend invited you to shop with Shoppy. Continue shopping to explore products and check your eligible referral discount at checkout.";
+    document.getElementById("invitedHeading").textContent =
+      "Your friend invited you to Shoppy";
+    document.getElementById("continueShoppingBtn").addEventListener("click", function () {
+      window.location.assign(SHOP_URL);
+    });
+  }
+
   const visitorKey = "shoppy_referral_visitor";
 
-  if (
-    invitationId &&
-    /^[A-Za-z0-9_-]{1,128}$/.test(invitationId)
-  ) {
+  if (validInvitation) {
     try {
       let visitorId = localStorage.getItem(visitorKey);
 
@@ -739,8 +775,11 @@ h1{
   copyBtn.addEventListener("click", copyLink);
   shareBtn.addEventListener("click", shareLink);
 
-  // Automatically load the profile when the page opens.
-  generateLink();
+  // Only the referral owner should generate their personal link.
+  // Invitees continue to the homepage using the button above.
+  if (!validInvitation) {
+    generateLink();
+  }
 })();
 </script>
 
