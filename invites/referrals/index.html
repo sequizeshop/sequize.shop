@@ -205,11 +205,7 @@ h1{
 
 .primary{background:#17191d;color:#fff}
 .secondary{background:#f0f1f3;color:#20242a}
-
-.copy{
-  flex:0 0 auto;
-  min-width:86px
-}
+.copy{flex:0 0 auto;min-width:86px}
 
 .actions{
   display:grid;
@@ -229,10 +225,7 @@ h1{
 .status.success{color:var(--success)}
 .status.error{color:var(--danger)}
 
-.steps{
-  display:grid;
-  gap:17px
-}
+.steps{display:grid;gap:17px}
 
 .step{
   display:flex;
@@ -305,6 +298,7 @@ h1{
   .offers{gap:8px}
   .offer{padding:12px}
   .card{border-radius:17px}
+
   .linkrow{flex-direction:column}
   .copy{width:100%}
   .actions{grid-template-columns:1fr}
@@ -355,7 +349,6 @@ h1{
   </section>
 
   <section class="card" aria-labelledby="invite-heading">
-
     <h2 id="invite-heading">Your referral link</h2>
 
     <p class="sub">
@@ -364,7 +357,6 @@ h1{
     </p>
 
     <div class="linkbox">
-
       <label class="label" for="referralLink">
         Personal invitation link
       </label>
@@ -388,7 +380,6 @@ h1{
       </div>
 
       <div class="actions">
-
         <button
           class="btn primary"
           id="generateBtn"
@@ -401,7 +392,6 @@ h1{
           type="button"
           disabled
         >Share link</button>
-
       </div>
 
       <div
@@ -409,10 +399,7 @@ h1{
         id="status"
         role="status"
         aria-live="polite"
-      >
-        Your link will appear here after your account is verified.
-      </div>
-
+      >Your link will appear here after your account is verified.</div>
     </div>
 
     <p class="note">
@@ -420,17 +407,13 @@ h1{
       displayed at checkout. Self-referrals, duplicate accounts
       and invalid orders are not eligible.
     </p>
-
   </section>
 
   <section class="card">
-
     <h2>How it works</h2>
-
     <p class="sub">Three simple steps to share the benefit.</p>
 
     <div class="steps">
-
       <div class="step">
         <div class="num">1</div>
         <div>
@@ -447,8 +430,8 @@ h1{
         <div>
           <strong>Your friend visits and shops</strong>
           <span>
-            The invitation is tracked and must be attached
-            to an eligible checkout.
+            The invitation is tracked and must be attached to
+            an eligible checkout.
           </span>
         </div>
       </div>
@@ -458,12 +441,11 @@ h1{
         <div>
           <strong>Payment is verified</strong>
           <span>
-            Any referral reward is recorded only after the
-            server confirms an eligible paid order.
+            Any referral reward is recorded only after the server
+            confirms an eligible paid order.
           </span>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -477,21 +459,13 @@ h1{
 (function () {
   "use strict";
 
-  /*
-   * Referral backend:
-   * This endpoint validates the signed token.
-   * No Shoppy backend proxy file is required.
-   */
-  const PROFILE_ENDPOINT =
-    "https://apisequizeshoplite.vercel.app/api/referrals/profile";
+  // Same-origin Shoppy API.
+  // It verifies the existing shop_session cookie on the server,
+  // then securely calls the separate referral backend.
+  const PROFILE_ENDPOINT = "/api/referrals/profile";
 
   const TRACK_ENDPOINT =
     "https://apisequizeshoplite.vercel.app/api/referrals/track";
-
-  const SHOP_ORIGIN =
-    "https://shopingweb-zeta.vercel.app";
-
-  const TOKEN_KEY = "shoppy_referral_token";
 
   const linkInput = document.getElementById("referralLink");
   const generateBtn = document.getElementById("generateBtn");
@@ -506,20 +480,35 @@ h1{
     status.className = "status" + (kind ? " " + kind : "");
   }
 
+  function readableError(data, fallback) {
+    if (typeof data === "string" && data.trim()) {
+      return data.trim();
+    }
+
+    if (data && typeof data === "object") {
+      for (const key of [
+        "message",
+        "error_description",
+        "error",
+        "details"
+      ]) {
+        const value = data[key];
+
+        if (typeof value === "string" && value.trim()) {
+          return value.trim();
+        }
+      }
+    }
+
+    return fallback;
+  }
+
   function setBusy(busy) {
     generateBtn.disabled = busy;
 
-    generateBtn.textContent = busy
-      ? "Generating…"
+    generateBtn.innerHTML = busy
+      ? '<span class="loading" aria-hidden="true"></span>Generating…'
       : "Generate my link";
-  }
-
-  function getReferralToken() {
-    try {
-      return sessionStorage.getItem(TOKEN_KEY) || "";
-    } catch (_) {
-      return "";
-    }
   }
 
   function validProfile(p) {
@@ -527,35 +516,21 @@ h1{
       return false;
     }
 
-    if (
-      typeof p.referralCode !== "string" ||
-      !p.referralCode.trim()
-    ) {
-      return false;
-    }
-
-    if (
-      typeof p.invitationId !== "string" ||
-      !/^[A-Za-z0-9_-]{1,128}$/.test(p.invitationId)
-    ) {
-      return false;
-    }
-
-    if (
-      typeof p.referralLink !== "string" ||
-      !p.referralLink
-    ) {
-      return false;
-    }
+    const link =
+      typeof p.referralLink === "string"
+        ? p.referralLink
+        : "";
 
     try {
-      const url = new URL(p.referralLink);
+      const url = new URL(link);
 
       return (
         url.protocol === "https:" &&
-        url.origin === SHOP_ORIGIN &&
-        url.pathname.replace(/\/+$/, "") ===
-          "/invites/referrals"
+        url.origin === location.origin &&
+        typeof p.invitationId === "string" &&
+        p.invitationId.length > 0 &&
+        typeof p.referralCode === "string" &&
+        p.referralCode.length > 0
       );
     } catch (_) {
       return false;
@@ -577,31 +552,7 @@ h1{
     );
   }
 
-  async function readResponse(response) {
-    try {
-      return await response.json();
-    } catch (_) {
-      return {};
-    }
-  }
-
   async function generateLink() {
-    const referralToken = getReferralToken();
-
-    if (!referralToken) {
-      profile = null;
-      linkInput.value = "Sign in to generate your link";
-      copyBtn.disabled = true;
-      shareBtn.disabled = true;
-
-      setStatus(
-        "Please sign in to Shoppy first. If you have already signed in, sign out and sign in again to refresh your referral access.",
-        "error"
-      );
-
-      return;
-    }
-
     setBusy(true);
 
     setStatus(
@@ -611,68 +562,87 @@ h1{
     try {
       const response = await fetch(PROFILE_ENDPOINT, {
         method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
         headers: {
           "Accept": "application/json",
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + referralToken
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({})
       });
 
-      const data = await readResponse(response);
+      let data = {};
 
-      if (response.status === 401 || response.status === 403) {
-        sessionStorage.removeItem(TOKEN_KEY);
+      try {
+        data = await response.json();
+      } catch (_) {
+        data = {};
+      }
 
+      if (response.status === 401) {
         throw new Error(
-          "Your referral login has expired. Please sign in to Shoppy again."
+          "Your Shoppy login session could not be verified. " +
+          "Please sign in again. If this continues, check the " +
+          "Shoppy session configuration."
+        );
+      }
+
+      if (response.status === 403) {
+        throw new Error(
+          "Your referral request was not authorized. Please contact support."
+        );
+      }
+
+      if (response.status === 404) {
+        throw new Error(
+          "The Shoppy referral API was not found. " +
+          "Check that the existing /api/referrals/profile API is deployed."
         );
       }
 
       if (!response.ok) {
         throw new Error(
-          data.message ||
-          data.error ||
-          "Could not generate your referral link. Please try again."
+          readableError(
+            data,
+            "Could not generate the link (HTTP " +
+              response.status +
+              "). Please try again."
+          )
         );
       }
 
       if (data.success !== true) {
         throw new Error(
-          data.message ||
-          "The referral server could not verify your account."
+          readableError(data, "Could not generate your referral link.")
         );
       }
 
-      const p = data.profile;
+      const p = data.profile || data;
 
       if (!validProfile(p)) {
         throw new Error(
-          "The referral server returned an invalid profile. Please check the referral backend configuration."
+          "The profile API did not return a valid Shoppy referral link. " +
+          "Check the backend profile response and referral URL."
         );
       }
 
       renderProfile(p);
-
     } catch (error) {
-      profile = null;
-      linkInput.value = "Unable to generate your link";
-      copyBtn.disabled = true;
-      shareBtn.disabled = true;
+      const message =
+        error &&
+        typeof error.message === "string" &&
+        error.message.trim()
+          ? error.message.trim()
+          : "Could not generate the link. Check your connection and try again.";
 
-      setStatus(
-        error.message ||
-        "Could not generate the link. Check your connection and try again.",
-        "error"
-      );
-
+      setStatus(message, "error");
     } finally {
       setBusy(false);
     }
   }
 
   async function copyLink() {
-    if (!profile || !validProfile(profile)) {
+    if (!profile) {
       return;
     }
 
@@ -694,7 +664,6 @@ h1{
         "Referral link copied. Send it to your friends!",
         "success"
       );
-
     } catch (_) {
       linkInput.focus();
       linkInput.select();
@@ -707,13 +676,14 @@ h1{
   }
 
   async function shareLink() {
-    if (!profile || !validProfile(profile)) {
+    if (!profile) {
       return;
     }
 
     const shareData = {
       title: "Join me on Shoppy",
-      text: "Use my personal Shoppy referral link to explore eligible benefits.",
+      text:
+        "Use my personal Shoppy referral link to explore eligible benefits.",
       url: profile.referralLink
     };
 
@@ -721,14 +691,10 @@ h1{
       if (navigator.share) {
         await navigator.share(shareData);
 
-        setStatus(
-          "Invitation ready to share.",
-          "success"
-        );
+        setStatus("Invitation ready to share.", "success");
       } else {
         await copyLink();
       }
-
     } catch (error) {
       if (!error || error.name !== "AbortError") {
         setStatus(
@@ -739,14 +705,12 @@ h1{
     }
   }
 
-  /*
-   * Track visits arriving through a referral invitation.
-   * This endpoint is separate from the authenticated profile endpoint.
-   */
+  // Preserve and track visits made through a referral invitation.
   const params = new URLSearchParams(location.search);
 
-  const invitationId =
-    (params.get("invitationId") || "").trim();
+  const invitationId = (
+    params.get("invitationId") || ""
+  ).trim();
 
   const visitorKey = "shoppy_referral_visitor";
 
@@ -759,13 +723,12 @@ h1{
 
       if (!visitorId) {
         const bytes = new Uint8Array(16);
+
         crypto.getRandomValues(bytes);
 
         visitorId = Array.from(
           bytes,
-          function (byte) {
-            return byte.toString(16).padStart(2, "0");
-          }
+          byte => byte.toString(16).padStart(2, "0")
         ).join("");
 
         localStorage.setItem(visitorKey, visitorId);
@@ -774,7 +737,7 @@ h1{
       localStorage.setItem(
         "shoppy_referral_invitation",
         JSON.stringify({
-          invitationId: invitationId,
+          invitationId,
           savedAt: Date.now()
         })
       );
@@ -785,12 +748,11 @@ h1{
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          invitationId: invitationId,
-          visitorId: visitorId
+          invitationId,
+          visitorId
         }),
         keepalive: true
       }).catch(function () {});
-
     } catch (_) {
       // Storage restrictions must not break the page.
     }
@@ -800,10 +762,10 @@ h1{
   copyBtn.addEventListener("click", copyLink);
   shareBtn.addEventListener("click", shareLink);
 
-  // Automatically retrieve the profile after login.
+  // Automatically retrieve the referral profile on page load.
   generateLink();
-
 })();
 </script>
+
 </body>
 </html>
