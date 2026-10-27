@@ -42,34 +42,6 @@ function hashEmail(email) {
     .digest("hex");
 }
 
-function createReferralToken(uid) {
-  const secret = process.env.REFERRAL_TOKEN_SECRET;
-
-  if (!secret || Buffer.byteLength(secret, "utf8") < 32) {
-    throw new Error("REFERRAL_TOKEN_SECRET is not configured correctly.");
-  }
-
-  const now = Math.floor(Date.now() / 1000);
-
-  const payload = {
-    uid: String(uid),
-    purpose: "shoppy-referral",
-    iat: now,
-    exp: now + 24 * 60 * 60
-  };
-
-  const encodedPayload = Buffer
-    .from(JSON.stringify(payload))
-    .toString("base64url");
-
-  const signature = crypto
-    .createHmac("sha256", secret)
-    .update(encodedPayload)
-    .digest("base64url");
-
-  return `${encodedPayload}.${signature}`;
-}
-
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -180,19 +152,18 @@ module.exports = async function handler(req, res) {
     if (blockedSnapshot.val() === true) {
       return sendJson(res, 403, {
         success: false,
-        message: "This account is unavailable. Please contact support."
+        message:
+          "This account is unavailable. Please contact support."
       });
     }
 
-    // Existing Shoppy login session.
+    // Create the existing Shoppy login session.
+    // The referral system uses this same authenticated session.
     await setSessionCookie(res, {
       uid: user.uid,
       email: user.email,
       name: user.name || ""
     });
-
-    // Signed token for the separate referral backend.
-    const referralToken = createReferralToken(user.uid);
 
     return sendJson(res, 200, {
       success: true,
@@ -203,9 +174,7 @@ module.exports = async function handler(req, res) {
         uid: user.uid,
         name: user.name || "",
         email: user.email
-      },
-
-      referralToken
+      }
     });
   } catch (error) {
     console.error("Login API error:", error);
