@@ -1,4 +1,3 @@
-```js
 "use strict";
 
 const crypto = require("crypto");
@@ -6,15 +5,10 @@ const bcrypt = require("bcryptjs");
 const { db } = require("../lib/firebase");
 const { setSessionCookie } = require("../lib/auth");
 
-const REFERRAL_PROFILE_URL =
-  "https://apisequizeshoplite.vercel.app/api/referrals/profile";
-
-// Send JSON response
 function sendJson(res, statusCode, data) {
   return res.status(statusCode).json(data);
 }
 
-// Read request body safely
 async function readBody(req) {
   if (req.body && typeof req.body === "object") {
     return req.body;
@@ -41,7 +35,6 @@ async function readBody(req) {
   }
 }
 
-// Normalize email and generate its SHA-256 hash
 function hashEmail(email) {
   return crypto
     .createHash("sha256")
@@ -49,53 +42,35 @@ function hashEmail(email) {
     .digest("hex");
 }
 
-// Create or retrieve the user's referral profile.
-// Referral failure must not prevent a valid login.
-async function getReferralProfile(uid) {
-  const secret = process.env.REFERRAL_SERVICE_SECRET;
+function createReferralToken(uid) {
+  const secret = process.env.REFERRAL_TOKEN_SECRET;
 
-  if (
-    typeof secret !== "string" ||
-    Buffer.byteLength(secret, "utf8") < 32
-  ) {
-    console.error(
-      "Referral profile skipped: REFERRAL_SERVICE_SECRET is missing or invalid."
-    );
-    return null;
+  if (!secret || Buffer.byteLength(secret, "utf8") < 32) {
+    throw new Error("REFERRAL_TOKEN_SECRET is not configured correctly.");
   }
 
-  try {
-    const response = await fetch(REFERRAL_PROFILE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${secret}`
-      },
-      body: JSON.stringify({ uid })
-    });
+  const now = Math.floor(Date.now() / 1000);
 
-    const data = await response.json().catch(() => ({}));
+  const payload = {
+    uid: String(uid),
+    purpose: "shoppy-referral",
+    iat: now,
+    exp: now + 24 * 60 * 60
+  };
 
-    if (!response.ok || data.success !== true) {
-      console.error(
-        "Referral profile request failed with status:",
-        response.status
-      );
-      return null;
-    }
+  const encodedPayload = Buffer
+    .from(JSON.stringify(payload))
+    .toString("base64url");
 
-    return data.profile || data;
-  } catch (error) {
-    console.error(
-      "Referral profile request failed:",
-      error.message
-    );
-    return null;
-  }
+  const signature = crypto
+    .createHmac("sha256", secret)
+    .update(encodedPayload)
+    .digest("base64url");
+
+  return `${encodedPayload}.${signature}`;
 }
 
 module.exports = async function handler(req, res) {
-  // Only allow POST
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
 
@@ -132,7 +107,6 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 1. Find the database mapping using the email hash
     const emailHash = hashEmail(email);
 
     const mappingSnapshot = await db
@@ -143,7 +117,6 @@ module.exports = async function handler(req, res) {
 
     let uid = null;
 
-    // Support legacy format: userEmails/{hash} = "UID"
     if (typeof mapping === "string" && mapping.length > 0) {
       uid = mapping;
     } else if (
@@ -154,7 +127,6 @@ module.exports = async function handler(req, res) {
       typeof mapping.uid === "string" &&
       mapping.uid.length > 0
     ) {
-      // Support current format: userEmails/{hash} = { uid, status }
       uid = mapping.uid;
     }
 
@@ -165,7 +137,6 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 2. Retrieve the user record
     const userSnapshot = await db
       .ref(`users/${uid}`)
       .get();
@@ -184,7 +155,6 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 3. Verify password
     let passwordMatches = false;
 
     try {
@@ -203,7 +173,6 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 4. Check whether the account is blocked
     const blockedSnapshot = await db
       .ref(`blockedUsers/${emailHash}/blocked`)
       .get();
@@ -211,36 +180,34 @@ module.exports = async function handler(req, res) {
     if (blockedSnapshot.val() === true) {
       return sendJson(res, 403, {
         success: false,
-        message:
-          "This account is unavailable. Please contact support."
+        message: "This account is unavailable. Please contact support."
       });
     }
 
-    // 5. Create the existing Shoppy login session
+    // Existing Shoppy login session.
     await setSessionCookie(res, {
       uid: user.uid,
       email: user.email,
       name: user.name || ""
     });
 
-    // 6. Create or retrieve the referral profile for this UID
-    // The referral API remains in apisequizeshoplite.vercel.app.
-    const referralProfile = await getReferralProfile(user.uid);
+    // Signed token for the separate referral backend.
+    const referralToken = createReferralToken(user.uid);
 
-    // 7. Login successful
     return sendJson(res, 200, {
       success: true,
       message: "Login successful.",
       redirect: "/profile.html",
+
       user: {
         uid: user.uid,
         name: user.name || "",
         email: user.email
       },
-      referralProfile
+
+      referralToken
     });
   } catch (error) {
-    // Keep sensitive server details out of the response
     console.error("Login API error:", error);
 
     return sendJson(res, 500, {
@@ -249,4 +216,3 @@ module.exports = async function handler(req, res) {
     });
   }
 };
-```
