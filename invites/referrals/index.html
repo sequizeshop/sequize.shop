@@ -6,122 +6,803 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="description" content="Invite friends to Shoppy and track your referral rewards.">
 <title>Refer a Friend · Shoppy</title>
+
 <style>
-:root{color-scheme:light;--ink:#17191d;--muted:#707784;--line:#e7e9ed;--bg:#fff;--soft:#f6f7f9;--accent:#17191d;--success:#16794b;--danger:#b42318}
-*{box-sizing:border-box}html{min-height:100%;scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}button,input{font:inherit}button{touch-action:manipulation}.wrap{width:min(100% - 32px,680px);margin:0 auto;padding:20px 0 max(28px,env(safe-area-inset-bottom))}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 22px}.brand{font-size:22px;font-weight:800;letter-spacing:-.8px}.brand span{font-weight:500}.pill{font-size:10px;font-weight:750;letter-spacing:1px;color:#454a53;border:1px solid var(--line);border-radius:999px;padding:8px 10px;white-space:nowrap}.hero{border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,36px);background:#fff}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;font-weight:750;color:var(--muted)}h1{font-size:clamp(31px,7vw,46px);line-height:1.06;letter-spacing:-1.8px;margin:12px 0 12px;max-width:510px}.hero p{font-size:15px;line-height:1.65;color:#5e6570;margin:0;max-width:520px}.offers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}.offer{border:1px solid var(--line);border-radius:14px;padding:15px;background:var(--soft);min-width:0}.offer strong{display:block;font-size:clamp(22px,5vw,28px);letter-spacing:-.7px}.offer span{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:5px}.card{margin-top:14px;border:1px solid var(--line);border-radius:20px;padding:clamp(18px,4vw,26px);background:#fff}.card h2{font-size:18px;letter-spacing:-.4px;margin:0 0 7px}.sub{font-size:13px;color:var(--muted);line-height:1.55;margin:0 0 18px}.linkbox{border:1px solid #d9dde3;border-radius:13px;padding:12px;background:#fff}.label{display:block;font-size:12px;font-weight:700;margin:0 0 9px}.linkrow{display:flex;align-items:stretch;gap:8px;min-width:0}.linkvalue{flex:1;min-width:0;border:0;outline:0;background:var(--soft);border-radius:9px;padding:13px 11px;font-size:13px;color:#333a44;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.btn{border:0;border-radius:11px;min-height:48px;padding:12px 16px;font-size:14px;font-weight:750;cursor:pointer;transition:opacity .15s,transform .15s}.btn:active{transform:scale(.99)}.btn:disabled{opacity:.55;cursor:wait}.primary{background:#17191d;color:#fff}.secondary{background:#f0f1f3;color:#20242a}.copy{flex:0 0 auto;min-width:86px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.status{min-height:20px;margin-top:12px;font-size:12px;line-height:1.5;color:var(--muted)}.status.success{color:var(--success)}.status.error{color:var(--danger)}.steps{display:grid;gap:17px}.step{display:flex;gap:12px;align-items:flex-start}.num{flex:0 0 30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#f0f1f3;font-size:12px;font-weight:800}.step strong{display:block;font-size:14px;margin:1px 0 4px}.step span{display:block;color:var(--muted);font-size:12px;line-height:1.55}.loading{display:inline-block;width:13px;height:13px;border:2px solid #cfd3d9;border-top-color:#17191d;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:7px}@keyframes spin{to{transform:rotate(360deg)}}.note{font-size:11px;line-height:1.6;color:#818792;margin:14px 2px 0}.footer{text-align:center;color:#858b95;font-size:11px;margin-top:22px}.hidden{display:none!important}
-@media(max-width:420px){.wrap{width:min(100% - 24px,680px);padding-top:14px}.top{padding-bottom:16px}.brand{font-size:20px}.pill{font-size:9px;padding:7px 8px}.hero{border-radius:17px}.offers{gap:8px}.offer{padding:12px}.card{border-radius:17px}.linkrow{flex-direction:column}.copy{width:100%}.actions{grid-template-columns:1fr}.btn{min-height:48px}.linkvalue{width:100%}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+:root{
+  color-scheme:light;
+  --ink:#17191d;
+  --muted:#707784;
+  --line:#e7e9ed;
+  --bg:#fff;
+  --soft:#f6f7f9;
+  --accent:#17191d;
+  --success:#16794b;
+  --danger:#b42318
+}
+
+*{box-sizing:border-box}
+
+html{
+  min-height:100%;
+  scroll-behavior:smooth
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased
+}
+
+button,input{font:inherit}
+button{touch-action:manipulation}
+
+.wrap{
+  width:min(100% - 32px,680px);
+  margin:0 auto;
+  padding:20px 0 max(28px,env(safe-area-inset-bottom))
+}
+
+.top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:4px 0 22px
+}
+
+.brand{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:-.8px
+}
+
+.brand span{font-weight:500}
+
+.pill{
+  font-size:10px;
+  font-weight:750;
+  letter-spacing:1px;
+  color:#454a53;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:8px 10px;
+  white-space:nowrap
+}
+
+.hero{
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:clamp(22px,5vw,36px);
+  background:#fff
+}
+
+.eyebrow{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1.4px;
+  font-weight:750;
+  color:var(--muted)
+}
+
+h1{
+  font-size:clamp(31px,7vw,46px);
+  line-height:1.06;
+  letter-spacing:-1.8px;
+  margin:12px 0 12px;
+  max-width:510px
+}
+
+.hero p{
+  font-size:15px;
+  line-height:1.65;
+  color:#5e6570;
+  margin:0;
+  max-width:520px
+}
+
+.offers{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:24px
+}
+
+.offer{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:15px;
+  background:var(--soft);
+  min-width:0
+}
+
+.offer strong{
+  display:block;
+  font-size:clamp(22px,5vw,28px);
+  letter-spacing:-.7px
+}
+
+.offer span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.45;
+  margin-top:5px
+}
+
+.card{
+  margin-top:14px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:clamp(18px,4vw,26px);
+  background:#fff
+}
+
+.card h2{
+  font-size:18px;
+  letter-spacing:-.4px;
+  margin:0 0 7px
+}
+
+.sub{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.55;
+  margin:0 0 18px
+}
+
+.linkbox{
+  border:1px solid #d9dde3;
+  border-radius:13px;
+  padding:12px;
+  background:#fff
+}
+
+.label{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  margin:0 0 9px
+}
+
+.linkrow{
+  display:flex;
+  align-items:stretch;
+  gap:8px;
+  min-width:0
+}
+
+.linkvalue{
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  background:var(--soft);
+  border-radius:9px;
+  padding:13px 11px;
+  font-size:13px;
+  color:#333a44;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+
+.btn{
+  border:0;
+  border-radius:11px;
+  min-height:48px;
+  padding:12px 16px;
+  font-size:14px;
+  font-weight:750;
+  cursor:pointer;
+  transition:opacity .15s,transform .15s
+}
+
+.btn:active{transform:scale(.99)}
+.btn:disabled{opacity:.55;cursor:wait}
+
+.primary{background:#17191d;color:#fff}
+.secondary{background:#f0f1f3;color:#20242a}
+
+.copy{
+  flex:0 0 auto;
+  min-width:86px
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px
+}
+
+.status{
+  min-height:20px;
+  margin-top:12px;
+  font-size:12px;
+  line-height:1.5;
+  color:var(--muted)
+}
+
+.status.success{color:var(--success)}
+.status.error{color:var(--danger)}
+
+.steps{
+  display:grid;
+  gap:17px
+}
+
+.step{
+  display:flex;
+  gap:12px;
+  align-items:flex-start
+}
+
+.num{
+  flex:0 0 30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#f0f1f3;
+  font-size:12px;
+  font-weight:800
+}
+
+.step strong{
+  display:block;
+  font-size:14px;
+  margin:1px 0 4px
+}
+
+.step span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55
+}
+
+.loading{
+  display:inline-block;
+  width:13px;
+  height:13px;
+  border:2px solid #cfd3d9;
+  border-top-color:#17191d;
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+  vertical-align:-2px;
+  margin-right:7px
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.note{
+  font-size:11px;
+  line-height:1.6;
+  color:#818792;
+  margin:14px 2px 0
+}
+
+.footer{
+  text-align:center;
+  color:#858b95;
+  font-size:11px;
+  margin-top:22px
+}
+
+@media(max-width:420px){
+  .wrap{
+    width:min(100% - 24px,680px);
+    padding-top:14px
+  }
+
+  .top{padding-bottom:16px}
+  .brand{font-size:20px}
+  .pill{font-size:9px;padding:7px 8px}
+  .hero{border-radius:17px}
+  .offers{gap:8px}
+  .offer{padding:12px}
+  .card{border-radius:17px}
+  .linkrow{flex-direction:column}
+  .copy{width:100%}
+  .actions{grid-template-columns:1fr}
+  .btn{min-height:48px}
+  .linkvalue{width:100%}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+    animation:none!important;
+    transition:none!important
+  }
+}
 </style>
 </head>
+
 <body>
 <main class="wrap">
-  <header class="top"><div class="brand">Shoppy<span></span></div><div class="pill">FRIEND REFERRAL</div></header>
+
+  <header class="top">
+    <div class="brand">Shoppy<span></span></div>
+    <div class="pill">FRIEND REFERRAL</div>
+  </header>
+
   <section class="hero">
     <div class="eyebrow">Good things are better shared</div>
+
     <h1>Invite friends.<br>Earn together.</h1>
-    <p>Share your personal Shoppy referral link with friends. Eligible referral benefits are applied according to the terms shown at checkout.</p>
-    <div class="offers"><div class="offer"><strong>40% OFF*</strong><span>For your invited friend</span></div><div class="offer"><strong>10%*</strong><span>Potential reward for you</span></div></div>
+
+    <p>
+      Share your personal Shoppy referral link with friends.
+      Eligible referral benefits are applied according to the
+      terms shown at checkout.
+    </p>
+
+    <div class="offers">
+      <div class="offer">
+        <strong>40% OFF*</strong>
+        <span>For your invited friend</span>
+      </div>
+
+      <div class="offer">
+        <strong>10%*</strong>
+        <span>Potential reward for you</span>
+      </div>
+    </div>
   </section>
 
   <section class="card" aria-labelledby="invite-heading">
+
     <h2 id="invite-heading">Your referral link</h2>
-    <p class="sub">Sign in to your Shoppy account to generate or retrieve your personal link.</p>
+
+    <p class="sub">
+      Sign in to your Shoppy account to generate or retrieve
+      your personal link.
+    </p>
+
     <div class="linkbox">
-      <label class="label" for="referralLink">Personal invitation link</label>
-      <div class="linkrow"><input id="referralLink" class="linkvalue" type="text" readonly value="Sign in to generate your link" aria-label="Your personal referral link"><button class="btn secondary copy" id="copyBtn" type="button" disabled>Copy link</button></div>
-      <div class="actions"><button class="btn primary" id="generateBtn" type="button">Generate my link</button><button class="btn secondary" id="shareBtn" type="button" disabled>Share link</button></div>
-      <div class="status" id="status" role="status" aria-live="polite">Your link will appear here after your account is verified.</div>
+
+      <label class="label" for="referralLink">
+        Personal invitation link
+      </label>
+
+      <div class="linkrow">
+        <input
+          id="referralLink"
+          class="linkvalue"
+          type="text"
+          readonly
+          value="Sign in to generate your link"
+          aria-label="Your personal referral link"
+        >
+
+        <button
+          class="btn secondary copy"
+          id="copyBtn"
+          type="button"
+          disabled
+        >Copy link</button>
+      </div>
+
+      <div class="actions">
+
+        <button
+          class="btn primary"
+          id="generateBtn"
+          type="button"
+        >Generate my link</button>
+
+        <button
+          class="btn secondary"
+          id="shareBtn"
+          type="button"
+          disabled
+        >Share link</button>
+
+      </div>
+
+      <div
+        class="status"
+        id="status"
+        role="status"
+        aria-live="polite"
+      >
+        Your link will appear here after your account is verified.
+      </div>
+
     </div>
-    <p class="note">*Referral benefits depend on eligibility and the terms displayed at checkout. Self-referrals, duplicate accounts and invalid orders are not eligible.</p>
+
+    <p class="note">
+      *Referral benefits depend on eligibility and the terms
+      displayed at checkout. Self-referrals, duplicate accounts
+      and invalid orders are not eligible.
+    </p>
+
   </section>
 
   <section class="card">
-    <h2>How it works</h2><p class="sub">Three simple steps to share the benefit.</p>
+
+    <h2>How it works</h2>
+
+    <p class="sub">Three simple steps to share the benefit.</p>
+
     <div class="steps">
-      <div class="step"><div class="num">1</div><div><strong>Generate and share your link</strong><span>Your personal link is created or retrieved securely for your signed-in account.</span></div></div>
-      <div class="step"><div class="num">2</div><div><strong>Your friend visits and shops</strong><span>The invitation is tracked and must be attached to an eligible checkout.</span></div></div>
-      <div class="step"><div class="num">3</div><div><strong>Payment is verified</strong><span>Any referral reward is recorded only after the server confirms an eligible paid order.</span></div></div>
+
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <strong>Generate and share your link</strong>
+          <span>
+            Your personal link is created or retrieved securely
+            for your signed-in account.
+          </span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <strong>Your friend visits and shops</strong>
+          <span>
+            The invitation is tracked and must be attached
+            to an eligible checkout.
+          </span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div>
+          <strong>Payment is verified</strong>
+          <span>
+            Any referral reward is recorded only after the
+            server confirms an eligible paid order.
+          </span>
+        </div>
+      </div>
+
     </div>
   </section>
-  <footer class="footer">© Shoppy · Shop smarter, together</footer>
+
+  <footer class="footer">
+    © Shoppy · Shop smarter, together
+  </footer>
+
 </main>
+
 <script>
-(function(){
+(function () {
   "use strict";
-  // This same-origin endpoint must authenticate the existing Shoppy session on the server,
-  // then call BACKEND /api/referrals/profile using REFERRAL_SERVICE_SECRET server-side.
-  // Never put REFERRAL_SERVICE_SECRET in this browser file.
-  const PROFILE_ENDPOINT = "https://apisequizeshoplite.vercel.app/api/referrals/profile";
-  const TRACK_ENDPOINT = "https://apisequizeshoplite.vercel.app/api/referrals/track";
-  const SHOP_URL = "https://shopingweb-zeta.vercel.app/";
+
+  /*
+   * Referral backend:
+   * This endpoint validates the signed token.
+   * No Shoppy backend proxy file is required.
+   */
+  const PROFILE_ENDPOINT =
+    "https://apisequizeshoplite.vercel.app/api/referrals/profile";
+
+  const TRACK_ENDPOINT =
+    "https://apisequizeshoplite.vercel.app/api/referrals/track";
+
+  const SHOP_ORIGIN =
+    "https://shopingweb-zeta.vercel.app";
+
+  const TOKEN_KEY = "shoppy_referral_token";
+
   const linkInput = document.getElementById("referralLink");
   const generateBtn = document.getElementById("generateBtn");
   const copyBtn = document.getElementById("copyBtn");
   const shareBtn = document.getElementById("shareBtn");
   const status = document.getElementById("status");
+
   let profile = null;
 
-  function setStatus(message, kind){status.textContent=message;status.className="status"+(kind?" "+kind:"");}
-  function setBusy(busy){generateBtn.disabled=busy;generateBtn.innerHTML=busy?'<span class="loading" aria-hidden="true"></span>Generating…':'Generate my link';}
-  function validProfile(p){
-    if(!p||typeof p!=="object")return false;
-    const link=typeof p.referralLink==="string"?p.referralLink:"";
-    try{const u=new URL(link);return u.protocol==="https:"&&u.origin===location.origin&&typeof p.invitationId==="string"&&p.invitationId.length>0&&typeof p.referralCode==="string"&&p.referralCode.length>0;}catch(_){return false;}
+  function setStatus(message, kind) {
+    status.textContent = message;
+    status.className = "status" + (kind ? " " + kind : "");
   }
-  function renderProfile(p){
-    profile=p;linkInput.value=p.referralLink;linkInput.title=p.referralLink;
-    copyBtn.disabled=false;shareBtn.disabled=false;
-    setStatus("Your personal referral link is ready. Copy it or share it with friends.","success");
+
+  function setBusy(busy) {
+    generateBtn.disabled = busy;
+
+    generateBtn.textContent = busy
+      ? "Generating…"
+      : "Generate my link";
   }
-  async function generateLink(){
-    setBusy(true);setStatus("Checking your Shoppy sign-in and preparing your referral link…");
-    try{
-      const response=await fetch(PROFILE_ENDPOINT,{method:"POST",credentials:"same-origin",headers:{"Accept":"application/json","Content-Type":"application/json"},body:JSON.stringify({})});
-      let data={};try{data=await response.json();}catch(_){}
-      if(response.status===401||response.status===403){throw new Error("Please sign in to your Shoppy account, then try again.");}
-      if(!response.ok){throw new Error(data.message||data.error||"Could not generate the link. Please try again.");}
-      const p=data.profile||data;
-      if(!validProfile(p)){
-        throw new Error("The profile API did not return a valid referral link. Check that /api/referrals/profile authenticates your session and returns the backend profile.");
+
+  function getReferralToken() {
+    try {
+      return sessionStorage.getItem(TOKEN_KEY) || "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function validProfile(p) {
+    if (!p || typeof p !== "object") {
+      return false;
+    }
+
+    if (
+      typeof p.referralCode !== "string" ||
+      !p.referralCode.trim()
+    ) {
+      return false;
+    }
+
+    if (
+      typeof p.invitationId !== "string" ||
+      !/^[A-Za-z0-9_-]{1,128}$/.test(p.invitationId)
+    ) {
+      return false;
+    }
+
+    if (
+      typeof p.referralLink !== "string" ||
+      !p.referralLink
+    ) {
+      return false;
+    }
+
+    try {
+      const url = new URL(p.referralLink);
+
+      return (
+        url.protocol === "https:" &&
+        url.origin === SHOP_ORIGIN &&
+        url.pathname.replace(/\/+$/, "") ===
+          "/invites/referrals"
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function renderProfile(p) {
+    profile = p;
+
+    linkInput.value = p.referralLink;
+    linkInput.title = p.referralLink;
+
+    copyBtn.disabled = false;
+    shareBtn.disabled = false;
+
+    setStatus(
+      "Your personal referral link is ready. Copy it or share it with friends.",
+      "success"
+    );
+  }
+
+  async function readResponse(response) {
+    try {
+      return await response.json();
+    } catch (_) {
+      return {};
+    }
+  }
+
+  async function generateLink() {
+    const referralToken = getReferralToken();
+
+    if (!referralToken) {
+      profile = null;
+      linkInput.value = "Sign in to generate your link";
+      copyBtn.disabled = true;
+      shareBtn.disabled = true;
+
+      setStatus(
+        "Please sign in to Shoppy first. If you have already signed in, sign out and sign in again to refresh your referral access.",
+        "error"
+      );
+
+      return;
+    }
+
+    setBusy(true);
+
+    setStatus(
+      "Checking your Shoppy sign-in and preparing your referral link…"
+    );
+
+    try {
+      const response = await fetch(PROFILE_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + referralToken
+        },
+        body: JSON.stringify({})
+      });
+
+      const data = await readResponse(response);
+
+      if (response.status === 401 || response.status === 403) {
+        sessionStorage.removeItem(TOKEN_KEY);
+
+        throw new Error(
+          "Your referral login has expired. Please sign in to Shoppy again."
+        );
       }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+          data.error ||
+          "Could not generate your referral link. Please try again."
+        );
+      }
+
+      if (data.success !== true) {
+        throw new Error(
+          data.message ||
+          "The referral server could not verify your account."
+        );
+      }
+
+      const p = data.profile;
+
+      if (!validProfile(p)) {
+        throw new Error(
+          "The referral server returned an invalid profile. Please check the referral backend configuration."
+        );
+      }
+
       renderProfile(p);
-    }catch(error){
-      setStatus(error.message||"Could not generate the link. Check your connection and try again.","error");
-    }finally{setBusy(false);}
+
+    } catch (error) {
+      profile = null;
+      linkInput.value = "Unable to generate your link";
+      copyBtn.disabled = true;
+      shareBtn.disabled = true;
+
+      setStatus(
+        error.message ||
+        "Could not generate the link. Check your connection and try again.",
+        "error"
+      );
+
+    } finally {
+      setBusy(false);
+    }
   }
-  async function copyLink(){
-    if(!profile)return;
-    try{
-      if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(profile.referralLink);}
-      else{linkInput.focus();linkInput.select();const ok=document.execCommand("copy");if(!ok)throw new Error("copy failed");}
-      setStatus("Referral link copied. Send it to your friends!","success");
-    }catch(_){linkInput.focus();linkInput.select();setStatus("Select and copy the link shown above.","error");}
+
+  async function copyLink() {
+    if (!profile || !validProfile(profile)) {
+      return;
+    }
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(profile.referralLink);
+      } else {
+        linkInput.focus();
+        linkInput.select();
+
+        const copied = document.execCommand("copy");
+
+        if (!copied) {
+          throw new Error("Copy failed");
+        }
+      }
+
+      setStatus(
+        "Referral link copied. Send it to your friends!",
+        "success"
+      );
+
+    } catch (_) {
+      linkInput.focus();
+      linkInput.select();
+
+      setStatus(
+        "Select and copy the link shown above.",
+        "error"
+      );
+    }
   }
-  async function shareLink(){
-    if(!profile)return;
-    const shareData={title:"Join me on Shoppy",text:"Use my personal Shoppy referral link to explore eligible benefits.",url:profile.referralLink};
-    try{
-      if(navigator.share){await navigator.share(shareData);setStatus("Invitation ready to share.","success");}
-      else{await copyLink();}
-    }catch(error){if(!error||error.name!=="AbortError")setStatus("Unable to open sharing. You can copy the link instead.","error");}
+
+  async function shareLink() {
+    if (!profile || !validProfile(profile)) {
+      return;
+    }
+
+    const shareData = {
+      title: "Join me on Shoppy",
+      text: "Use my personal Shoppy referral link to explore eligible benefits.",
+      url: profile.referralLink
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+
+        setStatus(
+          "Invitation ready to share.",
+          "success"
+        );
+      } else {
+        await copyLink();
+      }
+
+    } catch (error) {
+      if (!error || error.name !== "AbortError") {
+        setStatus(
+          "Unable to open sharing. You can copy the link instead.",
+          "error"
+        );
+      }
+    }
   }
-  // If this page was opened through an invitation, retain the invitation and record the visit.
-  const params=new URLSearchParams(location.search);
-  const invitationId=(params.get("invitationId")||"").trim();
-  const visitorKey="shoppy_referral_visitor";
-  if(invitationId&&/^[A-Za-z0-9_-]{1,128}$/.test(invitationId)){
-    try{
-      let visitorId=localStorage.getItem(visitorKey);
-      if(!visitorId){const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);visitorId=Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");localStorage.setItem(visitorKey,visitorId);}
-      localStorage.setItem("shoppy_referral_invitation",JSON.stringify({invitationId,savedAt:Date.now()}));
-      fetch(TRACK_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({invitationId,visitorId}),keepalive:true}).catch(function(){});
-    }catch(_){/* Private browsing/storage restrictions should not break the page. */}
+
+  /*
+   * Track visits arriving through a referral invitation.
+   * This endpoint is separate from the authenticated profile endpoint.
+   */
+  const params = new URLSearchParams(location.search);
+
+  const invitationId =
+    (params.get("invitationId") || "").trim();
+
+  const visitorKey = "shoppy_referral_visitor";
+
+  if (
+    invitationId &&
+    /^[A-Za-z0-9_-]{1,128}$/.test(invitationId)
+  ) {
+    try {
+      let visitorId = localStorage.getItem(visitorKey);
+
+      if (!visitorId) {
+        const bytes = new Uint8Array(16);
+        crypto.getRandomValues(bytes);
+
+        visitorId = Array.from(
+          bytes,
+          function (byte) {
+            return byte.toString(16).padStart(2, "0");
+          }
+        ).join("");
+
+        localStorage.setItem(visitorKey, visitorId);
+      }
+
+      localStorage.setItem(
+        "shoppy_referral_invitation",
+        JSON.stringify({
+          invitationId: invitationId,
+          savedAt: Date.now()
+        })
+      );
+
+      fetch(TRACK_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invitationId: invitationId,
+          visitorId: visitorId
+        }),
+        keepalive: true
+      }).catch(function () {});
+
+    } catch (_) {
+      // Storage restrictions must not break the page.
+    }
   }
-  generateBtn.addEventListener("click",generateLink);
-  copyBtn.addEventListener("click",copyLink);
-  shareBtn.addEventListener("click",shareLink);
-  // Attempt retrieval on page load so a signed-in user sees the link without an extra click.
+
+  generateBtn.addEventListener("click", generateLink);
+  copyBtn.addEventListener("click", copyLink);
+  shareBtn.addEventListener("click", shareLink);
+
+  // Automatically retrieve the profile after login.
   generateLink();
+
 })();
 </script>
 </body>
