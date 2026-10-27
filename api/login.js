@@ -3,9 +3,18 @@
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const { db } = require("../lib/firebase");
-const { setSessionCookie } = require("../lib/auth");
+const {
+  setSessionCookie,
+  getSession
+} = require("../lib/auth");
+
+const REFERRAL_BACKEND_URL =
+  "https://apisequizeshoplite.vercel.app/api/referrals/profile";
 
 function sendJson(res, statusCode, data) {
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Cache-Control", "private, no-store, max-age=0");
+
   return res.status(statusCode).json(data);
 }
 
@@ -42,6 +51,109 @@ function hashEmail(email) {
     .digest("hex");
 }
 
+/*
+ * Referral profile handler.
+ *
+ * This is part of the existing login API.
+ * It does not create a new API file.
+ *
+ * The UID comes only from the verified Shoppy session.
+ * The browser cannot choose another user's UID.
+ */
+async function handleReferralProfile(req, res) {
+  try {
+    const session = await getSession(req);
+
+    if (
+      !session ||
+      typeof session.uid !== "string" ||
+      !session.uid.trim()
+    ) {
+      return sendJson(res, 401, {
+        success: false,
+        message:
+          "Please sign in to your Shoppy account, then try again."
+      });
+    }
+
+    const secret = process.env.REFERRAL_SERVICE_SECRET;
+
+    if (
+      typeof secret !== "string" ||
+      Buffer.byteLength(secret, "utf8") < 32
+    ) {
+      console.error(
+        "REFERRAL_SERVICE_SECRET is missing or too short in Shoppy."
+      );
+
+      return sendJson(res, 500, {
+        success: false,
+        message:
+          "Referral service is not configured. Please try again later."
+      });
+    }
+
+    const upstream = await fetch(REFERRAL_BACKEND_URL, {
+      method: "POST",
+
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${secret}`
+      },
+
+      body: JSON.stringify({
+        uid: session.uid.trim()
+      }),
+
+      cache: "no-store"
+    });
+
+    const data = await upstream.json().catch(() => ({}));
+
+    if (
+      !upstream.ok ||
+      data.success !== true ||
+      !data.profile
+    ) {
+      console.error(
+        "Referral backend profile request failed:",
+        upstream.status,
+        data.message || data.error || "Unknown error"
+      );
+
+      const statusCode =
+        upstream.status >= 400 && upstream.status < 500
+          ? upstream.status
+          : 502;
+
+      return sendJson(res, statusCode, {
+        success: false,
+        message:
+          data.message ||
+          data.error ||
+          "Could not generate your referral link. Please try again."
+      });
+    }
+
+    return sendJson(res, 200, {
+      success: true,
+      profile: data.profile
+    });
+  } catch (error) {
+    console.error(
+      "Referral profile proxy error:",
+      error && error.message ? error.message : error
+    );
+
+    return sendJson(res, 500, {
+      success: false,
+      message:
+        "Could not generate your referral link. Please try again."
+    });
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -55,6 +167,18 @@ module.exports = async function handler(req, res) {
   try {
     const body = await readBody(req);
 
+    /*
+     * Referral page uses the same existing API.
+     * No additional Shoppy backend file is required.
+     */
+    if (body.action === "referralProfile") {
+      return await handleReferralProfile(req, res);
+    }
+
+    /*
+     * Normal login starts below.
+     * Existing login validation is preserved.
+     */
     const email =
       typeof body.email === "string"
         ? body.email.trim().toLowerCase()
@@ -157,8 +281,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Create the existing Shoppy login session.
-    // The referral system uses this same authenticated session.
+    // Existing Shoppy session. No referral token is required.
     await setSessionCookie(res, {
       uid: user.uid,
       email: user.email,
