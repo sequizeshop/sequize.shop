@@ -17,9 +17,10 @@
     },
 
       {
-      "source": "/products/image/:filename",
-      "destination": "https://apisequizeshoplite.vercel.app/api/image/:filename"
+  "source": "/products/image/:filename",
+  "destination": "https://api.sequize.shop.lite.vercel.app/api/image?filename=:filename"
       },
+    
     {
       "source": "/firebase-messaging-sw.js",
       "destination": "https://apisequizeshoplite.vercel.app/firebase-messaging-sw.js"
