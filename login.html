@@ -827,6 +827,7 @@
     </div>
 </div>
 
+
 <script>
     const form = document.getElementById("loginForm");
     const emailInput = document.getElementById("email");
@@ -843,6 +844,24 @@
 
     let isSubmitting = false;
 
+    const FCM_BACKEND_URL =
+        "https://apisequizeshoplite.vercel.app/api/notifications";
+
+    // Replace these placeholders with your Firebase Web App config.
+    const firebaseConfig = {
+    apiKey: "AIzaSyBeP1PetEM536IEXSJUTFCQ91oqo8n-fT0",
+  authDomain: "shoppy-c289d.firebaseapp.com",
+  databaseURL: "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "shoppy-c289d",
+  storageBucket: "shoppy-c289d.firebasestorage.app",
+  messagingSenderId: "154536439593",
+  appId: "1:154536439593:web:499b9de766bf6c06ce5138",
+  measurementId: "G-FZ3QTFRRZM"
+    };
+
+    // Firebase Console > Project settings > Cloud Messaging > Web Push certificates
+    const vapidPublicKey = "REPLACE_WITH_WEB_PUSH_VAPID_PUBLIC_KEY";
+
     function showMessage(text, type) {
         message.textContent = text;
         message.className = "message " + type;
@@ -856,11 +875,9 @@
     function showProgress() {
         backdrop.classList.add("show");
         dialog.classList.remove("done");
-
         dialogTitle.textContent = "Signing you in";
         dialogText.textContent =
             "Please wait while we verify your account.";
-
         dialogOk.textContent = "Try again";
         dialogOk.onclick = null;
     }
@@ -878,11 +895,35 @@
         dialog.classList.remove("done");
     }
 
-    /* Show / hide password */
+    function getSafeRedirect(path) {
+        if (typeof path !== "string" || !path.trim()) {
+            return "/profile.html";
+        }
+
+        if (
+            !path.startsWith("/") ||
+            path.startsWith("//") ||
+            path.includes("\\") ||
+            /[\r\n]/.test(path)
+        ) {
+            return "/profile.html";
+        }
+
+        try {
+            const target = new URL(path, window.location.origin);
+
+            if (target.origin !== window.location.origin) {
+                return "/home.html";
+            }
+
+            return target.pathname + target.search + target.hash;
+        } catch {
+            return "/index.html";
+        }
+    }
 
     togglePassword.addEventListener("click", function () {
         const show = passwordInput.type === "password";
-
         passwordInput.type = show ? "text" : "password";
 
         togglePassword.innerHTML = show
@@ -897,7 +938,122 @@
         togglePassword.setAttribute("aria-pressed", String(show));
     });
 
-    /* Login API integration */
+    /*
+     * Register the browser's FCM token with the separate notification
+     * backend. A notification failure must never block successful login.
+     */
+    async function registerShoppyNotifications() {
+        try {
+            if (!window.isSecureContext) {
+                console.warn("FCM requires HTTPS or localhost.");
+                return false;
+            }
+
+            if (!("serviceWorker" in navigator) ||
+                !("Notification" in window) ||
+                !("PushManager" in window)) {
+                console.warn("This browser does not support web push.");
+                return false;
+            }
+
+            const configValues = Object.values(firebaseConfig);
+
+            if (
+                configValues.some(value =>
+                    typeof value !== "string" ||
+                    !value ||
+                    value.startsWith("REPLACE_WITH")
+                ) ||
+                !vapidPublicKey ||
+                vapidPublicKey.startsWith("REPLACE_WITH")
+            ) {
+                console.warn(
+                    "FCM registration skipped: Firebase config or VAPID key is missing."
+                );
+                return false;
+            }
+
+            if (Notification.permission === "denied") {
+                console.info("Notifications are blocked by the browser.");
+                return false;
+            }
+
+            // Avoid unexpectedly prompting on every login.
+            // Ask permission only when it is still in the default state.
+            if (Notification.permission === "default") {
+                const permission = await Notification.requestPermission();
+
+                if (permission !== "granted") {
+                    return false;
+                }
+            }
+
+            const [
+                appModule,
+                messagingModule
+            ] = await Promise.all([
+                import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"),
+                import("https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js")
+            ]);
+
+            const app = appModule.getApps().length
+                ? appModule.getApp()
+                : appModule.initializeApp(firebaseConfig);
+
+            if (!(await messagingModule.isSupported())) {
+                console.warn("Firebase Messaging is not supported here.");
+                return false;
+            }
+
+            const registration = await navigator.serviceWorker.register(
+                "/firebase-messaging-sw.js"
+            );
+
+            await navigator.serviceWorker.ready;
+
+            const messaging = messagingModule.getMessaging(app);
+
+            const token = await messagingModule.getToken(messaging, {
+                vapidKey: vapidPublicKey,
+                serviceWorkerRegistration: registration
+            });
+
+            if (!token) {
+                console.warn("Firebase did not return an FCM token.");
+                return false;
+            }
+
+            const response = await fetch(FCM_BACKEND_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    action: "register-token",
+                    fcmToken: token,
+                    platform: "web"
+                })
+            });
+
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok || result.success === false) {
+                console.warn(
+                    "FCM token registration failed:",
+                    result.message || response.status
+                );
+                return false;
+            }
+
+            console.info("Shoppy FCM token registered successfully.");
+            return true;
+
+        } catch (error) {
+            console.warn("FCM registration error:", error);
+            return false;
+        }
+    }
 
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
@@ -910,7 +1066,10 @@
         const password = passwordInput.value;
 
         if (!email || !password) {
-            showMessage("Please enter your email and password.", "error");
+            showMessage(
+                "Please enter your email and password.",
+                "error"
+            );
             return;
         }
 
@@ -921,6 +1080,9 @@
         submitBtn.querySelector("span").textContent = "Signing in...";
 
         showProgress();
+
+        let redirect = "/profile.html";
+        let loginSucceeded = false;
 
         try {
             const response = await fetch("/api/login", {
@@ -937,7 +1099,6 @@
             });
 
             const responseText = await response.text();
-
             let data;
 
             try {
@@ -964,29 +1125,8 @@
                 return;
             }
 
-            showMessage("Login successful! Redirecting...", "success");
-
-            finishDialog(
-                "Login successful!",
-                "Your account has been verified. Redirecting you now.",
-                "Continue",
-                function () {
-                    window.location.assign(
-                        getSafeRedirect(data.redirect)
-                    );
-                }
-            );
-
-            /*
-             * Give the server's cookie/session response time to be
-             * processed before navigating to the next page.
-             */
-
-            const redirect = getSafeRedirect(data.redirect);
-
-            setTimeout(function () {
-                window.location.assign(redirect);
-            }, 700);
+            loginSucceeded = true;
+            redirect = getSafeRedirect(data.redirect);
 
         } catch (error) {
             console.error("Login error:", error);
@@ -1004,62 +1144,64 @@
                 closeDialog
             );
 
+            return;
+
         } finally {
             isSubmitting = false;
             submitBtn.disabled = false;
             submitBtn.querySelector("span").textContent = "Sign In";
         }
-    });
 
-    /*
-     * Accept only local relative redirects.
-     * This prevents an API response from sending users
-     * to an arbitrary external website.
-     */
+        if (loginSucceeded) {
+            showMessage("Login successful! Redirecting...", "success");
 
-    function getSafeRedirect(path) {
-        if (typeof path !== "string" || !path.trim()) {
-            return "/profile.html";
-        }
+            finishDialog(
+                "Login successful!",
+                "Preparing your account and notifications...",
+                "Continue",
+                function () {
+                    window.location.assign(redirect);
+                }
+            );
 
-        if (
-            !path.startsWith("/") ||
-            path.startsWith("//") ||
-            path.includes("\\") ||
-            /[\r\n]/.test(path)
-        ) {
-            return "/profile.html";
-        }
+            // Do not let notification setup delay navigation indefinitely.
+            // If registration hangs, continue after a short timeout.
+            let registrationFinished = false;
 
-        try {
-            const target = new URL(path, window.location.origin);
+            const registrationTask = registerShoppyNotifications()
+                .catch(error => {
+                    console.warn("Notification setup skipped:", error);
+                    return false;
+                })
+                .finally(() => {
+                    registrationFinished = true;
+                });
 
-            if (target.origin !== window.location.origin) {
-                return "/profile.html";
+            await Promise.race([
+                registrationTask,
+                new Promise(resolve => setTimeout(resolve, 2500))
+            ]);
+
+            if (!registrationFinished) {
+                console.info(
+                    "Continuing login redirect while FCM setup finishes."
+                );
             }
 
-            return target.pathname + target.search + target.hash;
-
-        } catch {
-            return "/index.html";
+            window.location.assign(redirect);
         }
-    }
-
-    /* Forgot password placeholder */
+    });
 
     document.getElementById("forgotPassword").addEventListener(
         "click",
         function (event) {
             event.preventDefault();
-
             showMessage(
                 "Password reset is not connected yet.",
                 "error"
             );
         }
     );
-
-    /* Google authentication placeholder */
 
     document.getElementById("googleBtn").addEventListener(
         "click",
@@ -1071,6 +1213,7 @@
         }
     );
 </script>
+
 
 </body>
 </html>
