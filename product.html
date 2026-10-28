@@ -4,26 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" id="metaDescription" content="Explore product details, pricing, images, reviews and offers on Shoppy.">
+  <meta name="description" id="metaDescription" content="Explore product details, pricing, images, reviews and offers on Sequize.">
   <meta name="robots" content="index, follow">
 
-  <title>Product Details — Shoppy</title>
+  <title>Product Details — Sequize</title>
 
-  <link rel="canonical" id="canonicalUrl" href="https://shopingweb-zeta.vercel.app/product.html">
+  <link rel="canonical" id="canonicalUrl" href="https://www.sequize.shop/product.html">
 
   <meta property="og:type" content="product">
-  <meta property="og:site_name" content="Shoppy">
-  <meta property="og:title" id="ogTitle" content="Product Details — Shoppy">
-  <meta property="og:description" id="ogDescription" content="Explore product details, pricing, images, reviews and offers on Shoppy.">
-  <meta property="og:url" id="ogUrl" content="https://shopingweb-zeta.vercel.app/product.html">
+  <meta property="og:site_name" content="Sequize">
+  <meta property="og:title" id="ogTitle" content="Product Details — Sequize">
+  <meta property="og:description" id="ogDescription" content="Explore product details, pricing, images, reviews and offers on Sequize.">
+  <meta property="og:url" id="ogUrl" content="https://www.sequize.shop/product.html">
   <meta property="og:image" id="ogImage" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-  <meta property="og:image:alt" id="ogImageAlt" content="Shoppy product">
+  <meta property="og:image:alt" id="ogImageAlt" content="Sequize product">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" id="twitterTitle" content="Product Details — Shoppy">
-  <meta name="twitter:description" id="twitterDescription" content="Explore product details, pricing, images, reviews and offers on Shoppy.">
+  <meta name="twitter:title" id="twitterTitle" content="Product Details — Sequize">
+  <meta name="twitter:description" id="twitterDescription" content="Explore product details, pricing, images, reviews and offers on Sequize.">
   <meta name="twitter:image" id="twitterImage" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
   <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
@@ -40,7 +40,7 @@
 
   <style>
     :root {
-      /* Shoppy design tokens */
+      /* Sequize design tokens */
       --primary: #2962FF;
       --primary-hover: #0059D7;
       --primary-soft: #EDF2FF;
@@ -1129,7 +1129,7 @@
         <i class="ph ph-arrow-left" aria-hidden="true"></i>
       </a>
     </nav>
-    <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
+    <a href="/home.html" class="brand" aria-label="Sequize home">Sequize.</a>
   </header>
 
   <main class="container">
@@ -1231,7 +1231,7 @@
   </main>
 
   <footer class="footer">
-    <span>© <span id="year"></span> Shoppy</span>
+    <span>© <span id="year"></span> Sequize</span>
     <span>Your shopping, all in one place.</span>
   </footer>
 
@@ -1248,7 +1248,7 @@
 
     const USD_TO_INR = 85;
     const PRODUCT_ID_PATTERN = /^[A-Za-z0-9]{40}$/;
-    const SITE_URL = "https://shopingweb-zeta.vercel.app";
+    const SITE_URL = "https://www.sequize.shop";
     const DEFAULT_IMAGE =
       "https://i.ibb.co/93kQCKxT/20261019-120246.png";
 
@@ -1342,6 +1342,27 @@
       }
     }
 
+    // Serve product images through the Sequize domain. The Vercel rewrite in
+    // vercel.json forwards /products/image/* to the separate image-proxy project.
+    function proxyImage(url) {
+      const safeUrl = safeImage(url);
+      if (!safeUrl) return "";
+
+      try {
+        const parsed = new URL(safeUrl);
+        const filename = parsed.pathname.split("/").filter(Boolean).pop();
+
+        // Only proxy supported image filenames; leave non-image URLs untouched.
+        if (!filename || !/^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(filename)) {
+          return safeUrl;
+        }
+
+        return `${SITE_URL}/products/image/${encodeURIComponent(filename)}?source=${encodeURIComponent(parsed.href)}`;
+      } catch {
+        return safeUrl;
+      }
+    }
+
     function updateMeta(selector, content) {
       const element = document.querySelector(selector);
 
@@ -1351,18 +1372,18 @@
     }
 
     function updateProductMetadata(item) {
-      const title = `${item.title} — Shoppy`;
+      const title = `${item.title} — Sequize`;
       const priceText = formatPrice(Number(item.price) || 0);
       const descriptionParts = [
-        item.description || `Explore ${item.title} on Shoppy.`,
+        item.description || `Explore ${item.title} on Sequize.`,
         `Category: ${item.category || "Products"}.`,
         `Price: ${priceText}.`,
         item.brand ? `Brand: ${item.brand}.` : ""
       ].filter(Boolean);
       const description = descriptionParts.join(" ").slice(0, 300);
 
-      const image = safeImage(item.thumbnail) ||
-        safeImage(Array.isArray(item.images) ? item.images[0] : "") ||
+      const image = proxyImage(item.thumbnail) ||
+        proxyImage(Array.isArray(item.images) ? item.images[0] : "") ||
         DEFAULT_IMAGE;
       const canonical =
         `${SITE_URL}/product.html?id=${encodeURIComponent(item.id)}`;
@@ -1561,7 +1582,7 @@
         ...(Array.isArray(item.images) ? item.images : [])
       ]
         .filter(Boolean)
-        .map(safeImage)
+        .map(proxyImage)
         .filter(Boolean);
 
       return [...new Set(allImages)];
@@ -2152,7 +2173,7 @@
 
       const shareData = {
         title: product.title,
-        text: `${product.title} — ${product.description || "Check out this product"} on Shoppy!`,
+        text: `${product.title} — ${product.description || "Check out this product"} on Sequize!`,
         url: window.location.href
       };
 
@@ -2365,7 +2386,7 @@
     function renderRecommendationCards(products) {
       return products.map(item => {
         const id = String(item.id || "");
-        const image = safeImage(item.thumbnail) || safeImage(Array.isArray(item.images) ? item.images[0] : "") || "https://placehold.co/400x400/f5f5f2/969991?text=Product";
+        const image = proxyImage(item.thumbnail) || proxyImage(Array.isArray(item.images) ? item.images[0] : "") || "https://placehold.co/400x400/f5f5f2/969991?text=Product";
         const rating = Number(item.rating) || 0;
         return `
           <article class="related-card product-card" data-product-id="${escapeHTML(id)}" tabindex="0" aria-label="View details for ${escapeHTML(item.title || "Product")}">
