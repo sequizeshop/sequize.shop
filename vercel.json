@@ -15,6 +15,11 @@
       "source": "/",
       "destination": "/index.html"
     },
+
+      {
+      "source": "/products/image/:filename",
+      "destination": "https://apisequizeshoplite.vercel.app/api/image/:filename"
+      },
     {
       "source": "/firebase-messaging-sw.js",
       "destination": "https://apisequizeshoplite.vercel.app/firebase-messaging-sw.js"
