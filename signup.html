@@ -1209,9 +1209,29 @@
                 return;
             }
 
+            /*
+             * Step 3: Ask for notification permission AFTER account creation.
+             * Notification setup is optional and must never undo a successful signup.
+             */
+            let notificationMessage = "";
+
+            try {
+                if (typeof window.enableShoppyNotifications === "function") {
+                    const notificationResult = await window.enableShoppyNotifications();
+
+                    if (notificationResult && notificationResult.saved) {
+                        notificationMessage = " Notifications are enabled on this device.";
+                    } else if (notificationResult && notificationResult.permission === "denied") {
+                        notificationMessage = " You can enable notifications later in your browser settings.";
+                    }
+                }
+            } catch (notificationError) {
+                console.warn("Notification setup skipped:", notificationError);
+            }
+
             finishDialog(
                 "Account created!",
-                "Your account has been created successfully.",
+                "Your account has been created successfully." + notificationMessage,
                 "Go to sign in",
                 function () {
                     window.location.href = "login.html";
@@ -1219,7 +1239,7 @@
             );
 
             showMessage(
-                "Account created successfully. You can now sign in.",
+                "Account created successfully." + notificationMessage,
                 "success"
             );
 
@@ -1267,6 +1287,100 @@
             "error"
         );
     });
+</script>
+
+
+<!-- Firebase Web Push setup. Replace the public Firebase config and VAPID key below. -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import {
+        getMessaging,
+        getToken,
+        isSupported
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js";
+
+    const firebaseConfig = {
+        apiKey: "REPLACE_WITH_FIREBASE_WEB_API_KEY",
+        authDomain: "REPLACE_WITH_FIREBASE_AUTH_DOMAIN",
+        projectId: "REPLACE_WITH_FIREBASE_PROJECT_ID",
+        messagingSenderId: "REPLACE_WITH_FIREBASE_MESSAGING_SENDER_ID",
+        appId: "REPLACE_WITH_FIREBASE_WEB_APP_ID"
+    };
+
+    const vapidPublicKey = "REPLACE_WITH_WEB_PUSH_VAPID_PUBLIC_KEY";
+
+    window.enableShoppyNotifications = async function () {
+        if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+            return { saved: false, unsupported: true };
+        }
+
+        if (!window.isSecureContext) {
+            console.warn("Web push requires HTTPS or localhost.");
+            return { saved: false, unsupported: true };
+        }
+
+        const supported = await isSupported().catch(() => false);
+        if (!supported) {
+            return { saved: false, unsupported: true };
+        }
+
+        if (
+            Object.values(firebaseConfig).some(value =>
+                typeof value !== "string" || value.startsWith("REPLACE_WITH_")
+            ) ||
+            !vapidPublicKey ||
+            vapidPublicKey.startsWith("REPLACE_WITH_")
+        ) {
+            console.warn("Firebase Web Push config has not been filled in yet.");
+            return { saved: false, configurationMissing: true };
+        }
+
+        let permission = Notification.permission;
+
+        if (permission === "default") {
+            permission = await Notification.requestPermission();
+        }
+
+        if (permission !== "granted") {
+            return { saved: false, permission };
+        }
+
+        const app = initializeApp(firebaseConfig);
+        const messaging = getMessaging(app);
+
+        const registration = await navigator.serviceWorker.register(
+            "/firebase-messaging-sw.js"
+        );
+
+        const token = await getToken(messaging, {
+            vapidKey: vapidPublicKey,
+            serviceWorkerRegistration: registration
+        });
+
+        if (!token) {
+            return { saved: false, permission, tokenUnavailable: true };
+        }
+
+        // This endpoint must verify the signed-in session and save the token
+        // against the UID from that session, never a UID supplied by the browser.
+        const response = await fetch("/api/signup", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ action: "save-fcm-token", fcmToken: token })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || data.success !== true) {
+            console.warn("FCM token was obtained but not saved by the server.");
+            return { saved: false, permission, serverSaveFailed: true };
+        }
+
+        return { saved: true, permission };
+    };
 </script>
 
 </body>
