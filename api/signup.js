@@ -1,4 +1,3 @@
-
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
@@ -8,14 +7,14 @@ const {
   setSessionCookie,
   clearSessionCookie,
   emailHash,
-  sendJson
+  sendJson,
+  getSession
 } = require("../lib/auth");
 
 const { consumeEmailVerification } = require("./auth/otp");
 
 module.exports = async function handler(req, res) {
-
-  // Only POST requests are allowed.
+  // POST requests only.
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
 
@@ -25,16 +24,80 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  /*
-   * LOGOUT ACTION
-   *
-   * This action runs before the signup process.
-   * It clears the existing session cookie.
-   */
   const action = req.body?.action;
 
-  if (action === "logout") {
+  /*
+   * REGISTER NOTIFICATION TOKEN
+   *
+   * Called by signup.html after notification permission
+   * is granted and Firebase generates an FCM token.
+   */
+  if (action === "save-fcm-token") {
+    try {
+      const session = await getSession(req);
+      const sessionUid = session?.uid || session?.user?.uid;
 
+      if (!sessionUid) {
+        return sendJson(res, 401, {
+          success: false,
+          message: "Please sign in before registering notifications."
+        });
+      }
+
+      const rawToken = req.body?.fcmToken;
+
+      if (
+        typeof rawToken !== "string" ||
+        rawToken.trim().length < 20 ||
+        rawToken.trim().length > 4096 ||
+        /[\u0000-\u001F\u007F]/.test(rawToken)
+      ) {
+        return sendJson(res, 400, {
+          success: false,
+          message: "Invalid notification token."
+        });
+      }
+
+      const token = rawToken.trim();
+
+      const tokenHash = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+
+      const tokenRef = db.ref(
+        `users/${sessionUid}/notificationTokens/${tokenHash}`
+      );
+
+      const existing = await tokenRef.get();
+      const now = new Date().toISOString();
+
+      await tokenRef.set({
+        token,
+        platform: "web",
+        enabled: true,
+        createdAt: existing.val()?.createdAt || now,
+        updatedAt: now
+      });
+
+      return sendJson(res, 200, {
+        success: true,
+        message: "Notification token registered."
+      });
+    } catch (error) {
+      console.error("FCM token registration error:", error);
+
+      return sendJson(res, 500, {
+        success: false,
+        message: "Unable to register notifications right now."
+      });
+    }
+  }
+
+  /*
+   * LOGOUT
+   */
+  if (action === "logout") {
     clearSessionCookie(res);
 
     return sendJson(res, 200, {
@@ -45,25 +108,14 @@ module.exports = async function handler(req, res) {
   }
 
   /*
-   * SIGNUP PROCESS
-   *
-   * Existing registration flow is preserved.
-   * FCM token support is optional.
+   * SIGNUP
    */
-
   let reservedEmailHash = null;
   let uid = null;
 
   try {
+    const { name, email, password } = req.body || {};
 
-    const {
-      name,
-      email,
-      password,
-      fcmToken: rawFcmToken
-    } = req.body || {};
-
-    // Validate required fields.
     if (
       typeof name !== "string" ||
       typeof email !== "string" ||
@@ -79,10 +131,7 @@ module.exports = async function handler(req, res) {
     const cleanEmail = email.trim().toLowerCase();
 
     // Validate name.
-    if (
-      cleanName.length < 2 ||
-      cleanName.length > 80
-    ) {
+    if (cleanName.length < 2 || cleanName.length > 80) {
       return sendJson(res, 400, {
         success: false,
         message: "Name must be between 2 and 80 characters."
@@ -101,42 +150,17 @@ module.exports = async function handler(req, res) {
     }
 
     // Validate password.
-    if (
-      password.length < 8 ||
-      password.length > 72
-    ) {
+    if (password.length < 8 || password.length > 72) {
       return sendJson(res, 400, {
         success: false,
         message: "Password must be between 8 and 72 characters."
       });
     }
 
-    /*
-     * Validate the optional FCM token.
-     *
-     * A missing or invalid token must not prevent signup.
-     * The browser will provide this token after FCM setup.
-     */
-    let fcmToken = null;
-
-    if (typeof rawFcmToken === "string") {
-
-      const candidate = rawFcmToken.trim();
-
-      if (
-        candidate.length >= 20 &&
-        candidate.length <= 4096 &&
-        !/[\u0000-\u001F\u007F]/.test(candidate)
-      ) {
-        fcmToken = candidate;
-      }
-    }
-
     const hash = emailHash(cleanEmail);
-
     reservedEmailHash = hash;
 
-    // Check whether this account is blocked.
+    // Check blocked accounts.
     const blocked = await db
       .ref(`blockedUsers/${hash}/blocked`)
       .get();
@@ -150,14 +174,10 @@ module.exports = async function handler(req, res) {
 
     uid = crypto.randomUUID();
 
-    /*
-     * Reserve the email atomically.
-     * This prevents duplicate registrations.
-     */
     const emailRef = db.ref(`userEmails/${hash}`);
 
+    // Reserve email atomically.
     const reservation = await emailRef.transaction(current => {
-
       if (current !== null) {
         return;
       }
@@ -166,11 +186,9 @@ module.exports = async function handler(req, res) {
         uid,
         status: "pending"
       };
-
     });
 
     if (!reservation.committed) {
-
       reservedEmailHash = null;
 
       return sendJson(res, 409, {
@@ -179,17 +197,11 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    /*
-     * Verify email OTP.
-     * Verification is single-use and valid for 15 minutes,
-     * according to the existing OTP implementation.
-     */
+    // Verify email OTP.
     const verified = await consumeEmailVerification(cleanEmail);
 
     if (!verified) {
-
       await emailRef.remove().catch(() => {});
-
       reservedEmailHash = null;
 
       return sendJson(res, 403, {
@@ -198,10 +210,11 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Hash password securely.
+    // Hash password.
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Create the user in Firebase.
+    // Create user without overwriting any notification token
+    // that may be registered later.
     await db.ref(`users/${uid}`).set({
       uid,
       name: cleanName,
@@ -211,53 +224,13 @@ module.exports = async function handler(req, res) {
       status: "active"
     });
 
-    /*
-     * Save the optional FCM token under this user's UID.
-     *
-     * The token hash is used as the database key so the raw
-     * FCM token does not have to be used as a Firebase path.
-     *
-     * Token saving is best-effort: notification setup errors
-     * must not prevent an otherwise valid signup.
-     */
-    if (fcmToken) {
-
-      try {
-
-        const tokenHash = crypto
-          .createHash("sha256")
-          .update(fcmToken)
-          .digest("hex");
-
-        const now = new Date().toISOString();
-
-        await db
-          .ref(`users/${uid}/notificationTokens/${tokenHash}`)
-          .set({
-            token: fcmToken,
-            platform: "web",
-            enabled: true,
-            createdAt: now,
-            updatedAt: now
-          });
-
-      } catch (tokenError) {
-
-        console.error(
-          "Signup FCM token save error:",
-          tokenError
-        );
-
-      }
-    }
-
-    // Mark the email reservation as active.
+    // Mark email active.
     await emailRef.set({
       uid,
       status: "active"
     });
 
-    // Create the login session.
+    // Create session.
     await setSessionCookie(res, {
       uid,
       email: cleanEmail,
@@ -267,46 +240,28 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 201, {
       success: true,
       message: "Account created successfully.",
-      redirect: "/home.html",
+      redirect: "/profile.html",
       user: {
         uid,
         name: cleanName,
         email: cleanEmail
       }
     });
-
   } catch (error) {
-
     console.error("Signup API error:", error);
 
-    /*
-     * Clean up an incomplete registration where possible.
-     */
+    // Clean up an incomplete registration when possible.
     if (reservedEmailHash && uid) {
-
       try {
-
-        const ref = db.ref(
-          `userEmails/${reservedEmailHash}`
-        );
-
+        const ref = db.ref(`userEmails/${reservedEmailHash}`);
         const snapshot = await ref.get();
 
         if (snapshot.val()?.uid === uid) {
-
           await ref.remove();
-
           await db.ref(`users/${uid}`).remove();
-
         }
-
       } catch (cleanupError) {
-
-        console.error(
-          "Signup cleanup error:",
-          cleanupError
-        );
-
+        console.error("Signup cleanup error:", cleanupError);
       }
     }
 
@@ -315,6 +270,5 @@ module.exports = async function handler(req, res) {
       message:
         "Unable to create your account right now. Please try again."
     });
-
   }
 };
