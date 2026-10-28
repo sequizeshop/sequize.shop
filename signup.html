@@ -1291,97 +1291,136 @@
 
 
 <!-- Firebase Web Push setup. Replace the public Firebase config and VAPID key below. -->
+
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import {
         getMessaging,
         getToken,
         isSupported
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js";
 
-    const firebaseConfig = {
-        apiKey: "REPLACE_WITH_FIREBASE_WEB_API_KEY",
-        authDomain: "REPLACE_WITH_FIREBASE_AUTH_DOMAIN",
-        projectId: "REPLACE_WITH_FIREBASE_PROJECT_ID",
-        messagingSenderId: "REPLACE_WITH_FIREBASE_MESSAGING_SENDER_ID",
-        appId: "REPLACE_WITH_FIREBASE_WEB_APP_ID"
+    const FIREBASE_CONFIG = {
+       apiKey: "AIzaSyBeP1PetEM536IEXSJUTFCQ91oqo8n-fT0",
+  authDomain: "shoppy-c289d.firebaseapp.com",
+  databaseURL: "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "shoppy-c289d",
+  storageBucket: "shoppy-c289d.firebasestorage.app",
+  messagingSenderId: "154536439593",
+  appId: "1:154536439593:web:499b9de766bf6c06ce5138",
+  measurementId: "G-FZ3QTFRRZM"
     };
 
-    const vapidPublicKey = "REPLACE_WITH_WEB_PUSH_VAPID_PUBLIC_KEY";
+    const VAPID_PUBLIC_KEY = "BJpOoJ9eQEhb7kuginY6Xz05tLJfY3Z91CQ8gR3Hg5d3Wh_8O1y4tmv8pOLD_4n4QU5MNEI31Ya-p6_LzCYpaOs";
+
+    const FCM_BACKEND_URL =
+        "https://apisequizeshoplite.vercel.app/api/notifications";
 
     window.enableShoppyNotifications = async function () {
-        if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-            return { saved: false, unsupported: true };
+        try {
+            if (
+                !("Notification" in window) ||
+                !("serviceWorker" in navigator) ||
+                !window.isSecureContext
+            ) {
+                return { saved: false, unsupported: true };
+            }
+
+            const supported = await isSupported().catch(() => false);
+
+            if (!supported) {
+                return { saved: false, unsupported: true };
+            }
+
+            const configValues = Object.values(FIREBASE_CONFIG);
+
+            if (
+                configValues.some(value =>
+                    !value || value.startsWith("REPLACE_WITH_")
+                ) ||
+                !VAPID_PUBLIC_KEY ||
+                VAPID_PUBLIC_KEY.startsWith("REPLACE_WITH_")
+            ) {
+                console.error("Firebase Web config or VAPID key is missing.");
+                return { saved: false, configurationMissing: true };
+            }
+
+            let permission = Notification.permission;
+
+            if (permission === "default") {
+                permission = await Notification.requestPermission();
+            }
+
+            if (permission !== "granted") {
+                return { saved: false, permission };
+            }
+
+            const app = getApps().length
+                ? getApp()
+                : initializeApp(FIREBASE_CONFIG);
+
+            const messaging = getMessaging(app);
+
+            /*
+             * The frontend Vercel rewrite should expose the backend's
+             * service worker at this same-origin URL.
+             */
+            const registration = await navigator.serviceWorker.register(
+                "/firebase-messaging-sw.js"
+            );
+
+            const token = await getToken(messaging, {
+                vapidKey: VAPID_PUBLIC_KEY,
+                serviceWorkerRegistration: registration
+            });
+
+            if (!token) {
+                return {
+                    saved: false,
+                    permission,
+                    tokenUnavailable: true
+                };
+            }
+
+            /*
+             * Register the token with the separate FCM backend.
+             * No admin API key is sent from the browser.
+             */
+            const response = await fetch(FCM_BACKEND_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: "register-token",
+                    fcmToken: token,
+                    platform: "web"
+                })
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok || data.success !== true) {
+                console.error("FCM token registration failed:", data);
+
+                return {
+                    saved: false,
+                    permission,
+                    serverSaveFailed: true
+                };
+            }
+
+            return { saved: true, permission };
+
+        } catch (error) {
+            console.error("Shoppy notification setup failed:", error);
+
+            return {
+                saved: false,
+                error: true
+            };
         }
-
-        if (!window.isSecureContext) {
-            console.warn("Web push requires HTTPS or localhost.");
-            return { saved: false, unsupported: true };
-        }
-
-        const supported = await isSupported().catch(() => false);
-        if (!supported) {
-            return { saved: false, unsupported: true };
-        }
-
-        if (
-            Object.values(firebaseConfig).some(value =>
-                typeof value !== "string" || value.startsWith("REPLACE_WITH_")
-            ) ||
-            !vapidPublicKey ||
-            vapidPublicKey.startsWith("REPLACE_WITH_")
-        ) {
-            console.warn("Firebase Web Push config has not been filled in yet.");
-            return { saved: false, configurationMissing: true };
-        }
-
-        let permission = Notification.permission;
-
-        if (permission === "default") {
-            permission = await Notification.requestPermission();
-        }
-
-        if (permission !== "granted") {
-            return { saved: false, permission };
-        }
-
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
-
-        const registration = await navigator.serviceWorker.register(
-            "/firebase-messaging-sw.js"
-        );
-
-        const token = await getToken(messaging, {
-            vapidKey: vapidPublicKey,
-            serviceWorkerRegistration: registration
-        });
-
-        if (!token) {
-            return { saved: false, permission, tokenUnavailable: true };
-        }
-
-        // This endpoint must verify the signed-in session and save the token
-        // against the UID from that session, never a UID supplied by the browser.
-        const response = await fetch("/api/signup", {
-            method: "POST",
-            credentials: "same-origin",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ action: "save-fcm-token", fcmToken: token })
-        });
-
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok || data.success !== true) {
-            console.warn("FCM token was obtained but not saved by the server.");
-            return { saved: false, permission, serverSaveFailed: true };
-        }
-
-        return { saved: true, permission };
     };
 </script>
-
 </body>
 </html>
