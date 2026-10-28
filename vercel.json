@@ -16,6 +16,11 @@
       "destination": "/index.html"
     },
     {
+      "source": "/firebase-messaging-sw.js",
+      "destination": "https://apisequizeshoplite.vercel.app/firebase-messaging-sw.js"
+    },
+    
+    {
       "source": "/home",
       "destination": "/index.html"
     },
