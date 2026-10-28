@@ -1,3 +1,4 @@
+
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
@@ -47,6 +48,7 @@ module.exports = async function handler(req, res) {
    * SIGNUP PROCESS
    *
    * Existing registration flow is preserved.
+   * FCM token support is optional.
    */
 
   let reservedEmailHash = null;
@@ -54,7 +56,12 @@ module.exports = async function handler(req, res) {
 
   try {
 
-    const { name, email, password } = req.body || {};
+    const {
+      name,
+      email,
+      password,
+      fcmToken: rawFcmToken
+    } = req.body || {};
 
     // Validate required fields.
     if (
@@ -102,6 +109,27 @@ module.exports = async function handler(req, res) {
         success: false,
         message: "Password must be between 8 and 72 characters."
       });
+    }
+
+    /*
+     * Validate the optional FCM token.
+     *
+     * A missing or invalid token must not prevent signup.
+     * The browser will provide this token after FCM setup.
+     */
+    let fcmToken = null;
+
+    if (typeof rawFcmToken === "string") {
+
+      const candidate = rawFcmToken.trim();
+
+      if (
+        candidate.length >= 20 &&
+        candidate.length <= 4096 &&
+        !/[\u0000-\u001F\u007F]/.test(candidate)
+      ) {
+        fcmToken = candidate;
+      }
     }
 
     const hash = emailHash(cleanEmail);
@@ -183,6 +211,46 @@ module.exports = async function handler(req, res) {
       status: "active"
     });
 
+    /*
+     * Save the optional FCM token under this user's UID.
+     *
+     * The token hash is used as the database key so the raw
+     * FCM token does not have to be used as a Firebase path.
+     *
+     * Token saving is best-effort: notification setup errors
+     * must not prevent an otherwise valid signup.
+     */
+    if (fcmToken) {
+
+      try {
+
+        const tokenHash = crypto
+          .createHash("sha256")
+          .update(fcmToken)
+          .digest("hex");
+
+        const now = new Date().toISOString();
+
+        await db
+          .ref(`users/${uid}/notificationTokens/${tokenHash}`)
+          .set({
+            token: fcmToken,
+            platform: "web",
+            enabled: true,
+            createdAt: now,
+            updatedAt: now
+          });
+
+      } catch (tokenError) {
+
+        console.error(
+          "Signup FCM token save error:",
+          tokenError
+        );
+
+      }
+    }
+
     // Mark the email reservation as active.
     await emailRef.set({
       uid,
@@ -199,7 +267,7 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 201, {
       success: true,
       message: "Account created successfully.",
-      redirect: "/profile.html",
+      redirect: "/home.html",
       user: {
         uid,
         name: cleanName,
