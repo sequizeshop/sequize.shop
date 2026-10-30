@@ -1373,24 +1373,10 @@
 
     // Serve product images through the Sequize domain. The Vercel rewrite in
     // vercel.json forwards /products/image/* to the separate image-proxy project.
-    function proxyImage(url) {
-      const safeUrl = safeImage(url);
-      if (!safeUrl) return "";
-
-      try {
-        const parsed = new URL(safeUrl);
-        const filename = parsed.pathname.split("/").filter(Boolean).pop();
-
-        // Only proxy supported image filenames; leave non-image URLs untouched.
-        if (!filename || !/^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(filename)) {
-          return safeUrl;
-        }
-
-        return `${SITE_URL}/products/image/${encodeURIComponent(filename)}?source=${encodeURIComponent(parsed.href)}`;
-      } catch {
-        return safeUrl;
-      }
-    }
+    // API already returns /img/<token>.jpg URLs. Do not rewrite them.
+function proxyImage(url) {
+  return safeImage(url);
+}
 
     function updateMeta(selector, content) {
       const element = document.querySelector(selector);
