@@ -22,7 +22,7 @@ const SEED_LOCK_TIMEOUT = 2 * 60 * 1000; // stale lock is ignored after 2 minute
 // Images are served from our own domain: /img/<token>.jpg
 // (vercel.json rewrites /img/* to the image-proxy project)
 const IMAGE_PROXY_PATH = "/img/";
-const OLD_PROXY_PREFIX = "https://apisequizeshoplite.vercel.app/api/image/";
+const OLD_PROXY_PREFIX = "https://apisequizeshoplite-two.vercel.app/api/image/";
 
 function proxyImage(url) {
   if (typeof url !== "string" || !url) return "";
