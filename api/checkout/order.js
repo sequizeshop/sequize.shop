@@ -110,10 +110,12 @@ async function getCustomerEmail(db, uid, session) {
 }
 
 /*
- * Load taxes and discounts from the same admin APIs
- * used by the cart page.
+ * Load taxes and discounts from admin APIs.
  *
- * There are no hardcoded tax or discount fallbacks.
+ * Discount endpoint:
+ * /api/admin/productData?resource=discounts
+ *
+ * No hardcoded tax or discount fallbacks.
  */
 async function loadPricingSettings(db, uid, session) {
   const email = await getCustomerEmail(
@@ -123,28 +125,37 @@ async function loadPricingSettings(db, uid, session) {
   );
 
   const discountURL =
-    `${ADMIN_API_BASE}/api/admin/discounts` +
-    (
-      email
-        ? `?email=${encodeURIComponent(email)}`
-        : ""
+    `${ADMIN_API_BASE}/api/admin/productData?resource=discounts`;
+
+  const adminApiKey = String(
+    process.env.ADMIN_API_KEY || ""
+  ).trim();
+
+  if (!adminApiKey) {
+    throw new Error(
+      "ADMIN_API_KEY is not configured."
     );
+  }
 
   const [taxResponse, discountResponse] =
     await Promise.all([
-      fetch(`${ADMIN_API_BASE}/api/admin/taxes`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json"
-        },
-        cache: "no-store",
-        signal: AbortSignal.timeout(10000)
-      }),
+      fetch(
+        `${ADMIN_API_BASE}/api/admin/taxes`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json"
+          },
+          cache: "no-store",
+          signal: AbortSignal.timeout(10000)
+        }
+      ),
 
       fetch(discountURL, {
         method: "GET",
         headers: {
-          Accept: "application/json"
+          Accept: "application/json",
+          Authorization: `Bearer ${adminApiKey}`
         },
         cache: "no-store",
         signal: AbortSignal.timeout(10000)
@@ -178,31 +189,68 @@ async function loadPricingSettings(db, uid, session) {
   }
 
   /*
-   * Match the cart's tax validation.
+   * Validate taxes.
    */
-  const taxes = taxData.taxes.filter(tax =>
-    tax &&
-    String(tax.title || "").trim() &&
-    Number.isFinite(Number(tax.percent)) &&
-    Number(tax.percent) >= 0 &&
-    Number(tax.percent) <= 100
-  ).map(tax => ({
-    id: String(tax.id || tax.key || ""),
-    title: String(tax.title),
-    percent: Number(tax.percent)
-  }));
+  const taxes = taxData.taxes
+    .filter(tax =>
+      tax &&
+      String(tax.title || "").trim() &&
+      Number.isFinite(Number(tax.percent)) &&
+      Number(tax.percent) >= 0 &&
+      Number(tax.percent) <= 100
+    )
+    .map(tax => ({
+      id: String(tax.id || tax.key || ""),
+      title: String(tax.title),
+      percent: Number(tax.percent)
+    }));
 
   /*
-   * Match the cart's eligible discount filtering.
+   * Filter discounts according to customer email
+   * and discount scope.
+   *
+   * scope: "all"
+   * Applies to every customer.
+   *
+   * scope: "user"
+   * Applies only to matching customer email.
    */
-  const discounts = discountData.discounts.filter(item =>
-    item &&
-    Number(item.percent) > 0 &&
-    Number(item.percent) <= 100
-  );
+  const customerEmail = String(email || "")
+    .trim()
+    .toLowerCase();
+
+  const discounts = discountData.discounts.filter(item => {
+    if (
+      !item ||
+      !Number.isFinite(Number(item.percent)) ||
+      Number(item.percent) <= 0 ||
+      Number(item.percent) > 100
+    ) {
+      return false;
+    }
+
+    const scope = item.scope || "all";
+
+    if (scope === "all") {
+      return true;
+    }
+
+    if (scope === "user") {
+      const discountEmail = String(
+        item.userEmail || ""
+      ).trim().toLowerCase();
+
+      return (
+        customerEmail !== "" &&
+        discountEmail === customerEmail
+      );
+    }
+
+    return false;
+  });
 
   /*
-   * Same rule as getAppliedDiscount() in the cart.
+   * Highest eligible discount first.
    */
   discounts.sort(
     (a, b) => Number(b.percent) - Number(a.percent)
@@ -868,7 +916,6 @@ async function createOrder(req, res, session) {
 
   /*
    * Calculate every currently configured tax.
-   * A new admin tax appears automatically.
    */
   const taxes = pricing.taxes.map(tax => {
     const percent = Number(tax.percent) || 0;
