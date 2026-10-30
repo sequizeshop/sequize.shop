@@ -18,6 +18,31 @@ const SEED_LOCK_PATH = "meta/dummyJsonSeedLock";
 const SEED_DONE_PATH = "meta/dummyJsonSeeded";
 const SEED_LOCK_TIMEOUT = 2 * 60 * 1000; // stale lock is ignored after 2 minutes
 
+// NEW: image proxy settings
+const IMAGE_PROXY_BASE = "https://apisequizeshoplite.vercel.app";
+
+// NEW: original image URL -> encrypted proxy URL (domain hidden)
+function proxyImage(url) {
+  if (typeof url !== "string" || !url) return "";
+  if (url.startsWith(IMAGE_PROXY_BASE)) return url; // already proxied
+  try {
+    if (new URL(url).protocol !== "https:") return url;
+  } catch {
+    return url;
+  }
+
+  const secret = process.env.IMAGE_PROXY_SECRET;
+  if (!secret) throw new Error("IMAGE_PROXY_SECRET environment variable is missing.");
+
+  const key = crypto.createHash("sha256").update(secret).digest();
+  const iv = crypto.createHmac("sha256", key).update(url).digest().subarray(0, 12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
+  const enc = Buffer.concat([cipher.update(url, "utf8"), cipher.final()]);
+  const token = Buffer.concat([iv, cipher.getAuthTag(), enc]).toString("base64url");
+
+  return IMAGE_PROXY_BASE + "/api/image/" + token + ".jpg";
+}
+
 function isValidProductId(id) {
   return typeof id === "string" && PRODUCT_ID_PATTERN.test(id);
 }
@@ -98,7 +123,7 @@ function mapDummyProduct(product, customId, now) {
 /* Firebase record -> public catalog format */
 function toPublic(p, id) {
   const price = Math.max(0, validNumber(p.price, 0));
-  const images = Array.isArray(p.images) ? p.images.filter(Boolean) : [];
+  const images = Array.isArray(p.images) ? p.images.filter(Boolean).map(proxyImage) : []; // CHANGED
   const stock = Math.max(0, validNumber(p.stock, 0));
 
   return {
@@ -113,7 +138,7 @@ function toPublic(p, id) {
     category: p.category || "other",
     brand: p.brand || "",
     sku: p.sku || "",
-    thumbnail: p.thumbnail || images[0] || "",
+    thumbnail: proxyImage(p.thumbnail) || images[0] || "", // CHANGED
     images,
     tags: Array.isArray(p.tags) ? p.tags : [],
     availabilityStatus: p.availabilityStatus || (stock > 0 ? "In Stock" : "Out of Stock"),
