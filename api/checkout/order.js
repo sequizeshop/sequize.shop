@@ -115,7 +115,8 @@ async function getCustomerEmail(db, uid, session) {
  * Discount endpoint:
  * /api/admin/productData?resource=discounts
  *
- * No hardcoded tax or discount fallbacks.
+ * ALL eligible discounts are returned; they are
+ * added together (capped at 100%) by createOrder.
  */
 async function loadPricingSettings(db, uid, session) {
   const email = await getCustomerEmail(
@@ -206,14 +207,8 @@ async function loadPricingSettings(db, uid, session) {
     }));
 
   /*
-   * Filter discounts according to customer email
-   * and discount scope.
-   *
-   * scope: "all"
-   * Applies to every customer.
-   *
-   * scope: "user"
-   * Applies only to matching customer email.
+   * scope: "all"  -> every customer
+   * scope: "user" -> only matching customer email
    */
   const customerEmail = String(email || "")
     .trim()
@@ -249,16 +244,13 @@ async function loadPricingSettings(db, uid, session) {
     return false;
   });
 
-  /*
-   * Highest eligible discount first.
-   */
   discounts.sort(
     (a, b) => Number(b.percent) - Number(a.percent)
   );
 
   return {
     taxes,
-    discount: discounts[0] || null
+    discounts
   };
 }
 
@@ -897,13 +889,18 @@ async function createOrder(req, res, session) {
   }
 
   /*
-   * Apply the selected discount exactly once.
+   * Apply ALL eligible discounts together.
+   * Percentages are added (e.g. 20% + 10% = 30%), capped at 100%.
    */
-  const discount = pricing.discount;
+  const discounts = pricing.discounts;
 
-  const discountPercent = discount
-    ? Number(discount.percent) || 0
-    : 0;
+  const discountPercent = Math.min(
+    100,
+    discounts.reduce(
+      (sum, d) => sum + (Number(d.percent) || 0),
+      0
+    )
+  );
 
   const discountUSD = roundMoney(
     subtotalUSD * discountPercent / 100
@@ -982,12 +979,32 @@ async function createOrder(req, res, session) {
 
   /*
    * Save the complete verified order.
+   * `discount` = combined summary (old pages keep working),
+   * `discounts` = each individual discount applied.
    */
   const orderRef = db
     .ref(`users/${uid}/orders`)
     .push();
 
   const now = Date.now();
+
+  const discountSummary = discounts.length
+    ? {
+        id: "combined",
+        title: discounts
+          .map(d => String(d.title || "Discount"))
+          .join(" + "),
+        percent: discountPercent,
+        amountUSD: discountUSD,
+        amountINR: discountINR
+      }
+    : null;
+
+  const discountList = discounts.map(d => ({
+    id: String(d.id || d.key || ""),
+    title: String(d.title || "Discount"),
+    percent: Number(d.percent)
+  }));
 
   const order = {
     orderId: orderRef.key,
@@ -1001,22 +1018,8 @@ async function createOrder(req, res, session) {
     subtotalUSD,
     subtotalINR,
 
-    discount: discount
-      ? {
-          id: String(
-            discount.id ||
-            discount.key ||
-            ""
-          ),
-          title: String(
-            discount.title ||
-            "Discount"
-          ),
-          percent: discountPercent,
-          amountUSD: discountUSD,
-          amountINR: discountINR
-        }
-      : null,
+    discount: discountSummary,
+    discounts: discountList,
 
     taxes,
     taxTotalUSD,
@@ -1046,6 +1049,7 @@ async function createOrder(req, res, session) {
       subtotalINR: order.subtotalINR,
 
       discount: order.discount,
+      discounts: order.discounts,
 
       taxes: order.taxes,
       taxTotalUSD: order.taxTotalUSD,
