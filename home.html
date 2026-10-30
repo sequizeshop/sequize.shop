@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
 
-  <title>Shoppy — Discover Products</title>
+  <title>Sequize Shop | Discover Products</title>
 
   <meta name="description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
   <meta name="robots" content="index, follow">
@@ -21,7 +21,7 @@
   <meta property="og:image:alt" content="Shoppy logo">
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Shoppy — Discover Products">
+  <meta name="twitter:title" content="Sequize Shop | Discover Products">
   <meta name="twitter:description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
   <meta name="twitter:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
@@ -6145,8 +6145,8 @@
             }
           } catch (_) {}
         }
-        const endpoint = "https://apisequizeshoplite.vercel.app/api/admin/discounts" +
-          (email ? "?email=" + encodeURIComponent(email) : "");
+        const endpoint = "https://apisequizeshoplite.vercel.app/api/admin/productData?resource=discounts" +
+  (email ? "&email=" + encodeURIComponent(email) : "");
         const response = await fetch(endpoint, {
           method: "GET", headers: { Accept: "application/json" }, cache: "no-store"
         });
@@ -6166,7 +6166,7 @@
           .filter(value => Number.isFinite(value) && value > 0 && value <= 100);
         // Use the first valid API offer in API order; do not accidentally select
         // a different, larger percentage (for example 60%) from the list.
-        homeAdminDiscountPercent = numericPercentages.length ? numericPercentages[0] : 0;
+        homeAdminDiscountPercent = Math.min(100, numericPercentages.reduce((a, b) => a + b, 0));
 
         if (!numericPercentages.length) {
           line.hidden = true;
@@ -6216,10 +6216,10 @@
       const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
       const price=v=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",minimumFractionDigits:2,maximumFractionDigits:2}).format((Number(v)||0)*85);
       async function loadTaxSettings(){try{const r=await fetch("https://apisequizeshoplite.vercel.app/api/admin/taxes",{method:"GET",headers:{Accept:"application/json"},cache:"no-store"});const d=await r.json();if(r.ok&&d.success&&Array.isArray(d.taxes))taxSettings=d.taxes.filter(t=>t&&String(t.title||"").trim()&&Number.isFinite(Number(t.percent))&&Number(t.percent)>=0&&Number(t.percent)<=100);}catch(e){console.warn("Cart charge settings unavailable; using defaults.",e)}}
-      async function loadDiscountSettings(){try{let email="";try{const p=JSON.parse(localStorage.getItem("shoppy_profile_cache_v1")||"null");if(p&&p.user&&p.user.email&&Number(p.expiresAt)>Date.now())email=String(p.user.email).trim().toLowerCase();}catch(e){}if(!email){try{const pr=await fetch("/api/profile",{method:"GET",credentials:"same-origin",headers:{Accept:"application/json"},cache:"no-store"});const pd=await pr.json().catch(()=>({}));if(pr.ok&&pd.success&&pd.user&&pd.user.email)email=String(pd.user.email).trim().toLowerCase();}catch(e){}}const url="https://apisequizeshoplite.vercel.app/api/admin/discounts"+(email?"?email="+encodeURIComponent(email):"");const r=await fetch(url,{method:"GET",headers:{Accept:"application/json"},cache:"no-store"});const d=await r.json();if(r.ok&&d.success&&Array.isArray(d.discounts))eligibleDiscounts=d.discounts.filter(x=>x&&Number(x.percent)>0&&Number(x.percent)<=100);}catch(e){console.warn("Customer discounts unavailable.",e)}}
+      async function loadDiscountSettings(){try{let email="";try{const p=JSON.parse(localStorage.getItem("shoppy_profile_cache_v1")||"null");if(p&&p.user&&p.user.email&&Number(p.expiresAt)>Date.now())email=String(p.user.email).trim().toLowerCase();}catch(e){}if(!email){try{const pr=await fetch("/api/profile",{method:"GET",credentials:"same-origin",headers:{Accept:"application/json"},cache:"no-store"});const pd=await pr.json().catch(()=>({}));if(pr.ok&&pd.success&&pd.user&&pd.user.email)email=String(pd.user.email).trim().toLowerCase();}catch(e){}}const url="https://apisequizeshoplite.vercel.app/api/admin/productData?resource=discounts"+(email?"&email="+encodeURIComponent(email):"");const r=await fetch(url,{method:"GET",headers:{Accept:"application/json"},cache:"no-store"});const d=await r.json();if(r.ok&&d.success&&Array.isArray(d.discounts))eligibleDiscounts=d.discounts.filter(x=>x&&Number(x.percent)>0&&Number(x.percent)<=100);}catch(e){console.warn("Customer discounts unavailable.",e)}}
       function getAppliedDiscount(){if(!eligibleDiscounts.length)return null;return eligibleDiscounts.slice().sort((a,b)=>Number(b.percent)-Number(a.percent))[0]}
       async function request(method,body){const o={method,headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"};if(body!==undefined){o.headers["Content-Type"]="application/json";o.body=JSON.stringify(body);}const r=await fetch("/api/cart",o);const t=await r.text();let d;try{d=JSON.parse(t)}catch{throw Error(`Cart API response invalid (HTTP ${r.status}).`)}if(r.status===401){authStatus="guest";document.body.classList.add("guest-mode");document.getElementById("guestCartPanel").hidden=false;document.getElementById("appCartLayout").hidden=true;throw Error("Login required.")}if(!r.ok||d.success!==true)throw Error(d.message||"Cart request failed.");return d;}
-      function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);const discount=getAppliedDiscount(),discountAmount=discount?subtotal*(Number(discount.percent)||0)/100:0,chargeBase=Math.max(0,subtotal-discountAmount);const charges=taxSettings.map(t=>({...t,amount:chargeBase*(Number(t.percent)||0)/100}));const total=chargeBase+charges.reduce((n,t)=>n+t.amount,0);qtyEl.textContent=count;subEl.textContent=price(subtotal);totalEl.textContent=price(total);chargesEl.innerHTML=(discount?`<div class="app-summary-line"><span>${esc(discount.title||"Discount")} (${Number(discount.percent).toFixed(2).replace(/\.?0+$/,'')}% off)</span><strong>−${price(discountAmount)}</strong></div>`:"")+charges.map(t=>`<div class="app-summary-line"><span>${esc(t.title)} (${Number(t.percent).toFixed(2).replace(/\.?0+$/,'')}%)</span><strong>${price(t.amount)}</strong></div>`).join("");checkout.disabled=!items.length||busy;clear.hidden=!items.length;clear.disabled=busy;
+      function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);const totalPct=Math.min(100,eligibleDiscounts.reduce((n,d)=>n+(Number(d.percent)||0),0)),discountAmount=subtotal*totalPct/100,chargeBase=Math.max(0,subtotal-discountAmount); const charges=taxSettings.map(t=>({...t,amount:chargeBase*(Number(t.percent)||0)/100}));const total=chargeBase+charges.reduce((n,t)=>n+t.amount,0);qtyEl.textContent=count;subEl.textContent=price(subtotal);totalEl.textContent=price(total);chargesEl.innerHTML=(discount?`<div class="app-summary-line"><span>${esc(discount.title||"Discount")} (${Number(discount.percent).toFixed(2).replace(/\.?0+$/,'')}% off)</span><strong>−${price(discountAmount)}</strong></div>`:"")+charges.map(t=>`<div class="app-summary-line"><span>${esc(t.title)} (${Number(t.percent).toFixed(2).replace(/\.?0+$/,'')}%)</span><strong>${price(t.amount)}</strong></div>`).join("");checkout.disabled=!items.length||busy;clear.hidden=!items.length;clear.disabled=busy;
         if(!items.length){itemsEl.innerHTML='<div class="app-status"><i class="ph ph-shopping-cart"></i><h2>Your cart is empty</h2><p>Looks like you haven\'t added any products yet.</p><button type="button" class="app-primary-button" id="appStartShopping">Start Shopping</button></div>';document.getElementById("appStartShopping").onclick=()=>handleNavigation("home");return;}
         itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),title=esc(x.title||"Product"),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="app-cart-item"><div class="app-cart-image"><img src="${img}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="app-cart-info"><h3 class="app-cart-title">${title}</h3><p class="app-cart-price">${price(p)} each</p><button class="app-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="app-cart-side"><div class="app-qty"><button type="button" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div><div class="app-cart-total">${price(p*q)}</div></div></article>`}).join("");
         itemsEl.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>act(b.dataset.action,b.dataset.id));
