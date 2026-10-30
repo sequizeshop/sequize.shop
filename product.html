@@ -194,6 +194,25 @@
     }
     .admin-discount-bar[hidden] { display: none; }
 
+    /* Special discount card: shown only when a discount is meant for this customer. */
+    .special-discount-card {
+      margin: -8px 0 22px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #F3D36B;
+      border-radius: var(--radius-md);
+      background: #FFF8E6;
+      color: #855B00;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .special-discount-card i { flex-shrink: 0; font-size: 20px; color: #A87500; }
+    .special-discount-card[hidden] { display: none; }
+    .admin-discount-bar:not([hidden]) + .special-discount-card { margin-top: -8px; }
+    .admin-discount-bar[hidden] + .special-discount-card { margin-top: 14px; }
+
     /* GALLERY */
 
     .gallery {
@@ -1135,6 +1154,10 @@
   <main class="container">
 
     <div id="adminDiscountBar" class="admin-discount-bar" hidden aria-live="polite"></div>
+    <div id="specialDiscountCard" class="special-discount-card" hidden aria-live="polite">
+      <i class="ph-fill ph-sparkle" aria-hidden="true"></i>
+      <span id="specialDiscountText"></span>
+    </div>
 
     <!-- PRODUCT AREA -->
 
@@ -1272,6 +1295,8 @@
     let wishlistItems = [];
     let wishlistLoaded = false;
     let wishlistBusy = false;
+
+    /* Combined percentage of ALL eligible admin discounts (general + this customer's own), capped at 100. */
     let adminDiscountPercent = 0;
 
     document.getElementById("year").textContent =
@@ -1304,6 +1329,10 @@
       }).format(inrPrice);
     }
 
+    function formatPercent(value) {
+      return `${Number(Number(value).toFixed(2)).toString()}%`;
+    }
+
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("show");
@@ -1315,14 +1344,14 @@
       }, 2400);
     }
 
-    function getDiscountPercent(item) {
-      const productDiscount = Math.max(0, Math.min(100, Number(item && item.discountPercentage) || 0));
-      return adminDiscountPercent > 0 ? adminDiscountPercent : productDiscount;
+    /* Same rule as Home, Cart and Checkout: only the admin discounts, added together. */
+    function getDiscountPercent() {
+      return Math.max(0, Math.min(100, Number(adminDiscountPercent) || 0));
     }
 
     function getDiscountedPrice(item) {
       const price = Math.max(0, Number(item && item.price) || 0);
-      return price * (1 - getDiscountPercent(item) / 100);
+      return price * (1 - getDiscountPercent() / 100);
     }
 
     function safeImage(url) {
@@ -1444,10 +1473,28 @@
       return data;
     }
 
-    /* ADMIN-MANAGED OFFERS: show once in the top bar, never on every product card. */
+    /*
+      ADMIN-MANAGED DISCOUNTS (same source and rule as Home, Cart and Checkout).
+
+      - Every eligible discount is added together (e.g. 20% + 10% = 30%), capped at 100%.
+      - General discounts (scope "all") are shown in the "Offer available" bar.
+      - Discounts meant only for this customer (scope "user") are shown in the
+        separate "Special discount for you" card. They are also included in the total.
+    */
     async function loadAdminDiscountBar() {
       const bar = document.getElementById("adminDiscountBar");
+      const specialCard = document.getElementById("specialDiscountCard");
+      const specialText = document.getElementById("specialDiscountText");
       if (!bar) return;
+
+      const hideOffers = () => {
+        adminDiscountPercent = 0;
+        bar.hidden = true;
+        bar.textContent = "";
+        if (specialCard) specialCard.hidden = true;
+        if (specialText) specialText.textContent = "";
+      };
+
       try {
         let email = "";
         try {
@@ -1465,25 +1512,73 @@
             }
           } catch (_) {}
         }
-        const endpoint = "https://apisequizeshoplite.vercel.app/api/admin/discounts" + (email ? "?email=" + encodeURIComponent(email) : "");
+
+        const endpoint = "https://apisequizeshoplite.vercel.app/api/admin/productData?resource=discounts" +
+          (email ? "&email=" + encodeURIComponent(email) : "");
         const response = await fetch(endpoint, { headers: { Accept: "application/json" }, cache: "no-store" });
         const data = await response.json().catch(() => ({}));
-        const offers = response.ok && data.success && Array.isArray(data.discounts)
-          ? data.discounts.map(x => Number(x && x.percent)).filter(x => Number.isFinite(x) && x > 0 && x <= 100)
+
+        const list = response.ok && data.success && Array.isArray(data.discounts)
+          ? data.discounts.filter(item => {
+              if (!item || item.active === false || item.enabled === false) return false;
+              const value = Number(item.percent);
+              return Number.isFinite(value) && value > 0 && value <= 100;
+            })
           : [];
-        const unique = [...new Set(offers)].sort((a, b) => b - a);
-        if (!unique.length) { bar.hidden = true; bar.textContent = ""; return; }
-        adminDiscountPercent = unique[0];
-        bar.textContent = `Offer available: ${unique.map(x => `${Number(x.toFixed(2)).toString()}%`).join(" · ")}`;
-        bar.hidden = false;
+
+        const general = list
+          .filter(item => (item.scope || "all") !== "user")
+          .map(item => Number(item.percent))
+          .sort((a, b) => b - a);
+
+        const special = list
+          .filter(item => item.scope === "user")
+          .map(item => Number(item.percent))
+          .sort((a, b) => b - a);
+
+        const everything = general.concat(special);
+
+        if (!everything.length) {
+          hideOffers();
+        } else {
+          adminDiscountPercent = Math.min(100, everything.reduce((sum, value) => sum + value, 0));
+
+          if (general.length) {
+            const generalTotal = Math.min(100, general.reduce((sum, value) => sum + value, 0));
+            bar.textContent = general.length > 1
+              ? `Offer available: ${general.map(formatPercent).join(" + ")} = ${formatPercent(generalTotal)} OFF`
+              : `Offer available: ${formatPercent(general[0])} OFF`;
+            bar.hidden = false;
+          } else {
+            bar.hidden = true;
+            bar.textContent = "";
+          }
+
+          if (special.length && specialCard && specialText) {
+            const specialTotal = Math.min(100, special.reduce((sum, value) => sum + value, 0));
+            specialText.textContent = special.length > 1
+              ? `Special discount for you: ${special.map(formatPercent).join(" + ")} = ${formatPercent(specialTotal)} off`
+              : `Special discount for you: ${formatPercent(special[0])} off`;
+            specialCard.hidden = false;
+          } else if (specialCard) {
+            specialCard.hidden = true;
+            if (specialText) specialText.textContent = "";
+          }
+        }
+
         if (product) {
           renderProduct();
           loadDetails();
           loadRelatedProducts();
         }
       } catch (error) {
-        bar.hidden = true;
+        hideOffers();
         console.warn("Admin discounts unavailable:", error);
+        if (product) {
+          renderProduct();
+          loadDetails();
+          loadRelatedProducts();
+        }
       }
     }
 
@@ -1700,7 +1795,7 @@
 
     function renderProduct() {
       const listedPrice = Math.max(0, Number(product.price) || 0);
-      const discountPercent = getDiscountPercent(product);
+      const discountPercent = getDiscountPercent();
       const displayedPrice = getDiscountedPrice(product);
 
       const inStock =
@@ -1728,7 +1823,7 @@
               </span>
               ${discountPercent > 0 ? `
                 <span class="original-price">${formatPrice(listedPrice)}</span>
-                <span class="discount-badge">${Number(discountPercent.toFixed(2)).toString()}% OFF</span>
+                <span class="discount-badge">${formatPercent(discountPercent)} OFF</span>
               ` : ""}
             </div>
 
@@ -1776,7 +1871,7 @@
                     ${!inStock ? "disabled" : ""}
                   >−</button>
 
-                  <span id="quantityValue" class="quantity-value">1</span>
+                  <span id="quantityValue" class="quantity-value">${quantity}</span>
 
                   <button
                     id="increaseQuantity"
@@ -2284,7 +2379,7 @@
       if (/ram|memory|storage|capacity/.test(value)) return "ph-memory";
       if (/battery/.test(value)) return "ph-battery-charging";
       if (/camera/.test(value)) return "ph-camera";
-      if (/operating|system|os/.test(value)) return "ph-gear";
+      if (/operating|system|os/.test(value)) return "ph-gear";
       if (/color|colour/.test(value)) return "ph-palette";
       if (/weight|scale/.test(value)) return "ph-scales";
       if (/dimension|size|length|width|height/.test(value)) return "ph-ruler";
@@ -2297,7 +2392,7 @@
       return "ph-info";
     }
 
-        /* CUSTOMER REVIEWS */
+    /* CUSTOMER REVIEWS */
 
     function loadReviews() {
       const reviews = Array.isArray(product.reviews)
@@ -2382,12 +2477,13 @@
       reviewsSection.setAttribute("aria-busy", "false");
     }
 
-    /* Shared product cards; prices stay at listed price. Admin offers are shown only in the top bar. */
+    /* Shared product cards; prices follow the same combined discount as Home, Cart and Checkout. */
     function renderRecommendationCards(products) {
       return products.map(item => {
         const id = String(item.id || "");
         const image = proxyImage(item.thumbnail) || proxyImage(Array.isArray(item.images) ? item.images[0] : "") || "https://placehold.co/400x400/f5f5f2/969991?text=Product";
         const rating = Number(item.rating) || 0;
+        const percent = getDiscountPercent();
         return `
           <article class="related-card product-card" data-product-id="${escapeHTML(id)}" tabindex="0" aria-label="View details for ${escapeHTML(item.title || "Product")}">
             <div class="product-image"><img src="${escapeHTML(image)}" alt="${escapeHTML(item.title || "Product")}" loading="lazy"></div>
@@ -2397,8 +2493,8 @@
               <p class="product-description">${escapeHTML(item.description || "")}</p>
               <div class="product-rating"><i class="ph-fill ph-star" aria-hidden="true"></i><span>${rating ? rating.toFixed(1) : "No rating"}</span></div>
               <div class="product-bottom">
-                <span class="product-price">${formatPrice(getDiscountedPrice(item))}${getDiscountPercent(item) > 0 ? ` <span class="product-original-price">${formatPrice(item.price)}</span>` : ""}</span>
-                ${getDiscountPercent(item) > 0 ? `<span class="discount">${Number(getDiscountPercent(item).toFixed(2)).toString()}% OFF</span>` : ""}
+                <span class="product-price">${formatPrice(getDiscountedPrice(item))}${percent > 0 ? ` <span class="product-original-price">${formatPrice(item.price)}</span>` : ""}</span>
+                ${percent > 0 ? `<span class="discount">${formatPercent(percent)} OFF</span>` : ""}
               </div>
             </div>
           </article>`;
