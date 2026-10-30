@@ -20,7 +20,7 @@ const INR_RATE = 85;
 // Images are served from our own domain: /img/<token>.jpg
 // (vercel.json rewrites /img/* to the image-proxy project)
 const IMAGE_PROXY_PATH = "/img/";
-const OLD_PROXY_PREFIX = "https://apisequizeshoplite.vercel.app/api/image/";
+const OLD_PROXY_PREFIX = "https://apisequizeshoplite-two.vercel.app";
 
 function proxyImage(url) {
   if (typeof url !== "string" || !url) return "";
