@@ -17,7 +17,7 @@
     },
 {
   "source": "/img/:file",
-  "destination": "https://apisequizeshoplite.vercel.app/api/image/:file"
+  "destination": "https://apisequizeshoplite-two.vercel.app/api/image/:file"
 },
     
     {
