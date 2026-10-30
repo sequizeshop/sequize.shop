@@ -15,12 +15,16 @@ const PRODUCT_ID_PATTERN = /^[A-Za-z0-9]{40}$/;
 const INR_RATE = 85;
 
 // NEW: image proxy settings
-const IMAGE_PROXY_BASE = "https://apisequizeshoplite.vercel.app";
 
 // NEW: original image URL -> encrypted proxy URL (domain hidden)
+// Images are served from our own domain: /img/<token>.jpg
+// (vercel.json rewrites /img/* to the image-proxy project)
+const IMAGE_PROXY_PATH = "/img/";
+const OLD_PROXY_PREFIX = "https://apisequizeshoplite.vercel.app/api/image/";
+
 function proxyImage(url) {
   if (typeof url !== "string" || !url) return "";
-  if (url.startsWith(IMAGE_PROXY_BASE)) return url; // already proxied
+  if (url.startsWith(IMAGE_PROXY_PATH) || url.startsWith(OLD_PROXY_PREFIX)) return url;
   try {
     if (new URL(url).protocol !== "https:") return url;
   } catch {
@@ -36,7 +40,7 @@ function proxyImage(url) {
   const enc = Buffer.concat([cipher.update(url, "utf8"), cipher.final()]);
   const token = Buffer.concat([iv, cipher.getAuthTag(), enc]).toString("base64url");
 
-  return IMAGE_PROXY_BASE + "/api/image/" + token + ".jpg";
+  return IMAGE_PROXY_PATH + token + ".jpg";
 }
 
 function initializeFirebase() {
