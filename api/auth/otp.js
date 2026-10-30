@@ -53,6 +53,13 @@ function hashOtp(email, otp) {
   return crypto.createHmac("sha256", secret).update(`${email}:${otp}`).digest("hex");
 }
 
+const secret = process.env.OTP_SECRET;
+
+console.log("OTP_SECRET:", {
+  exists: Boolean(secret),
+  length: secret?.length,
+  trimmedLength: secret?.trim().length
+});
 function safeEqualHex(a, b) {
   const x = Buffer.from(String(a));
   const y = Buffer.from(String(b));
