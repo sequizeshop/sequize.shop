@@ -16,8 +16,8 @@
       "destination": "/index.html"
     },
 {
-  "source": "/products/image/:filename",
-  "destination": "https://apisequizeshoplite.vercel.app/api/image?filename=:filename"
+  "source": "/img/:file",
+  "destination": "https://apisequizeshoplite.vercel.app/api/image/:file"
 },
     
     {
