@@ -1,4 +1,9 @@
 // api/product.js
+// Single product details. Reads ONLY from Firebase products/{id}.
+// Works for admin-added products and for imported DummyJSON products.
+//
+// GET /api/product?id=<40-char id>   (productId= also accepted)
+// A numeric DummyJSON id is also accepted and resolved through productSourceMap.
 
 const admin = require("firebase-admin");
 
@@ -9,300 +14,115 @@ const PRODUCT_ID_PATTERN = /^[A-Za-z0-9]{40}$/;
 const INR_RATE = 85;
 
 function initializeFirebase() {
-  if (admin.apps.length) {
-    return admin.database();
-  }
+  if (admin.apps.length) return admin.database();
 
-  const serviceAccountValue =
-    process.env.FIREBASE_SERVICE_ACCOUNT;
-
-  if (!serviceAccountValue) {
-    throw new Error(
-      "FIREBASE_SERVICE_ACCOUNT environment variable is missing."
-    );
-  }
+  const value = process.env.FIREBASE_SERVICE_ACCOUNT;
+  if (!value) throw new Error("FIREBASE_SERVICE_ACCOUNT environment variable is missing.");
 
   let serviceAccount;
-
   try {
-    serviceAccount = JSON.parse(
-      serviceAccountValue
-    );
+    serviceAccount = JSON.parse(value);
   } catch {
-    throw new Error(
-      "FIREBASE_SERVICE_ACCOUNT must contain valid JSON."
-    );
+    throw new Error("FIREBASE_SERVICE_ACCOUNT must contain valid JSON.");
   }
-
   if (serviceAccount.private_key) {
-    serviceAccount.private_key =
-      serviceAccount.private_key.replace(/\\n/g, "\n");
+    serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, "\n");
   }
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: DATABASE_URL
   });
-
   return admin.database();
 }
 
 function validNumber(value, fallback = 0) {
-  const number = Number(value);
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
 
-  return Number.isFinite(number)
-    ? number
-    : fallback;
+function toPublic(p, id) {
+  const price = Math.max(0, validNumber(p.price, 0));
+  const images = Array.isArray(p.images) ? p.images.filter(Boolean) : [];
+  const stock = Math.max(0, validNumber(p.stock, 0));
+
+  return {
+    id,
+    title: p.title || "",
+    description: p.description || "",
+    price,
+    originalPrice: price,
+    originalPriceUSD: Math.max(0, validNumber(p.originalPriceUSD, price / INR_RATE)),
+    discountPercentage: 0,
+    rating: validNumber(p.rating, 0),
+    category: p.category || "other",
+    brand: p.brand || "",
+    sku: p.sku || "",
+    thumbnail: p.thumbnail || images[0] || "",
+    images,
+    tags: Array.isArray(p.tags) ? p.tags : [],
+    availabilityStatus: p.availabilityStatus || (stock > 0 ? "In Stock" : "Out of Stock"),
+    stock,
+    weight: p.weight == null ? null : validNumber(p.weight, 0),
+    dimensions: p.dimensions || null,
+    warrantyInformation: p.warrantyInformation || "",
+    shippingInformation: p.shippingInformation || "",
+    returnPolicy: p.returnPolicy || "",
+    minimumOrderQuantity: Math.max(1, validNumber(p.minimumOrderQuantity, 1)),
+    reviews: Array.isArray(p.reviews) ? p.reviews : [],
+    createdAt: validNumber(p.createdAt, 0)
+  };
 }
 
 module.exports = async function handler(req, res) {
-  res.setHeader(
-    "Cache-Control",
-    "public, max-age=0, s-maxage=60"
-  );
-
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
-
-    return res.status(405).json({
-      success: false,
-      message: "Method not allowed."
-    });
-  }
-
-  const rawId = req.query?.id;
-
-  if (
-    typeof rawId !== "string" ||
-    !PRODUCT_ID_PATTERN.test(rawId)
-  ) {
-    return res.status(400).json({
-      success: false,
-      message: "A valid product ID is required."
-    });
+    return res.status(405).json({ success: false, message: "Method not allowed." });
   }
 
   try {
+    let id = String(
+      (req.query && (req.query.id || req.query.productId || req.query.pid)) || ""
+    ).trim();
+
+    if (!id) {
+      return res.status(400).json({ success: false, message: "Product id is required." });
+    }
+
     const db = initializeFirebase();
 
-    // Look up only the exact persistent custom product ID.
-    const productSnapshot = await db
-      .ref("products")
-      .child(rawId)
-      .once("value");
-
-    if (!productSnapshot.exists()) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found."
-      });
+    // Numeric DummyJSON id -> custom id through productSourceMap
+    if (/^\d+$/.test(id)) {
+      const mapped = (await db.ref("productSourceMap").child(id).once("value")).val();
+      if (typeof mapped === "string") id = mapped;
     }
 
-    const savedProduct = productSnapshot.val();
-
-    if (
-      !savedProduct ||
-      typeof savedProduct !== "object" ||
-      !savedProduct.sourceId ||
-      !/^\d+$/.test(String(savedProduct.sourceId))
-    ) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found."
-      });
+    if (!PRODUCT_ID_PATTERN.test(id)) {
+      return res.status(404).json({ success: false, message: "Product not found." });
     }
 
-    // Resolve provider details using the source ID stored in Firebase.
-    let sourceProduct = {};
+    const [snap, removedSnap] = await Promise.all([
+      db.ref("products").child(id).once("value"),
+      db.ref("removedProducts").child(id).once("value")
+    ]);
 
-    try {
-      const response = await fetch(
-        `https://dummyjson.com/products/${encodeURIComponent(
-          String(savedProduct.sourceId)
-        )}`
-      );
-
-      if (response.ok) {
-        const fetchedProduct = await response.json();
-
-        if (
-          fetchedProduct &&
-          String(fetchedProduct.id) ===
-            String(savedProduct.sourceId)
-        ) {
-          sourceProduct = fetchedProduct;
-        }
-      }
-    } catch (error) {
-      console.error(
-        "Product provider request failed:",
-        error.message
-      );
+    const data = snap.val();
+    if (!data || typeof data !== "object" || removedSnap.val()) {
+      return res.status(404).json({ success: false, message: "Product not found." });
     }
 
-    const savedPrice = Number(savedProduct.price);
+    const product = toPublic(data, id);
 
-    const sourcePrice = Number(
-      (
-        validNumber(sourceProduct.price, 0) *
-        INR_RATE
-      ).toFixed(2)
-    );
+    // Cache only successful responses (never cache a 404)
+    res.setHeader("Cache-Control", "s-maxage=30, stale-while-revalidate=120");
 
-    /*
-     * Firebase is the primary source for the saved INR price.
-     * The provider price is only a fallback.
-     */
-    const originalPrice =
-      Number.isFinite(savedPrice) && savedPrice >= 0
-        ? savedPrice
-        : sourcePrice;
-
-    const product = {
-      // Always return the persistent custom product ID.
-      id: rawId,
-
-      title:
-        savedProduct.title ||
-        sourceProduct.title ||
-        "",
-
-      description:
-        savedProduct.description ||
-        sourceProduct.description ||
-        "",
-
-      category:
-        savedProduct.category ||
-        sourceProduct.category ||
-        "",
-
-      brand:
-        savedProduct.brand ||
-        sourceProduct.brand ||
-        "Generic",
-
-      // No automatic discount is applied.
-      price: originalPrice,
-
-      originalPrice: originalPrice,
-
-      originalPriceUSD: validNumber(
-        savedProduct.originalPriceUSD,
-        validNumber(sourceProduct.price, 0)
-      ),
-
-      /*
-       * Do not trust old stored discountPercentage values or the
-       * provider's default discount percentage.
-       *
-       * Admin discounts must be validated and applied separately
-       * when the admin discount integration is implemented.
-       */
-      discountPercentage: 0,
-
-      rating: validNumber(
-        savedProduct.rating,
-        validNumber(sourceProduct.rating, 0)
-      ),
-
-      stock: Math.max(
-        0,
-        validNumber(
-          savedProduct.stock,
-          validNumber(sourceProduct.stock, 0)
-        )
-      ),
-
-      availabilityStatus:
-        savedProduct.availabilityStatus ||
-        sourceProduct.availabilityStatus ||
-        "",
-
-      thumbnail:
-        savedProduct.thumbnail ||
-        sourceProduct.thumbnail ||
-        "",
-
-      images: Array.isArray(savedProduct.images)
-        ? savedProduct.images
-        : Array.isArray(sourceProduct.images)
-          ? sourceProduct.images
-          : [],
-
-      tags: Array.isArray(savedProduct.tags)
-        ? savedProduct.tags
-        : Array.isArray(sourceProduct.tags)
-          ? sourceProduct.tags
-          : [],
-
-      sku:
-        savedProduct.sku ||
-        sourceProduct.sku ||
-        "",
-
-      weight: sourceProduct.weight ?? null,
-
-      dimensions:
-        sourceProduct.dimensions || null,
-
-      warrantyInformation:
-        sourceProduct.warrantyInformation || "",
-
-      shippingInformation:
-        sourceProduct.shippingInformation || "",
-
-      returnPolicy:
-        sourceProduct.returnPolicy || "",
-
-      minimumOrderQuantity:
-        validNumber(
-          sourceProduct.minimumOrderQuantity,
-          1
-        ) || 1,
-
-      reviews: Array.isArray(sourceProduct.reviews)
-        ? sourceProduct.reviews.map(review => ({
-            rating: validNumber(review.rating),
-
-            comment: String(
-              review.comment || ""
-            ),
-
-            date: review.date || "",
-
-            reviewerName: String(
-              review.reviewerName || "Customer"
-            ),
-
-            reviewerEmail: String(
-              review.reviewerEmail || ""
-            )
-          }))
-        : []
-    };
-
-    if (!product.title) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found."
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      product
-    });
+    // `product` for wrapped responses, top-level fields for flat ones
+    return res.status(200).json({ success: true, product, ...product });
   } catch (error) {
-    console.error(
-      "Product API error:",
-      error
-    );
-
-    return res.status(500).json({
+    console.error("Product API error:", error);
+    return res.status(502).json({
       success: false,
-      message:
-        "Something went wrong while loading the product."
+      message: "Product load nahi ho paya. Dobara try karein."
     });
   }
 };
