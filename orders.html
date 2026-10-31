@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
 
-  <title>My Orders — Shoppy</title>
+  <title>My Orders — Sequize</title>
 
   <link rel="icon" type="image/png"
     href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
@@ -23,13 +23,10 @@
 
   <style>
     :root {
-      /* Shoppy design tokens */
       --primary: #2962FF;
       --primary-hover: #0059D7;
       --primary-soft: #EDF2FF;
-      --primary-selected: #F8FAFF;
       --background: #FFFFFF;
-      --surface: #FFFFFF;
       --surface-secondary: #F5F5F2;
       --text-primary: #1E1F1C;
       --text-secondary: #666960;
@@ -40,22 +37,17 @@
       --success-bg: #ECFDF3;
       --error: #DC2626;
       --error-bg: #FEF2F2;
-      --disabled-bg: #E5E7EB;
-      --disabled-text: #969991;
 
       --font-body: "DM Sans", sans-serif;
       --font-heading: "Manrope", sans-serif;
 
-      --radius-sm: 5px;
       --radius-md: 9px;
       --radius-lg: 12px;
 
       --header-h: 64px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       width: 100%;
@@ -64,7 +56,6 @@
       padding: 0;
       font-family: var(--font-body);
       font-size: 14px;
-      font-weight: 400;
       line-height: 1.7;
       background: var(--background);
       color: var(--text-primary);
@@ -72,15 +63,8 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    button {
-      font: inherit;
-      cursor: pointer;
-    }
+    a { text-decoration: none; color: inherit; }
+    button { font: inherit; cursor: pointer; }
 
     a:focus-visible,
     button:focus-visible {
@@ -96,35 +80,26 @@
       z-index: 100;
       width: 100%;
       height: var(--header-h);
-      min-height: var(--header-h);
-      margin: 0;
       padding: 0 5%;
       display: flex;
       align-items: center;
       justify-content: space-between;
       background: var(--background);
       border-bottom: 1px solid var(--border);
-      box-shadow: none;
     }
 
-    .bag-link {
+    .nav-link {
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 8px;
-      margin: 0;
-      border: none;
       border-radius: var(--radius-md);
-      background: transparent;
       color: var(--text-primary);
       font-size: 24px;
       line-height: 1;
-      text-decoration: none;
     }
 
-    .bag-link:hover {
-      background: var(--surface-secondary);
-    }
+    .nav-link:hover { background: var(--surface-secondary); }
 
     .brand {
       font-family: var(--font-heading);
@@ -133,29 +108,17 @@
       line-height: 1.4;
       letter-spacing: -0.7px;
       color: var(--primary);
-      background: transparent;
-      padding: 0;
-      margin: 0;
-      text-decoration: none;
     }
 
     /* PAGE */
 
     main {
       width: min(1050px, 90%);
-      max-width: 1050px;
       margin: 34px auto 65px;
       min-height: 55vh;
     }
 
-    .page-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin: 0 0 28px;
-    }
+    .page-heading { margin: 0 0 28px; }
 
     .page-heading h1 {
       font-family: var(--font-heading);
@@ -169,51 +132,22 @@
     .page-heading p {
       margin: 0;
       color: var(--text-secondary);
-      font-size: 14px;
-      line-height: 1.7;
     }
 
-    /* BUTTONS (text only) */
-
-    .refresh-btn,
-    .action-btn,
     .primary-btn {
       min-height: 48px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       padding: 12px 24px;
+      border: 1px solid var(--primary);
       border-radius: var(--radius-lg);
+      background: var(--primary);
+      color: #fff;
       font-family: var(--font-body);
       font-size: 14px;
       font-weight: 700;
-      text-decoration: none;
-      transition: background .2s, border-color .2s, color .2s;
-    }
-
-    .refresh-btn,
-    .action-btn {
-      border: 1px solid var(--primary-soft);
-      background: var(--primary-soft);
-      color: var(--primary);
-    }
-
-    .refresh-btn:hover:not(:disabled),
-    .action-btn:hover:not(:disabled) {
-      border-color: var(--primary);
-    }
-
-    .refresh-btn:disabled {
-      background: var(--disabled-bg);
-      border-color: var(--disabled-bg);
-      color: var(--disabled-text);
-      cursor: wait;
-    }
-
-    .primary-btn {
-      border: 1px solid var(--primary);
-      background: var(--primary);
-      color: #ffffff;
+      transition: background .2s, border-color .2s;
     }
 
     .primary-btn:hover {
@@ -221,28 +155,21 @@
       background: var(--primary-hover);
     }
 
-    /* PAGE MESSAGE */
+    /* MESSAGE */
 
     #message {
-      padding: 0;
       margin: 0 0 18px;
       color: var(--text-secondary);
-      font-size: 14px;
-      line-height: 1.7;
     }
 
-    #message:empty {
-      display: none;
-    }
+    #message:empty { display: none; }
 
     .notice {
       padding: 12px 15px;
       margin-bottom: 24px;
       border-radius: var(--radius-lg);
       background: var(--primary-soft);
-      color: var(--text-primary);
       font-size: 13px;
-      line-height: 1.7;
     }
 
     .notice i {
@@ -250,108 +177,34 @@
       vertical-align: -2px;
     }
 
-    /* ORDERS (divider separated, no outer cards) */
+    /* ORDER */
 
     .order-card {
-      margin: 0;
       padding: 27px 0;
       border-bottom: 1px solid var(--divider);
-      background: transparent;
     }
 
-    .order-card:first-child {
-      padding-top: 0;
-    }
+    .order-card:first-child { padding-top: 0; }
 
     .order-card:last-child {
       border-bottom: none;
       padding-bottom: 0;
     }
 
-    .order-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 18px;
-      padding: 0 0 15px;
-      border-bottom: 1px solid var(--divider);
-    }
-
-    .order-meta {
-      flex: 1;
-      min-width: 130px;
-    }
-
-    .meta-label {
-      display: block;
-      margin-bottom: 2px;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .7px;
-    }
-
-    .meta-value {
-      font-size: 14px;
-      font-weight: 600;
-      overflow-wrap: anywhere;
-      line-height: 1.6;
-    }
-
-    /* STATUS */
-
-    .status-group {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--surface-secondary);
-      color: var(--text-secondary);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .status i {
-      font-size: 14px;
-    }
-
-    .status.paid {
-      background: var(--success-bg);
-      color: var(--success);
-    }
-
-    .status.failed {
-      background: var(--error-bg);
-      color: var(--error);
-    }
-
-    /* ORDER PRODUCTS (with images) */
-
-    .order-body {
-      padding: 0;
-    }
+    /* PRODUCTS: dividers only between products */
 
     .product-row {
       display: flex;
       align-items: center;
       gap: 15px;
       padding: 15px 0;
-      border-bottom: 1px solid var(--divider);
-      line-height: 1.6;
     }
 
-    .product-row:last-child {
-      border-bottom: 0;
+    .product-row:first-child { padding-top: 0; }
+    .product-row:last-child { padding-bottom: 0; }
+
+    .product-row + .product-row {
+      border-top: 1px solid var(--divider);
     }
 
     .product-image {
@@ -380,7 +233,6 @@
     }
 
     .product-name {
-      color: var(--text-primary);
       font-family: var(--font-heading);
       font-size: 14px;
       font-weight: 700;
@@ -392,37 +244,26 @@
       margin-top: 2px;
       color: var(--text-secondary);
       font-size: 13px;
+      line-height: 1.6;
     }
 
-    .product-price {
-      flex-shrink: 0;
-      padding-left: 5px;
-      color: var(--text-primary);
-      font-family: var(--font-heading);
-      font-size: 14px;
-      font-weight: 800;
-      white-space: nowrap;
+    .product-date {
+      color: var(--text-muted);
+      font-size: 12px;
     }
 
-    /* ORDER TOTAL */
+    /* TOTAL + STATUS + ACTIONS */
 
     .order-bottom {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 18px;
-      margin-top: 3px;
-      padding: 18px 0 0;
-      border-top: 1px solid var(--divider);
-    }
-
-    .order-total {
-      min-width: 0;
+      gap: 14px 18px;
+      margin-top: 18px;
     }
 
     .total-label {
-      margin-bottom: 0;
       color: var(--text-secondary);
       font-size: 13px;
     }
@@ -432,21 +273,69 @@
       font-size: 24px;
       font-weight: 800;
       letter-spacing: -.7px;
+      line-height: 1.3;
       overflow-wrap: anywhere;
     }
 
-    .order-actions {
+    .order-right {
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: flex-end;
       flex-wrap: wrap;
+      gap: 8px;
     }
+
+    /* Small pill: used by status tags and buttons alike */
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--surface-secondary);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.7;
+      white-space: nowrap;
+    }
+
+    .pill i { font-size: 14px; }
+
+    .pill.paid {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .pill.failed {
+      background: var(--error-bg);
+      color: var(--error);
+    }
+
+    button.pill,
+    a.pill { transition: background .2s, color .2s; }
+
+    button.pill.copy {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    button.pill.copy:hover { background: #dbe6ff; }
+
+    a.pill.pay {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    a.pill.pay:hover { background: var(--primary-hover); }
 
     /* EMPTY STATE */
 
     .empty-state {
       padding: 40px 0;
-      background: transparent;
       text-align: center;
     }
 
@@ -474,8 +363,6 @@
       max-width: 380px;
       margin: 0 auto 24px;
       color: var(--text-secondary);
-      font-size: 14px;
-      line-height: 1.7;
     }
 
     /* FOOTER */
@@ -491,146 +378,67 @@
     /* RESPONSIVE */
 
     @media (max-width: 760px) {
-      main {
-        width: 90%;
-        margin-top: 25px;
-      }
-
-      .page-heading h1 {
-        font-size: 29px;
-      }
-
-      .order-top {
-        gap: 15px;
-      }
-
-      .order-meta {
-        min-width: calc(50% - 10px);
-      }
-
-      .status-group {
-        width: 100%;
-      }
+      main { margin-top: 25px; }
 
       .order-bottom {
-        align-items: stretch;
+        flex-direction: column;
+        align-items: flex-start;
       }
 
-      .order-actions {
-        width: 100%;
-      }
-
-      .order-actions button,
-      .order-actions a {
-        flex: 1;
-      }
+      .order-right { justify-content: flex-start; }
     }
 
     @media (max-width: 380px) {
-      .refresh-btn {
-        width: 100%;
-      }
-
       .product-image {
         width: 60px;
-        height: 74px;
+        height: 60px;
         padding: 4px;
       }
 
-      .product-name {
-        font-size: 12px;
-      }
-
-      .product-price {
-        font-size: 12px;
-        padding-left: 0;
-      }
-
-      .total {
-        font-size: 22px;
-      }
-
-      .order-actions {
-        flex-direction: column;
-      }
-
-      .order-actions button,
-      .order-actions a {
-        width: 100%;
-        flex: none;
-      }
+      .product-name { font-size: 12px; }
+      .total { font-size: 22px; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- HEADER -->
-
   <header class="topbar">
 
     <a href="/"
-       class="bag-link"
-       aria-label="Continue shopping"
-       title="Continue shopping">
-
-      <i class="ph ph-bag-simple"></i>
-
+       class="nav-link"
+       aria-label="Back to shop"
+       title="Back to shop">
+      <i class="ph ph-arrow-left"></i>
     </a>
 
-    <a href="/" class="brand">Shoppy.</a>
+    <a href="/" class="brand">Sequize.</a>
 
   </header>
 
   <main>
 
-    <!-- PAGE HEADING -->
-
     <div class="page-heading">
-
-      <div>
-        <h1>My Orders</h1>
-
-        <p>
-          View your orders and payment status.
-        </p>
-      </div>
-
-      <button class="refresh-btn"
-              id="refreshBtn"
-              type="button">Refresh orders</button>
-
+      <h1>My Orders</h1>
+      <p>View your orders and payment status.</p>
     </div>
-
-    <!-- PAYMENT INFORMATION -->
 
     <div class="notice">
       <i class="ph ph-info"></i>
       Payment status is shown according to the order records available on
-      Shoppy. A pending payment is not a confirmed payment.
+      Sequize. A pending payment is not a confirmed payment.
     </div>
 
-    <!-- LOADING / ERROR MESSAGE -->
-
-    <div id="message"
-         role="status"
-         aria-live="polite">
-
+    <div id="message" role="status" aria-live="polite">
       Loading your orders...
-
     </div>
 
-    <!-- ORDERS LIST -->
-
-    <section id="ordersList"
-             aria-label="Your orders">
-
-    </section>
+    <section id="ordersList" aria-label="Your orders"></section>
 
   </main>
 
   <footer>
-    © <span id="year"></span> Shoppy. All rights reserved.
+    © <span id="year"></span> Sequize. All rights reserved.
   </footer>
 
   <script>
@@ -638,13 +446,19 @@
 
     const ordersList = document.getElementById("ordersList");
     const message = document.getElementById("message");
-    const refreshBtn = document.getElementById("refreshBtn");
 
+    // Inline placeholder: no external request, so it can never fail to load
     const PLACEHOLDER_IMAGE =
-      "https://placehold.co/300x300/f5f5f2/969991?text=Product";
+      "data:image/svg+xml;utf8," +
+      encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' +
+        '<rect width="100" height="100" fill="#F5F5F2"/>' +
+        '<path d="M30 40h40l-4 30H34z" fill="none" stroke="#969991" stroke-width="3" stroke-linejoin="round"/>' +
+        '<path d="M42 40v-5a8 8 0 0 1 16 0v5" fill="none" stroke="#969991" stroke-width="3"/>' +
+        '</svg>'
+      );
 
-    document.getElementById("year").textContent =
-      new Date().getFullYear();
+    document.getElementById("year").textContent = new Date().getFullYear();
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -660,10 +474,7 @@
 
     function formatINR(value) {
       const amount = Number(value);
-
-      if (!Number.isFinite(amount)) {
-        return "—";
-      }
+      if (!Number.isFinite(amount)) return "—";
 
       return new Intl.NumberFormat("en-IN", {
         style: "currency",
@@ -677,20 +488,11 @@
         return "Date unavailable";
       }
 
-      let date;
+      const date = (typeof value === "number" || /^\d+$/.test(String(value)))
+        ? new Date(Number(value))
+        : new Date(value);
 
-      if (
-        typeof value === "number" ||
-        /^\d+$/.test(String(value))
-      ) {
-        date = new Date(Number(value));
-      } else {
-        date = new Date(value);
-      }
-
-      if (Number.isNaN(date.getTime())) {
-        return "Date unavailable";
-      }
+      if (Number.isNaN(date.getTime())) return "Date unavailable";
 
       return date.toLocaleString("en-IN", {
         day: "2-digit",
@@ -708,46 +510,66 @@
         .replace(/\b\w/g, letter => letter.toUpperCase());
     }
 
-    function paymentClass(status) {
-      const value = String(status || "").toUpperCase();
+    /* Green for every "good" state, red for every "bad" state, gray otherwise */
+    const GOOD = [
+      "PAID", "SUCCESS", "SUCCESSFUL", "COMPLETED", "CONFIRMED",
+      "CAPTURED", "AUTHORIZED", "DELIVERED", "SHIPPED", "PROCESSING"
+    ];
+    const BAD = ["FAILED", "CANCELLED", "CANCELED", "EXPIRED", "REFUNDED"];
 
-      if (
-        value === "PAID" ||
-        value === "SUCCESS" ||
-        value === "SUCCESSFUL" ||
-        value === "COMPLETED"
-      ) {
-        return "paid";
-      }
-
-      if (
-        value === "FAILED" ||
-        value === "CANCELLED" ||
-        value === "EXPIRED"
-      ) {
-        return "failed";
-      }
-
+    function statusClass(status) {
+      const value = String(status || "").toUpperCase().replace(/\s+/g, "_");
+      if (GOOD.includes(value)) return "paid";
+      if (BAD.includes(value)) return "failed";
       return "";
     }
 
-    /*
-      Product image for an order item.
-      Uses the same field names as the cart API (thumbnail),
-      with a few common fallbacks. Only https or same-origin
-      URLs are used; anything else falls back to a placeholder.
-    */
+    function statusIcon(cls) {
+      if (cls === "paid") return "ph-check-circle";
+      if (cls === "failed") return "ph-x-circle";
+      return "ph-clock";
+    }
+
+    /* ---------- Product images ----------
+       The orders API may not send an image for each item.
+       So we also load the products API (same one the home page uses)
+       and match each order item to its product by id (or title). */
+
+    let productImages = { byId: {}, byTitle: {} };
+
+    async function loadProductImages() {
+      try {
+        const response = await fetch("/api/products", {
+          headers: { "Accept": "application/json" }
+        });
+        const data = await response.json();
+        const byId = {};
+        const byTitle = {};
+
+        (Array.isArray(data.products) ? data.products : []).forEach(p => {
+          const img = p.thumbnail || (Array.isArray(p.images) ? p.images[0] : "");
+          if (!img) return;
+          byId[String(p.id)] = img;
+          byTitle[String(p.title || "").trim().toLowerCase()] = img;
+        });
+
+        productImages = { byId, byTitle };
+      } catch (error) {
+        console.error("Product images error:", error);
+      }
+    }
+
     function getItemImage(item) {
       const candidate =
         item.thumbnail ||
         item.image ||
         item.imageUrl ||
         (Array.isArray(item.images) ? item.images[0] : "") ||
+        productImages.byId[String(item.productId ?? item.id ?? item.product_id ?? "")] ||
+        productImages.byTitle[String(item.title || "").trim().toLowerCase()] ||
         "";
 
-      if (!candidate) {
-        return PLACEHOLDER_IMAGE;
-      }
+      if (!candidate) return PLACEHOLDER_IMAGE;
 
       try {
         const parsed = new URL(candidate, window.location.origin);
@@ -765,213 +587,88 @@
       }
     }
 
+    /* ---------- Render ---------- */
+
     function renderOrder(order) {
       const orderId = String(order.orderId || "");
-
-      const paymentStatus =
-        String(order.paymentStatus || "PENDING");
-
-      const orderStatus =
-        String(order.orderStatus || "PENDING");
-
-      const items = Array.isArray(order.items)
-        ? order.items
-        : [];
+      const paymentStatus = String(order.paymentStatus || "PENDING");
+      const orderStatus = String(order.orderStatus || "PENDING");
+      const items = Array.isArray(order.items) ? order.items : [];
+      const dateText = escapeHTML(formatDate(order.createdAt));
 
       const productsHTML = items.length
         ? items.map(item => {
-
-            const title = escapeHTML(
-              item.title || "Product"
-            );
-
-            const quantity = Math.max(
-              0,
-              Number(item.quantity) || 0
-            );
-
-            const unitPriceUSD =
-              Number(item.unitPriceUSD);
-
-            const lineTotalUSD =
-              Number(item.lineTotalUSD);
-
+            const title = escapeHTML(item.title || "Product");
+            const quantity = Math.max(0, Number(item.quantity) || 0);
             const image = escapeHTML(getItemImage(item));
-
-            let priceText = "";
-
-            if (Number.isFinite(lineTotalUSD)) {
-
-              priceText = formatINR(
-                lineTotalUSD *
-                (Number(order.exchangeRate) || 85)
-              );
-
-            } else if (Number.isFinite(unitPriceUSD)) {
-
-              priceText = formatINR(
-                unitPriceUSD *
-                quantity *
-                (Number(order.exchangeRate) || 85)
-              );
-
-            }
 
             return `
               <div class="product-row">
 
                 <div class="product-image">
-                  <img
-                    src="${image}"
-                    alt="${title}"
-                    loading="lazy"
-                    onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}';"
-                  >
+                  <img src="${image}" alt="${title}" loading="lazy">
                 </div>
 
                 <div class="product-details">
-
-                  <div class="product-name">
-                    ${title}
-                  </div>
-
-                  <div class="product-info">
-                    Quantity: ${quantity}
-                  </div>
-
-                </div>
-
-                <div class="product-price">
-                  ${priceText || "—"}
+                  <div class="product-name">${title}</div>
+                  <div class="product-info">Quantity: ${quantity}</div>
+                  <div class="product-date">${dateText}</div>
                 </div>
 
               </div>
             `;
-
           }).join("")
         : `
-            <div class="empty-state"
-                 style="padding:20px 0">
-
-              <p style="margin:0">
+            <div class="product-row">
+              <div class="product-details product-info">
                 No item details available for this order.
-              </p>
-
+              </div>
             </div>
           `;
 
-      const encodedOrderId =
-        encodeURIComponent(orderId);
-
-      const upperPaymentStatus =
-        paymentStatus.toUpperCase();
+      const upperPayment = paymentStatus.toUpperCase();
+      const upperOrder = orderStatus.toUpperCase();
 
       const canContinuePayment =
-        upperPaymentStatus === "PENDING" &&
-        orderStatus.toUpperCase() !== "CANCELLED" &&
-        orderStatus.toUpperCase() !== "FAILED" &&
-        orderStatus.toUpperCase() !== "COMPLETED" &&
-        orderStatus.toUpperCase() !== "DELIVERED";
+        upperPayment === "PENDING" &&
+        !["CANCELLED", "FAILED", "COMPLETED", "DELIVERED"].includes(upperOrder);
 
-      const paymentIcon =
-        paymentClass(paymentStatus) === "paid"
-          ? "ph-check-circle"
-          : paymentClass(paymentStatus) === "failed"
-            ? "ph-x-circle"
-            : "ph-clock";
+      const payClass = statusClass(paymentStatus);
+      const orderClass = statusClass(orderStatus);
 
       return `
         <article class="order-card">
 
-          <!-- ORDER HEADER -->
-
-          <div class="order-top">
-
-            <div class="order-meta">
-
-              <span class="meta-label">
-                Order ID
-              </span>
-
-              <div class="meta-value">
-                ${escapeHTML(orderId || "Unavailable")}
-              </div>
-
-            </div>
-
-            <div class="order-meta">
-
-              <span class="meta-label">
-                Order date
-              </span>
-
-              <div class="meta-value">
-                ${escapeHTML(formatDate(order.createdAt))}
-              </div>
-
-            </div>
-
-            <div class="status-group">
-
-              <span class="status ${paymentClass(paymentStatus)}">
-
-                <i class="ph ${paymentIcon}"></i>
-
-                Payment:
-                ${escapeHTML(readableStatus(paymentStatus))}
-
-              </span>
-
-              <span class="status">
-
-                ${escapeHTML(readableStatus(orderStatus))}
-
-              </span>
-
-            </div>
-
-          </div>
-
-          <!-- PRODUCTS -->
-
           <div class="order-body">
-
             ${productsHTML}
-
           </div>
 
-          <!-- ORDER TOTAL AND ACTIONS -->
-
-          <div class="order-bottom total-row">
+          <div class="order-bottom">
 
             <div class="order-total">
-
-              <div class="total-label">
-                Order total
-              </div>
-
-              <div class="total">
-                ${formatINR(order.totalINR)}
-              </div>
-
+              <div class="total-label">Order total</div>
+              <div class="total">${formatINR(order.totalINR)}</div>
             </div>
 
-            <div class="order-actions">
+            <div class="order-right">
 
-              <button
-                class="action-btn"
-                type="button"
-                data-copy-order="${escapeHTML(orderId)}">Copy order ID</button>
+              <span class="pill ${payClass}">
+                <i class="ph ${statusIcon(payClass)}"></i>
+                Payment: ${escapeHTML(readableStatus(paymentStatus))}
+              </span>
 
-              ${
-                canContinuePayment
-                  ? `
-                    <a
-                      class="primary-btn"
-                      href="/payment.html?orderId=${encodedOrderId}">Continue to payment</a>
-                  `
-                  : ""
-              }
+              <span class="pill ${orderClass}">
+                ${escapeHTML(readableStatus(orderStatus))}
+              </span>
+
+              <button class="pill copy"
+                      type="button"
+                      data-copy-order="${escapeHTML(orderId)}">Copy order ID</button>
+
+              ${canContinuePayment
+                ? `<a class="pill pay"
+                      href="/payment.html?orderId=${encodeURIComponent(orderId)}">Continue to payment</a>`
+                : ""}
 
             </div>
 
@@ -982,147 +679,98 @@
     }
 
     async function loadOrders() {
-      refreshBtn.disabled = true;
-
-      refreshBtn.textContent = "Loading...";
-
       ordersList.replaceChildren();
-
       message.textContent = "Loading your orders...";
 
       try {
-
         const response = await fetch("/api/orders", {
           method: "GET",
           credentials: "same-origin",
           cache: "no-store",
-          headers: {
-            "Accept": "application/json"
-          }
+          headers: { "Accept": "application/json" }
         });
 
         const data = await response.json().catch(() => ({}));
 
         if (response.status === 401) {
-
-          message.textContent =
-            "Please log in to view your orders.";
+          message.textContent = "Please log in to view your orders.";
 
           ordersList.innerHTML = `
             <div class="empty-state">
-
-              <div class="empty-icon">
-                <i class="ph ph-user-circle"></i>
-              </div>
-
+              <div class="empty-icon"><i class="ph ph-user-circle"></i></div>
               <h2>Login required</h2>
-
-              <p>
-                Log in to your Shoppy account to see your orders.
-              </p>
-
+              <p>Log in to your Sequize account to see your orders.</p>
               <a class="primary-btn" href="/login.html">Log in</a>
-
             </div>
           `;
-
           return;
         }
 
         if (!response.ok || data.success !== true) {
-
-          throw new Error(
-            data.message || "Unable to load orders."
-          );
-
+          throw new Error(data.message || "Unable to load orders.");
         }
 
-        const orders = Array.isArray(data.orders)
-          ? data.orders
-          : [];
+        const orders = Array.isArray(data.orders) ? data.orders : [];
 
         if (orders.length === 0) {
-
           message.textContent = "";
 
           ordersList.innerHTML = `
             <div class="empty-state">
-
-              <div class="empty-icon">
-                <i class="ph ph-shopping-bag-open"></i>
-              </div>
-
+              <div class="empty-icon"><i class="ph ph-shopping-bag-open"></i></div>
               <h2>No orders yet</h2>
-
-              <p>
-                Your orders will appear here after you place an order.
-              </p>
-
+              <p>Your orders will appear here after you place an order.</p>
               <a class="primary-btn" href="/shop.html">Start shopping</a>
-
             </div>
           `;
-
           return;
         }
+
+        // The orders API already sends item images. Only if some are
+        // still missing, fall back to the products API.
+        const missingImage = orders.some(o =>
+          (Array.isArray(o.items) ? o.items : []).some(i => !i.thumbnail && !i.image)
+        );
+        if (missingImage) await loadProductImages();
 
         message.textContent =
           `${orders.length} order${orders.length === 1 ? "" : "s"} found.`;
 
-        ordersList.innerHTML =
-          orders.map(renderOrder).join("");
+        ordersList.innerHTML = orders.map(renderOrder).join("");
 
       } catch (error) {
-
         console.error("Load orders error:", error);
-
         message.textContent =
-          "We couldn't load your orders. Please try again.";
-
-      } finally {
-
-        refreshBtn.disabled = false;
-
-        refreshBtn.textContent = "Refresh orders";
-
+          "We couldn't load your orders. Please reload the page to try again.";
       }
     }
 
-    refreshBtn.addEventListener("click", loadOrders);
+    // If an image fails to load, swap in the placeholder
+    ordersList.addEventListener("error", function (event) {
+      const img = event.target;
+      if (img.tagName === "IMG" && img.src !== PLACEHOLDER_IMAGE) {
+        img.src = PLACEHOLDER_IMAGE;
+      }
+    }, true);
 
     ordersList.addEventListener("click", async function (event) {
+      const copyButton = event.target.closest("[data-copy-order]");
+      if (!copyButton) return;
 
-      const copyButton =
-        event.target.closest("[data-copy-order]");
+      try {
+        await navigator.clipboard.writeText(copyButton.dataset.copyOrder);
+        copyButton.textContent = "Copied";
 
-      if (copyButton) {
-
-        try {
-
-          await navigator.clipboard.writeText(
-            copyButton.dataset.copyOrder
-          );
-
-          copyButton.textContent = "Copied";
-
-          setTimeout(() => {
-
-            if (copyButton.isConnected) {
-              copyButton.textContent = "Copy order ID";
-            }
-
-          }, 1500);
-
-        } catch (error) {
-
-          console.error("Copy order ID error:", error);
-
-          message.textContent =
-            "Copy failed. Please select and copy the order ID manually.";
-
-        }
+        setTimeout(() => {
+          if (copyButton.isConnected) {
+            copyButton.textContent = "Copy order ID";
+          }
+        }, 1500);
+      } catch (error) {
+        console.error("Copy order ID error:", error);
+        message.textContent =
+          "Copy failed. Please select and copy the order ID manually.";
       }
-
     });
 
     loadOrders();
