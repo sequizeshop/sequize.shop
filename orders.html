@@ -291,6 +291,26 @@
       white-space: nowrap;
     }
 
+    .total-line {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .total.paid { color: var(--success); }
+    .total.failed { color: var(--error); }
+
+    .pay-tag {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .pay-tag.paid { color: var(--success); }
+    .pay-tag.failed { color: var(--error); }
+
     .order-right {
       min-width: 0;
       display: flex;
@@ -444,7 +464,6 @@
       margin: 0 var(--seg-gap);
       border-radius: 999px;
       background: var(--track);
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, .06);
     }
 
     .fill {
@@ -602,6 +621,7 @@
       }
 
       .total { font-size: 20px; }
+      .pay-tag { font-size: 11px; }
 
       .order-bottom { gap: 8px; }
       .order-right { gap: 5px; }
@@ -704,7 +724,7 @@
     const message = document.getElementById("message");
 
     // Tracker steps, left to right. Change the order/names here if needed.
-    const STEPS = ["Confirmed", "Order placed", "Shipped", "Delivered"];
+    const STEPS = ["Order placed", "Confirmed", "Shipped", "Delivered"];
 
     // Server time minus device time, so progress follows the server clock
     let serverDrift = 0;
@@ -890,8 +910,7 @@
              aria-valuemin="0"
              aria-valuemax="100"
              aria-valuenow="0"
-             data-start="${Number(t.startAt) || 0}"
-             data-end="${Number(t.endAt) || 0}"
+             data-milestones="${(Array.isArray(t.milestones) ? t.milestones : [t.startAt, t.endAt]).map(Number).join(",")}"
              data-active="${t.active ? "1" : "0"}"
              data-forced="${t.forceDelivered ? "1" : "0"}"
              data-note="${escapeHTML(t.note || "")}">
@@ -909,48 +928,63 @@
       `;
     }
 
+    function setPill(pill, tone, text) {
+      const cls = "pill " + tone;
+      if (pill.className !== cls) {
+        pill.className = cls;
+        pill.querySelector(".ico").className = "ph " + statusIcon(tone) + " ico";
+      }
+      const label = pill.querySelector(".pill-text");
+      if (label.textContent !== text) label.textContent = text;
+    }
+
     function updateTrackers() {
       const now = Date.now() + serverDrift;
 
       document.querySelectorAll(".tracker").forEach(el => {
-        const start = Number(el.dataset.start);
-        const end = Number(el.dataset.end);
+        // one time per step: placed, confirmed, shipped, delivered
+        const ms = el.dataset.milestones.split(",").map(Number);
         const active = el.dataset.active === "1";
         const forced = el.dataset.forced === "1";
-
-        let p = 0;
-
-        if (active) {
-          p = forced || end <= start
-            ? 1
-            : Math.min(1, Math.max(0, (now - start) / (end - start)));
-        }
+        const start = ms[0];
+        const end = ms[ms.length - 1];
 
         const segs = el.querySelectorAll(".seg");
         const dots = el.querySelectorAll(".dot");
         const labels = el.querySelectorAll(".step-label");
-        const m = segs.length;
+
+        // each line fills during its own time window
+        const fills = Array.from(segs, (_, i) => {
+          if (!active) return 0;
+          if (forced) return 1;
+          const a = ms[i];
+          const b = ms[i + 1];
+          return b > a ? Math.min(1, Math.max(0, (now - a) / (b - a))) : 1;
+        });
 
         // the line that is moving right now
-        const liveIndex = active && p < 1 ? Math.min(m - 1, Math.floor(p * m)) : -1;
+        const liveIndex = active ? fills.findIndex(f => f < 1) : -1;
 
         segs.forEach((seg, i) => {
-          const f = Math.min(1, Math.max(0, p * m - i));
-          seg.style.setProperty("--f", f.toFixed(5));
+          seg.style.setProperty("--f", fills[i].toFixed(5));
           seg.classList.toggle("live", i === liveIndex);
         });
 
         dots.forEach((dot, i) => {
-          const done = active && p >= i / m - 1e-9;
+          const done = active && (forced || now >= (ms[i] ?? Infinity));
           dot.classList.toggle("done", done);
           labels[i].classList.toggle("done", done);
         });
 
-        el.setAttribute("aria-valuenow", String(Math.round(p * 100)));
+        const overall = active
+          ? (forced ? 1 : Math.min(1, Math.max(0, (now - start) / (end - start))))
+          : 0;
+
+        el.setAttribute("aria-valuenow", String(Math.round(overall * 100)));
 
         const eta = el.querySelector(".eta");
         const live = el.querySelector(".live");
-        const delivered = active && p >= 1;
+        const delivered = active && (forced || now >= end);
 
         eta.classList.toggle("delivered", delivered);
 
@@ -967,6 +1001,15 @@
 
         if (showLive) {
           live.querySelector(".left").textContent = formatLeft(end - now);
+        }
+
+        // status tag switches by itself: Waiting to confirm -> Confirmed -> Delivered
+        const pill = el.closest(".order-card").querySelector("[data-status-pill]");
+
+        if (pill && active) {
+          if (delivered) setPill(pill, "paid", "Delivered");
+          else if (now >= ms[1]) setPill(pill, "paid", "Confirmed");
+          else setPill(pill, "warn", "Waiting to confirm");
         }
       });
     }
@@ -1012,7 +1055,17 @@
         ? order.statusTone
         : "";
 
-      const label = order.statusLabel || "Not paid";
+      const statusHTML = order.statusLabel
+        ? `<span class="pill ${tone}" data-status-pill><i class="ph ${statusIcon(tone)} ico"></i><span class="pill-text">${escapeHTML(order.statusLabel)}</span></span>`
+        : "";
+
+      const payTone = ["paid", "failed"].includes(order.paymentTone)
+        ? order.paymentTone
+        : "";
+
+      const payTag = order.paymentLabel
+        ? `<span class="pay-tag ${payTone}">${escapeHTML(order.paymentLabel)}</span>`
+        : "";
 
       return `
         <article class="order-card">
@@ -1025,14 +1078,15 @@
 
             <div class="order-total">
               <div class="total-label">Order total</div>
-              <div class="total">${formatINR(order.totalINR)}</div>
+              <div class="total-line">
+                <span class="total ${payTone}">${formatINR(order.totalINR)}</span>
+                ${payTag}
+              </div>
             </div>
 
             <div class="order-right">
 
-              <span class="pill ${tone}">
-                <i class="ph ${statusIcon(tone)} ico"></i>${escapeHTML(label)}
-              </span>
+              ${statusHTML}
 
               <button class="pill copy"
                       type="button"
