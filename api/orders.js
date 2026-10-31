@@ -1,21 +1,49 @@
 // api/orders.js
 //
 // My Orders API. Poora order system yahin hai:
-//  - Logged-in user ke orders Firebase se padhta hai.
-//  - Recent pending payments ko Cashfree se verify karta hai.
-//  - Har item ko working `thumbnail` deta hai (/img/ proxy URL).
-//  - Har order ke liye alag status label + delivery tracking banata hai:
+//  - GET  /api/orders              -> logged-in user ke saare orders
+//  - GET  /api/orders?orderId=XYZ  -> ek order ki details (order details page)
+//  - POST /api/orders              -> body: { action: "cancel", orderId } -> order cancel
+//
+// Har order ke saath:
 //      paymentLabel / paymentTone -> price ke baju ka tag: Paid / Not paid ...
-//      statusLabel / statusTone   -> Waiting to confirm / Confirmed / Delivered
+//      statusLabel / statusTone   -> Waiting to confirm / Confirmed / Delivered / Cancelled
 //      canContinuePayment         -> "Continue to payment" button dikhana hai ya nahi
-//      tracking                   -> timeline: 10-20 min mein confirm, phir 3 din mein delivery
+//      canCancel                  -> "Cancel order" button dikhana hai ya nahi
+//      tracking                   -> timeline (times neeche SETTINGS mein badal sakte ho)
 
 const crypto = require("crypto");
 const { getSession } = require("../lib/auth");
 const { getDatabase, syncPayment } = require("../lib/cashfree");
 
+/* =====================================================================
+ *  SETTINGS — delivery ka time yahin se badlo (sab kuch MINUTES mein)
+ *
+ *  Timeline:  Order placed --> Confirmed --> Shipped --> Delivered
+ *
+ *  Kuch useful values:  30 = aadha ghanta | 60 = 1 ghanta
+ *                       120 = 2 ghante    | 1440 = 1 din
+ *
+ *  Sirf in 3 numbers ko badalna hai, baaki sab apne aap adjust ho jata hai
+ *  (My Orders page, Order details page, countdown, "Delivered in ..." text).
+ * ===================================================================== */
+
+// Order place (ya payment) hone ke kitne minute baad "Confirmed" hoga
+const CONFIRM_AFTER_MIN = 10;
+
+// "Confirmed" hone ke kitne minute baad "Shipped" hoga
+const SHIP_AFTER_MIN = 30;
+
+// "Shipped" hone ke kitne minute baad "Delivered" hoga
+const DELIVER_AFTER_MIN = 120;
+
+/* ===================== SETTINGS khatam ===================== */
+
+const MIN_MS = 60 * 1000;
+
 const SYNC_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // sirf pichhle 7 din ke pending orders
 const MAX_SYNC = 5;
+const ORDER_ID_PATTERN = /^[A-Za-z0-9_-]{1,100}$/;
 
 /* ---------- Status rules ---------- */
 
@@ -24,16 +52,6 @@ const FAILED = ["FAILED", "EXPIRED", "USER_DROPPED"];
 const CANCELLED = ["CANCELLED", "CANCELED"];
 const REFUNDED = ["REFUNDED"];
 const DELIVERED_ORDER = ["DELIVERED", "COMPLETED"];
-
-/*
- * Har order ki apni timeline (order ke time se shuru):
- *   Order placed -> Confirmed : 10 se 20 minute (har order ka apna fixed time)
- *   Confirmed -> Delivered    : 3 din (Shipped beech mein)
- * Confirm hone ka time sirf time se chalta hai, orderStatus se nahi.
- */
-const CONFIRM_MIN_MS = 10 * 60 * 1000;
-const CONFIRM_SPAN_MS = 10 * 60 * 1000;
-const DELIVERY_MS = 3 * 24 * 60 * 60 * 1000;
 
 function norm(value) {
   return String(value || "").trim().toUpperCase().replace(/[\s-]+/g, "_");
@@ -50,19 +68,8 @@ function toMs(value) {
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
-// Same order = hamesha same time (10 se 20 minute ke beech)
-function confirmDelay(orderId) {
-  const n = crypto
-    .createHash("md5")
-    .update(String(orderId))
-    .digest()
-    .readUInt32BE(0);
-
-  return CONFIRM_MIN_MS + (n % (CONFIRM_SPAN_MS + 1));
-}
-
 /*
- * Ek order ka payment tag, status tag aur tracking.
+ * Ek order ka payment tag, status tag, tracking aur cancel permission.
  * Tone: "paid" (green) | "warn" (amber) | "failed" (red) | "" (grey)
  */
 function describeOrder(order, now) {
@@ -96,6 +103,10 @@ function describeOrder(order, now) {
   const canContinuePayment =
     pay === "PENDING" && !cancelled && !failed && !refunded && !delivered;
 
+  // Cancel: shipped hone se pehle tak (unpaid order kabhi bhi cancel ho sakta hai)
+  let canCancel =
+    !paid && !cancelled && !failed && !refunded && !delivered && pay === "PENDING";
+
   // Status tag (Waiting to confirm / Confirmed / Delivered) + tracking
   let statusLabel = "";
   let statusTone = "";
@@ -106,9 +117,10 @@ function describeOrder(order, now) {
     const startAt = (paid && toMs(order.paidAt)) || toMs(order.createdAt);
 
     if (startAt) {
-      const confirmAt = startAt + confirmDelay(order.orderId);
-      const shipAt = confirmAt + Math.round(DELIVERY_MS / 2);
-      const endAt = confirmAt + DELIVERY_MS;
+      // Times upar SETTINGS se aate hain
+      const confirmAt = startAt + CONFIRM_AFTER_MIN * MIN_MS;
+      const shipAt = confirmAt + SHIP_AFTER_MIN * MIN_MS;
+      const endAt = shipAt + DELIVER_AFTER_MIN * MIN_MS;
 
       tracking = {
         active: paid,
@@ -121,6 +133,8 @@ function describeOrder(order, now) {
       };
 
       if (paid) {
+        canCancel = !delivered && now < shipAt;
+
         if (delivered || now >= endAt) {
           statusLabel = "Delivered";
           statusTone = "paid";
@@ -138,6 +152,12 @@ function describeOrder(order, now) {
   if (cancelled) {
     statusLabel = "Cancelled";
     statusTone = "failed";
+
+    // Paisa aa chuka tha to refund baaki hai
+    if (paid) {
+      paymentLabel = "Refund pending";
+      paymentTone = "";
+    }
   }
 
   return {
@@ -146,6 +166,7 @@ function describeOrder(order, now) {
     statusLabel,
     statusTone,
     canContinuePayment,
+    canCancel,
     tracking
   };
 }
@@ -282,6 +303,7 @@ async function syncPendingOrders(db, orders) {
     .filter(
       o =>
         o.paymentStatus === "PENDING" &&
+        !CANCELLED.includes(norm(o.orderStatus)) &&
         o.lastPaymentId &&
         now - Number(o.createdAt || 0) < SYNC_WINDOW_MS
     )
@@ -302,12 +324,93 @@ async function syncPendingOrders(db, orders) {
   return results.some(r => r.status === "fulfilled" && r.value === "PAID");
 }
 
+/* ---------- Single order ---------- */
+
+async function readSingleOrder(db, uid, orderId) {
+  let orders = await readOrders(db, uid);
+  let order = orders.find(o => o.orderId === orderId);
+  if (!order) return null;
+
+  // Is order ka payment Cashfree se verify karo
+  try {
+    if (await syncPendingOrders(db, [order])) {
+      orders = await readOrders(db, uid);
+      order = orders.find(o => o.orderId === orderId) || order;
+    }
+  } catch (error) {
+    console.warn("Order sync skipped:", error.message);
+  }
+
+  try {
+    await addItemImages(db, [order]);
+  } catch (error) {
+    console.warn("Item images skipped:", error.message);
+  }
+
+  return order;
+}
+
+/* ---------- Cancel ---------- */
+
+async function cancelOrder(db, uid, orderId) {
+  // Cancel se pehle ek baar payment verify karo (paisa aa chuka ho to unpaid cancel na ho)
+  const current = await readSingleOrder(db, uid, orderId);
+  if (!current) return { status: 404, message: "Order not found." };
+
+  const now = Date.now();
+
+  if (!describeOrder(current, now).canCancel) {
+    return { status: 409, message: "This order can no longer be cancelled." };
+  }
+
+  const update = { orderStatus: "CANCELLED", cancelledAt: now };
+
+  // Unpaid order ka payment bhi band karo
+  if (!PAID_PAYMENT.includes(norm(current.paymentStatus))) {
+    update.paymentStatus = "CANCELLED";
+  }
+
+  await db
+    .ref("users")
+    .child(uid)
+    .child("orders")
+    .child(orderId)
+    .update(update);
+
+  return { status: 200 };
+}
+
+function readBody(req) {
+  let body = req.body;
+
+  if (typeof body === "string") {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      body = {};
+    }
+  }
+
+  return body && typeof body === "object" ? body : {};
+}
+
+function sameOrigin(req) {
+  const origin = req.headers.origin;
+  if (!origin) return true;
+
+  try {
+    return new URL(origin).host === req.headers.host;
+  } catch {
+    return false;
+  }
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "private, no-store");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
 
-  if (req.method !== "GET") {
-    res.setHeader("Allow", "GET");
+  if (req.method !== "GET" && req.method !== "POST") {
+    res.setHeader("Allow", "GET, POST");
     return res.status(405).json({
       success: false,
       message: "Method not allowed."
@@ -327,6 +430,70 @@ module.exports = async function handler(req, res) {
     const db = getDatabase();
     const uid = String(session.uid);
 
+    /* ----- POST: cancel order ----- */
+    if (req.method === "POST") {
+      if (!sameOrigin(req)) {
+        return res.status(403).json({
+          success: false,
+          message: "Request blocked."
+        });
+      }
+
+      const body = readBody(req);
+      const orderId = String(body.orderId || "");
+
+      if (body.action !== "cancel" || !ORDER_ID_PATTERN.test(orderId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid request."
+        });
+      }
+
+      const result = await cancelOrder(db, uid, orderId);
+
+      if (result.status !== 200) {
+        return res.status(result.status).json({
+          success: false,
+          message: result.message
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Your order has been cancelled."
+      });
+    }
+
+    /* ----- GET: single order ----- */
+    const orderId = new URL(req.url, "http://localhost").searchParams.get("orderId");
+
+    if (orderId !== null) {
+      if (!ORDER_ID_PATTERN.test(orderId)) {
+        return res.status(404).json({
+          success: false,
+          message: "Order not found."
+        });
+      }
+
+      const order = await readSingleOrder(db, uid, orderId);
+
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: "Order not found."
+        });
+      }
+
+      const now = Date.now();
+
+      return res.status(200).json({
+        success: true,
+        serverTime: now,
+        order: { ...order, ...describeOrder(order, now) }
+      });
+    }
+
+    /* ----- GET: all orders ----- */
     let orders = await readOrders(db, uid);
 
     try {
