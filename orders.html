@@ -45,9 +45,9 @@
       --track-dot: #D3D6DC;
       --green-1: #4ADE80;
       --green-2: #16A34A;
-      --dot-size: 30px;
+      --dot-size: 24px;
       --seg-h: 8px;
-      --seg-gap: 9px;
+      --seg-gap: 6px;
 
       --font-body: "DM Sans", sans-serif;
       --font-heading: "Manrope", sans-serif;
@@ -354,8 +354,9 @@
 
     /* DELIVERY TRACKER
        Row 1: step names. Row 2: dot - line - dot - line - dot - line - dot.
-       The first and last names sit on the content edges; every dot is
-       centred under its own name. Lines never touch the dots. */
+       Each step is 3 tracks: [half] [dot] [half]. A name spans its 3 tracks,
+       so the dot sits exactly under the middle of the name. A line spans
+       from one dot to the next, with the same small gap on both sides. */
 
     .tracker {
       margin-top: 28px;
@@ -406,7 +407,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      padding: 22%;
+      padding: 20%;
       fill: none;
       stroke: #fff;
       stroke-width: 3.4;
@@ -421,8 +422,8 @@
       border-color: #fff;
       background: linear-gradient(145deg, var(--green-1), var(--green-2));
       box-shadow:
-        0 0 0 3px rgba(22, 163, 74, .22),
-        0 5px 12px rgba(21, 128, 61, .32);
+        0 0 0 2px rgba(22, 163, 74, .22),
+        0 4px 10px rgba(21, 128, 61, .3);
     }
 
     .dot.done::before { display: none; }
@@ -437,6 +438,7 @@
     .seg {
       position: relative;
       align-self: center;
+      min-width: 0;
       height: var(--seg-h);
       margin: 0 var(--seg-gap);
       border-radius: 999px;
@@ -456,7 +458,7 @@
       transition: width 1s linear;
     }
 
-    .seg.live .fill { min-width: 10px; }
+    .seg.live .fill { min-width: var(--seg-h); }
 
     /* light sweeping along the live line */
     .shine {
@@ -477,14 +479,13 @@
     .seg.live .fill::after {
       content: "";
       position: absolute;
-      right: -3px;
-      top: 50%;
-      width: 14px;
-      height: 14px;
-      margin-top: -7px;
+      right: 0;
+      top: 0;
+      width: var(--seg-h);
+      height: var(--seg-h);
       border-radius: 50%;
       background: #fff;
-      border: 3px solid var(--green-2);
+      border: 2px solid var(--green-2);
       animation: pulse 1.6s ease-out infinite;
     }
 
@@ -589,9 +590,9 @@
       main { margin-top: 25px; }
 
       :root {
-        --dot-size: 26px;
+        --dot-size: 22px;
         --seg-h: 7px;
-        --seg-gap: 6px;
+        --seg-gap: 5px;
       }
 
       .total { font-size: 20px; }
@@ -616,7 +617,6 @@
       .copy.copied .t-short { display: none; }
 
       .step-label { font-size: 11px; }
-      .seg.live .fill::after { width: 12px; height: 12px; margin-top: -6px; }
     }
 
     @media (max-width: 380px) {
@@ -856,20 +856,23 @@
 
       const n = STEPS.length;
 
-      // auto (name width) for each step, 1fr for each line between them
-      const columns = ["auto"].concat(Array(n - 1).fill("1fr auto")).join(" ");
+      // every step = [half] [dot] [half]; 1fr of free space between steps
+      const columns = STEPS
+        .map(() => "auto var(--dot-size) auto")
+        .join(" 1fr ");
 
       let cells = "";
 
       STEPS.forEach((name, i) => {
-        cells += `<div class="step-label" style="grid-column:${2 * i + 1};grid-row:1">${escapeHTML(name)}</div>`;
+        cells += `<div class="step-label" style="grid-column:${4 * i + 1} / span 3;grid-row:1">${escapeHTML(name)}</div>`;
       });
 
       STEPS.forEach((_, i) => {
-        cells += `<span class="dot" style="grid-column:${2 * i + 1};grid-row:2">${CHECK_SVG}</span>`;
+        cells += `<span class="dot" style="grid-column:${4 * i + 2};grid-row:2">${CHECK_SVG}</span>`;
 
         if (i < n - 1) {
-          cells += `<span class="seg" style="grid-column:${2 * i + 2};grid-row:2">` +
+          // line runs from this dot's edge to the next dot's edge
+          cells += `<span class="seg" style="grid-column:${4 * i + 3} / span 3;grid-row:2">` +
                    `<span class="fill"><span class="shine"></span></span></span>`;
         }
       });
