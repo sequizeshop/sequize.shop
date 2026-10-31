@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>Order Details — Sequize</title>
+
+  <link rel="icon" type="image/png"
+    href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+  <link rel="stylesheet" href="/global.css">
+
+  <style>
+    :root {
+      --primary: #2962FF;
+      --primary-hover: #0059D7;
+      --primary-soft: #EDF2FF;
+      --background: #FFFFFF;
+      --surface-secondary: #F5F5F2;
+      --text-primary: #1E1F1C;
+      --text-secondary: #666960;
+      --text-muted: #969991;
+      --border: #E5E7EB;
+      --divider: #E5E7EB;
+      --success: #15803D;
+      --success-bg: #ECFDF3;
+      --warn: #B45309;
+      --warn-bg: #FFF4E0;
+      --error: #DC2626;
+      --error-bg: #FEF2F2;
+
+      /* Tracker */
+      --track: #E8EAEE;
+      --track-dot: #D3D6DC;
+      --green-1: #4ADE80;
+      --green-2: #16A34A;
+      --dot-size: 20px;
+      --seg-h: 5px;
+      --head-size: 10px;
+      --head-pad: 2px;
+      --seg-gap: 6px;
+
+      --font-body: "DM Sans", sans-serif;
+      --font-heading: "Manrope", sans-serif;
+
+      --radius-md: 9px;
+      --radius-lg: 12px;
+
+      --header-h: 64px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.7;
+      background: var(--background);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    button { font: inherit; cursor: pointer; }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+    }
+
+    /* HEADER */
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      height: var(--header-h);
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--background);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .nav-link:hover { background: var(--surface-secondary); }
+
+    .brand {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.4;
+      letter-spacing: -0.7px;
+      color: var(--primary);
+    }
+
+    /* PAGE */
+
+    main {
+      width: min(1050px, 90%);
+      margin: 34px auto 65px;
+      min-height: 55vh;
+    }
+
+    .page-heading { margin: 0 0 28px; }
+
+    .page-heading h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(27px, 4vw, 36px);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -1.2px;
+      margin: 0 0 8px;
+    }
+
+    .page-heading p {
+      margin: 0;
+      color: var(--text-secondary);
+      overflow-wrap: anywhere;
+    }
+
+    .primary-btn {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-lg);
+      background: var(--primary);
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      transition: background .2s, border-color .2s;
+    }
+
+    .primary-btn:hover {
+      border-color: var(--primary-hover);
+      background: var(--primary-hover);
+    }
+
+    .primary-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    /* Fully rounded buttons (cancel flow) */
+
+    .round { border-radius: 999px; }
+
+    .ghost-btn {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border: 1px solid var(--surface-secondary);
+      border-radius: 999px;
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      transition: background .2s;
+    }
+
+    .ghost-btn:hover { background: #ebebe6; }
+    .ghost-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* MESSAGE */
+
+    #message {
+      margin: 0 0 18px;
+      color: var(--text-secondary);
+    }
+
+    #message:empty { display: none; }
+
+    .notice {
+      padding: 12px 15px;
+      margin-bottom: 24px;
+      border-radius: var(--radius-lg);
+      background: var(--primary-soft);
+      font-size: 13px;
+    }
+
+    .notice i {
+      color: var(--primary);
+      vertical-align: -2px;
+    }
+
+    .notice.cancelled {
+      background: var(--error-bg);
+      color: var(--error);
+      font-weight: 600;
+    }
+
+    .notice.cancelled i { color: var(--error); }
+
+    /* ORDER */
+
+    .order-card {
+      padding: 27px 0;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .order-card:first-child { padding-top: 0; }
+
+    .order-card:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    /* PRODUCTS: dividers only between products */
+
+    .product-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px 0;
+    }
+
+    .product-row:first-child { padding-top: 0; }
+    .product-row:last-child { padding-bottom: 0; }
+
+    .product-row + .product-row {
+      border-top: 1px solid var(--divider);
+    }
+
+    .product-image {
+      width: 76px;
+      height: 76px;
+      flex-shrink: 0;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      background: var(--surface-secondary);
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .product-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .product-name {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .product-info {
+      margin-top: 2px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .product-date {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    /* TOTAL (left) + STATUS & BUTTONS (right) — always ONE line */
+
+    .order-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .order-total { flex-shrink: 0; }
+
+    .total-label {
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .total {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.7px;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+
+    .total-line {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .total.paid { color: var(--success); }
+    .total.failed { color: var(--error); }
+
+    .pay-tag {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .pay-tag.paid { color: var(--success); }
+    .pay-tag.failed { color: var(--error); }
+
+    .order-right {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: nowrap;
+      gap: 6px;
+    }
+
+    /* Small pill: used by the status tag and the buttons */
+
+    .pill {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--surface-secondary);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.7;
+      white-space: nowrap;
+    }
+
+    .pill i { font-size: 14px; }
+
+    .pill.paid { background: var(--success-bg); color: var(--success); }
+    .pill.warn { background: var(--warn-bg); color: var(--warn); }
+    .pill.failed { background: var(--error-bg); color: var(--error); }
+
+    button.pill,
+    a.pill { transition: background .2s, color .2s; }
+
+    button.pill.copy {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    button.pill.copy:hover { background: #dbe6ff; }
+
+    a.pill.pay {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    a.pill.pay:hover { background: var(--primary-hover); }
+
+    /* Short / full button text */
+    .copy .t-short,
+    .copy .t-copied,
+    .copy .cico,
+    .pay .t-short { display: none; }
+
+    .copy.copied .t-full,
+    .copy.copied .t-short { display: none; }
+
+    .copy.copied .t-copied { display: inline; }
+
+    /* DELIVERY TRACKER (vertical)
+       Same dots, same line thickness, same colours and live head as the
+       My Orders page — only the direction is top to bottom. Every step is
+       a row: [dot + line going down] [text]. The text stays horizontal. */
+
+    .tracker {
+      margin-top: 28px;
+
+      /* Step 1 (Order placed -> Confirmed): green, ek hi gradient */
+      --on: var(--green-2);
+      --ripple: 22, 163, 74;
+      --fill-bg: linear-gradient(180deg, var(--green-1), var(--green-2));
+      --fill-shadow: rgba(22, 163, 74, .35);
+      --head-bg: linear-gradient(145deg, var(--green-1), var(--green-2));
+    }
+
+    /* Confirmed ke baad (Confirmed -> Shipped -> Delivered): theme blue, bina gradient */
+    .tracker.stage-2 {
+      --on: var(--primary);
+      --ripple: 41, 98, 255;
+      --fill-bg: var(--primary);
+      --fill-shadow: rgba(41, 98, 255, .35);
+      --head-bg: var(--primary);
+    }
+
+    .vstep {
+      display: flex;
+      align-items: stretch;
+      gap: 14px;
+    }
+
+    .vcol {
+      flex-shrink: 0;
+      width: var(--dot-size);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .vtext {
+      flex: 1;
+      min-width: 0;
+      padding-bottom: 26px;
+    }
+
+    .vstep:last-child .vtext { padding-bottom: 0; }
+
+    .vtitle {
+      color: var(--text-muted);
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: var(--dot-size);
+      transition: color .3s;
+    }
+
+    .vtitle.done { color: var(--text-primary); }
+
+    .vdesc {
+      margin-top: 2px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .vtime {
+      margin-top: 2px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .vtime:empty { display: none; }
+
+    /* upcoming: thin light-grey ring, nothing inside */
+    .dot {
+      position: relative;
+      flex-shrink: 0;
+      width: var(--dot-size);
+      height: var(--dot-size);
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--track);
+      border-radius: 50%;
+      background: #fff;
+      transition: background .35s, border-color .35s;
+    }
+
+    .dot::before { display: none; }
+
+    .dot svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding: 20%;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 3.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+    }
+
+    /* done: plain green circle with a check */
+    .dot.done,
+    .dot.current {
+      border-color: var(--on);
+      background: var(--on);
+    }
+
+    /* green gradient ka pehla color: pehle step ka dot */
+    .tracker.stage-1 .dot.first.done {
+      border-color: var(--green-1);
+      background: var(--green-1);
+    }
+
+    .dot.done svg {
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset .45s ease .12s;
+    }
+
+    /* on the way: green circle with a small white dot */
+    .dot.current::before {
+      content: "";
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    /* Rounded line pieces between dots (going down) */
+
+    .seg {
+      position: relative;
+      flex: 1;
+      width: var(--seg-h);
+      min-height: 24px;
+      margin: var(--seg-gap) 0;
+      border-radius: 999px;
+      background: var(--track);
+    }
+
+    .fill {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: calc(var(--f, 0) * 100%);
+      border-radius: 999px;
+      background: var(--fill-bg);
+      box-shadow: 0 1px 4px var(--fill-shadow);
+      transition: height 1s linear;
+    }
+
+    .seg.live .fill { min-height: var(--head-size); }
+
+    /* light sweeping down the live line */
+    .shine {
+      display: none;
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: linear-gradient(180deg,
+        transparent 0%, rgba(255, 255, 255, .6) 50%, transparent 100%);
+      background-size: 100% 60%;
+      background-repeat: no-repeat;
+      animation: sweep 1.8s linear infinite;
+    }
+
+    .seg.live .shine { display: block; z-index: 0; }
+
+    /* moving head at the end of the live line: green disc, white dot inside,
+       green ripple coming out of the white dot */
+    .seg.live .fill::before,
+    .seg.live .fill::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    .seg.live .fill::before {
+      bottom: 0;
+      left: 50%;
+      width: var(--head-size);
+      height: var(--head-size);
+      margin-left: calc(var(--head-size) / -2);
+      background: var(--head-bg);
+      z-index: 1;
+    }
+
+    .seg.live .fill::after {
+      bottom: var(--head-pad);
+      left: 50%;
+      width: calc(var(--head-size) - 2 * var(--head-pad));
+      height: calc(var(--head-size) - 2 * var(--head-pad));
+      margin-left: calc((var(--head-size) - 2 * var(--head-pad)) / -2);
+      background: #fff;
+      z-index: 2;
+      animation: ripple 1.6s ease-out infinite;
+    }
+
+    @keyframes sweep {
+      from { background-position: 0 -150%; }
+      to { background-position: 0 250%; }
+    }
+
+    @keyframes ripple {
+      0% { box-shadow: 0 0 0 0 rgba(var(--ripple), .65); }
+      70% { box-shadow: 0 0 0 7px rgba(var(--ripple), 0); }
+      100% { box-shadow: 0 0 0 0 rgba(var(--ripple), 0); }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(var(--ripple), .5); }
+      70% { box-shadow: 0 0 0 9px rgba(var(--ripple), 0); }
+      100% { box-shadow: 0 0 0 0 rgba(var(--ripple), 0); }
+    }
+
+    /* Delivery date (left) + live countdown (right) */
+
+    .eta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px 14px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--divider);
+    }
+
+    .eta {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .eta.delivered { color: var(--success); }
+
+    .live {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      color: var(--on);
+      font-size: 12px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .live.on { display: inline-flex; }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--on);
+      animation: pulse 1.6s ease-out infinite;
+    }
+
+    /* CANCEL ORDER */
+
+    .cancel-wrap {
+      margin-top: 32px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .cancel-wrap .primary-btn { min-width: 260px; }
+
+    /* CONFIRM POPUP */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(30, 31, 28, .45);
+    }
+
+    .modal[hidden] { display: none; }
+
+    .modal-box {
+      width: min(400px, 100%);
+      padding: 26px 24px 22px;
+      border-radius: var(--radius-lg);
+      background: var(--background);
+    }
+
+    .modal-box h2 {
+      margin: 0 0 8px;
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    .modal-box p {
+      margin: 0 0 22px;
+      color: var(--text-secondary);
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modal-actions .primary-btn,
+    .modal-actions .ghost-btn { width: 100%; }
+
+    /* EMPTY STATE */
+
+    .empty-state {
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 29px;
+    }
+
+    .empty-state h2 {
+      margin: 0 0 8px;
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.7px;
+    }
+
+    .empty-state p {
+      max-width: 380px;
+      margin: 0 auto 24px;
+      color: var(--text-secondary);
+    }
+
+    /* FOOTER */
+
+    footer {
+      padding: 24px 5%;
+      border-top: 1px solid var(--divider);
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    /* RESPONSIVE — everything stays on one line */
+
+    @media (max-width: 600px) {
+      main { margin-top: 25px; }
+
+      :root {
+        --dot-size: 18px;
+        --seg-h: 4px;
+        --head-size: 8px;
+        --seg-gap: 5px;
+      }
+
+      .total { font-size: 20px; }
+      .pay-tag { font-size: 11px; }
+
+      .order-bottom { gap: 8px; }
+      .order-right { gap: 5px; }
+
+      .pill {
+        padding: 3px 8px;
+        font-size: 11px;
+        gap: 4px;
+      }
+
+      .pill .ico { display: none; }
+
+      .copy .t-full,
+      .pay .t-full { display: none; }
+
+      .copy .t-short,
+      .pay .t-short { display: inline; }
+
+      .copy.copied .t-short { display: none; }
+
+      .cancel-wrap .primary-btn { width: 100%; min-width: 0; }
+    }
+
+    @media (max-width: 380px) {
+      .product-image {
+        width: 60px;
+        height: 60px;
+        padding: 4px;
+      }
+
+      .product-name { font-size: 12px; }
+      .total { font-size: 18px; }
+    }
+
+    /* very narrow phones: copy button becomes icon only */
+    @media (max-width: 340px) {
+      .copy .t-short { display: none; }
+      .copy .cico { display: inline; }
+      .copy.copied .t-copied { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fill,
+      .dot,
+      .dot svg,
+      .vtitle { transition: none; }
+
+      .shine,
+      .seg.live .fill::after,
+      .live-dot { animation: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+
+    <a href="/orders.html"
+       class="nav-link"
+       aria-label="Back to orders"
+       title="Back to orders">
+      <i class="ph ph-arrow-left"></i>
+    </a>
+
+    <a href="/" class="brand">Sequize.</a>
+
+  </header>
+
+  <main>
+
+    <div class="page-heading">
+      <h1>Order Details</h1>
+      <p id="orderIdText">Track your order and payment status.</p>
+    </div>
+
+    <div class="notice">
+      <i class="ph ph-info"></i>
+      Payment status is shown according to the order records available on
+      Sequize. A pending payment is not a confirmed payment.
+    </div>
+
+    <div id="message" role="status" aria-live="polite">
+      Loading your order...
+    </div>
+
+    <section id="orderView" aria-label="Order details"></section>
+
+  </main>
+
+  <div class="modal" id="cancelModal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="cancelTitle">
+      <h2 id="cancelTitle">Cancel this order?</h2>
+      <p>This can't be undone. If you have already paid, our team will refund the amount.</p>
+      <div class="modal-actions">
+        <button class="primary-btn round" type="button" id="confirmCancel">Yes, cancel order</button>
+        <button class="ghost-btn" type="button" id="keepOrder">Keep order</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © <span id="year"></span> Sequize. All rights reserved.
+  </footer>
+
+  <script>
+    "use strict";
+
+    const orderView = document.getElementById("orderView");
+    const message = document.getElementById("message");
+    const orderIdText = document.getElementById("orderIdText");
+    const cancelModal = document.getElementById("cancelModal");
+    const confirmCancel = document.getElementById("confirmCancel");
+    const keepOrder = document.getElementById("keepOrder");
+
+    const ORDER_ID = new URLSearchParams(window.location.search).get("orderId") || "";
+
+    // Tracker steps, top to bottom: name + text for each state.
+    const STEPS = [
+      {
+        name: "Order placed",
+        done: "Your order has been placed successfully.",
+        wait: "Your order will be placed once the payment is confirmed."
+      },
+      {
+        name: "Confirmed",
+        done: "Your order has been confirmed.",
+        now: "We are confirming your order. This takes only a few minutes.",
+        wait: "Your order will be confirmed after the payment."
+      },
+      {
+        name: "Shipped",
+        done: "Your order has been shipped and is on the way.",
+        now: "Your order is being packed and will be shipped soon.",
+        wait: "Your order will be shipped after it is confirmed."
+      },
+      {
+        name: "Delivered",
+        done: "Your order has been delivered. Enjoy!",
+        now: "Your order is on the way to you.",
+        wait: "Your order will be delivered to your address."
+      }
+    ];
+
+    // Server time minus device time, so progress follows the server clock
+    let serverDrift = 0;
+
+    const CHECK_SVG =
+      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+      '<path d="M6 12.5l4.2 4.2L18 8" pathLength="1"/></svg>';
+
+    // Inline placeholder: no external request, so it can never fail to load
+    const PLACEHOLDER_IMAGE =
+      "data:image/svg+xml;utf8," +
+      encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' +
+        '<rect width="100" height="100" fill="#F5F5F2"/>' +
+        '<path d="M30 40h40l-4 30H34z" fill="none" stroke="#969991" stroke-width="3" stroke-linejoin="round"/>' +
+        '<path d="M42 40v-5a8 8 0 0 1 16 0v5" fill="none" stroke="#969991" stroke-width="3"/>' +
+        '</svg>'
+      );
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, function (char) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        }[char];
+      });
+    }
+
+    function formatINR(value) {
+      const amount = Number(value);
+      if (!Number.isFinite(amount)) return "—";
+
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 2
+      }).format(amount);
+    }
+
+    function formatDate(value) {
+      if (value === undefined || value === null || value === "") {
+        return "Date unavailable";
+      }
+
+      const date = (typeof value === "number" || /^\d+$/.test(String(value)))
+        ? new Date(Number(value))
+        : new Date(value);
+
+      if (Number.isNaN(date.getTime())) return "Date unavailable";
+
+      return date.toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function formatDay(ms) {
+      return new Date(ms).toLocaleDateString("en-IN", {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+    }
+
+    function formatLeft(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const d = Math.floor(total / 86400);
+      const h = Math.floor((total % 86400) / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      const pad = n => String(n).padStart(2, "0");
+
+      return (d > 0 ? d + "d " : "") + pad(h) + "h " + pad(m) + "m " + pad(s) + "s left";
+    }
+
+    // "2 hrs 29 mins", "45 mins", "1 min" — updates live
+    function formatIn(ms) {
+      const total = Math.max(1, Math.ceil(ms / 60000));
+      const d = Math.floor(total / 1440);
+      const h = Math.floor((total % 1440) / 60);
+      const m = total % 60;
+      const parts = [];
+
+      if (d) parts.push(d + (d === 1 ? " day" : " days"));
+      if (h) parts.push(h + (h === 1 ? " hr" : " hrs"));
+      if (m) parts.push(m + (m === 1 ? " min" : " mins"));
+
+      return parts.join(" ");
+    }
+
+    function statusIcon(tone) {
+      if (tone === "paid") return "ph-check-circle";
+      if (tone === "warn") return "ph-warning-circle";
+      if (tone === "failed") return "ph-x-circle";
+      return "ph-clock";
+    }
+
+    /* ---------- Product images ----------
+       The orders API sends an image for each item. Only if some are
+       still missing do we also use the products API as a backup. */
+
+    let productImages = { byId: {}, byTitle: {} };
+
+    async function loadProductImages() {
+      try {
+        const response = await fetch("/api/products", {
+          headers: { "Accept": "application/json" }
+        });
+        const data = await response.json();
+        const byId = {};
+        const byTitle = {};
+
+        (Array.isArray(data.products) ? data.products : []).forEach(p => {
+          const img = p.thumbnail || (Array.isArray(p.images) ? p.images[0] : "");
+          if (!img) return;
+          byId[String(p.id)] = img;
+          byTitle[String(p.title || "").trim().toLowerCase()] = img;
+        });
+
+        productImages = { byId, byTitle };
+      } catch (error) {
+        console.error("Product images error:", error);
+      }
+    }
+
+    function getItemImage(item) {
+      const candidate =
+        item.thumbnail ||
+        item.image ||
+        item.imageUrl ||
+        (Array.isArray(item.images) ? item.images[0] : "") ||
+        productImages.byId[String(item.productId ?? item.id ?? item.product_id ?? "")] ||
+        productImages.byTitle[String(item.title || "").trim().toLowerCase()] ||
+        "";
+
+      if (!candidate) return PLACEHOLDER_IMAGE;
+
+      try {
+        const parsed = new URL(candidate, window.location.origin);
+
+        if (
+          parsed.protocol !== "https:" &&
+          parsed.origin !== window.location.origin
+        ) {
+          return PLACEHOLDER_IMAGE;
+        }
+
+        return parsed.href;
+      } catch {
+        return PLACEHOLDER_IMAGE;
+      }
+    }
+
+    /* ---------- Delivery tracker (vertical) ----------
+       The orders API decides everything (active, milestones).
+       The page only draws it and keeps it moving every second. */
+
+    function renderTracker(order) {
+      const t = order.tracking;
+      if (!t || typeof t !== "object") return "";
+
+      // the steps themselves are drawn by updateTracker (2 steps first, 3 after confirm)
+      return `
+        <div class="tracker stage-1"
+             role="progressbar"
+             aria-label="Delivery progress"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             aria-valuenow="0"
+             data-stage=""
+             data-milestones="${(Array.isArray(t.milestones) ? t.milestones : [t.startAt, t.endAt]).map(Number).join(",")}"
+             data-active="${t.active ? "1" : "0"}"
+             data-forced="${t.forceDelivered ? "1" : "0"}"
+             data-note="${escapeHTML(t.note || "")}">
+
+          <div class="vsteps"></div>
+
+          <div class="eta-row">
+            <p class="eta"></p>
+            <span class="live"><i class="live-dot"></i><span class="left"></span></span>
+          </div>
+
+        </div>
+      `;
+    }
+
+    // offset 0: Order placed, Confirmed
+    // offset 1: Confirmed, Shipped, Delivered (Order placed is hidden)
+    function buildSteps(el, offset) {
+      const steps = STEPS.slice(offset);
+      let rows = "";
+
+      steps.forEach((step, i) => {
+        rows += `
+          <div class="vstep">
+            <div class="vcol">
+              <span class="dot${i === 0 ? " first" : ""}">${CHECK_SVG}</span>
+              ${i < steps.length - 1
+                ? `<span class="seg"><span class="fill"><span class="shine"></span></span></span>`
+                : ""}
+            </div>
+            <div class="vtext">
+              <div class="vtitle">${escapeHTML(step.name)}</div>
+              <div class="vdesc"></div>
+              <div class="vtime"></div>
+            </div>
+          </div>
+        `;
+      });
+
+      el.querySelector(".vsteps").innerHTML = rows;
+    }
+
+    function setPill(pill, tone, text) {
+      const cls = "pill " + tone;
+      if (pill.className !== cls) {
+        pill.className = cls;
+        pill.querySelector(".ico").className = "ph " + statusIcon(tone) + " ico";
+      }
+      const label = pill.querySelector(".pill-text");
+      if (label.textContent !== text) label.textContent = text;
+    }
+
+    function updateTracker() {
+      const el = document.querySelector(".tracker");
+      if (!el) return;
+
+      const now = Date.now() + serverDrift;
+
+      // one time per step: placed, confirmed, shipped, delivered
+      const ms = el.dataset.milestones.split(",").map(Number);
+      const active = el.dataset.active === "1";
+      const forced = el.dataset.forced === "1";
+      const start = ms[0];
+      const end = ms[ms.length - 1];
+
+      // Confirm hone tak 2 steps (green), uske baad 3 steps (blue)
+      const confirmed = active && (forced || now >= ms[1]);
+      const offset = confirmed ? 1 : 0;
+
+      if (el.dataset.stage !== String(offset + 1)) {
+        buildSteps(el, offset);
+        el.dataset.stage = String(offset + 1);
+        el.classList.toggle("stage-1", !confirmed);
+        el.classList.toggle("stage-2", confirmed);
+      }
+
+      const segs = el.querySelectorAll(".seg");
+      const dots = el.querySelectorAll(".dot");
+      const titles = el.querySelectorAll(".vtitle");
+      const descs = el.querySelectorAll(".vdesc");
+      const times = el.querySelectorAll(".vtime");
+
+      // each line fills during its own time window
+      const fills = Array.from(segs, (_, i) => {
+        if (!active) return 0;
+        if (forced) return 1;
+        const a = ms[offset + i];
+        const b = ms[offset + i + 1];
+        return b > a ? Math.min(1, Math.max(0, (now - a) / (b - a))) : 1;
+      });
+
+      // the line that is moving right now
+      const liveIndex = active ? fills.findIndex(f => f < 1) : -1;
+
+      segs.forEach((seg, i) => {
+        seg.style.setProperty("--f", fills[i].toFixed(5));
+        seg.classList.toggle("live", i === liveIndex);
+      });
+
+      const states = Array.from(dots, (_, i) =>
+        active && (forced || now >= (ms[offset + i] ?? Infinity))
+      );
+
+      // the first step that is not done yet is the one on the way
+      const currentIndex = active ? states.indexOf(false) : -1;
+
+      dots.forEach((dot, i) => {
+        const step = STEPS[offset + i];
+        const done = states[i];
+        const current = i === currentIndex;
+
+        dot.classList.toggle("done", done);
+        dot.classList.toggle("current", current);
+        titles[i].classList.toggle("done", done || current);
+
+        let text;
+        let time = "";
+
+        if (done) {
+          text = step.done;
+          time = formatDate(ms[offset + i]);
+        } else if (current) {
+          text = step.now || step.wait;
+          time = "Expected by " + formatDate(ms[offset + i]);
+        } else {
+          text = step.wait;
+          if (active) time = "Expected by " + formatDate(ms[offset + i]);
+        }
+
+        if (descs[i].textContent !== text) descs[i].textContent = text;
+        if (times[i].textContent !== time) times[i].textContent = time;
+      });
+
+      const overall = active
+        ? (forced ? 1 : Math.min(1, Math.max(0, (now - start) / (end - start))))
+        : 0;
+
+      el.setAttribute("aria-valuenow", String(Math.round(overall * 100)));
+
+      const eta = el.querySelector(".eta");
+      const live = el.querySelector(".live");
+      const delivered = active && (forced || now >= end);
+
+      eta.classList.toggle("delivered", delivered);
+
+      if (!active) {
+        eta.textContent = el.dataset.note;
+      } else if (delivered) {
+        eta.textContent = "Delivered on " + formatDay(end);
+      } else {
+        eta.textContent = "Delivered in " + formatIn(end - now);
+      }
+
+      const showLive = active && !delivered;
+      live.classList.toggle("on", showLive);
+
+      if (showLive) {
+        live.querySelector(".left").textContent = formatLeft(end - now);
+      }
+
+      // status tag switches by itself: Waiting to confirm -> Confirmed -> Delivered
+      const pill = document.querySelector("[data-status-pill]");
+
+      if (pill && active) {
+        if (delivered) setPill(pill, "paid", "Delivered");
+        else if (now >= ms[1]) setPill(pill, "paid", "Confirmed");
+        else setPill(pill, "warn", "Waiting to confirm");
+      }
+    }
+
+    /* ---------- Order card ---------- */
+
+    function renderOrder(order) {
+      const orderId = String(order.orderId || "");
+      const items = Array.isArray(order.items) ? order.items : [];
+      const dateText = escapeHTML(formatDate(order.createdAt));
+
+      const productsHTML = items.length
+        ? items.map(item => {
+            const title = escapeHTML(item.title || "Product");
+            const quantity = Math.max(0, Number(item.quantity) || 0);
+            const image = escapeHTML(getItemImage(item));
+
+            return `
+              <div class="product-row">
+
+                <div class="product-image">
+                  <img src="${image}" alt="${title}" loading="lazy">
+                </div>
+
+                <div class="product-details">
+                  <div class="product-name">${title}</div>
+                  <div class="product-info">Quantity: ${quantity}</div>
+                  <div class="product-date">${dateText}</div>
+                </div>
+
+              </div>
+            `;
+          }).join("")
+        : `
+            <div class="product-row">
+              <div class="product-details product-info">
+                No item details available for this order.
+              </div>
+            </div>
+          `;
+
+      const tone = ["paid", "warn", "failed"].includes(order.statusTone)
+        ? order.statusTone
+        : "";
+
+      const statusHTML = order.statusLabel
+        ? `<span class="pill ${tone}" data-status-pill><i class="ph ${statusIcon(tone)} ico"></i><span class="pill-text">${escapeHTML(order.statusLabel)}</span></span>`
+        : "";
+
+      const payTone = ["paid", "failed"].includes(order.paymentTone)
+        ? order.paymentTone
+        : "";
+
+      const payTag = order.paymentLabel
+        ? `<span class="pay-tag ${payTone}">${escapeHTML(order.paymentLabel)}</span>`
+        : "";
+
+      const cancelledHTML = order.statusLabel === "Cancelled"
+        ? `<div class="notice cancelled" style="margin:24px 0 0">
+             <i class="ph ph-x-circle"></i>
+             This order has been cancelled.
+           </div>`
+        : "";
+
+      const cancelHTML = order.canCancel
+        ? `<div class="cancel-wrap">
+             <button class="primary-btn round" type="button" id="cancelBtn">Cancel order</button>
+           </div>`
+        : "";
+
+      return `
+        <article class="order-card">
+
+          <div class="order-body">
+            ${productsHTML}
+          </div>
+
+          <div class="order-bottom">
+
+            <div class="order-total">
+              <div class="total-label">Order total</div>
+              <div class="total-line">
+                <span class="total ${payTone}">${formatINR(order.totalINR)}</span>
+                ${payTag}
+              </div>
+            </div>
+
+            <div class="order-right">
+
+              ${statusHTML}
+
+              <button class="pill copy"
+                      type="button"
+                      aria-label="Copy order ID"
+                      data-copy-order="${escapeHTML(orderId)}"><i class="ph ph-copy cico"></i><span class="t-full">Copy order ID</span><span class="t-short">Copy ID</span><span class="t-copied">Copied</span></button>
+
+              ${order.canContinuePayment
+                ? `<a class="pill pay"
+                      href="/payment.html?orderId=${encodeURIComponent(orderId)}"><span class="t-full">Continue to payment</span><span class="t-short">Pay now</span></a>`
+                : ""}
+
+            </div>
+
+          </div>
+
+          ${cancelledHTML}
+
+          ${renderTracker(order)}
+
+          ${cancelHTML}
+
+        </article>
+      `;
+    }
+
+    function showState(icon, title, text, linkHref, linkText) {
+      message.textContent = "";
+
+      orderView.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon"><i class="ph ${icon}"></i></div>
+          <h2>${title}</h2>
+          <p>${text}</p>
+          <a class="primary-btn" href="${linkHref}">${linkText}</a>
+        </div>
+      `;
+    }
+
+    async function loadOrder() {
+      if (!ORDER_ID) {
+        showState("ph-receipt", "Order not found",
+          "We couldn't find this order. Open it from your orders list.",
+          "/orders.html", "Back to orders");
+        return;
+      }
+
+      message.textContent = "Loading your order...";
+
+      try {
+        const response = await fetch(
+          "/api/orders?orderId=" + encodeURIComponent(ORDER_ID),
+          {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store",
+            headers: { "Accept": "application/json" }
+          }
+        );
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status === 401) {
+          showState("ph-user-circle", "Login required",
+            "Log in to your Sequize account to see your order.",
+            "/login.html", "Log in");
+          return;
+        }
+
+        if (response.status === 404) {
+          showState("ph-receipt", "Order not found",
+            "We couldn't find this order in your account.",
+            "/orders.html", "Back to orders");
+          return;
+        }
+
+        if (!response.ok || data.success !== true || !data.order) {
+          throw new Error(data.message || "Unable to load order.");
+        }
+
+        const order = data.order;
+
+        serverDrift = (Number(data.serverTime) || Date.now()) - Date.now();
+
+        const missingImage = (Array.isArray(order.items) ? order.items : [])
+          .some(i => !i.thumbnail && !i.image);
+        if (missingImage) await loadProductImages();
+
+        message.textContent = "";
+        orderIdText.textContent = "Order ID: " + order.orderId;
+
+        orderView.innerHTML = renderOrder(order);
+
+        updateTracker();
+
+      } catch (error) {
+        console.error("Load order error:", error);
+        message.textContent =
+          "We couldn't load your order. Please reload the page to try again.";
+      }
+    }
+
+    // If an image fails to load, swap in the placeholder
+    orderView.addEventListener("error", function (event) {
+      const img = event.target;
+      if (img.tagName === "IMG" && img.src !== PLACEHOLDER_IMAGE) {
+        img.src = PLACEHOLDER_IMAGE;
+      }
+    }, true);
+
+    orderView.addEventListener("click", async function (event) {
+      if (event.target.closest("#cancelBtn")) {
+        cancelModal.hidden = false;
+        keepOrder.focus();
+        return;
+      }
+
+      const copyButton = event.target.closest("[data-copy-order]");
+      if (!copyButton) return;
+
+      try {
+        await navigator.clipboard.writeText(copyButton.dataset.copyOrder);
+        copyButton.classList.add("copied");
+
+        setTimeout(() => {
+          if (copyButton.isConnected) {
+            copyButton.classList.remove("copied");
+          }
+        }, 1500);
+      } catch (error) {
+        console.error("Copy order ID error:", error);
+        message.textContent =
+          "Copy failed. Please select and copy the order ID manually.";
+      }
+    });
+
+    /* ---------- Cancel order ---------- */
+
+    function closeModal() {
+      cancelModal.hidden = true;
+    }
+
+    keepOrder.addEventListener("click", closeModal);
+
+    cancelModal.addEventListener("click", function (event) {
+      if (event.target === cancelModal) closeModal();
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !cancelModal.hidden) closeModal();
+    });
+
+    confirmCancel.addEventListener("click", async function () {
+      confirmCancel.disabled = true;
+      keepOrder.disabled = true;
+      confirmCancel.textContent = "Cancelling...";
+
+      try {
+        const response = await fetch("/api/orders", {
+          method: "POST",
+          credentials: "same-origin",
+          cache: "no-store",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ action: "cancel", orderId: ORDER_ID })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        closeModal();
+
+        if (!response.ok || data.success !== true) {
+          message.textContent = data.message || "Unable to cancel this order.";
+          await loadOrder();
+          if (!message.textContent) message.textContent = data.message || "";
+          return;
+        }
+
+        await loadOrder();
+        message.textContent = data.message || "Your order has been cancelled.";
+
+      } catch (error) {
+        console.error("Cancel order error:", error);
+        closeModal();
+        message.textContent = "We couldn't cancel your order. Please try again.";
+      } finally {
+        confirmCancel.disabled = false;
+        keepOrder.disabled = false;
+        confirmCancel.textContent = "Yes, cancel order";
+      }
+    });
+
+    // Live: the lines and countdown move every second
+    setInterval(function () {
+      if (!document.hidden) updateTracker();
+    }, 1000);
+
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) updateTracker();
+    });
+
+    loadOrder();
+  </script>
+
+</body>
+</html>
