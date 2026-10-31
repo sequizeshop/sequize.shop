@@ -7,22 +7,22 @@
 
   <title>Sequize Shop | Discover Products</title>
 
-  <meta name="description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
+  <meta name="description" content="Discover products, explore categories and find your next favorite item at Sequize.">
   <meta name="robots" content="index, follow">
 
   <link rel="canonical" href="https://YOUR-DOMAIN/home.html">
 
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Shoppy">
-  <meta property="og:title" content="Shoppy — Discover Products">
-  <meta property="og:description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
+  <meta property="og:site_name" content="Sequize">
+  <meta property="og:title" content="Sequize — Discover Products">
+  <meta property="og:description" content="Discover products, explore categories and find your next favorite item at Sequize.">
   <meta property="og:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
   <meta property="og:url" content="https://YOUR-DOMAIN/home.html">
-  <meta property="og:image:alt" content="Shoppy logo">
+  <meta property="og:image:alt" content="Sequize logo">
 
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Sequize Shop | Discover Products">
-  <meta name="twitter:description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
+  <meta name="twitter:description" content="Discover products, explore categories and find your next favorite item at Sequize.">
   <meta name="twitter:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
   <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
@@ -2729,7 +2729,7 @@
     padding-top:58px !important;
   }
   body.app-basic-navigation:not(.nav-pending) #bottomNav.nav-expanded::before {
-    content:"Shoppy.";
+    content:"Sequize";
     position:absolute;
     top:16px;
     left:18px;
@@ -3056,6 +3056,303 @@
     html body #cartPage .app-cart-price, html body #cartPage .app-remove { font-size:12px !important; }
   }
 </style>
+
+<style id="sequize-desktop-and-shared-fixes">
+/* Shared brand and image fallbacks */
+html body .brand,
+html body .guest-header-brand { color:#111 !important; }
+html body .nav-actions [data-top-nav="account"] { background:#e9ecf1 !important; overflow:hidden; }
+html body .hdr-avatar,
+html body .app-avatar img,
+html body .app-profile-image img,
+html body .profile-avatar img {
+  background:#e9ecf1 !important;
+}
+html body .app-avatar { background:#e9ecf1 !important; color:#555 !important; }
+html body .product-image,
+html body .app-cart-image { background:#f1f2f4 !important; }
+
+/* Uniform, perfectly circular add-to-cart controls on every product surface. */
+html body button.add-button,
+html body .product-card button.add-button,
+html body #productGrid button.add-button,
+html body #searchProductGrid button.add-button {
+  width:36px !important; min-width:36px !important; max-width:36px !important;
+  height:36px !important; min-height:36px !important; max-height:36px !important;
+  flex:0 0 36px !important; aspect-ratio:1 / 1 !important;
+  padding:0 !important; border-radius:50% !important;
+  display:inline-flex !important; align-items:center !important; justify-content:center !important;
+  box-sizing:border-box !important;
+}
+html body .product-card .product-bottom { align-items:center !important; }
+
+/* Empty cart is centred in the available page area on both desktop and mobile. */
+html body #cartPage:not(.has-items) .app-cart-layout {
+  display:flex !important; justify-content:center !important; align-items:center !important;
+  width:100% !important; min-height:55vh !important;
+}
+html body #cartPage:not(.has-items) .app-cart-items {
+  width:100% !important; min-height:55vh !important;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+}
+html body #cartPage:not(.has-items) .app-status {
+  width:100% !important; min-height:55vh !important; margin:0 !important;
+  display:flex !important; flex-direction:column !important;
+  align-items:center !important; justify-content:center !important; text-align:center !important;
+}
+html body #cartPage:not(.has-items) .app-status p { max-width:420px; }
+html body #cartPage:not(.has-items) .app-status .app-primary-button {
+  width:auto !important; min-width:190px; max-width:240px !important;
+}
+
+/* DESKTOP: header is one uninterrupted sticky bar; the drawer/divider begin below it. */
+@media (min-width:761px) {
+  html body:not(.nav-pending) { padding-top:68px !important; }
+  html body header.topbar,
+  html body.app-basic-navigation header.topbar,
+  html body.app-premium-navigation header.topbar {
+    position:fixed !important; inset:0 0 auto 0 !important;
+    width:100% !important; height:68px !important; min-height:68px !important;
+    margin:0 !important; padding:0 24px 0 0 !important;
+    display:flex !important; flex-direction:row !important; align-items:center !important;
+    justify-content:flex-start !important; gap:14px !important;
+    background:#fff !important; border:0 !important; border-bottom:1px solid #e7e9ed !important;
+    border-radius:0 !important; box-shadow:0 2px 10px rgba(0,0,0,.07) !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    overflow:visible !important; z-index:10000 !important;
+  }
+  html body header.topbar > .brand {
+    order:0 !important; position:static !important; inset:auto !important; transform:none !important;
+    display:flex !important; align-items:center !important; flex:0 0 var(--dw) !important;
+    width:var(--dw) !important; height:68px !important; margin:0 !important;
+    padding:0 12px 0 20px !important; overflow:hidden !important; white-space:nowrap !important;
+    background:transparent !important; border:0 !important; box-shadow:none !important;
+    color:#111 !important; font-family:"Pacifico",cursive !important;
+    font-size:27px !important; font-weight:400 !important; letter-spacing:0 !important;
+  }
+  html body header.topbar > .brand .b1,
+  html body header.topbar > .brand .b2 { display:inline !important; }
+  html body.drawer-mini header.topbar > .brand .b2 { display:none !important; }
+  html body header.topbar .desktop-top-search {
+    order:1 !important; display:flex !important; flex:1 1 480px !important;
+    width:auto !important; max-width:720px !important; min-width:180px !important;
+    height:42px !important; margin:0 !important;
+  }
+  html body header.topbar .desktop-top-search input { min-width:0 !important; }
+  html body header.topbar .desktop-top-avatar { display:none !important; }
+  html body header.topbar .nav-actions {
+    order:2 !important; display:flex !important; flex:0 0 auto !important;
+    align-items:center !important; gap:9px !important; margin-left:auto !important;
+    width:auto !important; padding:0 !important;
+  }
+  html body header.topbar .nav-actions [data-top-nav="home"] { display:none !important; }
+  html body header.topbar .nav-actions #notifButton,
+  html body header.topbar .nav-actions [data-top-nav="account"],
+  html body header.topbar .nav-actions [data-top-nav="cart"],
+  html body header.topbar .nav-actions #hdrWishlist {
+    display:flex !important; position:relative !important;
+    align-items:center !important; justify-content:center !important;
+    width:40px !important; min-width:40px !important; height:40px !important;
+    padding:0 !important; border:1px solid #d9dce1 !important; border-radius:50% !important;
+    background:#fff !important; color:#202124 !important; font-size:20px !important;
+    box-shadow:none !important;
+  }
+  html body header.topbar .nav-actions [data-top-nav="account"] {
+    border:0 !important; background:#e9ecf1 !important; overflow:hidden !important;
+  }
+  html body header.topbar .nav-actions #notifButton { order:1 !important; }
+  html body header.topbar .nav-actions [data-top-nav="account"] { order:2 !important; }
+  html body header.topbar .nav-actions #hdrWishlist { order:3 !important; }
+  html body header.topbar .nav-actions [data-top-nav="cart"] { order:4 !important; }
+  html body header.topbar .nav-actions #headerLocationButton {
+    display:inline-flex !important; order:5 !important; align-items:center !important; gap:6px !important;
+    height:40px !important; min-width:0 !important; max-width:170px !important;
+    padding:0 13px !important; border:1px solid #d9dce1 !important; border-radius:999px !important;
+    background:#fff !important; color:#202124 !important; box-shadow:none !important;
+  }
+  html body header.topbar .guest-header-brand,
+  html body header.topbar .guest-header-actions { display:none !important; }
+
+  /* Sidebar is independent from the header. Its vertical divider starts at y=68px. */
+  html body #desktopDrawer {
+    position:fixed !important; top:68px !important; bottom:0 !important;
+    left:0 !important; right:auto !important; height:auto !important; max-height:none !important;
+    width:var(--dw) !important; margin:0 !important; padding:14px 10px !important;
+    border:0 !important; border-right:1px solid #e3e5e9 !important;
+    border-radius:0 !important; box-shadow:none !important; transform:none !important;
+    background:#fff !important; z-index:9998 !important; overflow-x:hidden !important; overflow-y:auto !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head { display:none !important; }
+  html body #desktopDrawer .desktop-nav-links { display:flex !important; flex-direction:column !important; gap:6px !important; }
+  html body #desktopDrawer .desktop-nav-link { min-height:46px !important; }
+  html body #desktopDrawer.mini .desktop-nav-link { justify-content:center !important; padding:0 !important; }
+  html body #desktopDrawer.mini .desktop-nav-link span:not(.shoppy-notification-badge) { display:none !important; }
+  #dwHandle { display:block !important; top:68px !important; bottom:0 !important; }
+  html body .desktop-drawer-overlay { z-index:9997 !important; }
+
+  /* The page scrolls in its own column; it never slides underneath the header. */
+  html body #homeContent,
+  html body #searchPage,
+  html body .app-view {
+    min-width:0;
+  }
+  html body:not(.nav-pending) { padding-left:calc(var(--dw) + 20px) !important; }
+  html body #productsSection,
+  html body #searchPage,
+  html body .app-view {
+    width:calc(100% - 48px) !important; max-width:none !important;
+    margin-left:24px !important; margin-right:24px !important;
+  }
+
+  /* Home and Explore use the right-hand column instead of leaving a blank area. */
+  #offerBanner { display:none !important; }
+  #offerBannerDesk { grid-area:offer; }
+  body.has-offer #offerBannerDesk {
+    display:flex !important; flex-direction:column !important; justify-content:center !important;
+    align-items:flex-start !important; align-self:start !important; min-height:230px !important;
+    margin-top:0 !important; padding:28px !important; border-radius:18px !important;
+    background:linear-gradient(135deg,#2962FF,#1744B5) !important; color:#fff !important;
+  }
+  body:not(.has-offer) #offerBannerDesk { display:none !important; }
+  #productsSection > .explore-page-heading { grid-area:ehead; }
+  #categoriesHeading { grid-area:cathead; }
+  #exploreFilterRow { grid-area:filters; }
+  #categories { grid-area:cat; }
+  #categoryChips { grid-area:chips; }
+  #productsSectionHead { grid-area:phead; }
+  #productGrid { grid-area:grid; }
+  #productsSection > .load-more-wrap { grid-area:more; }
+
+  body.explore-mode #productsSection {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(260px,340px) !important;
+    column-gap:28px !important; row-gap:0 !important; align-items:start !important;
+    grid-template-areas:
+      "ehead cathead"
+      "chips filters"
+      "phead phead"
+      "grid grid"
+      "more more" !important;
+  }
+  body.explore-mode #productsSection > .explore-page-heading { align-self:start !important; margin:0 0 22px !important; }
+  body.explore-mode #categoriesHeading { align-self:start !important; margin:0 0 10px !important; }
+  body.explore-mode #exploreFilterRow {
+    display:flex !important; flex-direction:column !important; align-items:stretch !important;
+    gap:9px !important; margin:0 0 18px !important; overflow:visible !important;
+  }
+  body.explore-mode #exploreFilterRow .explore-filter-button {
+    width:100% !important; justify-content:space-between !important; min-height:44px !important;
+    border-radius:10px !important;
+  }
+  body.explore-mode #categoryChips { min-width:0 !important; align-self:start !important; }
+  body.explore-mode #productsSectionHead { margin-top:10px !important; }
+  body.explore-mode.has-offer #productsSection {
+    grid-template-columns:minmax(0,1fr) minmax(260px,340px) !important;
+    grid-template-areas:
+      "ehead offer"
+      "chips cathead"
+      "phead filters"
+      "grid grid"
+      "more more" !important;
+  }
+  body.explore-mode.has-offer #categoriesHeading { grid-area:cathead; }
+  body.explore-mode.has-offer #exploreFilterRow { grid-area:filters; }
+  body.explore-mode.has-offer #offerBannerDesk { grid-area:offer; }
+  body:not(.explore-mode).has-offer #productsSection {
+    display:grid !important; grid-template-columns:minmax(0,1fr) minmax(260px,380px) !important;
+    column-gap:28px !important; align-items:start !important;
+    grid-template-areas:"cathead offer" "cat offer" "phead offer" "grid grid" "more more" !important;
+  }
+  body:not(.explore-mode) #productsSection > .explore-page-heading { display:none !important; }
+  body.explore-mode #categoryChips { flex-wrap:wrap !important; overflow:visible !important; }
+}
+
+/* Mobile keeps its current navigation layout, while using the shared image/button fixes. */
+@media (max-width:760px) {
+  html body #cartPage:not(.has-items) .app-cart-layout,
+  html body #cartPage:not(.has-items) .app-cart-items,
+  html body #cartPage:not(.has-items) .app-status { min-height:48vh !important; }
+}
+</style>
+
+
+<style id="sequize-explore-layout-revision">
+@media (min-width:761px){
+  /* Keep the drawer itself below the header, but continue its divider all the way to the top. */
+  html body #desktopDrawer{border-right:0!important;}
+  html body #desktopDrawer::after{
+    content:"";position:fixed;left:var(--dw);top:0;bottom:0;width:1px;
+    background:#e3e5e9;pointer-events:none;z-index:10002;
+  }
+  html body #dwHandle{top:0!important;z-index:10003!important;}
+
+  /* Explore: only keep the Explore title; preserve the category-heading space without text. */
+  body.explore-mode #categoriesHeading{
+    visibility:hidden!important;min-height:34px!important;margin:0!important;padding:0!important;
+  }
+  body.explore-mode #categoriesHeading h2,
+  body.explore-mode #categoriesHeading p,
+  body.explore-mode #categoriesHeading > div{visibility:hidden!important;}
+  body.explore-mode #exploreFilterRow{
+    grid-area:filters!important;display:flex!important;visibility:visible!important;
+    flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;
+    flex-wrap:nowrap!important;gap:10px!important;overflow:visible!important;
+    margin:0 0 12px!important;padding:0!important;
+  }
+  body.explore-mode #exploreFilterRow[hidden]{display:flex!important;}
+  body.explore-mode #exploreFilterRow [data-filter="category"]{display:none!important;}
+  body.explore-mode #exploreFilterRow .explore-filter-button{
+    display:inline-flex!important;flex:0 0 auto!important;width:auto!important;min-width:112px!important;
+    min-height:42px!important;justify-content:space-between!important;border-radius:10px!important;
+  }
+  body.explore-mode #categoryChips{
+    grid-area:chips!important;display:flex!important;flex-flow:row nowrap!important;
+    align-items:center!important;gap:9px!important;min-width:0!important;width:100%!important;
+    overflow-x:auto!important;overflow-y:hidden!important;white-space:nowrap!important;
+    scrollbar-width:none!important;margin:0 0 18px!important;padding:2px 0 8px!important;
+  }
+  body.explore-mode #categoryChips::-webkit-scrollbar{display:none!important;}
+  body.explore-mode #categoryChips .chip{flex:0 0 auto!important;white-space:nowrap!important;}
+  body.explore-mode #productsSectionHead{grid-area:phead!important;margin-top:4px!important;}
+
+  /* With an offer, it occupies the right column as a wide landscape panel down to Recommended Products. */
+  body.explore-mode.has-offer #productsSection{
+    display:grid!important;grid-template-columns:minmax(0,1fr) minmax(300px,390px)!important;
+    column-gap:26px!important;row-gap:0!important;align-items:stretch!important;
+    grid-template-areas:"ehead offer" "filters offer" "chips offer" "phead phead" "grid grid" "more more"!important;
+  }
+  body.explore-mode.has-offer #offerBannerDesk{
+    grid-area:offer!important;display:flex!important;align-self:stretch!important;
+    width:100%!important;min-width:0!important;min-height:0!important;height:100%!important;
+    box-sizing:border-box!important;margin:0 0 18px!important;padding:24px!important;
+    border-radius:16px!important;justify-content:center!important;align-items:flex-start!important;
+  }
+
+  /* Without an offer, the right column becomes a clean category area. */
+  body.explore-mode:not(.has-offer) #productsSection{
+    display:grid!important;grid-template-columns:minmax(0,1fr) minmax(300px,390px)!important;
+    column-gap:26px!important;row-gap:0!important;align-items:start!important;
+    grid-template-areas:"ehead cathead" "filters cathead" "chips cat" "phead phead" "grid grid" "more more"!important;
+  }
+  body.explore-mode:not(.has-offer) #categoriesHeading{
+    grid-area:cathead!important;visibility:visible!important;min-height:0!important;
+    align-self:start!important;margin:0 0 8px!important;
+  }
+  body.explore-mode:not(.has-offer) #categoriesHeading h2{
+    visibility:visible!important;display:block!important;margin:0 0 12px!important;
+  }
+  body.explore-mode:not(.has-offer) #categoriesHeading p{display:none!important;}
+  body.explore-mode:not(.has-offer) #categoriesHeading > div{visibility:visible!important;}
+  body.explore-mode:not(.has-offer) #categoryChips{
+    grid-area:cat!important;display:flex!important;flex-flow:row wrap!important;
+    align-content:flex-start!important;align-items:center!important;gap:9px!important;
+    width:100%!important;overflow:visible!important;white-space:normal!important;
+    margin:0 0 18px!important;padding:0!important;
+  }
+  body.explore-mode:not(.has-offer) #productsSectionHead{margin-top:6px!important;}
+}
+</style>
+
 </head>
 
 <body class="nav-pending">
@@ -3072,7 +3369,7 @@
     <button type="button" class="desktop-top-avatar" id="desktopTopAvatar" aria-label="My profile" title="My profile">U</button>
 
 
-    <a href="/home.html" class="guest-header-brand" aria-label="Shoppy home">Shoppy.</a>
+    <a href="/home.html" class="guest-header-brand" aria-label="Sequize home">Sequize</a>
     <div class="guest-header-actions" id="guestHeaderActions" aria-label="Account actions">
       <a class="guest-auth-button guest-auth-login" href="/login.html">Login</a>
       <a class="guest-auth-button guest-auth-signup" href="/signup.html">Sign Up</a>
@@ -3104,6 +3401,8 @@
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </button>
 
+      <a class="nav-icon" id="hdrWishlist" href="/wishlist.html" aria-label="Wishlist" title="Wishlist"><i class="ph ph-heart" aria-hidden="true"></i></a>
+
       <button class="location-chip premium-toolbar-control" id="headerLocationButton" type="button" data-open-location aria-label="Change location" title="Change location">
         <i class="ph-fill ph-map-pin" aria-hidden="true"></i>
         <span id="headerLocationLabel">Select state</span>
@@ -3116,9 +3415,7 @@
 
     </nav>
 
-    <a href="/home.html" class="brand" aria-label="Shoppy home">
-      Shoppy.
-    </a>
+    <a href="/home.html" class="brand" aria-label="Sequize home"><span class="b1">S</span><span class="b2">equize</span></a>
 
   </header>
 
@@ -3133,7 +3430,7 @@
         aria-label="Expand navigation" aria-expanded="false">
         <i class="ph ph-list" aria-hidden="true"></i>
       </button>
-      <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
+      <a href="/home.html" class="brand" aria-label="Sequize home">Sequize</a>
     </div>
 
     <nav class="desktop-nav-links" aria-label="Desktop navigation links">
@@ -3189,7 +3486,7 @@
 
           <div class="eyebrow">
             <i class="ph ph-sparkle" aria-hidden="true"></i>
-            Welcome to Shoppy
+            Welcome to Sequize
           </div>
 
           <h1>Find your next favorite thing.</h1>
@@ -3382,7 +3679,7 @@
   <main id="accountPage" class="app-view" hidden>
     <div class="app-page-heading"><h1>My Account</h1><p>Manage your profile, orders and preferences.</p></div>
     <div id="guestAccountPanel" class="guest-auth-panel" hidden>
-      <h2>Login or create an account</h2><p>Browse Shoppy freely. Sign in or create an account to access your profile, wishlist, orders and other personal features.</p>
+      <h2>Login or create an account</h2><p>Browse Sequize freely. Sign in or create an account to access your profile, wishlist, orders and other personal features.</p>
       <div class="guest-auth-actions"><a class="guest-auth-button guest-auth-login" href="/login.html">Login</a><a class="guest-auth-button guest-auth-signup" href="/signup.html">Sign Up</a></div>
     </div>
     <div id="appProfileLoading" class="app-status">Loading your profile...</div>
@@ -3393,7 +3690,7 @@
         <p id="appUserEmail" class="app-profile-email"></p>
         <div id="appMembershipBadge" class="app-member-badge">✓ &nbsp; SHOPPING MEMBER</div>
         <div id="appMembershipSummary" class="app-membership-summary" hidden>
-          <strong id="appMembershipTitle">Shoppy Premium</strong>
+          <strong id="appMembershipTitle">Sequize Premium</strong>
           <small id="appMembershipPlan">Premium plan active</small>
           <small id="appMembershipExpiry">Membership expiry</small>
         </div>
@@ -3403,7 +3700,7 @@
         <button type="button" class="app-profile-row" id="appProfileCartShortcut" style="width:100%;border-top:0;border-left:0;border-right:0;background:transparent;text-align:left"><i class="ph ph-shopping-cart"></i><span><strong>My Cart</strong></span><i class="ph ph-caret-right"></i></button>
       </aside>
       <aside class="app-profile-promo" aria-label="Special discount offer">
-        <span class="app-profile-promo-eyebrow"><i class="ph-fill ph-sparkle" aria-hidden="true"></i> Shoppy Special</span>
+        <span class="app-profile-promo-eyebrow"><i class="ph-fill ph-sparkle" aria-hidden="true"></i> Sequize Special</span>
         <strong>50% <span>Off</span></strong>
         <p>Discover more for less. Shop your favourites and enjoy a special saving.</p>
         <button type="button" class="app-profile-promo-button" onclick="handleNavigation('explore')">Explore offers <i class="ph ph-arrow-up-right" aria-hidden="true"></i></button>
@@ -3649,7 +3946,7 @@
 
   <footer class="footer" id="pageFooter">
 
-    <span>© <span id="year"></span> Shoppy</span>
+    <span>© <span id="year"></span> Sequize</span>
     <span>Your shopping, all in one place.</span>
 
   </footer>
@@ -4857,7 +5154,7 @@
       const desktopBell = document.querySelector('#bottomNav [data-bottom-nav="notifications"] .nav-item-icon');
       if (!badge || !headerButton || !desktopBell) return;
       const placeBadge = () => {
-        if (window.innerWidth > 760) {
+        if (false) {
           if (badge.parentElement !== desktopBell) desktopBell.appendChild(badge);
         } else if (badge.parentElement !== headerButton) {
           headerButton.appendChild(badge);
@@ -6251,7 +6548,7 @@
         if(isActive){
           profileLayout.classList.add("app-premium-active");
           badge.classList.add("app-premium-badge");
-          badge.textContent="★  SHOPPY PREMIUM";
+          badge.textContent="★  SEQUIZE PREMIUM";
           summary.hidden=false;
           document.getElementById("appMembershipTitle").textContent="Premium Membership Active";
           document.getElementById("appMembershipPlan").textContent=(m.planName||m.plan||"Premium")+" plan";
@@ -6607,6 +6904,7 @@
 
 <style id="shoppy-ui-update-2026">
 :root{
+  --img-bg:#f1f2f4;
   --dw:226px;
   --gut:16px;
   --ic-cart:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='21' r='1'/%3E%3Ccircle cx='20' cy='21' r='1'/%3E%3Cpath d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6'/%3E%3C/svg%3E");
@@ -6618,8 +6916,8 @@
    image/card background is transparent so the image's own colour shows. */
 .product-card:not(.skeleton-card){padding:0;border:1px solid var(--border);border-radius:16px;background:var(--surface);overflow:hidden;box-shadow:none}
 .product-card .product-image,
-.product-grid.list-view .product-image{padding:0!important;border-radius:0!important;background:transparent!important}
-.product-card:hover .product-image{background:transparent!important}
+.product-grid.list-view .product-image{padding:0!important;border-radius:0!important;background:var(--img-bg)!important}
+.product-card:hover .product-image{background:var(--img-bg)!important}
 .product-card .product-image img{object-fit:cover!important}
 .product-card .product-category,.product-card .product-description,.product-card .product-rating{display:none!important}
 .product-card .product-info{padding:10px 12px 12px!important}
@@ -6668,9 +6966,7 @@ body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-w
   html body .topbar .nav-actions [data-top-nav="account"]{display:flex!important;align-items:center;justify-content:center;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;box-sizing:border-box}
   html body .topbar .nav-actions #notifButton{order:1;border:1px solid #d9dce1;background:#fff;color:#1b1d21;font-size:21px}
   html body .topbar .nav-actions [data-top-nav="account"]{order:2;border:0;background:#e9ecf1;overflow:hidden}
-  html body .topbar .nav-actions [data-top-nav="account"].has-pic i{display:none}
-  .hdr-avatar{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}
-  html body #notifButton .shoppy-notification-badge{top:-2px!important;right:-2px!important}
+  html body #hdrWishlist{display:none!important}
 
   /* Offer banner replaces hero on mobile */
   .hero-wrap{display:none!important}
@@ -6716,25 +7012,86 @@ body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-w
   html body.app-premium-navigation .nav-indicator{top:4px!important;height:42px!important}
 }
 
-/* ================= DESKTOP ================= */
+/* ================= DESKTOP: one full-width header, drawer + divider below it ================= */
 #dwHandle{display:none}
+.offer-banner-desk{display:none}
 @media (min-width:761px){
+  /* header: single bar across the page (brand | search | notification | profile | extras) */
+  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar{left:0!important;right:0!important;padding:0 24px 0 0!important;gap:12px!important}
+  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar > .brand{position:static!important;transform:none!important;inset:auto!important;display:flex!important;align-items:center;order:0;flex:0 0 calc(var(--dw) + 44px)!important;width:auto!important;margin:0!important;padding:0 0 0 18px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;overflow:hidden;white-space:nowrap;font-family:"Pacifico",cursive!important;font-size:27px!important;font-weight:400!important;letter-spacing:0!important;line-height:1.3!important;color:#111!important;z-index:auto!important}
+  body.drawer-mini .topbar > .brand .b2{display:none}
+  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar > .guest-header-brand{display:none!important}
+  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar .desktop-top-search{order:1}
+  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar .desktop-top-avatar{display:none!important}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions{display:flex!important;order:2;margin:0 0 0 auto!important;padding:0!important;gap:10px!important;align-items:center;width:auto!important;flex:0 0 auto}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="home"]{display:none!important}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions #notifButton,html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="account"],html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="cart"],html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions #hdrWishlist{display:flex!important;position:relative;align-items:center;justify-content:center;box-sizing:border-box;width:40px!important;min-width:40px!important;height:40px!important;padding:0!important;border:1px solid #d9dce1!important;border-radius:50%!important;background:#fff!important;color:#1b1d21;font-size:20px;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="account"]{border:0!important;background:#e9ecf1!important;overflow:hidden}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions #notifButton{order:1}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="account"]{order:2}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions #hdrWishlist{order:3}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="cart"]{order:4}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions #headerLocationButton{display:inline-flex!important;order:5;align-items:center;gap:6px;height:40px!important;min-width:0;max-width:170px!important;padding:0 14px!important;border:1px solid #d9dce1!important;border-radius:999px!important;background:#fff!important;color:#1b1d21;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  /* Premium/iOS: header floats, content scrolls underneath and fades (same as mobile) */
+  html body.app-premium-navigation:not(.zz):not(.yy):not(.nav-pending) header.topbar{background:transparent!important}
+  html body.app-premium-navigation .fx-fade.top{display:block;position:fixed;top:0;left:0;right:0;height:96px;z-index:900;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.96) 45%,rgba(255,255,255,0));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+  html body.app-premium-navigation .fx-fade.bottom{display:none}
+
+  /* drawer sits below the header; vertical divider (drawer edge) starts below the header too */
   html body:not(.zz):not(.yy):not(.nav-pending){padding-left:calc(var(--dw) + 20px)!important}
-  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar{left:var(--dw)!important}
-  html body:not(.zz):not(.nav-pending)::before{left:var(--dw)!important}
-  #dwHandle{display:block;position:fixed;top:0;bottom:0;left:calc(var(--dw) - 4px);width:9px;cursor:col-resize;z-index:10001;touch-action:none}
+  html body:not(.zz):not(.yy):not(.nav-pending)::before,html body:not(.zz):not(.yy):not(.nav-pending)::after{display:none!important}
+  html body:not(.zz):not(.yy) #desktopDrawer{top:68px!important;bottom:0!important;height:auto!important;max-height:none!important}
+  html body:not(.zz):not(.yy) #desktopDrawer .desktop-drawer-head{display:none!important}
+  html body:not(.zz):not(.yy) #desktopDrawer .desktop-nav-links{scrollbar-width:none}
+  html body:not(.zz):not(.yy) #desktopDrawer .desktop-nav-links::-webkit-scrollbar{display:none}
+  html body:not(.zz):not(.yy) #desktopDrawer.mini .desktop-nav-link span:not(.shoppy-notification-badge){display:none!important}
+  html body:not(.zz):not(.yy) #desktopDrawer.mini .desktop-nav-link{justify-content:center!important;padding:0!important}
+  html body:not(.zz):not(.yy) #desktopDrawer{border-right:1px solid #e3e5e9!important}
+  html body:not(.zz):not(.yy) #desktopDrawer .desktop-nav-link span.shoppy-notification-badge[style*="none"]{display:none!important}
+  #dwHandle{display:block;position:fixed;top:68px;bottom:0;left:calc(var(--dw) - 4px);width:9px;cursor:col-resize;z-index:10001;touch-action:none}
   #dwHandle:hover{background:rgba(41,98,255,.18)}
-  html body:not(.zz) #desktopDrawer .desktop-nav-links{scrollbar-width:none}
-  html body:not(.zz) #desktopDrawer .desktop-nav-links::-webkit-scrollbar{display:none}
-  html body:not(.zz) #desktopDrawer .desktop-drawer-head .brand{overflow:hidden;text-overflow:clip}
-  html body:not(.zz) #desktopDrawer.mini .desktop-nav-link span:not(.shoppy-notification-badge){display:none!important}
-  html body:not(.zz) #desktopDrawer.mini .desktop-nav-link{justify-content:center!important;padding:0!important}
-  html body:not(.zz) #desktopDrawer.mini .desktop-drawer-head{justify-content:center!important;padding:0!important}
-  html body:not(.zz) #desktopDrawer.mini .desktop-drawer-head .brand{display:none!important}
-  html body:not(.zz) #desktopDrawer.mini .desktop-drawer-head::before{content:"S";color:var(--primary);font:800 24px var(--font-heading)}
+
   /* equal 24px spacing top / bottom / left / right */
   html body:not(.nav-pending) #productsSection,html body:not(.nav-pending) #searchPage,html body:not(.nav-pending) .app-view{margin-bottom:24px!important}
+
+  /* discount card fills the empty right side (home + explore) */
+  #offerBanner{display:none!important}
+  body.has-offer .offer-banner-desk{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;position:relative;overflow:hidden;align-self:stretch;min-height:200px;padding:28px;border-radius:18px;background:linear-gradient(135deg,#2962FF,#1744B5);color:#fff}
+  .offer-banner-desk b{font-size:14px;letter-spacing:1.5px}
+  .offer-banner-desk strong{font-family:var(--font-heading);font-size:48px;font-weight:800;line-height:1.1}
+  .offer-banner-desk strong em{font-style:normal;font-size:26px;margin-left:8px}
+  .offer-banner-desk small{font-size:11px;letter-spacing:1.5px;opacity:.85;margin:6px 0 16px}
+  .offer-banner-desk button{position:relative;z-index:1;padding:10px 22px;border:0;border-radius:999px;background:#fff;color:var(--primary);font-weight:700;font-size:14px}
+  .offer-banner-desk > i{position:absolute;right:16px;bottom:-18px;font-size:150px;opacity:.2;transform:rotate(-12deg)}
+  #productsSection > .explore-page-heading{grid-area:ehead}
+  #categoriesHeading{grid-area:cathead}
+  #exploreFilterRow{grid-area:filters}
+  #categories{grid-area:cat}
+  #categoryChips{grid-area:chips}
+  #productsSectionHead{grid-area:phead}
+  #productGrid{grid-area:grid}
+  #productsSection > .load-more-wrap{grid-area:more}
+  #offerBannerDesk{grid-area:offer}
+  body.has-offer:not(.explore-mode) #productsSection{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,400px);column-gap:24px;align-items:start;grid-template-areas:"cathead offer" "cat offer" "phead offer" "grid grid" "more more"}
+  body.explore-mode.has-offer #productsSection{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,400px);column-gap:24px;align-items:start;grid-template-areas:"ehead offer" "cathead offer" "filters offer" "chips offer" "phead phead" "grid grid" "more more"}
+  body.explore-mode:not(.has-offer) #productsSection{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,420px);column-gap:24px;align-items:start;grid-template-areas:"ehead cathead" "phead filters" "phead chips" "grid grid" "more more"}
+  body.explore-mode #categoryChips{flex-wrap:wrap;overflow:visible;margin:0 0 16px}
+  body.explore-mode #exploreFilterRow{flex-wrap:wrap;overflow:visible}
 }
+
+/* ================= ALL SIZES ================= */
+html body .topbar .nav-actions [data-top-nav="account"].has-pic i{display:none}
+.hdr-avatar{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}
+html body:not(.zz) #notifButton .shoppy-notification-badge{top:-2px!important;right:-2px!important}
+/* add-to-cart button: identical 34px circle everywhere */
+html body .product-card .add-button,html body #productGrid .add-button,html body #searchProductGrid .add-button{width:34px!important;min-width:34px!important;max-width:34px!important;height:34px!important;min-height:34px!important;flex:0 0 34px!important;padding:0!important;border-radius:50%!important;aspect-ratio:1/1;box-sizing:border-box!important;display:inline-flex!important;align-items:center;justify-content:center}
+/* cart images: same single light grey */
+html body .app-cart-image{background:var(--img-bg)!important}
+/* empty cart: centred (desktop + mobile), no side column */
+html body:not(.nav-pending) #cartPage:not(.has-items) .app-cart-layout{grid-template-columns:minmax(0,1fr)!important}
+html body #cartPage:not(.has-items) .app-status{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:50vh;padding:24px 0}
+html body #cartPage:not(.has-items) .app-status .app-primary-button{width:100%;max-width:240px;margin-left:auto;margin-right:auto}
+
 </style>
 
 <script id="shoppy-ui-update-2026-js">
@@ -6755,7 +7112,16 @@ body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-w
       b.classList.toggle("show",p>0);
     };
     var line=$("homeDiscountOffers");
-    if(line)new MutationObserver(upd).observe(line,{childList:true,characterData:true,subtree:true,attributes:true});
+    if(line)new MutationObserver(function(){upd()}).observe(line,{childList:true,characterData:true,subtree:true,attributes:true});
+    var ps=$("productsSection");
+    if(ps){
+      var d=document.createElement("section");d.className="offer-banner-desk";d.id="offerBannerDesk";
+      d.innerHTML='<b>UP TO</b><strong><span id="offerPctD">0</span>%<em>OFF</em></strong><small>ENDS SOON</small><button type="button" id="offerShopD">Shop Now →</button><i class="ph-fill ph-seal-percent" aria-hidden="true"></i>';
+      ps.insertBefore(d,ps.firstChild);
+      $("offerShopD").addEventListener("click",function(){var g=$("productGrid");if(g)g.scrollIntoView({behavior:"smooth"})});
+    }
+    var upd0=upd;
+    upd=function(){upd0();var pc=$("offerPct").textContent;var e=$("offerPctD");if(e)e.textContent=pc;document.body.classList.toggle("has-offer",Number(pc)>0)};
     setInterval(upd,1500);upd();
   }
 
@@ -6832,14 +7198,14 @@ body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-w
 
   /* 8. Desktop drawer: drag the divider. Whole drawer (background + selected tab) resizes;
         text hides when narrow; smallest size = selected tab is a perfect square. */
-  var dr=$("desktopDrawer"),MIN=62,MINI=150;
+  var dr=$("desktopDrawer"),MIN=63,MINI=150;
   if(dr){
     var hd=document.createElement("div");hd.id="dwHandle";hd.setAttribute("role","separator");hd.setAttribute("aria-orientation","vertical");document.body.appendChild(hd);
     var setW=function(w,save){
       w=Math.round(Math.max(MIN,Math.min(320,w)));
       document.documentElement.style.setProperty("--dw",w+"px");
       dr.style.setProperty("width",w+"px","important");
-      dr.classList.toggle("mini",w<MINI);
+      dr.classList.toggle("mini",w<MINI);document.body.classList.toggle("drawer-mini",w<MINI);
       if(save){try{localStorage.setItem("shoppy_drawer_w2",String(w))}catch(e){}}
     };
     var saved=226;try{saved=Number(localStorage.getItem("shoppy_drawer_w2"))||226}catch(e){}
