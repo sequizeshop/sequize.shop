@@ -35,8 +35,13 @@
       --divider: #E5E7EB;
       --success: #15803D;
       --success-bg: #ECFDF3;
+      --warn: #B45309;
+      --warn-bg: #FFF4E0;
       --error: #DC2626;
       --error-bg: #FEF2F2;
+
+      --track: #E3E5E9;
+      --track-dot: #C9CDD3;
 
       --font-body: "DM Sans", sans-serif;
       --font-heading: "Manrope", sans-serif;
@@ -252,16 +257,17 @@
       font-size: 12px;
     }
 
-    /* TOTAL + STATUS + ACTIONS */
+    /* TOTAL (left) + STATUS & ACTIONS (right) — always one line */
 
     .order-bottom {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 14px 18px;
+      gap: 12px;
       margin-top: 18px;
     }
+
+    .order-total { flex-shrink: 0; }
 
     .total-label {
       color: var(--text-secondary);
@@ -274,10 +280,12 @@
       font-weight: 800;
       letter-spacing: -.7px;
       line-height: 1.3;
-      overflow-wrap: anywhere;
+      white-space: nowrap;
     }
 
     .order-right {
+      flex: 1;
+      min-width: 0;
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -285,7 +293,7 @@
       gap: 8px;
     }
 
-    /* Small pill: used by status tags and buttons alike */
+    /* Small pill: used by the status tag and the buttons */
 
     .pill {
       display: inline-flex;
@@ -305,15 +313,9 @@
 
     .pill i { font-size: 14px; }
 
-    .pill.paid {
-      background: var(--success-bg);
-      color: var(--success);
-    }
-
-    .pill.failed {
-      background: var(--error-bg);
-      color: var(--error);
-    }
+    .pill.paid { background: var(--success-bg); color: var(--success); }
+    .pill.warn { background: var(--warn-bg); color: var(--warn); }
+    .pill.failed { background: var(--error-bg); color: var(--error); }
 
     button.pill,
     a.pill { transition: background .2s, color .2s; }
@@ -331,6 +333,92 @@
     }
 
     a.pill.pay:hover { background: var(--primary-hover); }
+
+    /* DELIVERY TRACKER */
+
+    .tracker {
+      --p: 0;
+      margin-top: 26px;
+    }
+
+    .step-labels,
+    .step-dots {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .step-labels div {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .step-dots {
+      position: relative;
+      height: 24px;
+      margin-top: 8px;
+    }
+
+    /* Line runs from the 1st dot centre to the 4th dot centre */
+    .track {
+      position: absolute;
+      left: 12.5%;
+      right: 12.5%;
+      top: 50%;
+      height: 4px;
+      margin-top: -2px;
+      border-radius: 4px;
+      background: var(--track);
+      overflow: hidden;
+    }
+
+    .track-fill {
+      width: calc(var(--p) * 100%);
+      height: 100%;
+      border-radius: 4px;
+      background: var(--success);
+      transition: width .8s ease;
+    }
+
+    .dot {
+      position: relative;
+      z-index: 1;
+      justify-self: center;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--track-dot);
+      border-radius: 50%;
+      background: #fff;
+      color: #fff;
+      font-size: 14px;
+      transition: background .3s, border-color .3s;
+    }
+
+    .dot i {
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .dot.done {
+      border-color: var(--success);
+      background: var(--success);
+    }
+
+    .dot.done i { opacity: 1; }
+
+    .eta {
+      margin: 12px 0 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .eta.delivered { color: var(--success); }
 
     /* EMPTY STATE */
 
@@ -379,13 +467,7 @@
 
     @media (max-width: 760px) {
       main { margin-top: 25px; }
-
-      .order-bottom {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .order-right { justify-content: flex-start; }
+      .step-labels div { font-size: 11px; }
     }
 
     @media (max-width: 380px) {
@@ -396,7 +478,13 @@
       }
 
       .product-name { font-size: 12px; }
-      .total { font-size: 22px; }
+      .total { font-size: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .track-fill,
+      .dot,
+      .dot i { transition: none; }
     }
   </style>
 </head>
@@ -446,6 +534,12 @@
 
     const ordersList = document.getElementById("ordersList");
     const message = document.getElementById("message");
+
+    // Tracker steps, left to right. Change the order/names here if needed.
+    const STEPS = ["Confirmed", "Order placed", "Shipped", "Delivered"];
+
+    // Server time minus device time, so progress follows the server clock
+    let serverDrift = 0;
 
     // Inline placeholder: no external request, so it can never fail to load
     const PLACEHOLDER_IMAGE =
@@ -503,37 +597,25 @@
       });
     }
 
-    function readableStatus(value) {
-      return String(value || "UNKNOWN")
-        .replace(/_/g, " ")
-        .toLowerCase()
-        .replace(/\b\w/g, letter => letter.toUpperCase());
+    function formatDay(ms) {
+      return new Date(ms).toLocaleDateString("en-IN", {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
     }
 
-    /* Green for every "good" state, red for every "bad" state, gray otherwise */
-    const GOOD = [
-      "PAID", "SUCCESS", "SUCCESSFUL", "COMPLETED", "CONFIRMED",
-      "CAPTURED", "AUTHORIZED", "DELIVERED", "SHIPPED", "PROCESSING"
-    ];
-    const BAD = ["FAILED", "CANCELLED", "CANCELED", "EXPIRED", "REFUNDED"];
-
-    function statusClass(status) {
-      const value = String(status || "").toUpperCase().replace(/\s+/g, "_");
-      if (GOOD.includes(value)) return "paid";
-      if (BAD.includes(value)) return "failed";
-      return "";
-    }
-
-    function statusIcon(cls) {
-      if (cls === "paid") return "ph-check-circle";
-      if (cls === "failed") return "ph-x-circle";
+    function statusIcon(tone) {
+      if (tone === "paid") return "ph-check-circle";
+      if (tone === "warn") return "ph-warning-circle";
+      if (tone === "failed") return "ph-x-circle";
       return "ph-clock";
     }
 
     /* ---------- Product images ----------
-       The orders API may not send an image for each item.
-       So we also load the products API (same one the home page uses)
-       and match each order item to its product by id (or title). */
+       The orders API sends an image for each item. Only if some are
+       still missing do we also use the products API as a backup. */
 
     let productImages = { byId: {}, byTitle: {} };
 
@@ -587,12 +669,87 @@
       }
     }
 
-    /* ---------- Render ---------- */
+    /* ---------- Delivery tracker ----------
+       Everything is decided by the orders API (active, start, end).
+       The page only draws it and keeps the line moving. */
+
+    function renderTracker(order) {
+      const t = order.tracking;
+      if (!t || typeof t !== "object") return "";
+
+      const labels = STEPS.map(name => `<div>${escapeHTML(name)}</div>`).join("");
+      const dots = STEPS.map(
+        () => `<span class="dot"><i class="ph ph-check"></i></span>`
+      ).join("");
+
+      return `
+        <div class="tracker"
+             role="group"
+             aria-label="Delivery progress"
+             data-start="${Number(t.startAt) || 0}"
+             data-end="${Number(t.endAt) || 0}"
+             data-active="${t.active ? "1" : "0"}"
+             data-forced="${t.forceDelivered ? "1" : "0"}"
+             data-note="${escapeHTML(t.note || "")}">
+
+          <div class="step-labels">${labels}</div>
+
+          <div class="step-dots">
+            <div class="track"><div class="track-fill"></div></div>
+            ${dots}
+          </div>
+
+          <p class="eta"></p>
+
+        </div>
+      `;
+    }
+
+    function updateTrackers() {
+      const now = Date.now() + serverDrift;
+
+      document.querySelectorAll(".tracker").forEach(el => {
+        const start = Number(el.dataset.start);
+        const end = Number(el.dataset.end);
+        const active = el.dataset.active === "1";
+        const forced = el.dataset.forced === "1";
+
+        let p = 0;
+
+        if (active) {
+          p = forced || end <= start
+            ? 1
+            : Math.min(1, Math.max(0, (now - start) / (end - start)));
+        }
+
+        el.style.setProperty("--p", p.toFixed(4));
+
+        const dots = el.querySelectorAll(".dot");
+        const last = Math.max(1, dots.length - 1);
+
+        dots.forEach((dot, i) => {
+          dot.classList.toggle("done", active && p >= i / last - 1e-9);
+        });
+
+        const eta = el.querySelector(".eta");
+        const done = active && p >= 1;
+
+        eta.classList.toggle("delivered", done);
+
+        if (!active) {
+          eta.textContent = el.dataset.note;
+        } else if (done) {
+          eta.textContent = "Delivered on " + formatDay(end);
+        } else {
+          eta.textContent = "Delivery by " + formatDay(end);
+        }
+      });
+    }
+
+    /* ---------- Order card ---------- */
 
     function renderOrder(order) {
       const orderId = String(order.orderId || "");
-      const paymentStatus = String(order.paymentStatus || "PENDING");
-      const orderStatus = String(order.orderStatus || "PENDING");
       const items = Array.isArray(order.items) ? order.items : [];
       const dateText = escapeHTML(formatDate(order.createdAt));
 
@@ -626,15 +783,11 @@
             </div>
           `;
 
-      const upperPayment = paymentStatus.toUpperCase();
-      const upperOrder = orderStatus.toUpperCase();
+      const tone = ["paid", "warn", "failed"].includes(order.statusTone)
+        ? order.statusTone
+        : "";
 
-      const canContinuePayment =
-        upperPayment === "PENDING" &&
-        !["CANCELLED", "FAILED", "COMPLETED", "DELIVERED"].includes(upperOrder);
-
-      const payClass = statusClass(paymentStatus);
-      const orderClass = statusClass(orderStatus);
+      const label = order.statusLabel || "Not paid";
 
       return `
         <article class="order-card">
@@ -652,20 +805,16 @@
 
             <div class="order-right">
 
-              <span class="pill ${payClass}">
-                <i class="ph ${statusIcon(payClass)}"></i>
-                Payment: ${escapeHTML(readableStatus(paymentStatus))}
-              </span>
-
-              <span class="pill ${orderClass}">
-                ${escapeHTML(readableStatus(orderStatus))}
+              <span class="pill ${tone}">
+                <i class="ph ${statusIcon(tone)}"></i>
+                ${escapeHTML(label)}
               </span>
 
               <button class="pill copy"
                       type="button"
                       data-copy-order="${escapeHTML(orderId)}">Copy order ID</button>
 
-              ${canContinuePayment
+              ${order.canContinuePayment
                 ? `<a class="pill pay"
                       href="/payment.html?orderId=${encodeURIComponent(orderId)}">Continue to payment</a>`
                 : ""}
@@ -673,6 +822,8 @@
             </div>
 
           </div>
+
+          ${renderTracker(order)}
 
         </article>
       `;
@@ -726,8 +877,8 @@
           return;
         }
 
-        // The orders API already sends item images. Only if some are
-        // still missing, fall back to the products API.
+        serverDrift = (Number(data.serverTime) || Date.now()) - Date.now();
+
         const missingImage = orders.some(o =>
           (Array.isArray(o.items) ? o.items : []).some(i => !i.thumbnail && !i.image)
         );
@@ -737,6 +888,8 @@
           `${orders.length} order${orders.length === 1 ? "" : "s"} found.`;
 
         ordersList.innerHTML = orders.map(renderOrder).join("");
+
+        updateTrackers();
 
       } catch (error) {
         console.error("Load orders error:", error);
@@ -771,6 +924,13 @@
         message.textContent =
           "Copy failed. Please select and copy the order ID manually.";
       }
+    });
+
+    // Keep every order's line moving while the page is open
+    setInterval(updateTrackers, 30000);
+
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) updateTrackers();
     });
 
     loadOrders();
