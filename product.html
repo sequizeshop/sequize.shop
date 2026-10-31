@@ -2324,11 +2324,18 @@ function proxyImage(url) {
         } else {
           for (const [key, value] of Object.entries(group)) {
             if (value == null || value === "" || ignored.has(key)) continue;
-            addRow(humanizeKey(key), value, iconForDetail(key));
+            // Category specifications keep their label exactly as saved
+            // (e.g. "RAM", "Screen Size") and are listed first.
+            const before = rows.length;
+            addRow(String(key), value, iconForDetail(key));
+            if (rows.length > before) rows[rows.length - 1].spec = true;
           }
         }
       }
       if (Array.isArray(product.tags) && product.tags.length) addRow("Tags", product.tags.join(", "), "ph-hash");
+
+      // Category specific details first, then the general information.
+      rows.sort((a, b) => (b.spec ? 1 : 0) - (a.spec ? 1 : 0));
 
       // Keep the table clean if the API has duplicate spec fields.
       const seen = new Set();
