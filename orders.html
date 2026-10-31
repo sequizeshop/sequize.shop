@@ -46,7 +46,8 @@
       --green-1: #4ADE80;
       --green-2: #16A34A;
       --dot-size: 20px;
-      --seg-h: 10px;
+      --seg-h: 5px;
+      --head-size: 10px;
       --head-pad: 2px;
       --seg-gap: 6px;
 
@@ -401,6 +402,7 @@
 
     .step-label.done { color: var(--text-primary); }
 
+    /* upcoming: thin light-grey ring, nothing inside */
     .dot {
       position: relative;
       justify-self: center;
@@ -408,20 +410,13 @@
       height: var(--dot-size);
       display: grid;
       place-items: center;
-      border: 2px solid var(--track-dot);
+      border: 2px solid var(--track);
       border-radius: 50%;
-      background: #F3F4F6;
-      transition: background .35s, border-color .35s, box-shadow .35s;
+      background: #fff;
+      transition: background .35s, border-color .35s;
     }
 
-    /* waiting dot: small grey centre */
-    .dot::before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--track-dot);
-    }
+    .dot::before { display: none; }
 
     .dot svg {
       position: absolute;
@@ -436,22 +431,28 @@
       stroke-linejoin: round;
       stroke-dasharray: 1;
       stroke-dashoffset: 1;
-      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .18));
     }
 
-    .dot.done {
-      border-color: #fff;
-      background: linear-gradient(145deg, var(--green-1), var(--green-2));
-      box-shadow:
-        0 0 0 2px rgba(22, 163, 74, .22),
-        0 4px 10px rgba(21, 128, 61, .3);
+    /* done: plain green circle with a check */
+    .dot.done,
+    .dot.current {
+      border-color: var(--green-2);
+      background: var(--green-2);
     }
-
-    .dot.done::before { display: none; }
 
     .dot.done svg {
       stroke-dashoffset: 0;
       transition: stroke-dashoffset .45s ease .12s;
+    }
+
+    /* on the way: green circle with a small white dot */
+    .dot.current::before {
+      content: "";
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
     }
 
     /* Rounded line pieces between dots */
@@ -478,7 +479,7 @@
       transition: width 1s linear;
     }
 
-    .seg.live .fill { min-width: var(--seg-h); }
+    .seg.live .fill { min-width: var(--head-size); }
 
     /* light sweeping along the live line */
     .shine {
@@ -493,18 +494,35 @@
       animation: sweep 1.8s linear infinite;
     }
 
-    .seg.live .shine { display: block; }
+    .seg.live .shine { display: block; z-index: 0; }
 
-    /* glowing head at the moving end of the live line */
+    /* moving head at the end of the live line: green disc, white dot inside,
+       green ripple coming out of the white dot */
+    .seg.live .fill::before,
     .seg.live .fill::after {
       content: "";
       position: absolute;
-      right: var(--head-pad);
-      top: var(--head-pad);
-      width: calc(var(--seg-h) - 2 * var(--head-pad));
-      height: calc(var(--seg-h) - 2 * var(--head-pad));
       border-radius: 50%;
+    }
+
+    .seg.live .fill::before {
+      right: 0;
+      top: 50%;
+      width: var(--head-size);
+      height: var(--head-size);
+      margin-top: calc(var(--head-size) / -2);
+      background: linear-gradient(145deg, var(--green-1), var(--green-2));
+      z-index: 1;
+    }
+
+    .seg.live .fill::after {
+      right: var(--head-pad);
+      top: 50%;
+      width: calc(var(--head-size) - 2 * var(--head-pad));
+      height: calc(var(--head-size) - 2 * var(--head-pad));
+      margin-top: calc((var(--head-size) - 2 * var(--head-pad)) / -2);
       background: #fff;
+      z-index: 2;
       animation: ripple 1.6s ease-out infinite;
     }
 
@@ -616,7 +634,8 @@
 
       :root {
         --dot-size: 18px;
-        --seg-h: 8px;
+        --seg-h: 4px;
+        --head-size: 8px;
         --seg-gap: 5px;
       }
 
@@ -970,10 +989,17 @@
           seg.classList.toggle("live", i === liveIndex);
         });
 
+        const states = Array.from(dots, (_, i) =>
+          active && (forced || now >= (ms[i] ?? Infinity))
+        );
+
+        // the first step that is not done yet is the one on the way
+        const currentIndex = active ? states.indexOf(false) : -1;
+
         dots.forEach((dot, i) => {
-          const done = active && (forced || now >= (ms[i] ?? Infinity));
-          dot.classList.toggle("done", done);
-          labels[i].classList.toggle("done", done);
+          dot.classList.toggle("done", states[i]);
+          dot.classList.toggle("current", i === currentIndex);
+          labels[i].classList.toggle("done", states[i] || i === currentIndex);
         });
 
         const overall = active
