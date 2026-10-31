@@ -6601,24 +6601,32 @@
     }
 </style>
 
-<!-- ===== SHOPPY HOME UI UPDATE ===== -->
+<!-- ===== SHOPPY HOME UI UPDATE v2 ===== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 
 <style id="shoppy-ui-update-2026">
 :root{
   --dw:226px;
+  --gut:16px;
   --ic-cart:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='21' r='1'/%3E%3Ccircle cx='20' cy='21' r='1'/%3E%3Cpath d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6'/%3E%3C/svg%3E");
   --ic-check:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
 }
 
-/* ---------- PRODUCT CARD (mobile + desktop): wishlist on image, name + price + cart icon ---------- */
-.product-card:not(.skeleton-card){padding:8px;border:1px solid var(--border);border-radius:16px;background:var(--surface);box-shadow:0 1px 4px rgba(20,25,35,.05)}
+/* ================= PRODUCT CARD (all devices) =================
+   Image touches the border on every side, card has rounded corners,
+   image/card background is transparent so the image's own colour shows. */
+.product-card:not(.skeleton-card){padding:0;border:1px solid var(--border);border-radius:16px;background:var(--surface);overflow:hidden;box-shadow:none}
+.product-card .product-image,
+.product-grid.list-view .product-image{padding:0!important;border-radius:0!important;background:transparent!important}
+.product-card:hover .product-image{background:transparent!important}
+.product-card .product-image img{object-fit:cover!important}
 .product-card .product-category,.product-card .product-description,.product-card .product-rating{display:none!important}
-.product-card .product-info{padding:8px 2px 0}
+.product-card .product-info{padding:10px 12px 12px!important}
 .product-card .product-title{min-height:0;margin:0;font-size:13px;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .product-card .product-bottom{padding-top:6px;margin-top:6px}
 .product-card .product-price{font-size:15px}
 .product-card .product-original-price{display:none}
-.product-image{border-radius:12px}
 .wish-btn{position:absolute;top:8px;right:8px;z-index:3;width:30px;height:30px;padding:0;display:flex;align-items:center;justify-content:center;border:0;border-radius:50%;background:#fff;color:#4b4f56;font-size:17px;box-shadow:0 1px 5px rgba(0,0,0,.15)}
 .wish-btn.on{color:#e53935}
 .add-button i{display:none!important}
@@ -6628,12 +6636,11 @@
 .add-button.added{background:var(--primary)!important;border-color:var(--primary)!important;color:#fff!important}
 
 /* Search page: same card, grid instead of list */
-#searchProductGrid.product-grid.list-view{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px 14px!important}
-#searchProductGrid.list-view .product-card{flex-direction:column!important;gap:0!important;padding:8px!important;border-bottom:1px solid var(--border)!important}
-#searchProductGrid.list-view .product-image{width:100%!important;min-width:0!important;height:auto!important;aspect-ratio:1/1!important}
-#searchProductGrid.list-view .product-info{padding:8px 2px 0!important}
+#searchProductGrid.product-grid.list-view,#productGrid.product-grid.list-view{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px 14px!important}
+.product-grid.list-view .product-card{flex-direction:column!important;gap:0!important;padding:0!important;border-bottom:1px solid var(--border)!important}
+.product-grid.list-view .product-image{width:100%!important;min-width:0!important;height:auto!important;aspect-ratio:1/1!important}
+.product-grid.list-view .product-info{padding:10px 12px 12px!important}
 
-/* ---------- OFFER BANNER (mobile home) ---------- */
 .offer-banner{display:none}
 .category-chips{display:none}
 body.explore-mode .category-chips{display:flex;gap:8px;overflow-x:auto;margin:0 0 16px;padding-bottom:4px;scrollbar-width:none}
@@ -6643,25 +6650,31 @@ body.explore-mode .category-chips{display:flex;gap:8px;overflow-x:auto;margin:0 
 [data-filter="category"]{display:none!important}
 body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
 
-/* ---------- CART: Order Summary hidden while the cart is empty / loading ---------- */
+/* Cart: Order Summary only when the cart really has items */
 #cartPage .app-summary{display:none!important}
 #cartPage.has-items .app-summary{display:block!important}
 #cartPage:not(.has-items) .app-cart-layout{grid-template-columns:minmax(0,1fr)!important}
 
-/* ---------- MOBILE ---------- */
+/* ================= MOBILE (Basic + Premium/iOS share one toolbar) ================= */
 @media (max-width:760px){
-  /* Header: Brand left, notification + profile right */
-  .topbar .brand,.topbar .guest-header-brand{order:-1}
-  .topbar .nav-actions{order:1;margin-left:auto}
+  /* Toolbar: brand left (black, brand font) | notification (grey ring) | profile picture */
+  html body .topbar{height:60px!important;min-height:60px!important;padding:0 var(--gut)!important;border:0!important;border-bottom:0!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px}
+  html body .topbar .brand,html body .topbar .guest-header-brand{order:-1;font-family:"Pacifico",cursive!important;font-size:27px!important;font-weight:400!important;letter-spacing:0!important;line-height:1.3!important;color:#111!important}
+  .topbar .nav-actions{order:1;margin-left:auto;gap:10px}
   html body .nav-actions [data-top-nav="home"],
   html body .nav-actions [data-top-nav="cart"],
   html body #headerLocationButton{display:none!important}
-  html body .nav-actions #notifButton{display:flex!important;order:1}
-  html body .nav-actions [data-top-nav="account"]{display:flex!important;order:2}
+  html body .topbar .nav-actions #notifButton,
+  html body .topbar .nav-actions [data-top-nav="account"]{display:flex!important;align-items:center;justify-content:center;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;box-sizing:border-box}
+  html body .topbar .nav-actions #notifButton{order:1;border:1px solid #d9dce1;background:#fff;color:#1b1d21;font-size:21px}
+  html body .topbar .nav-actions [data-top-nav="account"]{order:2;border:0;background:#e9ecf1;overflow:hidden}
+  html body .topbar .nav-actions [data-top-nav="account"].has-pic i{display:none}
+  .hdr-avatar{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}
+  html body #notifButton .shoppy-notification-badge{top:-2px!important;right:-2px!important}
 
   /* Offer banner replaces hero on mobile */
   .hero-wrap{display:none!important}
-  .offer-banner.show{display:flex;align-items:center;justify-content:space-between;gap:12px;width:90%;margin:18px auto 0;padding:20px;position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(135deg,#2962FF,#1744B5);color:#fff}
+  .offer-banner.show{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px;position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(135deg,#2962FF,#1744B5);color:#fff}
   body.explore-mode .offer-banner{display:none!important}
   .offer-banner small{display:block;font-size:10px;letter-spacing:1.5px;opacity:.85;margin:4px 0 12px}
   .offer-banner b{display:block;font-size:13px;letter-spacing:1px}
@@ -6669,44 +6682,58 @@ body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-w
   .offer-banner strong em{font-style:normal;font-size:20px;margin-left:6px}
   .offer-banner button{padding:9px 18px;border:0;border-radius:999px;background:#fff;color:var(--primary);font-weight:700;font-size:13px}
   .offer-banner > i{font-size:92px;opacity:.22;transform:rotate(-12deg)}
-  .product-grid:not(.list-view),#searchProductGrid.product-grid.list-view{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+  .product-grid:not(.list-view),.product-grid.list-view{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+
+  /* Equal page spacing: same gutter left, right, top and bottom */
+  html body #homeSearchWrap,html body #offerBanner,html body #productsSection,html body #searchPage,html body .app-view{width:auto!important;max-width:none!important;margin-left:var(--gut)!important;margin-right:var(--gut)!important}
+  html body #homeSearchWrap{margin-top:var(--gut)!important;margin-bottom:0!important}
+  html body #offerBanner.show{margin-top:var(--gut)!important}
+  html body #productsSection{margin-top:var(--gut)!important;margin-bottom:var(--gut)!important}
+  html body #searchPage,html body .app-view{margin-top:var(--gut)!important;margin-bottom:var(--gut)!important}
+  html body .footer{padding-left:var(--gut);padding-right:var(--gut)}
 }
 
-/* ---------- iOS / PREMIUM mobile: shorter, glassier, floating with dark shadow ---------- */
+/* ================= PREMIUM / iOS mobile: floating glass ================= */
 .fx-fade{display:none}
 @media (max-width:760px){
-  :root{--bottom-nav-height:56px}
-  body.app-premium-navigation .bottom-nav{
-    height:56px;padding:5px;
+  html body.app-premium-navigation{--bottom-nav-height:52px;padding-bottom:calc(52px + 14px + var(--gut) + env(safe-area-inset-bottom,0px))!important}
+
+  /* header floats: no bar, no divider; content scrolls underneath and fades */
+  html body.app-premium-navigation .topbar{top:0!important;width:100%!important;margin:0!important;border-radius:0!important;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;overflow:visible!important}
+  html body.app-premium-navigation .topbar::before{display:none!important}
+  body.app-premium-navigation .fx-fade{display:block;position:fixed;left:0;right:0;z-index:900;pointer-events:none}
+  body.app-premium-navigation .fx-fade.top{top:0;height:calc(env(safe-area-inset-top,0px) + 86px);background:linear-gradient(180deg,rgba(255,255,255,.96) 45%,rgba(255,255,255,0));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+  body.app-premium-navigation .fx-fade.bottom{bottom:0;height:calc(env(safe-area-inset-bottom,0px) + 100px);background:linear-gradient(0deg,rgba(255,255,255,.96) 35%,rgba(255,255,255,0))}
+
+  /* bottom bar: equal 4px gap between bar edge and selected pill on all four sides */
+  html body.app-premium-navigation .bottom-nav{
+    height:52px;padding:4px;gap:0;
     background:linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.16));
     -webkit-backdrop-filter:blur(30px) saturate(220%);backdrop-filter:blur(30px) saturate(220%);
     border:1px solid rgba(255,255,255,.75);
     box-shadow:0 12px 32px rgba(0,0,0,.24),0 2px 8px rgba(0,0,0,.14),inset 0 1px 1px rgba(255,255,255,.95),inset 0 -1px 1px rgba(255,255,255,.3)}
-  body.app-premium-navigation .bottom-nav-item{height:44px}
-  body.app-premium-navigation .topbar{
-    background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,.18));
-    -webkit-backdrop-filter:blur(30px) saturate(220%);backdrop-filter:blur(30px) saturate(220%);
-    box-shadow:0 12px 30px rgba(0,0,0,.22),0 2px 8px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.95)}
-  /* content scrolling underneath fades out so it is not clearly visible behind floating bars */
-  body.app-premium-navigation .fx-fade{display:block;position:fixed;left:0;right:0;z-index:900;pointer-events:none}
-  body.app-premium-navigation .fx-fade.top{top:0;height:calc(env(safe-area-inset-top,0px) + 84px);background:linear-gradient(180deg,#fff 40%,rgba(255,255,255,0))}
-  body.app-premium-navigation .fx-fade.bottom{bottom:0;height:calc(env(safe-area-inset-bottom,0px) + 100px);background:linear-gradient(0deg,#fff 35%,rgba(255,255,255,0))}
+  html body.app-premium-navigation .bottom-nav-item{height:42px}
+  html body.app-premium-navigation .nav-indicator{top:4px!important;height:42px!important}
 }
 
-/* ---------- DESKTOP: resizable drawer (drag the divider) ---------- */
+/* ================= DESKTOP ================= */
 #dwHandle{display:none}
 @media (min-width:761px){
   html body:not(.zz):not(.yy):not(.nav-pending){padding-left:calc(var(--dw) + 20px)!important}
-  html body:not(.zz) #desktopDrawer{width:var(--dw)!important}
   html body:not(.zz):not(.yy):not(.nav-pending) header.topbar{left:var(--dw)!important}
   html body:not(.zz):not(.nav-pending)::before{left:var(--dw)!important}
   #dwHandle{display:block;position:fixed;top:0;bottom:0;left:calc(var(--dw) - 4px);width:9px;cursor:col-resize;z-index:10001;touch-action:none}
   #dwHandle:hover{background:rgba(41,98,255,.18)}
+  html body:not(.zz) #desktopDrawer .desktop-nav-links{scrollbar-width:none}
+  html body:not(.zz) #desktopDrawer .desktop-nav-links::-webkit-scrollbar{display:none}
+  html body:not(.zz) #desktopDrawer .desktop-drawer-head .brand{overflow:hidden;text-overflow:clip}
   html body:not(.zz) #desktopDrawer.mini .desktop-nav-link span:not(.shoppy-notification-badge){display:none!important}
   html body:not(.zz) #desktopDrawer.mini .desktop-nav-link{justify-content:center!important;padding:0!important}
   html body:not(.zz) #desktopDrawer.mini .desktop-drawer-head{justify-content:center!important;padding:0!important}
   html body:not(.zz) #desktopDrawer.mini .desktop-drawer-head .brand{display:none!important}
-  html body:not(.zz) #desktopDrawer.mini .desktop-drawer-head::before{content:"S.";color:var(--primary);font:800 21px var(--font-heading)}
+  html body:not(.zz) #desktopDrawer.mini .desktop-drawer-head::before{content:"S";color:var(--primary);font:800 24px var(--font-heading)}
+  /* equal 24px spacing top / bottom / left / right */
+  html body:not(.nav-pending) #productsSection,html body:not(.nav-pending) #searchPage,html body:not(.nav-pending) .app-view{margin-bottom:24px!important}
 }
 </style>
 
@@ -6715,7 +6742,7 @@ body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-w
   "use strict";
   var $=function(id){return document.getElementById(id)};
 
-  /* 1. Offer banner: "UP TO X% OFF", driven by the admin discount already loaded by the page */
+  /* 1. Offer banner "UP TO X% OFF" from the admin discount already loaded by the page */
   var home=$("homeContent"),search=$("homeSearchWrap");
   if(home&&search){
     var b=document.createElement("section");b.className="offer-banner";b.id="offerBanner";
@@ -6783,35 +6810,47 @@ body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-w
     build();
   }
 
-  /* 5. Cart: Order Summary only when the cart really has items */
+  /* 5. Cart summary only with items */
   var cart=$("cartPage"),items=$("appCartItems");
   if(cart&&items){
     var sync=function(){cart.classList.toggle("has-items",!!items.querySelector(".app-cart-item"))};
     new MutationObserver(sync).observe(items,{childList:true,subtree:true});sync();
   }
 
-  /* 6. iOS: fade layers under the floating header / bottom bar */
+  /* 6. Fade layers under the floating iOS header / bottom bar */
   ["top","bottom"].forEach(function(p){var d=document.createElement("div");d.className="fx-fade "+p;d.setAttribute("aria-hidden","true");document.body.appendChild(d)});
 
-  /* 7. Desktop: drag the drawer divider; narrow = icons only, wide = text returns */
-  var dr=$("desktopDrawer");
+  /* 7. Header profile picture (circular) */
+  var acc=document.querySelector('.nav-actions [data-top-nav="account"]');
+  if(acc){
+    var im=document.createElement("img");im.className="hdr-avatar";im.alt="";
+    im.src="https://randomuser.me/api/portraits/women/44.jpg";
+    im.addEventListener("load",function(){acc.classList.add("has-pic")});
+    im.addEventListener("error",function(){im.remove();acc.classList.remove("has-pic")});
+    acc.appendChild(im);
+  }
+
+  /* 8. Desktop drawer: drag the divider. Whole drawer (background + selected tab) resizes;
+        text hides when narrow; smallest size = selected tab is a perfect square. */
+  var dr=$("desktopDrawer"),MIN=62,MINI=150;
   if(dr){
     var hd=document.createElement("div");hd.id="dwHandle";hd.setAttribute("role","separator");hd.setAttribute("aria-orientation","vertical");document.body.appendChild(hd);
     var setW=function(w,save){
-      w=Math.max(64,Math.min(320,w));if(save&&w<140)w=64;
+      w=Math.round(Math.max(MIN,Math.min(320,w)));
       document.documentElement.style.setProperty("--dw",w+"px");
-      dr.classList.toggle("mini",w<140);
-      if(save){try{localStorage.setItem("shoppy_drawer_w",String(w))}catch(e){}}
-      return w;
+      dr.style.setProperty("width",w+"px","important");
+      dr.classList.toggle("mini",w<MINI);
+      if(save){try{localStorage.setItem("shoppy_drawer_w2",String(w))}catch(e){}}
     };
-    try{var s=Number(localStorage.getItem("shoppy_drawer_w"));if(s)setW(s,false)}catch(e){}
+    var saved=226;try{saved=Number(localStorage.getItem("shoppy_drawer_w2"))||226}catch(e){}
+    setW(saved,false);
     hd.addEventListener("pointerdown",function(e){
       e.preventDefault();hd.setPointerCapture(e.pointerId);document.body.style.userSelect="none";
       var mv=function(ev){setW(ev.clientX,false)};
       var up=function(ev){hd.removeEventListener("pointermove",mv);hd.removeEventListener("pointerup",up);document.body.style.userSelect="";setW(ev.clientX,true)};
       hd.addEventListener("pointermove",mv);hd.addEventListener("pointerup",up);
     });
-    hd.addEventListener("dblclick",function(){setW(dr.classList.contains("mini")?226:64,true)});
+    hd.addEventListener("dblclick",function(){setW(dr.classList.contains("mini")?226:MIN,true)});
   }
 })();
 </script>
