@@ -45,8 +45,9 @@
       --track-dot: #D3D6DC;
       --green-1: #4ADE80;
       --green-2: #16A34A;
-      --dot-size: 24px;
-      --seg-h: 8px;
+      --dot-size: 20px;
+      --seg-h: 10px;
+      --head-pad: 2px;
       --seg-gap: 6px;
 
       --font-body: "DM Sans", sans-serif;
@@ -396,8 +397,8 @@
     /* waiting dot: small grey centre */
     .dot::before {
       content: "";
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--track-dot);
     }
@@ -479,19 +480,24 @@
     .seg.live .fill::after {
       content: "";
       position: absolute;
-      right: 0;
-      top: 0;
-      width: var(--seg-h);
-      height: var(--seg-h);
+      right: var(--head-pad);
+      top: var(--head-pad);
+      width: calc(var(--seg-h) - 2 * var(--head-pad));
+      height: calc(var(--seg-h) - 2 * var(--head-pad));
       border-radius: 50%;
       background: #fff;
-      border: 2px solid var(--green-2);
-      animation: pulse 1.6s ease-out infinite;
+      animation: ripple 1.6s ease-out infinite;
     }
 
     @keyframes sweep {
       from { background-position: -150% 0; }
       to { background-position: 250% 0; }
+    }
+
+    @keyframes ripple {
+      0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, .65); }
+      70% { box-shadow: 0 0 0 7px rgba(22, 163, 74, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
     }
 
     @keyframes pulse {
@@ -590,8 +596,8 @@
       main { margin-top: 25px; }
 
       :root {
-        --dot-size: 22px;
-        --seg-h: 7px;
+        --dot-size: 18px;
+        --seg-h: 8px;
         --seg-gap: 5px;
       }
 
