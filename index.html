@@ -7,22 +7,22 @@
 
   <title>Sequize Shop | Discover Products</title>
 
-  <meta name="description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
+  <meta name="description" content="Discover products, explore categories and find your next favorite item at Sequize.">
   <meta name="robots" content="index, follow">
 
   <link rel="canonical" href="https://YOUR-DOMAIN/home.html">
 
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Shoppy">
-  <meta property="og:title" content="Shoppy — Discover Products">
-  <meta property="og:description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
+  <meta property="og:site_name" content="Sequize">
+  <meta property="og:title" content="Sequize — Discover Products">
+  <meta property="og:description" content="Discover products, explore categories and find your next favorite item at Sequize.">
   <meta property="og:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
   <meta property="og:url" content="https://YOUR-DOMAIN/home.html">
-  <meta property="og:image:alt" content="Shoppy logo">
+  <meta property="og:image:alt" content="Sequize logo">
 
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Sequize Shop | Discover Products">
-  <meta name="twitter:description" content="Discover products, explore categories and find your next favorite item at Shoppy.">
+  <meta name="twitter:description" content="Discover products, explore categories and find your next favorite item at Sequize.">
   <meta name="twitter:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
   <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
@@ -2729,7 +2729,7 @@
     padding-top:58px !important;
   }
   body.app-basic-navigation:not(.nav-pending) #bottomNav.nav-expanded::before {
-    content:"Shoppy.";
+    content:"Sequize";
     position:absolute;
     top:16px;
     left:18px;
@@ -3056,6 +3056,430 @@
     html body #cartPage .app-cart-price, html body #cartPage .app-remove { font-size:12px !important; }
   }
 </style>
+
+<style id="sequize-desktop-and-shared-fixes">
+/* Shared brand and image fallbacks */
+html body .brand,
+html body .guest-header-brand { color:#111 !important; }
+html body .nav-actions [data-top-nav="account"] { background:#e9ecf1 !important; overflow:hidden; }
+html body .hdr-avatar,
+html body .app-avatar img,
+html body .app-profile-image img,
+html body .profile-avatar img {
+  background:#e9ecf1 !important;
+}
+html body .app-avatar { background:#e9ecf1 !important; color:#555 !important; }
+html body .product-image,
+html body .app-cart-image { background:#f1f2f4 !important; }
+
+/* Uniform, perfectly circular add-to-cart controls on every product surface. */
+html body button.add-button,
+html body .product-card button.add-button,
+html body #productGrid button.add-button,
+html body #searchProductGrid button.add-button {
+  width:36px !important; min-width:36px !important; max-width:36px !important;
+  height:36px !important; min-height:36px !important; max-height:36px !important;
+  flex:0 0 36px !important; aspect-ratio:1 / 1 !important;
+  padding:0 !important; border-radius:50% !important;
+  display:inline-flex !important; align-items:center !important; justify-content:center !important;
+  box-sizing:border-box !important;
+}
+html body .product-card .product-bottom { align-items:center !important; }
+
+/* Empty cart is centred in the available page area on both desktop and mobile. */
+html body #cartPage:not(.has-items) .app-cart-layout {
+  display:flex !important; justify-content:center !important; align-items:center !important;
+  width:100% !important; min-height:55vh !important;
+}
+html body #cartPage:not(.has-items) .app-cart-items {
+  width:100% !important; min-height:55vh !important;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+}
+html body #cartPage:not(.has-items) .app-status {
+  width:100% !important; min-height:55vh !important; margin:0 !important;
+  display:flex !important; flex-direction:column !important;
+  align-items:center !important; justify-content:center !important; text-align:center !important;
+}
+html body #cartPage:not(.has-items) .app-status p { max-width:420px; }
+html body #cartPage:not(.has-items) .app-status .app-primary-button {
+  width:auto !important; min-width:190px; max-width:240px !important;
+}
+
+/* DESKTOP: header is one uninterrupted sticky bar; the drawer/divider begin below it. */
+@media (min-width:761px) {
+  html body:not(.nav-pending) { padding-top:68px !important; }
+  html body header.topbar,
+  html body.app-basic-navigation header.topbar,
+  html body.app-premium-navigation header.topbar {
+    position:fixed !important; inset:0 0 auto 0 !important;
+    width:100% !important; height:68px !important; min-height:68px !important;
+    margin:0 !important; padding:0 24px 0 0 !important;
+    display:flex !important; flex-direction:row !important; align-items:center !important;
+    justify-content:flex-start !important; gap:14px !important;
+    background:#fff !important; border:0 !important; border-bottom:1px solid #e7e9ed !important;
+    border-radius:0 !important; box-shadow:0 2px 10px rgba(0,0,0,.07) !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    overflow:visible !important; z-index:10000 !important;
+  }
+  html body header.topbar > .brand {
+    order:0 !important; position:static !important; inset:auto !important; transform:none !important;
+    display:flex !important; align-items:center !important; flex:0 0 var(--dw) !important;
+    width:var(--dw) !important; height:68px !important; margin:0 !important;
+    padding:0 12px 0 20px !important; overflow:hidden !important; white-space:nowrap !important;
+    background:transparent !important; border:0 !important; box-shadow:none !important;
+    color:#111 !important; font-family:"Pacifico",cursive !important;
+    font-size:27px !important; font-weight:400 !important; letter-spacing:0 !important;
+  }
+  html body header.topbar > .brand .b1,
+  html body header.topbar > .brand .b2 { display:inline !important; }
+  html body.drawer-mini header.topbar > .brand .b2 { display:none !important; }
+  html body header.topbar .desktop-top-search {
+    order:1 !important; display:flex !important; flex:1 1 480px !important;
+    width:auto !important; max-width:720px !important; min-width:180px !important;
+    height:42px !important; margin:0 !important;
+  }
+  html body header.topbar .desktop-top-search input { min-width:0 !important; }
+  html body header.topbar .desktop-top-avatar { display:none !important; }
+  html body header.topbar .nav-actions {
+    order:2 !important; display:flex !important; flex:0 0 auto !important;
+    align-items:center !important; gap:9px !important; margin-left:auto !important;
+    width:auto !important; padding:0 !important;
+  }
+  html body header.topbar .nav-actions [data-top-nav="home"] { display:none !important; }
+  html body header.topbar .nav-actions #notifButton,
+  html body header.topbar .nav-actions [data-top-nav="account"],
+  html body header.topbar .nav-actions [data-top-nav="cart"],
+  html body header.topbar .nav-actions #hdrWishlist {
+    display:flex !important; position:relative !important;
+    align-items:center !important; justify-content:center !important;
+    width:40px !important; min-width:40px !important; height:40px !important;
+    padding:0 !important; border:1px solid #d9dce1 !important; border-radius:50% !important;
+    background:#fff !important; color:#202124 !important; font-size:20px !important;
+    box-shadow:none !important;
+  }
+  html body header.topbar .nav-actions [data-top-nav="account"] {
+    border:0 !important; background:#e9ecf1 !important; overflow:hidden !important;
+  }
+  html body header.topbar .nav-actions #notifButton { order:1 !important; }
+  html body header.topbar .nav-actions [data-top-nav="account"] { order:2 !important; }
+  html body header.topbar .nav-actions #hdrWishlist { order:3 !important; }
+  html body header.topbar .nav-actions [data-top-nav="cart"] { order:4 !important; }
+  html body header.topbar .nav-actions #headerLocationButton {
+    display:inline-flex !important; order:5 !important; align-items:center !important; gap:6px !important;
+    height:40px !important; min-width:0 !important; max-width:170px !important;
+    padding:0 13px !important; border:1px solid #d9dce1 !important; border-radius:999px !important;
+    background:#fff !important; color:#202124 !important; box-shadow:none !important;
+  }
+  html body header.topbar .guest-header-brand,
+  html body header.topbar .guest-header-actions { display:none !important; }
+
+  /* Sidebar is independent from the header. Its vertical divider starts at y=68px. */
+  html body #desktopDrawer {
+    position:fixed !important; top:68px !important; bottom:0 !important;
+    left:0 !important; right:auto !important; height:auto !important; max-height:none !important;
+    width:var(--dw) !important; margin:0 !important; padding:14px 10px !important;
+    border:0 !important; border-right:1px solid #e3e5e9 !important;
+    border-radius:0 !important; box-shadow:none !important; transform:none !important;
+    background:#fff !important; z-index:9998 !important; overflow-x:hidden !important; overflow-y:auto !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head { display:none !important; }
+  html body #desktopDrawer .desktop-nav-links { display:flex !important; flex-direction:column !important; gap:6px !important; }
+  html body #desktopDrawer .desktop-nav-link { min-height:46px !important; }
+  html body #desktopDrawer.mini .desktop-nav-link { justify-content:center !important; padding:0 !important; }
+  html body #desktopDrawer.mini .desktop-nav-link span:not(.shoppy-notification-badge) { display:none !important; }
+  #dwHandle { display:block !important; top:68px !important; bottom:0 !important; }
+  html body .desktop-drawer-overlay { z-index:9997 !important; }
+
+  /* The page scrolls in its own column; it never slides underneath the header. */
+  html body #homeContent,
+  html body #searchPage,
+  html body .app-view {
+    min-width:0;
+  }
+  html body:not(.nav-pending) { padding-left:calc(var(--dw) + 20px) !important; }
+  html body #productsSection,
+  html body #searchPage,
+  html body .app-view {
+    width:calc(100% - 48px) !important; max-width:none !important;
+    margin-left:24px !important; margin-right:24px !important;
+  }
+
+  /* Home and Explore use the right-hand column instead of leaving a blank area. */
+  #offerBanner { display:none !important; }
+  #offerBannerDesk { grid-area:offer; }
+  body.has-offer #offerBannerDesk {
+    display:flex !important; flex-direction:column !important; justify-content:center !important;
+    align-items:flex-start !important; align-self:start !important; min-height:230px !important;
+    margin-top:0 !important; padding:28px !important; border-radius:18px !important;
+    background:linear-gradient(135deg,#2962FF,#1744B5) !important; color:#fff !important;
+  }
+  body:not(.has-offer) #offerBannerDesk { display:none !important; }
+  #productsSection > .explore-page-heading { grid-area:ehead; }
+  #categoriesHeading { grid-area:cathead; }
+  #exploreFilterRow { grid-area:filters; }
+  #categories { grid-area:cat; }
+  #categoryChips { grid-area:chips; }
+  #productsSectionHead { grid-area:phead; }
+  #productGrid { grid-area:grid; }
+  #productsSection > .load-more-wrap { grid-area:more; }
+
+  body.explore-mode #productsSection {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(260px,340px) !important;
+    column-gap:28px !important; row-gap:0 !important; align-items:start !important;
+    grid-template-areas:
+      "ehead cathead"
+      "chips filters"
+      "phead phead"
+      "grid grid"
+      "more more" !important;
+  }
+  body.explore-mode #productsSection > .explore-page-heading { align-self:start !important; margin:0 0 22px !important; }
+  body.explore-mode #categoriesHeading { align-self:start !important; margin:0 0 10px !important; }
+  body.explore-mode #exploreFilterRow {
+    display:flex !important; flex-direction:column !important; align-items:stretch !important;
+    gap:9px !important; margin:0 0 18px !important; overflow:visible !important;
+  }
+  body.explore-mode #exploreFilterRow .explore-filter-button {
+    width:100% !important; justify-content:space-between !important; min-height:44px !important;
+    border-radius:10px !important;
+  }
+  body.explore-mode #categoryChips { min-width:0 !important; align-self:start !important; }
+  body.explore-mode #productsSectionHead { margin-top:10px !important; }
+  body.explore-mode.has-offer #productsSection {
+    grid-template-columns:minmax(0,1fr) minmax(260px,340px) !important;
+    grid-template-areas:
+      "ehead offer"
+      "chips cathead"
+      "phead filters"
+      "grid grid"
+      "more more" !important;
+  }
+  body.explore-mode.has-offer #categoriesHeading { grid-area:cathead; }
+  body.explore-mode.has-offer #exploreFilterRow { grid-area:filters; }
+  body.explore-mode.has-offer #offerBannerDesk { grid-area:offer; }
+  body:not(.explore-mode).has-offer #productsSection {
+    display:grid !important; grid-template-columns:minmax(0,1fr) minmax(260px,380px) !important;
+    column-gap:28px !important; align-items:start !important;
+    grid-template-areas:"cathead offer" "cat offer" "phead offer" "grid grid" "more more" !important;
+  }
+  body:not(.explore-mode) #productsSection > .explore-page-heading { display:none !important; }
+  body.explore-mode #categoryChips { flex-wrap:wrap !important; overflow:visible !important; }
+}
+
+/* Mobile keeps its current navigation layout, while using the shared image/button fixes. */
+@media (max-width:760px) {
+  html body #cartPage:not(.has-items) .app-cart-layout,
+  html body #cartPage:not(.has-items) .app-cart-items,
+  html body #cartPage:not(.has-items) .app-status { min-height:48vh !important; }
+}
+</style>
+
+
+<style id="sequize-explore-layout-revision">
+@media (min-width:761px){
+  /* Keep the drawer itself below the header, but continue its divider all the way to the top. */
+  html body #desktopDrawer{border-right:0!important;}
+  html body #desktopDrawer::after{
+    content:"";position:fixed;left:var(--dw);top:0;bottom:0;width:1px;
+    background:#e3e5e9;pointer-events:none;z-index:10002;
+  }
+  html body #dwHandle{top:0!important;z-index:10003!important;}
+
+  /* Explore: only keep the Explore title; preserve the category-heading space without text. */
+  body.explore-mode #categoriesHeading{
+    visibility:hidden!important;min-height:34px!important;margin:0!important;padding:0!important;
+  }
+  body.explore-mode #categoriesHeading h2,
+  body.explore-mode #categoriesHeading p,
+  body.explore-mode #categoriesHeading > div{visibility:hidden!important;}
+  body.explore-mode #exploreFilterRow{
+    grid-area:filters!important;display:flex!important;visibility:visible!important;
+    flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;
+    flex-wrap:nowrap!important;gap:10px!important;overflow:visible!important;
+    margin:0 0 12px!important;padding:0!important;
+  }
+  body.explore-mode #exploreFilterRow[hidden]{display:flex!important;}
+  body.explore-mode #exploreFilterRow [data-filter="category"]{display:none!important;}
+  body.explore-mode #exploreFilterRow .explore-filter-button{
+    display:inline-flex!important;flex:0 0 auto!important;width:auto!important;min-width:112px!important;
+    min-height:42px!important;justify-content:space-between!important;border-radius:10px!important;
+  }
+  body.explore-mode #categoryChips{
+    grid-area:chips!important;display:flex!important;flex-flow:row nowrap!important;
+    align-items:center!important;gap:9px!important;min-width:0!important;width:100%!important;
+    overflow-x:auto!important;overflow-y:hidden!important;white-space:nowrap!important;
+    scrollbar-width:none!important;margin:0 0 18px!important;padding:2px 0 8px!important;
+  }
+  body.explore-mode #categoryChips::-webkit-scrollbar{display:none!important;}
+  body.explore-mode #categoryChips .chip{flex:0 0 auto!important;white-space:nowrap!important;}
+  body.explore-mode #productsSectionHead{grid-area:phead!important;margin-top:4px!important;}
+
+  /* With an offer, it occupies the right column as a wide landscape panel down to Recommended Products. */
+  body.explore-mode.has-offer #productsSection{
+    display:grid!important;grid-template-columns:minmax(0,1fr) minmax(300px,390px)!important;
+    column-gap:26px!important;row-gap:0!important;align-items:stretch!important;
+    grid-template-areas:"ehead offer" "filters offer" "chips offer" "phead phead" "grid grid" "more more"!important;
+  }
+  body.explore-mode.has-offer #offerBannerDesk{
+    grid-area:offer!important;display:flex!important;align-self:stretch!important;
+    width:100%!important;min-width:0!important;min-height:0!important;height:100%!important;
+    box-sizing:border-box!important;margin:0 0 18px!important;padding:24px!important;
+    border-radius:16px!important;justify-content:center!important;align-items:flex-start!important;
+  }
+
+  /* Without an offer, the right column becomes a clean category area. */
+  body.explore-mode:not(.has-offer) #productsSection{
+    display:grid!important;grid-template-columns:minmax(0,1fr) minmax(300px,390px)!important;
+    column-gap:26px!important;row-gap:0!important;align-items:start!important;
+    grid-template-areas:"ehead cathead" "filters cathead" "chips cat" "phead phead" "grid grid" "more more"!important;
+  }
+  body.explore-mode:not(.has-offer) #categoriesHeading{
+    grid-area:cathead!important;visibility:visible!important;min-height:0!important;
+    align-self:start!important;margin:0 0 8px!important;
+  }
+  body.explore-mode:not(.has-offer) #categoriesHeading h2{
+    visibility:visible!important;display:block!important;margin:0 0 12px!important;
+  }
+  body.explore-mode:not(.has-offer) #categoriesHeading p{display:none!important;}
+  body.explore-mode:not(.has-offer) #categoriesHeading > div{visibility:visible!important;}
+  body.explore-mode:not(.has-offer) #categoryChips{
+    grid-area:cat!important;display:flex!important;flex-flow:row wrap!important;
+    align-content:flex-start!important;align-items:center!important;gap:9px!important;
+    width:100%!important;overflow:visible!important;white-space:normal!important;
+    margin:0 0 18px!important;padding:0!important;
+  }
+  body.explore-mode:not(.has-offer) #productsSectionHead{margin-top:6px!important;}
+}
+</style>
+
+
+
+<style id="sequize-explore-offer-position-fix">
+@media (min-width:761px){
+  /* Match the horizontal page gutters used by the other desktop pages. */
+  html body.explore-mode #productsSection{
+    box-sizing:border-box!important;
+    width:calc(100% - 48px)!important;
+    max-width:none!important;
+    margin-left:24px!important;
+    margin-right:24px!important;
+    margin-top:24px!important;
+    position:relative!important;
+  }
+
+  /* The hidden category selector must not create an extra implicit grid column/row. */
+  html body.explore-mode #categories{display:none!important;}
+
+  /* Keep the offer card beside the Explore controls, never above or over them. */
+  html body.explore-mode.has-offer #productsSection{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(280px,340px)!important;
+    grid-template-areas:
+      "ehead offer"
+      "cathead offer"
+      "filters offer"
+      "chips offer"
+      "phead phead"
+      "grid grid"
+      "more more"!important;
+    column-gap:24px!important;
+    row-gap:0!important;
+    align-items:start!important;
+  }
+  html body.explore-mode.has-offer #productsSection > .explore-page-heading{
+    grid-area:ehead!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    margin:0 0 16px!important;
+    align-self:start!important;
+  }
+  html body.explore-mode.has-offer #categoriesHeading{
+    grid-area:cathead!important;
+    visibility:hidden!important;
+    display:block!important;
+    min-height:34px!important;
+    height:34px!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  html body.explore-mode.has-offer #categoriesHeading h2,
+  html body.explore-mode.has-offer #categoriesHeading p,
+  html body.explore-mode.has-offer #categoriesHeading > div{
+    visibility:hidden!important;
+  }
+  html body.explore-mode.has-offer #exploreFilterRow{
+    grid-area:filters!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    display:flex!important;
+    visibility:visible!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:10px!important;
+    overflow:visible!important;
+    margin:0 0 12px!important;
+    padding:0!important;
+  }
+  html body.explore-mode.has-offer #exploreFilterRow[hidden]{display:flex!important;}
+  html body.explore-mode.has-offer #exploreFilterRow [data-filter="category"]{display:none!important;}
+  html body.explore-mode.has-offer #exploreFilterRow .explore-filter-button{
+    display:inline-flex!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:112px!important;
+    min-height:42px!important;
+    justify-content:space-between!important;
+  }
+  html body.explore-mode.has-offer #categoryChips{
+    grid-area:chips!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    gap:9px!important;
+    width:100%!important;
+    min-width:0!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    margin:0 0 18px!important;
+    padding:2px 0 8px!important;
+  }
+  html body.explore-mode.has-offer #offerBannerDesk{
+    grid-area:offer!important;
+    grid-column:2!important;
+    grid-row:1 / span 4!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    align-self:stretch!important;
+    justify-self:stretch!important;
+    box-sizing:border-box!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    height:auto!important;
+    margin:0 0 18px!important;
+    padding:24px!important;
+    overflow:hidden!important;
+  }
+  html body.explore-mode.has-offer #productsSectionHead{
+    grid-area:phead!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    margin:4px 0 16px!important;
+  }
+  html body.explore-mode.has-offer #productGrid{grid-area:grid!important;min-width:0!important;}
+  html body.explore-mode.has-offer #productsSection > .load-more-wrap{grid-area:more!important;}
+}
+</style>
 </head>
 
 <body class="nav-pending">
@@ -3072,7 +3496,7 @@
     <button type="button" class="desktop-top-avatar" id="desktopTopAvatar" aria-label="My profile" title="My profile">U</button>
 
 
-    <a href="/home.html" class="guest-header-brand" aria-label="Shoppy home">Shoppy.</a>
+    <a href="/home.html" class="guest-header-brand" aria-label="Sequize home">Sequize</a>
     <div class="guest-header-actions" id="guestHeaderActions" aria-label="Account actions">
       <a class="guest-auth-button guest-auth-login" href="/login.html">Login</a>
       <a class="guest-auth-button guest-auth-signup" href="/signup.html">Sign Up</a>
@@ -3104,6 +3528,8 @@
         <i class="ph ph-user-circle" aria-hidden="true"></i>
       </button>
 
+      <a class="nav-icon" id="hdrWishlist" href="/wishlist.html" aria-label="Wishlist" title="Wishlist"><i class="ph ph-heart" aria-hidden="true"></i></a>
+
       <button class="location-chip premium-toolbar-control" id="headerLocationButton" type="button" data-open-location aria-label="Change location" title="Change location">
         <i class="ph-fill ph-map-pin" aria-hidden="true"></i>
         <span id="headerLocationLabel">Select state</span>
@@ -3116,9 +3542,7 @@
 
     </nav>
 
-    <a href="/home.html" class="brand" aria-label="Shoppy home">
-      Shoppy.
-    </a>
+    <a href="/home.html" class="brand" aria-label="Sequize home"><span class="b1">S</span><span class="b2">equize</span></a>
 
   </header>
 
@@ -3133,7 +3557,7 @@
         aria-label="Expand navigation" aria-expanded="false">
         <i class="ph ph-list" aria-hidden="true"></i>
       </button>
-      <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
+      <a href="/home.html" class="brand" aria-label="Sequize home">Sequize</a>
     </div>
 
     <nav class="desktop-nav-links" aria-label="Desktop navigation links">
@@ -3189,7 +3613,7 @@
 
           <div class="eyebrow">
             <i class="ph ph-sparkle" aria-hidden="true"></i>
-            Welcome to Shoppy
+            Welcome to Sequize
           </div>
 
           <h1>Find your next favorite thing.</h1>
@@ -3382,7 +3806,7 @@
   <main id="accountPage" class="app-view" hidden>
     <div class="app-page-heading"><h1>My Account</h1><p>Manage your profile, orders and preferences.</p></div>
     <div id="guestAccountPanel" class="guest-auth-panel" hidden>
-      <h2>Login or create an account</h2><p>Browse Shoppy freely. Sign in or create an account to access your profile, wishlist, orders and other personal features.</p>
+      <h2>Login or create an account</h2><p>Browse Sequize freely. Sign in or create an account to access your profile, wishlist, orders and other personal features.</p>
       <div class="guest-auth-actions"><a class="guest-auth-button guest-auth-login" href="/login.html">Login</a><a class="guest-auth-button guest-auth-signup" href="/signup.html">Sign Up</a></div>
     </div>
     <div id="appProfileLoading" class="app-status">Loading your profile...</div>
@@ -3393,7 +3817,7 @@
         <p id="appUserEmail" class="app-profile-email"></p>
         <div id="appMembershipBadge" class="app-member-badge">✓ &nbsp; SHOPPING MEMBER</div>
         <div id="appMembershipSummary" class="app-membership-summary" hidden>
-          <strong id="appMembershipTitle">Shoppy Premium</strong>
+          <strong id="appMembershipTitle">Sequize Premium</strong>
           <small id="appMembershipPlan">Premium plan active</small>
           <small id="appMembershipExpiry">Membership expiry</small>
         </div>
@@ -3403,7 +3827,7 @@
         <button type="button" class="app-profile-row" id="appProfileCartShortcut" style="width:100%;border-top:0;border-left:0;border-right:0;background:transparent;text-align:left"><i class="ph ph-shopping-cart"></i><span><strong>My Cart</strong></span><i class="ph ph-caret-right"></i></button>
       </aside>
       <aside class="app-profile-promo" aria-label="Special discount offer">
-        <span class="app-profile-promo-eyebrow"><i class="ph-fill ph-sparkle" aria-hidden="true"></i> Shoppy Special</span>
+        <span class="app-profile-promo-eyebrow"><i class="ph-fill ph-sparkle" aria-hidden="true"></i> Sequize Special</span>
         <strong>50% <span>Off</span></strong>
         <p>Discover more for less. Shop your favourites and enjoy a special saving.</p>
         <button type="button" class="app-profile-promo-button" onclick="handleNavigation('explore')">Explore offers <i class="ph ph-arrow-up-right" aria-hidden="true"></i></button>
@@ -3649,7 +4073,7 @@
 
   <footer class="footer" id="pageFooter">
 
-    <span>© <span id="year"></span> Shoppy</span>
+    <span>© <span id="year"></span> Sequize</span>
     <span>Your shopping, all in one place.</span>
 
   </footer>
@@ -4857,7 +5281,7 @@
       const desktopBell = document.querySelector('#bottomNav [data-bottom-nav="notifications"] .nav-item-icon');
       if (!badge || !headerButton || !desktopBell) return;
       const placeBadge = () => {
-        if (window.innerWidth > 760) {
+        if (false) {
           if (badge.parentElement !== desktopBell) desktopBell.appendChild(badge);
         } else if (badge.parentElement !== headerButton) {
           headerButton.appendChild(badge);
@@ -6251,7 +6675,7 @@
         if(isActive){
           profileLayout.classList.add("app-premium-active");
           badge.classList.add("app-premium-badge");
-          badge.textContent="★  SHOPPY PREMIUM";
+          badge.textContent="★  SEQUIZE PREMIUM";
           summary.hidden=false;
           document.getElementById("appMembershipTitle").textContent="Premium Membership Active";
           document.getElementById("appMembershipPlan").textContent=(m.planName||m.plan||"Premium")+" plan";
@@ -6600,5 +7024,380 @@
       }
     }
 </style>
+
+<!-- ===== SHOPPY HOME UI UPDATE v2 ===== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+<style id="shoppy-ui-update-2026">
+:root{
+  --img-bg:#f1f2f4;
+  --dw:226px;
+  --gut:16px;
+  --ic-cart:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='21' r='1'/%3E%3Ccircle cx='20' cy='21' r='1'/%3E%3Cpath d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6'/%3E%3C/svg%3E");
+  --ic-check:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+}
+
+/* ================= PRODUCT CARD (all devices) =================
+   Image touches the border on every side, card has rounded corners,
+   image/card background is transparent so the image's own colour shows. */
+.product-card:not(.skeleton-card){padding:0;border:1px solid var(--border);border-radius:16px;background:var(--surface);overflow:hidden;box-shadow:none}
+.product-card .product-image,
+.product-grid.list-view .product-image{padding:0!important;border-radius:0!important;background:var(--img-bg)!important}
+.product-card:hover .product-image{background:var(--img-bg)!important}
+.product-card .product-image img{object-fit:cover!important}
+.product-card .product-category,.product-card .product-description,.product-card .product-rating{display:none!important}
+.product-card .product-info{padding:10px 12px 12px!important}
+.product-card .product-title{min-height:0;margin:0;font-size:13px;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.product-card .product-bottom{padding-top:6px;margin-top:6px}
+.product-card .product-price{font-size:15px}
+.product-card .product-original-price{display:none}
+.wish-btn{position:absolute;top:8px;right:8px;z-index:3;width:30px;height:30px;padding:0;display:flex;align-items:center;justify-content:center;border:0;border-radius:50%;background:#fff;color:#4b4f56;font-size:17px;box-shadow:0 1px 5px rgba(0,0,0,.15)}
+.wish-btn.on{color:#e53935}
+.add-button i{display:none!important}
+.add-button::before{content:"";display:block;width:18px;height:18px;background:currentColor;-webkit-mask:var(--ic-cart) center/contain no-repeat;mask:var(--ic-cart) center/contain no-repeat}
+.add-button.added::before{-webkit-mask-image:var(--ic-check);mask-image:var(--ic-check)}
+.add-button{background:#fff!important;border:1px solid var(--border)!important}
+.add-button.added{background:var(--primary)!important;border-color:var(--primary)!important;color:#fff!important}
+
+/* Search page: same card, grid instead of list */
+#searchProductGrid.product-grid.list-view,#productGrid.product-grid.list-view{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px 14px!important}
+.product-grid.list-view .product-card{flex-direction:column!important;gap:0!important;padding:0!important;border-bottom:1px solid var(--border)!important}
+.product-grid.list-view .product-image{width:100%!important;min-width:0!important;height:auto!important;aspect-ratio:1/1!important}
+.product-grid.list-view .product-info{padding:10px 12px 12px!important}
+
+.offer-banner{display:none}
+.category-chips{display:none}
+body.explore-mode .category-chips{display:flex;gap:8px;overflow-x:auto;margin:0 0 16px;padding-bottom:4px;scrollbar-width:none}
+.category-chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;min-height:40px;padding:8px 16px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text-primary);font-size:13px;font-weight:600;text-transform:capitalize;white-space:nowrap}
+.chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+[data-filter="category"]{display:none!important}
+body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+
+/* Cart: Order Summary only when the cart really has items */
+#cartPage .app-summary{display:none!important}
+#cartPage.has-items .app-summary{display:block!important}
+#cartPage:not(.has-items) .app-cart-layout{grid-template-columns:minmax(0,1fr)!important}
+
+/* ================= MOBILE (Basic + Premium/iOS share one toolbar) ================= */
+@media (max-width:760px){
+  /* Toolbar: brand left (black, brand font) | notification (grey ring) | profile picture */
+  html body .topbar{height:60px!important;min-height:60px!important;padding:0 var(--gut)!important;border:0!important;border-bottom:0!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px}
+  html body .topbar .brand,html body .topbar .guest-header-brand{order:-1;font-family:"Pacifico",cursive!important;font-size:27px!important;font-weight:400!important;letter-spacing:0!important;line-height:1.3!important;color:#111!important}
+  .topbar .nav-actions{order:1;margin-left:auto;gap:10px}
+  html body .nav-actions [data-top-nav="home"],
+  html body .nav-actions [data-top-nav="cart"],
+  html body #headerLocationButton{display:none!important}
+  html body .topbar .nav-actions #notifButton,
+  html body .topbar .nav-actions [data-top-nav="account"]{display:flex!important;align-items:center;justify-content:center;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;box-sizing:border-box}
+  html body .topbar .nav-actions #notifButton{order:1;border:1px solid #d9dce1;background:#fff;color:#1b1d21;font-size:21px}
+  html body .topbar .nav-actions [data-top-nav="account"]{order:2;border:0;background:#e9ecf1;overflow:hidden}
+  html body #hdrWishlist{display:none!important}
+
+  /* Offer banner replaces hero on mobile */
+  .hero-wrap{display:none!important}
+  .offer-banner.show{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px;position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(135deg,#2962FF,#1744B5);color:#fff}
+  body.explore-mode .offer-banner{display:none!important}
+  .offer-banner small{display:block;font-size:10px;letter-spacing:1.5px;opacity:.85;margin:4px 0 12px}
+  .offer-banner b{display:block;font-size:13px;letter-spacing:1px}
+  .offer-banner strong{font-family:var(--font-heading);font-size:34px;font-weight:800;line-height:1.1}
+  .offer-banner strong em{font-style:normal;font-size:20px;margin-left:6px}
+  .offer-banner button{padding:9px 18px;border:0;border-radius:999px;background:#fff;color:var(--primary);font-weight:700;font-size:13px}
+  .offer-banner > i{font-size:92px;opacity:.22;transform:rotate(-12deg)}
+  .product-grid:not(.list-view),.product-grid.list-view{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+
+  /* Equal page spacing: same gutter left, right, top and bottom */
+  html body #homeSearchWrap,html body #offerBanner,html body #productsSection,html body #searchPage,html body .app-view{width:auto!important;max-width:none!important;margin-left:var(--gut)!important;margin-right:var(--gut)!important}
+  html body #homeSearchWrap{margin-top:var(--gut)!important;margin-bottom:0!important}
+  html body #offerBanner.show{margin-top:var(--gut)!important}
+  html body #productsSection{margin-top:var(--gut)!important;margin-bottom:var(--gut)!important}
+  html body #searchPage,html body .app-view{margin-top:var(--gut)!important;margin-bottom:var(--gut)!important}
+  html body .footer{padding-left:var(--gut);padding-right:var(--gut)}
+}
+
+/* ================= PREMIUM / iOS mobile: floating glass ================= */
+.fx-fade{display:none}
+@media (max-width:760px){
+  html body.app-premium-navigation{--bottom-nav-height:52px;padding-bottom:calc(52px + 14px + var(--gut) + env(safe-area-inset-bottom,0px))!important}
+
+  /* header floats: no bar, no divider; content scrolls underneath and fades */
+  html body.app-premium-navigation .topbar{top:0!important;width:100%!important;margin:0!important;border-radius:0!important;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;overflow:visible!important}
+  html body.app-premium-navigation .topbar::before{display:none!important}
+  body.app-premium-navigation .fx-fade{display:block;position:fixed;left:0;right:0;z-index:900;pointer-events:none}
+  body.app-premium-navigation .fx-fade.top{top:0;height:calc(env(safe-area-inset-top,0px) + 86px);background:linear-gradient(180deg,rgba(255,255,255,.96) 45%,rgba(255,255,255,0));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+  body.app-premium-navigation .fx-fade.bottom{bottom:0;height:calc(env(safe-area-inset-bottom,0px) + 100px);background:linear-gradient(0deg,rgba(255,255,255,.96) 35%,rgba(255,255,255,0))}
+
+  /* bottom bar: equal 4px gap between bar edge and selected pill on all four sides */
+  html body.app-premium-navigation .bottom-nav{
+    height:52px;padding:4px;gap:0;
+    background:linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.16));
+    -webkit-backdrop-filter:blur(30px) saturate(220%);backdrop-filter:blur(30px) saturate(220%);
+    border:1px solid rgba(255,255,255,.75);
+    box-shadow:0 12px 32px rgba(0,0,0,.24),0 2px 8px rgba(0,0,0,.14),inset 0 1px 1px rgba(255,255,255,.95),inset 0 -1px 1px rgba(255,255,255,.3)}
+  html body.app-premium-navigation .bottom-nav-item{height:42px}
+  html body.app-premium-navigation .nav-indicator{top:4px!important;height:42px!important}
+}
+
+/* ================= DESKTOP: one full-width header, drawer + divider below it ================= */
+#dwHandle{display:none}
+.offer-banner-desk{display:none}
+@media (min-width:761px){
+  /* header: single bar across the page (brand | search | notification | profile | extras) */
+  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar{left:0!important;right:0!important;padding:0 24px 0 0!important;gap:12px!important}
+  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar > .brand{position:static!important;transform:none!important;inset:auto!important;display:flex!important;align-items:center;order:0;flex:0 0 calc(var(--dw) + 44px)!important;width:auto!important;margin:0!important;padding:0 0 0 18px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;overflow:hidden;white-space:nowrap;font-family:"Pacifico",cursive!important;font-size:27px!important;font-weight:400!important;letter-spacing:0!important;line-height:1.3!important;color:#111!important;z-index:auto!important}
+  body.drawer-mini .topbar > .brand .b2{display:none}
+  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar > .guest-header-brand{display:none!important}
+  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar .desktop-top-search{order:1}
+  html body:not(.zz):not(.yy):not(.nav-pending) header.topbar .desktop-top-avatar{display:none!important}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions{display:flex!important;order:2;margin:0 0 0 auto!important;padding:0!important;gap:10px!important;align-items:center;width:auto!important;flex:0 0 auto}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="home"]{display:none!important}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions #notifButton,html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="account"],html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="cart"],html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions #hdrWishlist{display:flex!important;position:relative;align-items:center;justify-content:center;box-sizing:border-box;width:40px!important;min-width:40px!important;height:40px!important;padding:0!important;border:1px solid #d9dce1!important;border-radius:50%!important;background:#fff!important;color:#1b1d21;font-size:20px;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="account"]{border:0!important;background:#e9ecf1!important;overflow:hidden}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions #notifButton{order:1}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="account"]{order:2}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions #hdrWishlist{order:3}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions [data-top-nav="cart"]{order:4}
+  html body:not(.zz):not(.yy):not(.nav-pending):not(.guest-mode) header.topbar .nav-actions #headerLocationButton{display:inline-flex!important;order:5;align-items:center;gap:6px;height:40px!important;min-width:0;max-width:170px!important;padding:0 14px!important;border:1px solid #d9dce1!important;border-radius:999px!important;background:#fff!important;color:#1b1d21;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  /* Premium/iOS: header floats, content scrolls underneath and fades (same as mobile) */
+  html body.app-premium-navigation:not(.zz):not(.yy):not(.nav-pending) header.topbar{background:transparent!important}
+  html body.app-premium-navigation .fx-fade.top{display:block;position:fixed;top:0;left:0;right:0;height:96px;z-index:900;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.96) 45%,rgba(255,255,255,0));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+  html body.app-premium-navigation .fx-fade.bottom{display:none}
+
+  /* drawer sits below the header; vertical divider (drawer edge) starts below the header too */
+  html body:not(.zz):not(.yy):not(.nav-pending){padding-left:calc(var(--dw) + 20px)!important}
+  html body:not(.zz):not(.yy):not(.nav-pending)::before,html body:not(.zz):not(.yy):not(.nav-pending)::after{display:none!important}
+  html body:not(.zz):not(.yy) #desktopDrawer{top:68px!important;bottom:0!important;height:auto!important;max-height:none!important}
+  html body:not(.zz):not(.yy) #desktopDrawer .desktop-drawer-head{display:none!important}
+  html body:not(.zz):not(.yy) #desktopDrawer .desktop-nav-links{scrollbar-width:none}
+  html body:not(.zz):not(.yy) #desktopDrawer .desktop-nav-links::-webkit-scrollbar{display:none}
+  html body:not(.zz):not(.yy) #desktopDrawer.mini .desktop-nav-link span:not(.shoppy-notification-badge){display:none!important}
+  html body:not(.zz):not(.yy) #desktopDrawer.mini .desktop-nav-link{justify-content:center!important;padding:0!important}
+  html body:not(.zz):not(.yy) #desktopDrawer{border-right:1px solid #e3e5e9!important}
+  html body:not(.zz):not(.yy) #desktopDrawer .desktop-nav-link span.shoppy-notification-badge[style*="none"]{display:none!important}
+  #dwHandle{display:block;position:fixed;top:68px;bottom:0;left:calc(var(--dw) - 4px);width:9px;cursor:col-resize;z-index:10001;touch-action:none}
+  #dwHandle:hover{background:rgba(41,98,255,.18)}
+
+  /* equal 24px spacing top / bottom / left / right */
+  html body:not(.nav-pending) #productsSection,html body:not(.nav-pending) #searchPage,html body:not(.nav-pending) .app-view{margin-bottom:24px!important}
+
+  /* discount card fills the empty right side (home + explore) */
+  #offerBanner{display:none!important}
+  body.has-offer .offer-banner-desk{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;position:relative;overflow:hidden;align-self:stretch;min-height:200px;padding:28px;border-radius:18px;background:linear-gradient(135deg,#2962FF,#1744B5);color:#fff}
+  .offer-banner-desk b{font-size:14px;letter-spacing:1.5px}
+  .offer-banner-desk strong{font-family:var(--font-heading);font-size:48px;font-weight:800;line-height:1.1}
+  .offer-banner-desk strong em{font-style:normal;font-size:26px;margin-left:8px}
+  .offer-banner-desk small{font-size:11px;letter-spacing:1.5px;opacity:.85;margin:6px 0 16px}
+  .offer-banner-desk button{position:relative;z-index:1;padding:10px 22px;border:0;border-radius:999px;background:#fff;color:var(--primary);font-weight:700;font-size:14px}
+  .offer-banner-desk > i{position:absolute;right:16px;bottom:-18px;font-size:150px;opacity:.2;transform:rotate(-12deg)}
+  #productsSection > .explore-page-heading{grid-area:ehead}
+  #categoriesHeading{grid-area:cathead}
+  #exploreFilterRow{grid-area:filters}
+  #categories{grid-area:cat}
+  #categoryChips{grid-area:chips}
+  #productsSectionHead{grid-area:phead}
+  #productGrid{grid-area:grid}
+  #productsSection > .load-more-wrap{grid-area:more}
+  #offerBannerDesk{grid-area:offer}
+  body.has-offer:not(.explore-mode) #productsSection{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,400px);column-gap:24px;align-items:start;grid-template-areas:"cathead offer" "cat offer" "phead offer" "grid grid" "more more"}
+  body.explore-mode.has-offer #productsSection{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,400px);column-gap:24px;align-items:start;grid-template-areas:"ehead offer" "cathead offer" "filters offer" "chips offer" "phead phead" "grid grid" "more more"}
+  body.explore-mode:not(.has-offer) #productsSection{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,420px);column-gap:24px;align-items:start;grid-template-areas:"ehead cathead" "phead filters" "phead chips" "grid grid" "more more"}
+  body.explore-mode #categoryChips{flex-wrap:wrap;overflow:visible;margin:0 0 16px}
+  body.explore-mode #exploreFilterRow{flex-wrap:wrap;overflow:visible}
+}
+
+/* ================= ALL SIZES ================= */
+html body .topbar .nav-actions [data-top-nav="account"].has-pic i{display:none}
+.hdr-avatar{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}
+html body:not(.zz) #notifButton .shoppy-notification-badge{top:-2px!important;right:-2px!important}
+/* add-to-cart button: identical 34px circle everywhere */
+html body .product-card .add-button,html body #productGrid .add-button,html body #searchProductGrid .add-button{width:34px!important;min-width:34px!important;max-width:34px!important;height:34px!important;min-height:34px!important;flex:0 0 34px!important;padding:0!important;border-radius:50%!important;aspect-ratio:1/1;box-sizing:border-box!important;display:inline-flex!important;align-items:center;justify-content:center}
+/* cart images: same single light grey */
+html body .app-cart-image{background:var(--img-bg)!important}
+/* empty cart: centred (desktop + mobile), no side column */
+html body:not(.nav-pending) #cartPage:not(.has-items) .app-cart-layout{grid-template-columns:minmax(0,1fr)!important}
+html body #cartPage:not(.has-items) .app-status{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:50vh;padding:24px 0}
+html body #cartPage:not(.has-items) .app-status .app-primary-button{width:100%;max-width:240px;margin-left:auto;margin-right:auto}
+
+
+
+/* ================= REQUESTED DESKTOP-ONLY ADJUSTMENTS ================= */
+@media (min-width: 761px) {
+  /* Keep four product cards in each desktop row on Home, Explore and Search. */
+  html body #productGrid.product-grid,
+  html body #searchProductGrid.product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    gap: 18px 16px !important;
+  }
+
+  /* Put the Sequize wordmark centrally at the top of the desktop sidebar. */
+  html body #desktopDrawer .desktop-drawer-head {
+    display: flex !important;
+    position: relative !important;
+    flex: 0 0 68px !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head > .brand {
+    display: block !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    font-family: "Pacifico", cursive !important;
+    font-size: 24px !important;
+    font-weight: 400 !important;
+    line-height: 1.2 !important;
+    color: #111 !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head > #desktopDrawerToggle {
+    display: none !important;
+  }
+  html body header.topbar > .brand {
+    display: none !important;
+  }
+  html body #desktopDrawer.mini .desktop-drawer-head > .brand {
+    display: none !important;
+  }
+}
+</style>
+
+<script id="shoppy-ui-update-2026-js">
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id)};
+
+  /* 1. Offer banner "UP TO X% OFF" from the admin discount already loaded by the page */
+  var home=$("homeContent"),search=$("homeSearchWrap");
+  if(home&&search){
+    var b=document.createElement("section");b.className="offer-banner";b.id="offerBanner";
+    b.innerHTML='<div><b>UP TO</b><strong><span id="offerPct">0</span>%<em>OFF</em></strong><small>ENDS SOON</small><button type="button" id="offerShop">Shop Now →</button></div><i class="ph-fill ph-seal-percent" aria-hidden="true"></i>';
+    search.after(b);
+    $("offerShop").addEventListener("click",function(){var s=$("productsSection");if(s)s.scrollIntoView({behavior:"smooth"})});
+    var upd=function(){
+      var p=0;try{p=Math.max(0,Number(getHomeDiscountPercent())||0)}catch(e){}
+      $("offerPct").textContent=Number(p.toFixed(2)).toString();
+      b.classList.toggle("show",p>0);
+    };
+    var line=$("homeDiscountOffers");
+    if(line)new MutationObserver(function(){upd()}).observe(line,{childList:true,characterData:true,subtree:true,attributes:true});
+    var ps=$("productsSection");
+    if(ps){
+      var d=document.createElement("section");d.className="offer-banner-desk";d.id="offerBannerDesk";
+      d.innerHTML='<b>UP TO</b><strong><span id="offerPctD">0</span>%<em>OFF</em></strong><small>ENDS SOON</small><button type="button" id="offerShopD">Shop Now →</button><i class="ph-fill ph-seal-percent" aria-hidden="true"></i>';
+      ps.insertBefore(d,ps.firstChild);
+      $("offerShopD").addEventListener("click",function(){var g=$("productGrid");if(g)g.scrollIntoView({behavior:"smooth"})});
+    }
+    var upd0=upd;
+    upd=function(){upd0();var pc=$("offerPct").textContent;var e=$("offerPctD");if(e)e.textContent=pc;document.body.classList.toggle("has-offer",Number(pc)>0)};
+    setInterval(upd,1500);upd();
+  }
+
+  /* 2. Recommended heading */
+  var h=$("productsHeading");
+  if(h){var fix=function(){if(h.textContent==="Popular Products")h.textContent="Recommended Products"};
+    new MutationObserver(fix).observe(h,{childList:true,characterData:true,subtree:true});fix();}
+
+  /* 3. Wishlist heart: icon only, stored locally on this device */
+  var WK="shoppy_wishlist_ids_v1";
+  function wl(){try{return JSON.parse(localStorage.getItem(WK)||"[]")}catch(e){return[]}}
+  function inject(root){
+    root.querySelectorAll(".product-card[data-product-id]").forEach(function(c){
+      var img=c.querySelector(".product-image");if(!img||img.querySelector(".wish-btn"))return;
+      var id=c.dataset.productId,on=wl().indexOf(id)>-1;
+      var btn=document.createElement("button");btn.type="button";btn.className="wish-btn"+(on?" on":"");
+      btn.setAttribute("aria-label","Add to wishlist");
+      btn.innerHTML='<i class="ph'+(on?"-fill":"")+' ph-heart" aria-hidden="true"></i>';
+      btn.addEventListener("click",function(e){
+        e.stopPropagation();e.preventDefault();
+        var list=wl(),i=list.indexOf(id);if(i>-1)list.splice(i,1);else list.push(id);
+        try{localStorage.setItem(WK,JSON.stringify(list))}catch(x){}
+        var now=i===-1;btn.classList.toggle("on",now);
+        btn.firstChild.className="ph"+(now?"-fill":"")+" ph-heart";
+      });
+      img.appendChild(btn);
+    });
+  }
+  ["productGrid","searchProductGrid"].forEach(function(id){
+    var g=$(id);if(!g)return;
+    new MutationObserver(function(){inject(g)}).observe(g,{childList:true});inject(g);
+  });
+
+  /* 4. Explore: horizontal category chips */
+  var main=$("productsSection"),sheet=$("sheetCategories");
+  if(main){
+    var chips=document.createElement("div");chips.className="category-chips";chips.id="categoryChips";
+    main.insertBefore(chips,main.firstChild);
+    var build=function(){
+      var list=[{v:"",l:"All"}].concat(allCategories.map(function(c){return{v:c,l:c.replace(/-/g," ")}}));
+      chips.innerHTML=list.map(function(c){
+        return '<button type="button" class="chip'+(c.v===currentCategory?" active":"")+'" data-v="'+c.v.replace(/"/g,"&quot;")+'">'+c.l.replace(/</g,"&lt;")+'</button>';
+      }).join("");
+    };
+    chips.addEventListener("click",function(e){
+      var t=e.target.closest(".chip");if(!t)return;
+      currentCategory=t.dataset.v||"";currentSearch="";
+      var lbl=$("selectedCategoryLabel");if(lbl)lbl.textContent=currentCategory?currentCategory.replace(/-/g," "):"All Products";
+      loadProducts();build();
+    });
+    if(sheet)new MutationObserver(build).observe(sheet,{childList:true});
+    build();
+  }
+
+  /* 5. Cart summary only with items */
+  var cart=$("cartPage"),items=$("appCartItems");
+  if(cart&&items){
+    var sync=function(){cart.classList.toggle("has-items",!!items.querySelector(".app-cart-item"))};
+    new MutationObserver(sync).observe(items,{childList:true,subtree:true});sync();
+  }
+
+  /* 6. Fade layers under the floating iOS header / bottom bar */
+  ["top","bottom"].forEach(function(p){var d=document.createElement("div");d.className="fx-fade "+p;d.setAttribute("aria-hidden","true");document.body.appendChild(d)});
+
+  /* 7. Header profile picture (circular) */
+  var acc=document.querySelector('.nav-actions [data-top-nav="account"]');
+  if(acc){
+    var im=document.createElement("img");im.className="hdr-avatar";im.alt="";
+    im.src="https://randomuser.me/api/portraits/women/44.jpg";
+    im.addEventListener("load",function(){acc.classList.add("has-pic")});
+    im.addEventListener("error",function(){im.remove();acc.classList.remove("has-pic")});
+    acc.appendChild(im);
+  }
+
+  /* 8. Desktop drawer: drag the divider. Whole drawer (background + selected tab) resizes;
+        text hides when narrow; smallest size = selected tab is a perfect square. */
+  var dr=$("desktopDrawer"),MIN=63,MINI=150;
+  if(dr){
+    var hd=document.createElement("div");hd.id="dwHandle";hd.setAttribute("role","separator");hd.setAttribute("aria-orientation","vertical");document.body.appendChild(hd);
+    var setW=function(w,save){
+      w=Math.round(Math.max(MIN,Math.min(320,w)));
+      document.documentElement.style.setProperty("--dw",w+"px");
+      dr.style.setProperty("width",w+"px","important");
+      dr.classList.toggle("mini",w<MINI);document.body.classList.toggle("drawer-mini",w<MINI);
+      if(save){try{localStorage.setItem("shoppy_drawer_w2",String(w))}catch(e){}}
+    };
+    var saved=226;try{saved=Number(localStorage.getItem("shoppy_drawer_w2"))||226}catch(e){}
+    setW(saved,false);
+    hd.addEventListener("pointerdown",function(e){
+      e.preventDefault();hd.setPointerCapture(e.pointerId);document.body.style.userSelect="none";
+      var mv=function(ev){setW(ev.clientX,false)};
+      var up=function(ev){hd.removeEventListener("pointermove",mv);hd.removeEventListener("pointerup",up);document.body.style.userSelect="";setW(ev.clientX,true)};
+      hd.addEventListener("pointermove",mv);hd.addEventListener("pointerup",up);
+    });
+    hd.addEventListener("dblclick",function(){setW(dr.classList.contains("mini")?226:MIN,true)});
+  }
+})();
+</script>
+
 </body>
 </html>
