@@ -5,9 +5,10 @@
 //  - Recent pending payments ko Cashfree se verify karta hai.
 //  - Har item ko working `thumbnail` deta hai (/img/ proxy URL).
 //  - Har order ke liye alag status label + delivery tracking banata hai:
-//      statusLabel / statusTone   -> "Paid and confirmed" etc.
+//      paymentLabel / paymentTone -> price ke baju ka tag: Paid / Not paid ...
+//      statusLabel / statusTone   -> Waiting to confirm / Confirmed / Delivered
 //      canContinuePayment         -> "Continue to payment" button dikhana hai ya nahi
-//      tracking                   -> 5 din ki delivery progress (order ke apne time se)
+//      tracking                   -> timeline: 10-20 min mein confirm, phir 3 din mein delivery
 
 const crypto = require("crypto");
 const { getSession } = require("../lib/auth");
@@ -16,22 +17,23 @@ const { getDatabase, syncPayment } = require("../lib/cashfree");
 const SYNC_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // sirf pichhle 7 din ke pending orders
 const MAX_SYNC = 5;
 
-const DELIVERY_DAYS = 5;
-const DELIVERY_MS = DELIVERY_DAYS * 24 * 60 * 60 * 1000;
-
 /* ---------- Status rules ---------- */
 
 const PAID_PAYMENT = ["PAID", "SUCCESS", "SUCCESSFUL", "COMPLETED", "CAPTURED"];
 const FAILED = ["FAILED", "EXPIRED", "USER_DROPPED"];
 const CANCELLED = ["CANCELLED", "CANCELED"];
 const REFUNDED = ["REFUNDED"];
-
-// orderStatus jinko "confirmed" maana jaata hai
-const CONFIRMED_ORDER = [
-  "CONFIRMED", "PROCESSING", "PACKED", "SHIPPED",
-  "OUT_FOR_DELIVERY", "DELIVERED", "COMPLETED"
-];
 const DELIVERED_ORDER = ["DELIVERED", "COMPLETED"];
+
+/*
+ * Har order ki apni timeline (order ke time se shuru):
+ *   Order placed -> Confirmed : 10 se 20 minute (har order ka apna fixed time)
+ *   Confirmed -> Delivered    : 3 din (Shipped beech mein)
+ * Confirm hone ka time sirf time se chalta hai, orderStatus se nahi.
+ */
+const CONFIRM_MIN_MS = 10 * 60 * 1000;
+const CONFIRM_SPAN_MS = 10 * 60 * 1000;
+const DELIVERY_MS = 3 * 24 * 60 * 60 * 1000;
 
 function norm(value) {
   return String(value || "").trim().toUpperCase().replace(/[\s-]+/g, "_");
@@ -48,11 +50,22 @@ function toMs(value) {
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
+// Same order = hamesha same time (10 se 20 minute ke beech)
+function confirmDelay(orderId) {
+  const n = crypto
+    .createHash("md5")
+    .update(String(orderId))
+    .digest()
+    .readUInt32BE(0);
+
+  return CONFIRM_MIN_MS + (n % (CONFIRM_SPAN_MS + 1));
+}
+
 /*
- * Ek order ka label, tone aur tracking.
+ * Ek order ka payment tag, status tag aur tracking.
  * Tone: "paid" (green) | "warn" (amber) | "failed" (red) | "" (grey)
  */
-function describeOrder(order) {
+function describeOrder(order, now) {
   const pay = norm(order.paymentStatus || "PENDING");
   const ord = norm(order.orderStatus || "PENDING");
 
@@ -60,60 +73,81 @@ function describeOrder(order) {
   const cancelled = CANCELLED.includes(pay) || CANCELLED.includes(ord);
   const refunded = REFUNDED.includes(pay) || REFUNDED.includes(ord);
   const failed = !paid && (FAILED.includes(pay) || FAILED.includes(ord));
-  const confirmed = CONFIRMED_ORDER.includes(ord);
   const delivered = DELIVERED_ORDER.includes(ord);
 
-  let statusLabel;
-  let statusTone;
+  // Price ke baju mein chhota tag (price ka rang bhi isi se)
+  let paymentLabel;
+  let paymentTone;
 
   if (refunded) {
-    statusLabel = "Refunded";
-    statusTone = "";
-  } else if (cancelled) {
-    statusLabel = "Cancelled";
-    statusTone = "failed";
-  } else if (failed) {
-    statusLabel = "Payment failed";
-    statusTone = "failed";
-  } else if (paid && confirmed) {
-    statusLabel = "Paid and confirmed";
-    statusTone = "paid";
+    paymentLabel = "Refunded";
+    paymentTone = "";
   } else if (paid) {
-    statusLabel = "Paid and not confirmed";
-    statusTone = "warn";
+    paymentLabel = "Paid";
+    paymentTone = "paid";
+  } else if (failed) {
+    paymentLabel = "Payment failed";
+    paymentTone = "failed";
   } else {
-    statusLabel = "Not paid";
-    statusTone = "";
+    paymentLabel = "Not paid";
+    paymentTone = "failed";
   }
 
   const canContinuePayment =
     pay === "PENDING" && !cancelled && !failed && !refunded && !delivered;
 
-  // Delivery tracking: cancelled / failed / refunded orders ke liye nahi
+  // Status tag (Waiting to confirm / Confirmed / Delivered) + tracking
+  let statusLabel = "";
+  let statusTone = "";
   let tracking = null;
 
   if (!cancelled && !failed && !refunded) {
-    // Progress payment hone ke time se chalti hai (paidAt na ho to order ke time se)
+    // Timeline payment hone ke time se chalti hai (paidAt na ho to order ke time se)
     const startAt = (paid && toMs(order.paidAt)) || toMs(order.createdAt);
 
     if (startAt) {
-      const active = paid && confirmed;
+      const confirmAt = startAt + confirmDelay(order.orderId);
+      const shipAt = confirmAt + Math.round(DELIVERY_MS / 2);
+      const endAt = confirmAt + DELIVERY_MS;
 
       tracking = {
-        active,
-        forceDelivered: active && delivered,
+        active: paid,
+        forceDelivered: paid && delivered,
+        // Order placed, Confirmed, Shipped, Delivered
+        milestones: [startAt, confirmAt, shipAt, endAt],
         startAt,
-        endAt: startAt + DELIVERY_MS,
-        note: active
-          ? ""
-          : paid
-            ? "Waiting for order confirmation."
-            : "Delivery starts after payment is confirmed."
+        endAt,
+        note: paid ? "" : "Delivery starts after payment is confirmed."
       };
+
+      if (paid) {
+        if (delivered || now >= endAt) {
+          statusLabel = "Delivered";
+          statusTone = "paid";
+        } else if (now >= confirmAt) {
+          statusLabel = "Confirmed";
+          statusTone = "paid";
+        } else {
+          statusLabel = "Waiting to confirm";
+          statusTone = "warn";
+        }
+      }
     }
   }
 
-  return { statusLabel, statusTone, canContinuePayment, tracking };
+  if (cancelled) {
+    statusLabel = "Cancelled";
+    statusTone = "failed";
+  }
+
+  return {
+    paymentLabel,
+    paymentTone,
+    statusLabel,
+    statusTone,
+    canContinuePayment,
+    tracking
+  };
 }
 
 /* ---------- Image proxy (same logic as api/products.js) ---------- */
@@ -309,12 +343,13 @@ module.exports = async function handler(req, res) {
     }
 
     // Har order ka apna alag status + tracking
-    orders = orders.map(order => ({ ...order, ...describeOrder(order) }));
+    const now = Date.now();
+    orders = orders.map(order => ({ ...order, ...describeOrder(order, now) }));
 
     return res.status(200).json({
       success: true,
       total: orders.length,
-      serverTime: Date.now(),
+      serverTime: now,
       orders
     });
   } catch (error) {
