@@ -3353,6 +3353,133 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 }
 </style>
 
+
+
+<style id="sequize-explore-offer-position-fix">
+@media (min-width:761px){
+  /* Match the horizontal page gutters used by the other desktop pages. */
+  html body.explore-mode #productsSection{
+    box-sizing:border-box!important;
+    width:calc(100% - 48px)!important;
+    max-width:none!important;
+    margin-left:24px!important;
+    margin-right:24px!important;
+    margin-top:24px!important;
+    position:relative!important;
+  }
+
+  /* The hidden category selector must not create an extra implicit grid column/row. */
+  html body.explore-mode #categories{display:none!important;}
+
+  /* Keep the offer card beside the Explore controls, never above or over them. */
+  html body.explore-mode.has-offer #productsSection{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(280px,340px)!important;
+    grid-template-areas:
+      "ehead offer"
+      "cathead offer"
+      "filters offer"
+      "chips offer"
+      "phead phead"
+      "grid grid"
+      "more more"!important;
+    column-gap:24px!important;
+    row-gap:0!important;
+    align-items:start!important;
+  }
+  html body.explore-mode.has-offer #productsSection > .explore-page-heading{
+    grid-area:ehead!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    margin:0 0 16px!important;
+    align-self:start!important;
+  }
+  html body.explore-mode.has-offer #categoriesHeading{
+    grid-area:cathead!important;
+    visibility:hidden!important;
+    display:block!important;
+    min-height:34px!important;
+    height:34px!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  html body.explore-mode.has-offer #categoriesHeading h2,
+  html body.explore-mode.has-offer #categoriesHeading p,
+  html body.explore-mode.has-offer #categoriesHeading > div{
+    visibility:hidden!important;
+  }
+  html body.explore-mode.has-offer #exploreFilterRow{
+    grid-area:filters!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    display:flex!important;
+    visibility:visible!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:10px!important;
+    overflow:visible!important;
+    margin:0 0 12px!important;
+    padding:0!important;
+  }
+  html body.explore-mode.has-offer #exploreFilterRow[hidden]{display:flex!important;}
+  html body.explore-mode.has-offer #exploreFilterRow [data-filter="category"]{display:none!important;}
+  html body.explore-mode.has-offer #exploreFilterRow .explore-filter-button{
+    display:inline-flex!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:112px!important;
+    min-height:42px!important;
+    justify-content:space-between!important;
+  }
+  html body.explore-mode.has-offer #categoryChips{
+    grid-area:chips!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    gap:9px!important;
+    width:100%!important;
+    min-width:0!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    margin:0 0 18px!important;
+    padding:2px 0 8px!important;
+  }
+  html body.explore-mode.has-offer #offerBannerDesk{
+    grid-area:offer!important;
+    grid-column:2!important;
+    grid-row:1 / span 4!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    align-self:stretch!important;
+    justify-self:stretch!important;
+    box-sizing:border-box!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    height:auto!important;
+    margin:0 0 18px!important;
+    padding:24px!important;
+    overflow:hidden!important;
+  }
+  html body.explore-mode.has-offer #productsSectionHead{
+    grid-area:phead!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    margin:4px 0 16px!important;
+  }
+  html body.explore-mode.has-offer #productGrid{grid-area:grid!important;min-width:0!important;}
+  html body.explore-mode.has-offer #productsSection > .load-more-wrap{grid-area:more!important;}
+}
+</style>
 </head>
 
 <body class="nav-pending">
@@ -7092,6 +7219,57 @@ html body:not(.nav-pending) #cartPage:not(.has-items) .app-cart-layout{grid-temp
 html body #cartPage:not(.has-items) .app-status{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:50vh;padding:24px 0}
 html body #cartPage:not(.has-items) .app-status .app-primary-button{width:100%;max-width:240px;margin-left:auto;margin-right:auto}
 
+
+
+/* ================= REQUESTED DESKTOP-ONLY ADJUSTMENTS ================= */
+@media (min-width: 761px) {
+  /* Keep four product cards in each desktop row on Home, Explore and Search. */
+  html body #productGrid.product-grid,
+  html body #searchProductGrid.product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    gap: 18px 16px !important;
+  }
+
+  /* Put the Sequize wordmark centrally at the top of the desktop sidebar. */
+  html body #desktopDrawer .desktop-drawer-head {
+    display: flex !important;
+    position: relative !important;
+    flex: 0 0 68px !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head > .brand {
+    display: block !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    font-family: "Pacifico", cursive !important;
+    font-size: 24px !important;
+    font-weight: 400 !important;
+    line-height: 1.2 !important;
+    color: #111 !important;
+  }
+  html body #desktopDrawer .desktop-drawer-head > #desktopDrawerToggle {
+    display: none !important;
+  }
+  html body header.topbar > .brand {
+    display: none !important;
+  }
+  html body #desktopDrawer.mini .desktop-drawer-head > .brand {
+    display: none !important;
+  }
+}
 </style>
 
 <script id="shoppy-ui-update-2026-js">
