@@ -71,6 +71,20 @@ function validNumber(value, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+// Category specifications: plain { label: value } strings only.
+function publicSpecs(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const out = {};
+  Object.keys(value).forEach(k => {
+    const label = String(k).trim();
+    const val = value[k];
+    if (!label || val == null || typeof val === "object") return;
+    const text = String(val).trim();
+    if (text) out[label] = text;
+  });
+  return out;
+}
+
 function toPublic(p, id) {
   const price = Math.max(0, validNumber(p.price, 0));
   const images = Array.isArray(p.images) ? p.images.filter(Boolean).map(proxyImage) : []; // CHANGED
@@ -99,6 +113,7 @@ function toPublic(p, id) {
     shippingInformation: p.shippingInformation || "",
     returnPolicy: p.returnPolicy || "",
     minimumOrderQuantity: Math.max(1, validNumber(p.minimumOrderQuantity, 1)),
+    specifications: publicSpecs(p.specifications),
     reviews: Array.isArray(p.reviews) ? p.reviews : [],
     createdAt: validNumber(p.createdAt, 0)
   };
