@@ -40,8 +40,14 @@
       --error: #DC2626;
       --error-bg: #FEF2F2;
 
-      --track: #E3E5E9;
-      --track-dot: #C9CDD3;
+      /* Tracker */
+      --track: #E8EAEE;
+      --track-dot: #D3D6DC;
+      --green-1: #4ADE80;
+      --green-2: #16A34A;
+      --dot-size: 30px;
+      --seg-h: 8px;
+      --seg-gap: 9px;
 
       --font-body: "DM Sans", sans-serif;
       --font-heading: "Manrope", sans-serif;
@@ -257,13 +263,14 @@
       font-size: 12px;
     }
 
-    /* TOTAL (left) + STATUS & ACTIONS (right) — always one line */
+    /* TOTAL (left) + STATUS & BUTTONS (right) — always ONE line */
 
     .order-bottom {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      flex-wrap: nowrap;
+      gap: 10px;
       margin-top: 18px;
     }
 
@@ -284,18 +291,18 @@
     }
 
     .order-right {
-      flex: 1;
       min-width: 0;
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      flex-wrap: wrap;
-      gap: 8px;
+      flex-wrap: nowrap;
+      gap: 6px;
     }
 
     /* Small pill: used by the status tag and the buttons */
 
     .pill {
+      flex-shrink: 0;
       display: inline-flex;
       align-items: center;
       gap: 5px;
@@ -334,91 +341,204 @@
 
     a.pill.pay:hover { background: var(--primary-hover); }
 
-    /* DELIVERY TRACKER */
+    /* Short / full button text */
+    .copy .t-short,
+    .copy .t-copied,
+    .copy .cico,
+    .pay .t-short { display: none; }
+
+    .copy.copied .t-full,
+    .copy.copied .t-short { display: none; }
+
+    .copy.copied .t-copied { display: inline; }
+
+    /* DELIVERY TRACKER
+       Row 1: step names. Row 2: dot - line - dot - line - dot - line - dot.
+       The first and last names sit on the content edges; every dot is
+       centred under its own name. Lines never touch the dots. */
 
     .tracker {
-      --p: 0;
-      margin-top: 26px;
+      margin-top: 28px;
     }
 
-    .step-labels,
-    .step-dots {
+    .track-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      row-gap: 12px;
     }
 
-    .step-labels div {
-      text-align: center;
-      color: var(--text-secondary);
+    .step-label {
+      justify-self: center;
+      color: var(--text-muted);
       font-size: 12px;
       font-weight: 600;
-      line-height: 1.4;
+      line-height: 1.3;
+      white-space: nowrap;
+      transition: color .3s;
     }
 
-    .step-dots {
-      position: relative;
-      height: 24px;
-      margin-top: 8px;
-    }
-
-    /* Line runs from the 1st dot centre to the 4th dot centre */
-    .track {
-      position: absolute;
-      left: 12.5%;
-      right: 12.5%;
-      top: 50%;
-      height: 4px;
-      margin-top: -2px;
-      border-radius: 4px;
-      background: var(--track);
-      overflow: hidden;
-    }
-
-    .track-fill {
-      width: calc(var(--p) * 100%);
-      height: 100%;
-      border-radius: 4px;
-      background: var(--success);
-      transition: width .8s ease;
-    }
+    .step-label.done { color: var(--text-primary); }
 
     .dot {
       position: relative;
-      z-index: 1;
       justify-self: center;
-      width: 24px;
-      height: 24px;
+      width: var(--dot-size);
+      height: var(--dot-size);
       display: grid;
       place-items: center;
       border: 2px solid var(--track-dot);
       border-radius: 50%;
-      background: #fff;
-      color: #fff;
-      font-size: 14px;
-      transition: background .3s, border-color .3s;
+      background: #F3F4F6;
+      transition: background .35s, border-color .35s, box-shadow .35s;
     }
 
-    .dot i {
-      opacity: 0;
-      transition: opacity .3s;
+    /* waiting dot: small grey centre */
+    .dot::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--track-dot);
+    }
+
+    .dot svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding: 22%;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 3.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .18));
     }
 
     .dot.done {
-      border-color: var(--success);
-      background: var(--success);
+      border-color: #fff;
+      background: linear-gradient(145deg, var(--green-1), var(--green-2));
+      box-shadow:
+        0 0 0 3px rgba(22, 163, 74, .22),
+        0 5px 12px rgba(21, 128, 61, .32);
     }
 
-    .dot.done i { opacity: 1; }
+    .dot.done::before { display: none; }
+
+    .dot.done svg {
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset .45s ease .12s;
+    }
+
+    /* Rounded line pieces between dots */
+
+    .seg {
+      position: relative;
+      align-self: center;
+      height: var(--seg-h);
+      margin: 0 var(--seg-gap);
+      border-radius: 999px;
+      background: var(--track);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, .06);
+    }
+
+    .fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: calc(var(--f, 0) * 100%);
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--green-1), var(--green-2));
+      box-shadow: 0 1px 4px rgba(22, 163, 74, .35);
+      transition: width 1s linear;
+    }
+
+    .seg.live .fill { min-width: 10px; }
+
+    /* light sweeping along the live line */
+    .shine {
+      display: none;
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: linear-gradient(100deg,
+        transparent 0%, rgba(255, 255, 255, .6) 50%, transparent 100%);
+      background-size: 60% 100%;
+      background-repeat: no-repeat;
+      animation: sweep 1.8s linear infinite;
+    }
+
+    .seg.live .shine { display: block; }
+
+    /* glowing head at the moving end of the live line */
+    .seg.live .fill::after {
+      content: "";
+      position: absolute;
+      right: -3px;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      margin-top: -7px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid var(--green-2);
+      animation: pulse 1.6s ease-out infinite;
+    }
+
+    @keyframes sweep {
+      from { background-position: -150% 0; }
+      to { background-position: 250% 0; }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, .5); }
+      70% { box-shadow: 0 0 0 9px rgba(22, 163, 74, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+    }
+
+    /* Delivery date (left) + live countdown (right) */
+
+    .eta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px 14px;
+      margin-top: 18px;
+    }
 
     .eta {
-      margin: 12px 0 0;
+      margin: 0;
       color: var(--text-secondary);
       font-size: 13px;
       font-weight: 600;
-      text-align: center;
+      text-align: left;
     }
 
     .eta.delivered { color: var(--success); }
+
+    .live {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .live.on { display: inline-flex; }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green-2);
+      animation: pulse 1.6s ease-out infinite;
+    }
 
     /* EMPTY STATE */
 
@@ -463,11 +583,40 @@
       text-align: center;
     }
 
-    /* RESPONSIVE */
+    /* RESPONSIVE — everything stays on one line */
 
-    @media (max-width: 760px) {
+    @media (max-width: 600px) {
       main { margin-top: 25px; }
-      .step-labels div { font-size: 11px; }
+
+      :root {
+        --dot-size: 26px;
+        --seg-h: 7px;
+        --seg-gap: 6px;
+      }
+
+      .total { font-size: 20px; }
+
+      .order-bottom { gap: 8px; }
+      .order-right { gap: 5px; }
+
+      .pill {
+        padding: 3px 8px;
+        font-size: 11px;
+        gap: 4px;
+      }
+
+      .pill .ico { display: none; }
+
+      .copy .t-full,
+      .pay .t-full { display: none; }
+
+      .copy .t-short,
+      .pay .t-short { display: inline; }
+
+      .copy.copied .t-short { display: none; }
+
+      .step-label { font-size: 11px; }
+      .seg.live .fill::after { width: 12px; height: 12px; margin-top: -6px; }
     }
 
     @media (max-width: 380px) {
@@ -478,13 +627,26 @@
       }
 
       .product-name { font-size: 12px; }
-      .total { font-size: 20px; }
+      .total { font-size: 18px; }
+      .step-label { font-size: 10.5px; }
+    }
+
+    /* very narrow phones: copy button becomes icon only */
+    @media (max-width: 340px) {
+      .copy .t-short { display: none; }
+      .copy .cico { display: inline; }
+      .copy.copied .t-copied { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .track-fill,
+      .fill,
       .dot,
-      .dot i { transition: none; }
+      .dot svg,
+      .step-label { transition: none; }
+
+      .shine,
+      .seg.live .fill::after,
+      .live-dot { animation: none; }
     }
   </style>
 </head>
@@ -540,6 +702,10 @@
 
     // Server time minus device time, so progress follows the server clock
     let serverDrift = 0;
+
+    const CHECK_SVG =
+      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+      '<path d="M6 12.5l4.2 4.2L18 8" pathLength="1"/></svg>';
 
     // Inline placeholder: no external request, so it can never fail to load
     const PLACEHOLDER_IMAGE =
@@ -606,6 +772,17 @@
       });
     }
 
+    function formatLeft(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const d = Math.floor(total / 86400);
+      const h = Math.floor((total % 86400) / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      const pad = n => String(n).padStart(2, "0");
+
+      return (d > 0 ? d + "d " : "") + pad(h) + "h " + pad(m) + "m " + pad(s) + "s left";
+    }
+
     function statusIcon(tone) {
       if (tone === "paid") return "ph-check-circle";
       if (tone === "warn") return "ph-warning-circle";
@@ -670,36 +847,54 @@
     }
 
     /* ---------- Delivery tracker ----------
-       Everything is decided by the orders API (active, start, end).
-       The page only draws it and keeps the line moving. */
+       The orders API decides everything (active, start, end).
+       The page only draws it and keeps it moving every second. */
 
     function renderTracker(order) {
       const t = order.tracking;
       if (!t || typeof t !== "object") return "";
 
-      const labels = STEPS.map(name => `<div>${escapeHTML(name)}</div>`).join("");
-      const dots = STEPS.map(
-        () => `<span class="dot"><i class="ph ph-check"></i></span>`
-      ).join("");
+      const n = STEPS.length;
+
+      // auto (name width) for each step, 1fr for each line between them
+      const columns = ["auto"].concat(Array(n - 1).fill("1fr auto")).join(" ");
+
+      let cells = "";
+
+      STEPS.forEach((name, i) => {
+        cells += `<div class="step-label" style="grid-column:${2 * i + 1};grid-row:1">${escapeHTML(name)}</div>`;
+      });
+
+      STEPS.forEach((_, i) => {
+        cells += `<span class="dot" style="grid-column:${2 * i + 1};grid-row:2">${CHECK_SVG}</span>`;
+
+        if (i < n - 1) {
+          cells += `<span class="seg" style="grid-column:${2 * i + 2};grid-row:2">` +
+                   `<span class="fill"><span class="shine"></span></span></span>`;
+        }
+      });
 
       return `
         <div class="tracker"
-             role="group"
+             role="progressbar"
              aria-label="Delivery progress"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             aria-valuenow="0"
              data-start="${Number(t.startAt) || 0}"
              data-end="${Number(t.endAt) || 0}"
              data-active="${t.active ? "1" : "0"}"
              data-forced="${t.forceDelivered ? "1" : "0"}"
              data-note="${escapeHTML(t.note || "")}">
 
-          <div class="step-labels">${labels}</div>
-
-          <div class="step-dots">
-            <div class="track"><div class="track-fill"></div></div>
-            ${dots}
+          <div class="track-grid" style="grid-template-columns:${columns}">
+            ${cells}
           </div>
 
-          <p class="eta"></p>
+          <div class="eta-row">
+            <p class="eta"></p>
+            <span class="live"><i class="live-dot"></i><span class="left"></span></span>
+          </div>
 
         </div>
       `;
@@ -722,26 +917,47 @@
             : Math.min(1, Math.max(0, (now - start) / (end - start)));
         }
 
-        el.style.setProperty("--p", p.toFixed(4));
-
+        const segs = el.querySelectorAll(".seg");
         const dots = el.querySelectorAll(".dot");
-        const last = Math.max(1, dots.length - 1);
+        const labels = el.querySelectorAll(".step-label");
+        const m = segs.length;
 
-        dots.forEach((dot, i) => {
-          dot.classList.toggle("done", active && p >= i / last - 1e-9);
+        // the line that is moving right now
+        const liveIndex = active && p < 1 ? Math.min(m - 1, Math.floor(p * m)) : -1;
+
+        segs.forEach((seg, i) => {
+          const f = Math.min(1, Math.max(0, p * m - i));
+          seg.style.setProperty("--f", f.toFixed(5));
+          seg.classList.toggle("live", i === liveIndex);
         });
 
-        const eta = el.querySelector(".eta");
-        const done = active && p >= 1;
+        dots.forEach((dot, i) => {
+          const done = active && p >= i / m - 1e-9;
+          dot.classList.toggle("done", done);
+          labels[i].classList.toggle("done", done);
+        });
 
-        eta.classList.toggle("delivered", done);
+        el.setAttribute("aria-valuenow", String(Math.round(p * 100)));
+
+        const eta = el.querySelector(".eta");
+        const live = el.querySelector(".live");
+        const delivered = active && p >= 1;
+
+        eta.classList.toggle("delivered", delivered);
 
         if (!active) {
           eta.textContent = el.dataset.note;
-        } else if (done) {
+        } else if (delivered) {
           eta.textContent = "Delivered on " + formatDay(end);
         } else {
           eta.textContent = "Delivery by " + formatDay(end);
+        }
+
+        const showLive = active && !delivered;
+        live.classList.toggle("on", showLive);
+
+        if (showLive) {
+          live.querySelector(".left").textContent = formatLeft(end - now);
         }
       });
     }
@@ -806,17 +1022,17 @@
             <div class="order-right">
 
               <span class="pill ${tone}">
-                <i class="ph ${statusIcon(tone)}"></i>
-                ${escapeHTML(label)}
+                <i class="ph ${statusIcon(tone)} ico"></i>${escapeHTML(label)}
               </span>
 
               <button class="pill copy"
                       type="button"
-                      data-copy-order="${escapeHTML(orderId)}">Copy order ID</button>
+                      aria-label="Copy order ID"
+                      data-copy-order="${escapeHTML(orderId)}"><i class="ph ph-copy cico"></i><span class="t-full">Copy order ID</span><span class="t-short">Copy ID</span><span class="t-copied">Copied</span></button>
 
               ${order.canContinuePayment
                 ? `<a class="pill pay"
-                      href="/payment.html?orderId=${encodeURIComponent(orderId)}">Continue to payment</a>`
+                      href="/payment.html?orderId=${encodeURIComponent(orderId)}"><span class="t-full">Continue to payment</span><span class="t-short">Pay now</span></a>`
                 : ""}
 
             </div>
@@ -912,11 +1128,11 @@
 
       try {
         await navigator.clipboard.writeText(copyButton.dataset.copyOrder);
-        copyButton.textContent = "Copied";
+        copyButton.classList.add("copied");
 
         setTimeout(() => {
           if (copyButton.isConnected) {
-            copyButton.textContent = "Copy order ID";
+            copyButton.classList.remove("copied");
           }
         }, 1500);
       } catch (error) {
@@ -926,8 +1142,10 @@
       }
     });
 
-    // Keep every order's line moving while the page is open
-    setInterval(updateTrackers, 30000);
+    // Live: every order's line and countdown move every second
+    setInterval(function () {
+      if (!document.hidden) updateTrackers();
+    }, 1000);
 
     document.addEventListener("visibilitychange", function () {
       if (!document.hidden) updateTrackers();
