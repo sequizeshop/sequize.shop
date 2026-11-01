@@ -15,31 +15,26 @@
       "source": "/",
       "destination": "/index.html"
     },
-{
-  "source": "/img/:file",
-  "destination": "https://apisequizeshoplite-two.vercel.app/api/image/:file"
-},
-
-    { "source": "/product.html", "destination": "/api/product?page=1" },
-{ "source": "/product", "destination": "/api/product?page=1" },
-
     {
-  "source": "/product.html",
-  "has": [{ "type": "query", "key": "id" }],
-  "missing": [{ "type": "header", "key": "x-meta-bypass" }],
-  "destination": "/api/product?page=1"
+      "source": "/img/:file",
+      "destination": "https://apisequizeshoplite-two.vercel.app/api/image/:file"
     },
-
-    { 
-      "source": "/__/auth/:path*", 
+    {
+      "source": "/product.html",
+      "destination": "/api/product?page=1"
+    },
+    {
+      "source": "/product",
+      "destination": "/api/product?page=1"
+    },
+    {
+      "source": "/__/auth/:path*",
       "destination": "https://shoppy-c289d.firebaseapp.com/__/auth/:path*"
     },
-    
     {
       "source": "/firebase-messaging-sw.js",
       "destination": "https://apisequizeshoplite.vercel.app/firebase-messaging-sw.js"
     },
-    
     {
       "source": "/home",
       "destination": "/index.html"
@@ -63,10 +58,6 @@
     {
       "source": "/cart",
       "destination": "/cart.html"
-    },
-    {
-      "source": "/product",
-      "destination": "/product.html"
     },
     {
       "source": "/profile",
