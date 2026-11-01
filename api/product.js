@@ -1,7 +1,7 @@
 // api/product.js
 // 1) GET /api/product?id=<40-char id>          -> JSON (public, login NOT required)
 // 2) GET /api/product?id=<id>&page=1           -> product.html with product meta tags
-//    (vercel.json rewrites /p/<id> to this, so social apps / crawlers
+//    (vercel.json rewrites /product.html to this, so social apps / crawlers
 //     see the real product image, title and description when a link is shared)
 
 const crypto = require("crypto");
@@ -158,10 +158,10 @@ function getOrigin(req) {
 async function sendProductPage(req, res, db) {
   const origin = getOrigin(req);
 
-  // Original product.html (bypass header stops the rewrite from looping)
-  const pageRes = await fetch(`${origin}/product.html`, {
-    headers: { "x-meta-bypass": "1" }
-  });
+  // The real page lives in /product-template.html (a static file).
+  // /product.html itself has no file, so vercel.json can rewrite it to this API.
+  const pageRes = await fetch(`${origin}/product-template.html`);
+  if (!pageRes.ok) throw new Error("product-template.html not found (HTTP " + pageRes.status + ")");
   let html = await pageRes.text();
 
   try {
@@ -180,7 +180,7 @@ async function sendProductPage(req, res, db) {
       if (image.startsWith("/")) image = origin + image;
       if (!image) image = DEFAULT_IMAGE;
 
-      const url = `${origin}/p/${encodeURIComponent(found.id)}`;
+      const url = `${origin}/product.html?id=${encodeURIComponent(found.id)}`;
 
       html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(title)}</title>`);
       html = setMeta(html, "metaDescription", description);
