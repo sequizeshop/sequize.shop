@@ -15,7 +15,7 @@
   <meta property="og:site_name" content="Sequize">
   <meta property="og:title" id="ogTitle" content="Product Details — Sequize">
   <meta property="og:description" id="ogDescription" content="Explore product details, pricing, images, reviews and offers on Sequize.">
-  <meta property="og:url" id="ogUrl" content="https://www.sequize.shop/product.html">
+  <meta property="og:url" id="ogUrl" content="https://www.sequize.shop/product">
   <meta property="og:image" id="ogImage" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
   <meta property="og:image:alt" id="ogImageAlt" content="Sequize product">
   <meta property="og:image:width" content="1200">
@@ -1449,41 +1449,6 @@ function proxyImage(url) {
       }
     }
 
-
-    function updateProductStructuredData(item) {
-      const image = proxyImage(item.thumbnail) ||
-        proxyImage(Array.isArray(item.images) ? item.images[0] : "") ||
-        DEFAULT_IMAGE;
-      const price = Math.max(0, Number(item.price) || 0);
-      const inStock = Number(item.stock) > 0 &&
-        String(item.availabilityStatus || "").toLowerCase() !== "out of stock";
-      const schema = {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        "name": String(item.title || "Product"),
-        "description": String(item.description || `Explore ${item.title || "this product"} on Sequize.`).slice(0, 5000),
-        "sku": String(item.sku || item.id || ""),
-        "brand": item.brand ? {"@type": "Brand", "name": String(item.brand)} : undefined,
-        "category": String(item.category || "Products"),
-        "image": [image],
-        "offers": {
-          "@type": "Offer",
-          "url": `${SITE_URL}/product?id=${encodeURIComponent(item.id)}`,
-          "priceCurrency": "INR",
-          "price": price.toFixed(2),
-          "availability": inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-          "itemCondition": "https://schema.org/NewCondition"
-        }
-      };
-      const old = document.getElementById("product-jsonld");
-      if (old) old.remove();
-      const script = document.createElement("script");
-      script.id = "product-jsonld";
-      script.type = "application/ld+json";
-      script.textContent = JSON.stringify(schema);
-      document.head.appendChild(script);
-    }
-
     /* API */
 
     async function fetchJSON(url, options = {}) {
@@ -1674,7 +1639,6 @@ function proxyImage(url) {
           : [];
 
         updateProductMetadata(product);
-        updateProductStructuredData(product);
 
         renderProduct();
 
@@ -2315,7 +2279,7 @@ function proxyImage(url) {
       const shareData = {
         title: product.title,
         text: `${product.title} — ${product.description || "Check out this product"} on Sequize!`,
-        url: `${SITE_URL}/product?id=${encodeURIComponent(product.id)}`
+        url: `${window.location.origin}/product?id=${encodeURIComponent(product.id)}`
       };
 
       try {
