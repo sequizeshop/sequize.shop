@@ -1,7 +1,6 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-
   "redirects": [
     {
       "source": "/account",
@@ -9,7 +8,6 @@
       "permanent": false
     }
   ],
-
   "rewrites": [
     {
       "source": "/",
@@ -20,12 +18,16 @@
       "destination": "https://apisequizeshoplite-two.vercel.app/api/image/:file"
     },
     {
+      "source": "/product",
+      "destination": "/api/product?page=1"
+    },
+    {
       "source": "/product.html",
       "destination": "/api/product?page=1"
     },
     {
-      "source": "/product",
-      "destination": "/api/product?page=1"
+      "source": "/sitemap.xml",
+      "destination": "https://apisequizeshoplite-two.vercel.app/api/sitemap"
     },
     {
       "source": "/__/auth/:path*",
