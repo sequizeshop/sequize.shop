@@ -1135,10 +1135,28 @@
       .skeleton::after { animation: none; }
       .toast, .purchase-button { transition: none; }
     }
+
+    /* GUEST MODE */
+    .guest-header-brand{display:none;font-family:var(--font-heading);font-size:22px;font-weight:800;letter-spacing:-.6px;color:var(--primary);white-space:nowrap}
+    .guest-header-actions{display:none;align-items:center;gap:8px}
+    .guest-auth-button{min-height:36px;display:inline-flex;align-items:center;justify-content:center;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap}
+    .guest-auth-login{color:var(--primary);background:transparent;border:1px solid var(--primary)}
+    .guest-auth-signup{color:#fff;background:var(--primary);border:1px solid var(--primary)}
+    body.auth-pending .topbar > *{visibility:hidden}
+    body.guest-mode .topbar > .brand,body.guest-mode .topbar > .nav-actions{display:none !important}
+    body.guest-mode .guest-header-brand{display:block}
+    body.guest-mode .guest-header-actions{display:flex}
+    body.auth-pending .purchase-buttons,body.auth-pending .quantity-row,body.auth-pending .wishlist-overlay,
+    body.guest-mode .purchase-buttons,body.guest-mode .quantity-row,body.guest-mode .wishlist-overlay{display:none !important}
+
+    /* BUTTONS: smaller height, fully round */
+    html body .purchase-button,html body .status button,html body .status a{min-height:44px !important;padding:10px 20px !important;border-radius:999px !important}
+    html body .quantity-control{border-radius:999px !important}
+    html body .quantity-control button{width:30px !important;height:30px !important;border-radius:50% !important}
   </style>
 </head>
 
-<body>
+<body class="auth-pending">
 
   <!-- HEADER -->
 
@@ -1149,6 +1167,11 @@
       </a>
     </nav>
     <a href="/home.html" class="brand" aria-label="Sequize home">Sequize.</a>
+    <a href="/home.html" class="guest-header-brand" aria-label="Sequize home">Sequize</a>
+    <div class="guest-header-actions" id="guestHeaderActions">
+      <a class="guest-auth-button guest-auth-login" id="guestLoginLink" href="/login.html">Login</a>
+      <a class="guest-auth-button guest-auth-signup" href="/signup.html">Sign Up</a>
+    </div>
   </header>
 
   <main class="container">
@@ -2547,6 +2570,31 @@ function proxyImage(url) {
 
     /* INITIALIZE */
 
+    async function checkAuth() {
+      let guest = false;
+      try {
+        const r = await fetch("/api/profile", {
+          credentials: "same-origin", cache: "no-store",
+          headers: { Accept: "application/json" }
+        });
+        if (r.status === 401) guest = true;
+        else if (r.ok) {
+          const d = await r.json().catch(() => ({}));
+          if (!(d.success === true && d.user)) guest = true;
+        }
+      } catch (e) { /* network error: normal options stay visible */ }
+
+      document.body.classList.toggle("guest-mode", guest);
+      document.body.classList.remove("auth-pending");
+
+      if (guest) {
+        const login = document.getElementById("guestLoginLink");
+        if (login) login.href = "/login.html?returnTo=" +
+          encodeURIComponent(window.location.pathname + window.location.search);
+      }
+    }
+
+    checkAuth();
     loadAdminDiscountBar();
     loadProduct();
   </script>
