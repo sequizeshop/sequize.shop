@@ -3791,11 +3791,11 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     <div class="app-cart-layout" id="appCartLayout">
       <section id="appCartItems" class="app-cart-items" aria-live="polite" aria-busy="true"></section>
       <aside class="app-summary">
-        <h2>Order Summary</h2>
+        <h2>Payment Summary</h2>
         <div class="app-summary-line"><span>Items</span><strong id="appSummaryQuantity">0</strong></div>
-        <div class="app-summary-line"><span>Subtotal</span><strong id="appSummarySubtotal">₹0.00</strong></div>
-        <div id="appSummaryCharges" aria-live="polite"></div>
-        <div class="app-summary-total"><span>Total</span><strong id="appSummaryTotal">₹0.00</strong></div>
+        <div class="app-summary-total"><span>Total to Pay</span><strong id="appSummaryAdvance">₹0.00</strong></div>
+        <div class="app-summary-line"><span>Remaining COD</span><strong id="appSummaryCod">₹0.00</strong></div>
+        <p class="app-summary-note" style="margin:12px 0;color:var(--text-secondary);font-size:12px;line-height:1.5">Pay ₹600 online in advance. The remaining amount will be collected at delivery.</p>
         <button id="appCheckoutButton" class="app-primary-button" type="button" disabled>Continue to Checkout</button>
         <button id="appClearCartButton" class="app-danger-button" type="button" hidden>Clear Cart</button>
       </aside>
@@ -6627,7 +6627,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     /* IN-PAGE CART: preserves /api/cart endpoints and checkout route */
     (function(){
       const root=document.getElementById("cartPage"); if(!root)return;
-      const itemsEl=document.getElementById("appCartItems"), qtyEl=document.getElementById("appSummaryQuantity"), subEl=document.getElementById("appSummarySubtotal"), totalEl=document.getElementById("appSummaryTotal"), chargesEl=document.getElementById("appSummaryCharges"), checkout=document.getElementById("appCheckoutButton"), clear=document.getElementById("appClearCartButton");
+      const itemsEl=document.getElementById("appCartItems"), qtyEl=document.getElementById("appSummaryQuantity"), advanceEl=document.getElementById("appSummaryAdvance"), codEl=document.getElementById("appSummaryCod"), checkout=document.getElementById("appCheckoutButton"), clear=document.getElementById("appClearCartButton");
       let items=[],busy=false,loaded=false,taxSettings=[{id:"shipping",title:"Shipping",percent:2},{id:"packaging",title:"Packaging",percent:3},{id:"platform-fee",title:"Platform fee",percent:1},{id:"delivery-charges",title:"Delivery charges",percent:2},{id:"gst",title:"GST",percent:18}],eligibleDiscounts=[];
       const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
       const price=v=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",minimumFractionDigits:2,maximumFractionDigits:2}).format((Number(v)||0)*85);
@@ -6635,7 +6635,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       async function loadDiscountSettings(){try{let email="";try{const p=JSON.parse(localStorage.getItem("shoppy_profile_cache_v1")||"null");if(p&&p.user&&p.user.email&&Number(p.expiresAt)>Date.now())email=String(p.user.email).trim().toLowerCase();}catch(e){}if(!email){try{const pr=await fetch("/api/profile",{method:"GET",credentials:"same-origin",headers:{Accept:"application/json"},cache:"no-store"});const pd=await pr.json().catch(()=>({}));if(pr.ok&&pd.success&&pd.user&&pd.user.email)email=String(pd.user.email).trim().toLowerCase();}catch(e){}}const url="https://apisequizeshoplite.vercel.app/api/admin/productData?resource=discounts"+(email?"&email="+encodeURIComponent(email):"");const r=await fetch(url,{method:"GET",headers:{Accept:"application/json"},cache:"no-store"});const d=await r.json();if(r.ok&&d.success&&Array.isArray(d.discounts))eligibleDiscounts=d.discounts.filter(x=>x&&Number(x.percent)>0&&Number(x.percent)<=100);}catch(e){console.warn("Customer discounts unavailable.",e)}}
       function getAppliedDiscount(){if(!eligibleDiscounts.length)return null;return eligibleDiscounts.slice().sort((a,b)=>Number(b.percent)-Number(a.percent))[0]}
       async function request(method,body){const o={method,headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"};if(body!==undefined){o.headers["Content-Type"]="application/json";o.body=JSON.stringify(body);}const r=await fetch("/api/cart",o);const t=await r.text();let d;try{d=JSON.parse(t)}catch{throw Error(`Cart API response invalid (HTTP ${r.status}).`)}if(r.status===401){authStatus="guest";document.body.classList.add("guest-mode");document.getElementById("guestCartPanel").hidden=false;document.getElementById("appCartLayout").hidden=true;throw Error("Login required.")}if(!r.ok||d.success!==true)throw Error(d.message||"Cart request failed.");return d;}
-      function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);const totalPct=Math.min(100,eligibleDiscounts.reduce((n,d)=>n+(Number(d.percent)||0),0)),discountAmount=subtotal*totalPct/100,chargeBase=Math.max(0,subtotal-discountAmount); const charges=taxSettings.map(t=>({...t,amount:chargeBase*(Number(t.percent)||0)/100}));const total=chargeBase+charges.reduce((n,t)=>n+t.amount,0);qtyEl.textContent=count;subEl.textContent=price(subtotal);totalEl.textContent=price(total);chargesEl.innerHTML=eligibleDiscounts.map(d=>`<div class="app-summary-line"><span>${esc(d.title||"Discount")} (${Number(d.percent).toFixed(2).replace(/\.?0+$/,'')}% off)</span><strong>−${price(subtotal*Number(d.percent)/100)}</strong></div>`).join("")+charges.map(t=>`<div class="app-summary-line"><span>${esc(t.title)} (${Number(t.percent).toFixed(2).replace(/\.?0+$/,'')}%)</span><strong>${price(t.amount)}</strong></div>`).join("");checkout.disabled=!items.length||busy;clear.hidden=!items.length;clear.disabled=busy;
+      function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);const totalPct=Math.min(100,eligibleDiscounts.reduce((n,d)=>n+(Number(d.percent)||0),0)),discountAmount=subtotal*totalPct/100,chargeBase=Math.max(0,subtotal-discountAmount); const charges=taxSettings.map(t=>({...t,amount:chargeBase*(Number(t.percent)||0)/100}));const total=chargeBase+charges.reduce((n,t)=>n+t.amount,0);const totalINR=Math.max(0,total*85),advanceINR=Math.min(600,totalINR),codINR=Math.max(0,totalINR-advanceINR);qtyEl.textContent=count;advanceEl.textContent=price(advanceINR/85);codEl.textContent=price(codINR/85);checkout.disabled=!items.length||busy;clear.hidden=!items.length;clear.disabled=busy;
         if(!items.length){itemsEl.innerHTML='<div class="app-status"><i class="ph ph-shopping-cart"></i><h2>Your cart is empty</h2><p>Looks like you haven\'t added any products yet.</p><button type="button" class="app-primary-button" id="appStartShopping">Start Shopping</button></div>';document.getElementById("appStartShopping").onclick=()=>handleNavigation("home");return;}
         itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),title=esc(x.title||"Product"),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="app-cart-item"><div class="app-cart-image"><img src="${img}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="app-cart-info"><h3 class="app-cart-title">${title}</h3><p class="app-cart-price">${price(p)} each</p><button class="app-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="app-cart-side"><div class="app-qty"><button type="button" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div><div class="app-cart-total">${price(p*q)}</div></div></article>`}).join("");
         itemsEl.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>act(b.dataset.action,b.dataset.id));
@@ -7400,6 +7400,12 @@ html body .app-primary-button,html body .app-secondary-button,html body .app-dan
 html body .app-logout,html body .category-current{min-height:44px !important;border-radius:999px !important;padding-top:10px !important;padding-bottom:10px !important}
 html body .app-qty{border-radius:999px !important}
 html body .app-qty button{border-radius:50% !important}
+</style>
+
+<style id="home-cart-advance-cod">
+  #cartPage .app-summary { position:sticky; top:92px; }
+  #cartPage .app-summary-total { font-size:18px; }
+  #cartPage .app-summary-note { color:var(--text-secondary); }
 </style>
 </body>
 </html>
