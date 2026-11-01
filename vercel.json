@@ -6,6 +6,11 @@
       "source": "/account",
       "destination": "/user/account/redirect?mode=checkout",
       "permanent": false
+    },
+    {
+      "source": "/product.html",
+      "destination": "/product",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -19,10 +24,6 @@
     },
     {
       "source": "/product",
-      "destination": "/api/product?page=1"
-    },
-    {
-      "source": "/product.html",
       "destination": "/api/product?page=1"
     },
     {
