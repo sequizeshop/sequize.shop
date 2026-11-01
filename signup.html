@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Create Account</title>
+    <title>Sign In</title>
 
-    <!-- Logo / Favicon -->
     <link
         rel="icon"
-        type="image/jpeg"
+        type="image/png"
         href="https://i.ibb.co/93kQCKxT/20261019-120246.png"
     >
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
@@ -50,8 +50,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        input,
-        button {
+        input, button {
             font: inherit;
         }
 
@@ -185,7 +184,7 @@
             font-size: 15px;
         }
 
-        /* SIGNUP FORM */
+        /* LOGIN FORM */
 
         .form-panel {
             display: flex;
@@ -194,12 +193,10 @@
             min-width: 0;
         }
 
-        .signup-card {
+        .login-card {
             width: 100%;
             max-width: 390px;
         }
-
-        /* LOGO */
 
         .brand-logo {
             display: flex;
@@ -298,50 +295,29 @@
             font-size: 18px;
         }
 
-        /* SEND CODE BUTTON (inside the code input box) */
-
-        .send-code {
-            flex-shrink: 0;
-            padding: 6px 10px;
-            border: none;
-            background: transparent;
-            color: var(--black);
-            font-size: 11px;
-            font-weight: 700;
-            text-decoration: underline;
-            text-underline-offset: 2px;
-            border-radius: 4px;
-            white-space: nowrap;
-        }
-
-        .send-code:disabled {
-            color: var(--gray-400);
-            text-decoration: none;
-            cursor: not-allowed;
-        }
-
-        /* TERMS */
-
-        .terms {
+        .form-options {
             display: flex;
-            align-items: flex-start;
-            gap: 9px;
-            margin: 20px 0;
-            color: var(--gray-500);
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin: 18px 0 21px;
             font-size: 10px;
-            line-height: 1.8;
         }
 
-        .terms input {
-            flex-shrink: 0;
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--gray-500);
+        }
+
+        .remember-me input {
             width: 14px;
             height: 14px;
-            margin-top: 2px;
             accent-color: var(--black);
         }
 
-        .terms a {
-            color: var(--black);
+        .forgot-link {
             font-weight: 600;
             text-decoration: underline;
             text-underline-offset: 2px;
@@ -421,9 +397,7 @@
             flex-shrink: 0;
         }
 
-        /* LOGIN LINK */
-
-        .login-link {
+        .signup-link {
             margin-top: 22px;
             padding-top: 17px;
             border-top: 1px solid var(--gray-200);
@@ -432,7 +406,7 @@
             font-size: 10px;
         }
 
-        .login-link a {
+        .signup-link a {
             color: var(--black);
             font-weight: 700;
             margin-left: 4px;
@@ -448,7 +422,7 @@
             font-size: 10px;
         }
 
-        /* STATUS MESSAGES */
+        /* MESSAGES */
 
         .message {
             display: none;
@@ -457,6 +431,7 @@
             border-radius: 5px;
             font-size: 12px;
             line-height: 1.6;
+            overflow-wrap: anywhere;
         }
 
         .message.error,
@@ -530,9 +505,10 @@
             font-size: 12px;
             line-height: 1.7;
             color: var(--gray-500);
+            overflow-wrap: anywhere;
         }
 
-        .progress-dialog .dialog-ok {
+        .dialog-ok {
             display: none;
             margin-top: 18px;
         }
@@ -544,8 +520,6 @@
         .progress-dialog.done .dialog-ok {
             display: flex;
         }
-
-        /* RESPONSIVE */
 
         @media (max-width: 900px) {
             .page-wrapper {
@@ -581,7 +555,7 @@
                 width: 100%;
             }
 
-            .signup-card {
+            .login-card {
                 max-width: 420px;
             }
 
@@ -619,19 +593,19 @@
 
 <main class="page-wrapper">
 
-    <!-- LEFT INTRO PANEL -->
+    <!-- SAME INTRO PANEL AS SIGNUP -->
 
     <section class="intro-panel">
         <div class="intro-content">
 
             <div class="eyebrow">THE NEW WAY TO SHOP</div>
 
-            <h1>Find your<br>next <span>favorite.</span></h1>
+            <h1>Welcome<br><span>back.</span></h1>
 
             <p class="intro-description">
-                Discover products that fit your lifestyle.
-                Explore new arrivals, find everyday essentials,
-                and make every purchase count.
+                Your favorite products are waiting for you.
+                Sign in to explore new arrivals, discover everyday
+                essentials, and continue your shopping journey.
             </p>
 
             <div class="visual">
@@ -663,12 +637,10 @@
         </div>
     </section>
 
-    <!-- SIGNUP FORM -->
+    <!-- LOGIN FORM -->
 
     <section class="form-panel">
-        <div class="signup-card">
-
-            <!-- LOGO IMAGE ONLY -->
+        <div class="login-card">
 
             <div class="brand-logo">
                 <img
@@ -680,8 +652,8 @@
             </div>
 
             <div class="form-heading">
-                <h2>Create your account</h2>
-                <p>Create an account and discover a better way to shop.</p>
+                <h2>Welcome back</h2>
+                <p>Sign in to your account to continue shopping.</p>
             </div>
 
             <div
@@ -691,32 +663,16 @@
                 aria-live="polite"
             ></div>
 
-            <form id="signupForm">
-
-                <div class="form-group">
-                    <label for="fullName">Full Name</label>
-
-                    <div class="input-box">
-                        <i class="ph ph-user" aria-hidden="true"></i>
-
-                        <input
-                            type="text"
-                            id="fullName"
-                            name="name"
-                            placeholder="Enter your full name"
-                            autocomplete="name"
-                            minlength="2"
-                            maxlength="80"
-                            required
-                        >
-                    </div>
-                </div>
+            <form id="loginForm">
 
                 <div class="form-group">
                     <label for="email">Email Address</label>
 
                     <div class="input-box">
-                        <i class="ph ph-envelope-simple" aria-hidden="true"></i>
+                        <i
+                            class="ph ph-envelope-simple"
+                            aria-hidden="true"
+                        ></i>
 
                         <input
                             type="email"
@@ -731,47 +687,22 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="otp">Verification Code</label>
-
-                    <div class="input-box">
-                        <i class="ph ph-shield-check" aria-hidden="true"></i>
-
-                        <input
-                            type="text"
-                            id="otp"
-                            name="otp"
-                            placeholder="6-digit code"
-                            autocomplete="one-time-code"
-                            inputmode="numeric"
-                            pattern="[0-9]{6}"
-                            maxlength="6"
-                            required
-                        >
-
-                        <button
-                            type="button"
-                            class="send-code"
-                            id="sendOtpBtn"
-                        >
-                            Send code
-                        </button>
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label for="password">Password</label>
 
                     <div class="input-box">
-                        <i class="ph ph-lock-simple" aria-hidden="true"></i>
+                        <i
+                            class="ph ph-lock-simple"
+                            aria-hidden="true"
+                        ></i>
 
                         <input
                             type="password"
                             id="password"
                             name="password"
-                            placeholder="Create a strong password"
-                            autocomplete="new-password"
-                            minlength="8"
-                            maxlength="72"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            minlength="1"
+                            maxlength="1024"
                             required
                         >
 
@@ -787,23 +718,27 @@
                     </div>
                 </div>
 
-                <label class="terms">
-                    <input type="checkbox" id="terms" required>
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <span>Remember me</span>
+                    </label>
 
-                    <span>
-                        I agree to the
-                        <a href="terms.html">Terms of Service</a>
-                        and
-                        <a href="privacy.html">Privacy Policy</a>.
-                    </span>
-                </label>
+                    <a
+                        class="forgot-link"
+                        href="#"
+                        id="forgotPassword"
+                    >
+                        Forgot password?
+                    </a>
+                </div>
 
                 <button
                     type="submit"
                     class="btn btn-primary"
                     id="submitBtn"
                 >
-                    <span>Create Account</span>
+                    <span>Sign In</span>
                     <i class="ph ph-arrow-right" aria-hidden="true"></i>
                 </button>
 
@@ -827,17 +762,14 @@
                             fill="#4285F4"
                             d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.9 6.1-15z"
                         />
-
                         <path
                             fill="#34A853"
                             d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.6-5.1c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20 20 0 0 0 24 44z"
                         />
-
                         <path
                             fill="#FBBC05"
                             d="M12.6 27.6a12 12 0 0 1 0-7.2v-5.3H5.8a20 20 0 0 0 0 17.8z"
                         />
-
                         <path
                             fill="#EA4335"
                             d="M24 12c3 0 5.7 1 7.8 3.1l5.8-5.8A19.3 19.3 0 0 0 24 4 20 20 0 0 0 5.8 15.1l6.8 5.3C14.2 15.6 18.7 12 24 12z"
@@ -849,9 +781,9 @@
 
             </div>
 
-            <div class="login-link">
-                Already have an account?
-                <a href="login.html">Sign in</a>
+            <div class="signup-link">
+                Don't have an account?
+                <a href="signup.html">Create account</a>
             </div>
 
             <div class="secure-note">
@@ -878,10 +810,10 @@
 
         <div class="spinner" aria-hidden="true"></div>
 
-        <h3 id="dialogTitle">Creating your account</h3>
+        <h3 id="dialogTitle">Signing you in</h3>
 
         <p id="dialogText">
-            Please wait while we securely create your account.
+            Please wait while we verify your account.
         </p>
 
         <button
@@ -889,17 +821,16 @@
             id="dialogOk"
             type="button"
         >
-            Continue
+            Try again
         </button>
 
     </div>
 </div>
 
+
 <script>
-    const form = document.getElementById("signupForm");
+    const form = document.getElementById("loginForm");
     const emailInput = document.getElementById("email");
-    const otpInput = document.getElementById("otp");
-    const sendOtpBtn = document.getElementById("sendOtpBtn");
     const passwordInput = document.getElementById("password");
     const togglePassword = document.getElementById("togglePassword");
     const message = document.getElementById("message");
@@ -911,24 +842,43 @@
     const dialogText = document.getElementById("dialogText");
     const dialogOk = document.getElementById("dialogOk");
 
-    /* Email that has already passed OTP verification (valid ~15 min on server) */
-    let verifiedEmail = null;
-    let cooldownTimer = null;
+    let isSubmitting = false;
+
+    const FCM_BACKEND_URL =
+        "https://apisequizeshoplite.vercel.app/api/notifications";
+
+    // Replace these placeholders with your Firebase Web App config.
+    const firebaseConfig = {
+    apiKey: "AIzaSyBeP1PetEM536IEXSJUTFCQ91oqo8n-fT0",
+  authDomain: "sequize.shop",
+  databaseURL: "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "shoppy-c289d",
+  storageBucket: "shoppy-c289d.firebasestorage.app",
+  messagingSenderId: "154536439593",
+  appId: "1:154536439593:web:499b9de766bf6c06ce5138",
+  measurementId: "G-FZ3QTFRRZM"
+    };
+
+    // Firebase Console > Project settings > Cloud Messaging > Web Push certificates
+    const vapidPublicKey = "BJpOoJ9eQEhb7kuginY6Xz05tLJfY3Z91CQ8gR3Hg5d3Wh_8O1y4tmv8pOLD_4n4QU5MNEI31Ya-p6_LzCYpaOs";
 
     function showMessage(text, type) {
         message.textContent = text;
         message.className = "message " + type;
     }
 
-    function showProgress(title, text) {
+    function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+    }
+
+    function showProgress() {
         backdrop.classList.add("show");
         dialog.classList.remove("done");
-
-        dialogTitle.textContent = title || "Creating your account";
+        dialogTitle.textContent = "Signing you in";
         dialogText.textContent =
-            text || "Please wait while we securely create your account.";
-
-        dialogOk.textContent = "Continue";
+            "Please wait while we verify your account.";
+        dialogOk.textContent = "Try again";
         dialogOk.onclick = null;
     }
 
@@ -945,11 +895,35 @@
         dialog.classList.remove("done");
     }
 
-    /* Show / hide password */
+    function getSafeRedirect(path) {
+        if (typeof path !== "string" || !path.trim()) {
+            return "/profile.html";
+        }
+
+        if (
+            !path.startsWith("/") ||
+            path.startsWith("//") ||
+            path.includes("\\") ||
+            /[\r\n]/.test(path)
+        ) {
+            return "/profile.html";
+        }
+
+        try {
+            const target = new URL(path, window.location.origin);
+
+            if (target.origin !== window.location.origin) {
+                return "/home.html";
+            }
+
+            return target.pathname + target.search + target.hash;
+        } catch {
+            return "/index.html";
+        }
+    }
 
     togglePassword.addEventListener("click", function () {
         const show = passwordInput.type === "password";
-
         passwordInput.type = show ? "text" : "password";
 
         togglePassword.innerHTML = show
@@ -964,559 +938,96 @@
         togglePassword.setAttribute("aria-pressed", String(show));
     });
 
-    /* OTP helpers */
-
-    async function callOtp(payload) {
-        const response = await fetch("/api/auth/otp", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
-
-        let data = {};
-
-        try {
-            data = await response.json();
-        } catch (parseError) {
-            throw new Error(
-                "The server returned an invalid response. Please try again."
-            );
-        }
-
-        return { ok: response.ok && data.success === true, data: data };
-    }
-
-    function startCooldown(seconds) {
-        clearInterval(cooldownTimer);
-
-        let left = Math.max(1, Math.ceil(seconds));
-
-        sendOtpBtn.disabled = true;
-        sendOtpBtn.textContent = "Resend in " + left + "s";
-
-        cooldownTimer = setInterval(function () {
-            left -= 1;
-
-            if (left <= 0) {
-                clearInterval(cooldownTimer);
-                sendOtpBtn.disabled = false;
-                sendOtpBtn.textContent = "Resend code";
-                return;
-            }
-
-            sendOtpBtn.textContent = "Resend in " + left + "s";
-        }, 1000);
-    }
-
-    /* Send verification code (shows the same dialog, closes when sent) */
-
-    sendOtpBtn.addEventListener("click", async function () {
-        const email = emailInput.value.trim().toLowerCase();
-
-        if (!email || !emailInput.checkValidity()) {
-            showMessage("Please enter a valid email address first.", "error");
-            emailInput.focus();
-            return;
-        }
-
-        sendOtpBtn.disabled = true;
-        message.className = "message";
-
-        showProgress(
-            "Sending verification code",
-            "Please wait while we send a code to your email."
-        );
-
-        try {
-            const result = await callOtp({ action: "send", email: email });
-
-            if (!result.ok) {
-                const sendError =
-                    result.data.message || "Could not send the code. Please try again.";
-
-                finishDialog(
-                    "Code not sent",
-                    sendError,
-                    "Try again",
-                    closeDialog
-                );
-
-                showMessage(sendError, "error");
-
-                if (result.data.retryAfter) {
-                    startCooldown(result.data.retryAfter);
-                } else {
-                    sendOtpBtn.disabled = false;
-                    sendOtpBtn.textContent = "Send code";
-                }
-
-                return;
-            }
-
-            /* Sent: close the dialog automatically */
-
-            closeDialog();
-
-            showMessage(
-                result.data.message || "Verification code sent to your email.",
-                "success"
-            );
-
-            startCooldown(result.data.resendAfterSeconds || 60);
-            otpInput.focus();
-
-        } catch (error) {
-            console.error("Send OTP error:", error);
-
-            const errorMessage =
-                error.message || "Unable to connect. Please try again.";
-
-            finishDialog(
-                "Something went wrong",
-                errorMessage,
-                "Try again",
-                closeDialog
-            );
-
-            showMessage(errorMessage, "error");
-
-            sendOtpBtn.disabled = false;
-            sendOtpBtn.textContent = "Send code";
-        }
-    });
-
-    /* Only digits in the code field */
-
-    otpInput.addEventListener("input", function () {
-        otpInput.value = otpInput.value.replace(/\D/g, "").slice(0, 6);
-    });
-
-    /* Signup form */
-
-    form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-
-        if (!form.reportValidity()) {
-            return;
-        }
-
-        const name = document.getElementById("fullName").value.trim();
-        const email = emailInput.value.trim().toLowerCase();
-        const password = passwordInput.value;
-        const otp = otpInput.value.trim();
-
-        if (name.length < 2 || name.length > 80) {
-            showMessage(
-                "Name must be between 2 and 80 characters.",
-                "error"
-            );
-            return;
-        }
-
-        if (password.length < 8 || password.length > 72) {
-            showMessage(
-                "Password must be between 8 and 72 characters.",
-                "error"
-            );
-            return;
-        }
-
-        if (verifiedEmail !== email && !/^\d{6}$/.test(otp)) {
-            showMessage(
-                "Enter the 6-digit code sent to your email.",
-                "error"
-            );
-            return;
-        }
-
-        message.className = "message";
-        submitBtn.disabled = true;
-        submitBtn.querySelector("span").textContent = "Creating account...";
-
-        showProgress();
-
-        try {
-            /* Step 1: verify email code (skipped if already verified) */
-
-            if (verifiedEmail !== email) {
-                const verify = await callOtp({
-                    action: "verify",
-                    email: email,
-                    otp: otp
-                });
-
-                if (!verify.ok) {
-                    const verifyError =
-                        verify.data.message || "Could not verify the code. Please try again.";
-
-                    finishDialog(
-                        "Verification failed",
-                        verifyError,
-                        "Try again",
-                        closeDialog
-                    );
-
-                    showMessage(verifyError, "error");
-                    return;
-                }
-
-                verifiedEmail = email;
-            }
-
-            /* Step 2: create account */
-
-            const response = await fetch("/api/signup", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    email: email,
-                    password: password
-                })
-            });
-
-            let data;
-
-            try {
-                data = await response.json();
-            } catch (parseError) {
-                throw new Error(
-                    "The server returned an invalid response. Please try again."
-                );
-            }
-
-            if (!response.ok || data.success !== true) {
-                const errorMessage =
-                    data.message || "Unable to create account right now.";
-
-                /* Verification was used up or missing: ask for a new code */
-                if (response.status === 403 || response.status >= 500) {
-                    verifiedEmail = null;
-                }
-
-                finishDialog(
-                    "Account not created",
-                    errorMessage,
-                    "Try again",
-                    closeDialog
-                );
-
-                showMessage(errorMessage, "error");
-                return;
-            }
-
-            /*
-             * Step 3: Ask for notification permission AFTER account creation.
-             * Notification setup is optional and must never undo a successful signup.
-             */
-            let notificationMessage = "";
-
-            try {
-                if (typeof window.enableShoppyNotifications === "function") {
-                    const notificationResult = await window.enableShoppyNotifications();
-
-                    if (notificationResult && notificationResult.saved) {
-                        notificationMessage = " Notifications are enabled on this device.";
-                    } else if (notificationResult && notificationResult.permission === "denied") {
-                        notificationMessage = " You can enable notifications later in your browser settings.";
-                    }
-                }
-            } catch (notificationError) {
-                console.warn("Notification setup skipped:", notificationError);
-            }
-
-            finishDialog(
-                "Account created!",
-                "Your account has been created successfully." + notificationMessage,
-                "Go to sign in",
-                function () {
-                    window.location.href = "login.html";
-                }
-            );
-
-            showMessage(
-                "Account created successfully." + notificationMessage,
-                "success"
-            );
-
-            verifiedEmail = null;
-            form.reset();
-
-            clearInterval(cooldownTimer);
-            sendOtpBtn.disabled = false;
-            sendOtpBtn.textContent = "Send code";
-
-            passwordInput.type = "password";
-
-            togglePassword.innerHTML =
-                '<i class="ph ph-eye" aria-hidden="true"></i>';
-
-            togglePassword.setAttribute("aria-label", "Show password");
-            togglePassword.setAttribute("aria-pressed", "false");
-
-        } catch (error) {
-            console.error("Signup request error:", error);
-
-            const errorMessage =
-                error.message || "Unable to connect. Please try again.";
-
-            finishDialog(
-                "Something went wrong",
-                errorMessage,
-                "Try again",
-                closeDialog
-            );
-
-            showMessage(errorMessage, "error");
-
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.querySelector("span").textContent = "Create Account";
-        }
-    });
-
     /*
-     * CONTINUE WITH GOOGLE
-     * Creates the account if it is new, or signs in if it already exists.
-     * Google has already verified the email, so no OTP is needed.
+     * Register the browser's FCM token with the separate notification
+     * backend. A notification failure must never block successful login.
      */
-    const GOOGLE_FIREBASE_CONFIG = {
-        apiKey: "AIzaSyBeP1PetEM536IEXSJUTFCQ91oqo8n-fT0",
-        authDomain: "shoppy-c289d.firebaseapp.com",
-        databaseURL: "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "shoppy-c289d",
-        storageBucket: "shoppy-c289d.firebasestorage.app",
-        messagingSenderId: "154536439593",
-        appId: "1:154536439593:web:499b9de766bf6c06ce5138",
-        measurementId: "G-FZ3QTFRRZM"
-    };
-
-    let googleBusy = false;
-
-    document.getElementById("googleBtn").addEventListener("click", async function () {
-        if (googleBusy) {
-            return;
-        }
-
-        googleBusy = true;
-        message.className = "message";
-
-        showProgress("Connecting to Google", "Please wait...");
-
-        let redirect = null;
-
+    async function registerShoppyNotifications() {
         try {
-            const [appMod, authMod] = await Promise.all([
-                import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"),
-                import("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js")
-            ]);
-
-            const app = appMod.getApps().length
-                ? appMod.getApp()
-                : appMod.initializeApp(GOOGLE_FIREBASE_CONFIG);
-
-            const auth = authMod.getAuth(app);
-            const provider = new authMod.GoogleAuthProvider();
-            provider.setCustomParameters({ prompt: "select_account" });
-
-            const credential = await authMod.signInWithPopup(auth, provider);
-            const idToken = await credential.user.getIdToken();
-
-            // Shoppy uses its own session cookie, so drop the Firebase client session.
-            authMod.signOut(auth).catch(() => {});
-
-            dialogText.textContent = "Setting up your account...";
-
-            const response = await fetch("/api/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                credentials: "same-origin",
-                body: JSON.stringify({
-                    action: "googleLogin",
-                    idToken: idToken
-                })
-            });
-
-            const data = await response.json().catch(() => ({}));
-
-            if (!response.ok || data.success !== true) {
-                throw new Error(
-                    data.message || "Google sign-in failed. Please try again."
-                );
+            if (!window.isSecureContext) {
+                console.warn("FCM requires HTTPS or localhost.");
+                return false;
             }
 
-            redirect = (
-                typeof data.redirect === "string" &&
-                data.redirect.startsWith("/") &&
-                !data.redirect.startsWith("//") &&
-                !data.redirect.includes("\\")
-            ) ? data.redirect : "/profile.html";
-
-        } catch (error) {
-            const cancelled =
-                error &&
-                (error.code === "auth/popup-closed-by-user" ||
-                 error.code === "auth/cancelled-popup-request");
-
-            if (cancelled) {
-                closeDialog();
-            } else {
-                console.error("Google sign-up error:", error);
-
-                const errorMessage =
-                    (error && error.code === "auth/popup-blocked")
-                        ? "The Google popup was blocked. Please allow popups and try again."
-                        : (error && error.message) ||
-                          "Google sign-in failed. Please try again.";
-
-                finishDialog(
-                    "Google sign-in failed",
-                    errorMessage,
-                    "Try again",
-                    closeDialog
-                );
-
-                showMessage(errorMessage, "error");
-            }
-        }
-
-        googleBusy = false;
-
-        if (redirect) {
-            finishDialog(
-                "You're in!",
-                "Taking you to your account...",
-                "Continue",
-                function () {
-                    window.location.assign(redirect);
-                }
-            );
-
-            // Optional notification setup; must never block or undo sign-in.
-            try {
-                if (typeof window.enableShoppyNotifications === "function") {
-                    await Promise.race([
-                        window.enableShoppyNotifications(),
-                        new Promise(resolve => setTimeout(resolve, 2500))
-                    ]);
-                }
-            } catch (notificationError) {
-                console.warn("Notification setup skipped:", notificationError);
-            }
-
-            window.location.assign(redirect);
-        }
-    });
-</script>
-
-
-<!-- Firebase Web Push setup. Replace the public Firebase config and VAPID key below. -->
-
-<script type="module">
-    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import {
-        getMessaging,
-        getToken,
-        isSupported
-    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js";
-
-    const FIREBASE_CONFIG = {
-       apiKey: "AIzaSyBeP1PetEM536IEXSJUTFCQ91oqo8n-fT0",
-  authDomain: "shoppy-c289d.firebaseapp.com",
-  databaseURL: "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "shoppy-c289d",
-  storageBucket: "shoppy-c289d.firebasestorage.app",
-  messagingSenderId: "154536439593",
-  appId: "1:154536439593:web:499b9de766bf6c06ce5138",
-  measurementId: "G-FZ3QTFRRZM"
-    };
-
-    const VAPID_PUBLIC_KEY = "BJpOoJ9eQEhb7kuginY6Xz05tLJfY3Z91CQ8gR3Hg5d3Wh_8O1y4tmv8pOLD_4n4QU5MNEI31Ya-p6_LzCYpaOs";
-
-    const FCM_BACKEND_URL =
-        "https://apisequizeshoplite.vercel.app/api/notifications";
-
-    window.enableShoppyNotifications = async function () {
-        try {
-            if (
+            if (!("serviceWorker" in navigator) ||
                 !("Notification" in window) ||
-                !("serviceWorker" in navigator) ||
-                !window.isSecureContext
-            ) {
-                return { saved: false, unsupported: true };
+                !("PushManager" in window)) {
+                console.warn("This browser does not support web push.");
+                return false;
             }
 
-            const supported = await isSupported().catch(() => false);
-
-            if (!supported) {
-                return { saved: false, unsupported: true };
-            }
-
-            const configValues = Object.values(FIREBASE_CONFIG);
+            const configValues = Object.values(firebaseConfig);
 
             if (
                 configValues.some(value =>
-                    !value || value.startsWith("REPLACE_WITH_")
+                    typeof value !== "string" ||
+                    !value ||
+                    value.startsWith("REPLACE_WITH")
                 ) ||
-                !VAPID_PUBLIC_KEY ||
-                VAPID_PUBLIC_KEY.startsWith("REPLACE_WITH_")
+                !vapidPublicKey ||
+                vapidPublicKey.startsWith("REPLACE_WITH")
             ) {
-                console.error("Firebase Web config or VAPID key is missing.");
-                return { saved: false, configurationMissing: true };
+                console.warn(
+                    "FCM registration skipped: Firebase config or VAPID key is missing."
+                );
+                return false;
             }
 
-            let permission = Notification.permission;
-
-            if (permission === "default") {
-                permission = await Notification.requestPermission();
+            if (Notification.permission === "denied") {
+                console.info("Notifications are blocked by the browser.");
+                return false;
             }
 
-            if (permission !== "granted") {
-                return { saved: false, permission };
+            // Avoid unexpectedly prompting on every login.
+            // Ask permission only when it is still in the default state.
+            if (Notification.permission === "default") {
+                const permission = await Notification.requestPermission();
+
+                if (permission !== "granted") {
+                    return false;
+                }
             }
 
-            const app = getApps().length
-                ? getApp()
-                : initializeApp(FIREBASE_CONFIG);
+            const [
+                appModule,
+                messagingModule
+            ] = await Promise.all([
+                import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"),
+                import("https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js")
+            ]);
 
-            const messaging = getMessaging(app);
+            const app = appModule.getApps().length
+                ? appModule.getApp()
+                : appModule.initializeApp(firebaseConfig);
 
-            /*
-             * The frontend Vercel rewrite should expose the backend's
-             * service worker at this same-origin URL.
-             */
+            if (!(await messagingModule.isSupported())) {
+                console.warn("Firebase Messaging is not supported here.");
+                return false;
+            }
+
             const registration = await navigator.serviceWorker.register(
                 "/firebase-messaging-sw.js"
             );
 
-            const token = await getToken(messaging, {
-                vapidKey: VAPID_PUBLIC_KEY,
+            await navigator.serviceWorker.ready;
+
+            const messaging = messagingModule.getMessaging(app);
+
+            const token = await messagingModule.getToken(messaging, {
+                vapidKey: vapidPublicKey,
                 serviceWorkerRegistration: registration
             });
 
             if (!token) {
-                return {
-                    saved: false,
-                    permission,
-                    tokenUnavailable: true
-                };
+                console.warn("Firebase did not return an FCM token.");
+                return false;
             }
 
-            /*
-             * Register the token with the separate FCM backend.
-             * No admin API key is sent from the browser.
-             */
             const response = await fetch(FCM_BACKEND_URL, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
                 },
                 body: JSON.stringify({
                     action: "register-token",
@@ -1525,29 +1036,292 @@
                 })
             });
 
-            const data = await response.json().catch(() => ({}));
+            const result = await response.json().catch(() => ({}));
 
-            if (!response.ok || data.success !== true) {
-                console.error("FCM token registration failed:", data);
-
-                return {
-                    saved: false,
-                    permission,
-                    serverSaveFailed: true
-                };
+            if (!response.ok || result.success === false) {
+                console.warn(
+                    "FCM token registration failed:",
+                    result.message || response.status
+                );
+                return false;
             }
 
-            return { saved: true, permission };
+            console.info("Shoppy FCM token registered successfully.");
+            return true;
 
         } catch (error) {
-            console.error("Shoppy notification setup failed:", error);
-
-            return {
-                saved: false,
-                error: true
-            };
+            console.warn("FCM registration error:", error);
+            return false;
         }
-    };
+    }
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (isSubmitting || !form.reportValidity()) {
+            return;
+        }
+
+        const email = emailInput.value.trim().toLowerCase();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+            showMessage(
+                "Please enter your email and password.",
+                "error"
+            );
+            return;
+        }
+
+        isSubmitting = true;
+        clearMessage();
+
+        submitBtn.disabled = true;
+        submitBtn.querySelector("span").textContent = "Signing in...";
+
+        showProgress();
+
+        let redirect = "/profile.html";
+        let loginSucceeded = false;
+
+        try {
+            const response = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                credentials: "same-origin",
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
+
+            const responseText = await response.text();
+            let data;
+
+            try {
+                data = JSON.parse(responseText);
+            } catch {
+                throw new Error(
+                    "The server returned an invalid response. Check the Login API."
+                );
+            }
+
+            if (!response.ok || data.success !== true) {
+                const errorMessage =
+                    data.message || "Invalid email or password.";
+
+                showMessage(errorMessage, "error");
+
+                finishDialog(
+                    "Login unsuccessful",
+                    errorMessage,
+                    "Try again",
+                    closeDialog
+                );
+
+                return;
+            }
+
+            loginSucceeded = true;
+            redirect = getSafeRedirect(data.redirect);
+
+        } catch (error) {
+            console.error("Login error:", error);
+
+            const errorMessage =
+                error.message ||
+                "Unable to connect to the server. Please try again.";
+
+            showMessage(errorMessage, "error");
+
+            finishDialog(
+                "Something went wrong",
+                errorMessage,
+                "Try again",
+                closeDialog
+            );
+
+            return;
+
+        } finally {
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            submitBtn.querySelector("span").textContent = "Sign In";
+        }
+
+        if (loginSucceeded) {
+            showMessage("Login successful! Redirecting...", "success");
+
+            finishDialog(
+                "Login successful!",
+                "Preparing your account and notifications...",
+                "Continue",
+                function () {
+                    window.location.assign(redirect);
+                }
+            );
+
+            // Do not let notification setup delay navigation indefinitely.
+            // If registration hangs, continue after a short timeout.
+            let registrationFinished = false;
+
+            const registrationTask = registerShoppyNotifications()
+                .catch(error => {
+                    console.warn("Notification setup skipped:", error);
+                    return false;
+                })
+                .finally(() => {
+                    registrationFinished = true;
+                });
+
+            await Promise.race([
+                registrationTask,
+                new Promise(resolve => setTimeout(resolve, 2500))
+            ]);
+
+            if (!registrationFinished) {
+                console.info(
+                    "Continuing login redirect while FCM setup finishes."
+                );
+            }
+
+            window.location.assign(redirect);
+        }
+    });
+
+    document.getElementById("forgotPassword").addEventListener(
+        "click",
+        function (event) {
+            event.preventDefault();
+            showMessage(
+                "Password reset is not connected yet.",
+                "error"
+            );
+        }
+    );
+
+    /*
+     * CONTINUE WITH GOOGLE
+     * Firebase popup -> ID token -> /api/login (action: googleLogin)
+     * The server verifies the token and sets the normal Shoppy session.
+     */
+    document.getElementById("googleBtn").addEventListener(
+        "click",
+        async function () {
+            if (isSubmitting) {
+                return;
+            }
+
+            isSubmitting = true;
+            clearMessage();
+            showProgress();
+            dialogText.textContent = "Connecting to Google...";
+
+            let redirect = null;
+
+            try {
+                const [appMod, authMod] = await Promise.all([
+                    import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"),
+                    import("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js")
+                ]);
+
+                const app = appMod.getApps().length
+                    ? appMod.getApp()
+                    : appMod.initializeApp(firebaseConfig);
+
+                const auth = authMod.getAuth(app);
+                const provider = new authMod.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: "select_account" });
+
+                const credential = await authMod.signInWithPopup(auth, provider);
+                const idToken = await credential.user.getIdToken();
+
+                // Shoppy uses its own session cookie, so drop the Firebase client session.
+                authMod.signOut(auth).catch(() => {});
+
+                dialogText.textContent = "Verifying your account...";
+
+                const response = await fetch("/api/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify({
+                        action: "googleLogin",
+                        idToken: idToken
+                    })
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok || data.success !== true) {
+                    throw new Error(
+                        data.message ||
+                        "Google sign-in failed. Please try again."
+                    );
+                }
+
+                redirect = getSafeRedirect(data.redirect);
+
+            } catch (error) {
+                const cancelled =
+                    error &&
+                    (error.code === "auth/popup-closed-by-user" ||
+                     error.code === "auth/cancelled-popup-request");
+
+                if (cancelled) {
+                    closeDialog();
+                } else {
+                    console.error("Google sign-in error:", error);
+
+                    const errorMessage =
+                        (error && error.code === "auth/popup-blocked")
+                            ? "The Google popup was blocked. Please allow popups and try again."
+                            : (error && error.message) ||
+                              "Google sign-in failed. Please try again.";
+
+                    showMessage(errorMessage, "error");
+
+                    finishDialog(
+                        "Google sign-in failed",
+                        errorMessage,
+                        "Try again",
+                        closeDialog
+                    );
+                }
+            }
+
+            isSubmitting = false;
+
+            if (redirect) {
+                showMessage("Login successful! Redirecting...", "success");
+
+                finishDialog(
+                    "Login successful!",
+                    "Preparing your account and notifications...",
+                    "Continue",
+                    function () {
+                        window.location.assign(redirect);
+                    }
+                );
+
+                // Same behaviour as email login: never block on notifications.
+                await Promise.race([
+                    registerShoppyNotifications().catch(() => false),
+                    new Promise(resolve => setTimeout(resolve, 2500))
+                ]);
+
+                window.location.assign(redirect);
+            }
+        }
+    );
 </script>
+
+
 </body>
 </html>
