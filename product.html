@@ -1425,7 +1425,7 @@ function proxyImage(url) {
         proxyImage(Array.isArray(item.images) ? item.images[0] : "") ||
         DEFAULT_IMAGE;
       const canonical =
-        `${SITE_URL}/p/${encodeURIComponent(item.id)}`;
+        `${SITE_URL}/product.html?id=${encodeURIComponent(item.id)}`;
       const pageUrl = canonical;
 
       document.title = title;
@@ -2279,7 +2279,7 @@ function proxyImage(url) {
       const shareData = {
         title: product.title,
         text: `${product.title} — ${product.description || "Check out this product"} on Sequize!`,
-        url: `${window.location.origin}/p/${encodeURIComponent(product.id)}`
+        url: `${window.location.origin}/product.html?id=${encodeURIComponent(product.id)}`
       };
 
       try {
