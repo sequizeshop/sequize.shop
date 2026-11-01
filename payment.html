@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
 
-  <title>Payment — Shoppy</title>
+  <title>Payment — Sequize Shop</title>
 
   <link rel="icon" type="image/png"
     href="https://i.ibb.co/93kQCKxT/202610.png">
@@ -453,6 +453,12 @@
       transition: background .2s, border-color .2s, color .2s;
     }
 
+    .cod-balance-row {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
     #payButton { margin-top: 24px; }
 
     .pay-button:hover:not(:disabled) {
@@ -570,7 +576,7 @@
     <a href="javascript:history.back()" class="payment-back nav-icon" aria-label="Go back" title="Go back">
       <i class="ph ph-arrow-left" aria-hidden="true"></i>
     </a>
-    <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
+    <a href="/home.html" class="brand" aria-label="Sequize Shop home">Sequize</a>
   </header>
 
   <main>
@@ -662,51 +668,34 @@
             <h2>Payment details</h2>
           </div>
 
-          <div class="price-row">
-            <span>Subtotal</span>
-            <strong id="originalPrice">₹0.00</strong>
-          </div>
-
-          <div id="discountRow" class="price-row discount-row" hidden>
-            <span id="discountLabel">Discount</span>
-            <strong id="discountAmount">−₹0.00</strong>
-          </div>
-
-          <div id="taxRows" class="tax-rows"></div>
-
-          <div class="price-row delivery-row">
-            <span>Delivery</span>
-            <strong>FREE</strong>
-          </div>
-
           <div class="price-row total-row">
-            <span>Total to pay</span>
-            <strong id="totalPrice">₹0.00</strong>
+            <span>Online advance</span>
+            <strong id="totalPrice">₹600.00</strong>
           </div>
 
-          <div id="savingsText" class="savings-box" hidden></div>
+          <div class="price-row cod-balance-row">
+            <span>Remaining Cash on Delivery</span>
+            <strong id="codBalance">Calculating…</strong>
+          </div>
+
+          <p class="payment-footnote">Pay the advance shown above online now. The remaining balance will be collected by Cash on Delivery when your order is delivered.</p>
 
           <button id="payButton" class="pay-button" disabled>
-            <i class="ph ph-lock-key"></i>
-            <span>Loading checkout...</span>
+            Loading checkout...
           </button>
 
           <div id="orderReference" class="order-reference"></div>
 
           <a href="/orders.html" class="orders-link">View my orders</a>
 
-          <p class="payment-footnote">
-            Your payment is processed securely by Cashfree.
-            Payment confirmation is verified by our server.
-          </p>
+          <p class="payment-footnote">Payment is processed securely by Cashfree and verified by our server.</p>
         </section>
       </aside>
 
       <!-- Mobile-only sticky twin. The desktop button remains inside the summary. -->
       <div class="mobile-pay-sticky" aria-label="Secure payment action">
         <button id="mobilePayButton" class="pay-button" disabled>
-          <i class="ph ph-lock-key"></i>
-          <span>Loading checkout...</span>
+          Loading checkout...
         </button>
       </div>
     </div>
@@ -914,7 +903,11 @@
 
     function getAppliedDiscount() {
       if (!eligibleDiscounts.length) return null;
-      return eligibleDiscounts.slice().sort((a, b) => Number(b.percent) - Number(a.percent))[0];
+      const percent = Math.min(100, eligibleDiscounts.reduce((sum, item) => sum + (Number(item.percent) || 0), 0));
+      return {
+        title: eligibleDiscounts.map(item => String(item.title || "Discount")).join(" + "),
+        percent
+      };
     }
 
     async function getCustomerEmail() {
@@ -983,26 +976,16 @@
       updatePayButton();
     }
 
+    function renderPaymentAmounts(totalINR, advanceINR) {
+      const total = Math.max(0, Number(totalINR) || 0);
+      const advance = Math.min(total, Math.max(0, Number.isFinite(Number(advanceINR)) ? Number(advanceINR) : 600));
+      $("totalPrice").textContent = money(advance);
+      $("codBalance").textContent = money(Math.max(0, total - advance));
+    }
+
     function renderTotals() {
       const totals = getTotals();
-      $("originalPrice").textContent = money(totals.subtotal);
-      const discountRow = $("discountRow");
-      discountRow.hidden = !totals.discount || totals.discountAmount <= 0;
-      if (totals.discount) {
-        const percent = Number(totals.discount.percent).toFixed(2).replace(/\.?0+$/, "");
-        $("discountLabel").textContent = `${totals.discount.title || "Discount"} (${percent}% off)`;
-      }
-      $("discountAmount").textContent = "−" + money(totals.discountAmount);
-      $("taxRows").innerHTML = totals.taxes.map(tax => `
-        <div class="tax-row">
-          <span>${escapeHTML(tax.title)} (${Number(tax.percent).toFixed(2).replace(/\.?0+$/, "")}%)</span>
-          <strong>${money(tax.amount)}</strong>
-        </div>
-      `).join("");
-      $("totalPrice").textContent = money(totals.total);
-      const savings = $("savingsText");
-      savings.hidden = !totals.discount || totals.discountAmount <= 0;
-      savings.textContent = savings.hidden ? "" : `You save ${money(totals.discountAmount)} with ${totals.discount.title || "this discount"}.`;
+      renderPaymentAmounts(totals.total, Math.min(600, totals.total));
     }
 
     function getAddressId(address) {
@@ -1139,22 +1122,17 @@
       updatePayButton();
     }
 
-    function setButton(text, disabled, icon = "ph-lock-key") {
+    function setButton(text, disabled) {
       const buttons = [$("payButton"), $("mobilePayButton")].filter(Boolean);
-      const markup = `
-        <i class="ph ${icon}"></i>
-        <span>${escapeHTML(text)}</span>
-      `;
-
       buttons.forEach((button) => {
         button.disabled = disabled;
-        button.innerHTML = markup;
+        button.textContent = text;
       });
     }
 
     function updatePayButton() {
       if (checkoutStarted) {
-        setButton("Opening Cashfree checkout...", true, "ph-spinner");
+        setButton("Opening Cashfree checkout...", true);
         return;
       }
 
@@ -1164,27 +1142,23 @@
       }
 
       if (!cartItems.length && !currentOrder) {
-        setButton("Your cart is empty", true, "ph-shopping-bag");
+        setButton("Your cart is empty", true);
         return;
       }
 
       if (!currentOrder && !selectedAddressId) {
-        setButton("Select delivery address", true, "ph-map-pin");
+        setButton("Select delivery address", true);
         return;
       }
 
       const existingOrderId = getOrderId(currentOrder);
 
       if (existingOrderId) {
-        setButton("Continue to payment", false, "ph-lock-key");
+        setButton(`Pay ${$("totalPrice").textContent} Advance`, false);
         return;
       }
 
-      setButton(
-        `Pay ${$("totalPrice").textContent}`,
-        false,
-        "ph-lock-key"
-      );
+      setButton(`Pay ${$("totalPrice").textContent} Advance`, false);
     }
 
     async function loadCart() {
@@ -1239,6 +1213,7 @@
         const status = getPaymentStatus(data);
 
         if (
+          status === "ADVANCE_PAID" ||
           status === "PAID" ||
           status === "SUCCESS" ||
           status === "SUCCESSFUL" ||
@@ -1271,29 +1246,10 @@
 
     function applyServerPricing(order) {
       if (!order || !Number.isFinite(Number(order.totalINR))) return;
-      if (Number.isFinite(Number(order.subtotalINR))) {
-        $("originalPrice").textContent = money(order.subtotalINR);
-      }
-      const discount = order.discount;
-      const discountRow = $("discountRow");
-      discountRow.hidden = !discount || !(Number(discount.amountINR) > 0);
-      if (discount) {
-        const percent = Number(discount.percent || 0).toFixed(2).replace(/\.?0+$/, "");
-        $("discountLabel").textContent = `${discount.title || "Discount"} (${percent}% off)`;
-        $("discountAmount").textContent = "−" + money(discount.amountINR);
-      } else {
-        $("discountAmount").textContent = "−" + money(0);
-      }
-      $("taxRows").innerHTML = (Array.isArray(order.taxes) ? order.taxes : []).map(tax => `
-        <div class="tax-row">
-          <span>${escapeHTML(tax.title)} (${Number(tax.percent || 0).toFixed(2).replace(/\.?0+$/, "")}%)</span>
-          <strong>${money(tax.amountINR)}</strong>
-        </div>
-      `).join("");
-      $("totalPrice").textContent = money(order.totalINR);
-      const savings = $("savingsText");
-      savings.hidden = !discount || !(Number(discount.amountINR) > 0);
-      savings.textContent = savings.hidden ? "" : `You save ${money(discount.amountINR)} with ${discount.title || "this discount"}.`;
+      const advance = Number.isFinite(Number(order.advanceAmountINR))
+        ? Number(order.advanceAmountINR)
+        : Math.min(600, Number(order.totalINR));
+      renderPaymentAmounts(Number(order.totalINR), advance);
       updatePayButton();
     }
 
