@@ -1203,13 +1203,121 @@
         }
     );
 
+    /*
+     * CONTINUE WITH GOOGLE
+     * Firebase popup -> ID token -> /api/login (action: googleLogin)
+     * The server verifies the token and sets the normal Shoppy session.
+     */
     document.getElementById("googleBtn").addEventListener(
         "click",
-        function () {
-            showMessage(
-                "Google sign-in is not connected yet. Please use your email and password.",
-                "error"
-            );
+        async function () {
+            if (isSubmitting) {
+                return;
+            }
+
+            isSubmitting = true;
+            clearMessage();
+            showProgress();
+            dialogText.textContent = "Connecting to Google...";
+
+            let redirect = null;
+
+            try {
+                const [appMod, authMod] = await Promise.all([
+                    import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"),
+                    import("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js")
+                ]);
+
+                const app = appMod.getApps().length
+                    ? appMod.getApp()
+                    : appMod.initializeApp(firebaseConfig);
+
+                const auth = authMod.getAuth(app);
+                const provider = new authMod.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: "select_account" });
+
+                const credential = await authMod.signInWithPopup(auth, provider);
+                const idToken = await credential.user.getIdToken();
+
+                // Shoppy uses its own session cookie, so drop the Firebase client session.
+                authMod.signOut(auth).catch(() => {});
+
+                dialogText.textContent = "Verifying your account...";
+
+                const response = await fetch("/api/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify({
+                        action: "googleLogin",
+                        idToken: idToken
+                    })
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok || data.success !== true) {
+                    throw new Error(
+                        data.message ||
+                        "Google sign-in failed. Please try again."
+                    );
+                }
+
+                redirect = getSafeRedirect(data.redirect);
+
+            } catch (error) {
+                const cancelled =
+                    error &&
+                    (error.code === "auth/popup-closed-by-user" ||
+                     error.code === "auth/cancelled-popup-request");
+
+                if (cancelled) {
+                    closeDialog();
+                } else {
+                    console.error("Google sign-in error:", error);
+
+                    const errorMessage =
+                        (error && error.code === "auth/popup-blocked")
+                            ? "The Google popup was blocked. Please allow popups and try again."
+                            : (error && error.message) ||
+                              "Google sign-in failed. Please try again.";
+
+                    showMessage(errorMessage, "error");
+
+                    finishDialog(
+                        "Google sign-in failed",
+                        errorMessage,
+                        "Try again",
+                        closeDialog
+                    );
+                }
+            }
+
+            isSubmitting = false;
+
+            if (redirect) {
+                showMessage("Login successful! Redirecting...", "success");
+
+                finishDialog(
+                    "Login successful!",
+                    "Preparing your account and notifications...",
+                    "Continue",
+                    function () {
+                        window.location.assign(redirect);
+                    }
+                );
+
+                // Same behaviour as email login: never block on notifications.
+                await Promise.race([
+                    registerShoppyNotifications().catch(() => false),
+                    new Promise(resolve => setTimeout(resolve, 2500))
+                ]);
+
+                window.location.assign(redirect);
+            }
         }
     );
 </script>
