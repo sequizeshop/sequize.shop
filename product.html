@@ -1305,7 +1305,8 @@
     const toast = document.getElementById("toast");
 
     const params = new URLSearchParams(window.location.search);
-    const productId = String(params.get("id") || "").trim();
+    const pathMatch = window.location.pathname.match(/\/p\/([A-Za-z0-9]{40})\/?$/);
+    const productId = String(params.get("id") || (pathMatch ? pathMatch[1] : "")).trim();
 
     let product = null;
     let selectedImageIndex = 0;
@@ -1424,8 +1425,8 @@ function proxyImage(url) {
         proxyImage(Array.isArray(item.images) ? item.images[0] : "") ||
         DEFAULT_IMAGE;
       const canonical =
-        `${SITE_URL}/product.html?id=${encodeURIComponent(item.id)}`;
-      const pageUrl = window.location.href;
+        `${SITE_URL}/p/${encodeURIComponent(item.id)}`;
+      const pageUrl = canonical;
 
       document.title = title;
 
@@ -2278,19 +2279,19 @@ function proxyImage(url) {
       const shareData = {
         title: product.title,
         text: `${product.title} — ${product.description || "Check out this product"} on Sequize!`,
-        url: window.location.href
+        url: `${window.location.origin}/p/${encodeURIComponent(product.id)}`
       };
 
       try {
         if (navigator.share) {
           await navigator.share(shareData);
         } else if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(window.location.href);
+          await navigator.clipboard.writeText(shareData.url);
           showToast("Product link copied!");
         } else {
           window.prompt(
             "Copy this product link:",
-            window.location.href
+            shareData.url
           );
         }
       } catch (error) {
