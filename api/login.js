@@ -2,6 +2,7 @@
 
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
+const admin = require("firebase-admin");
 const { db } = require("../lib/firebase");
 const {
   setSessionCookie,
@@ -154,6 +155,154 @@ async function handleReferralProfile(req, res) {
   }
 }
 
+/*
+ * Google sign-in / sign-up handler.
+ *
+ * The browser sends a Firebase ID token obtained after the Google popup.
+ * The server verifies it, then either signs in the existing account
+ * (matched by verified email) or creates a new one, and finally issues
+ * the normal Shoppy session cookie.
+ */
+async function handleGoogleLogin(req, res, body) {
+  const idToken =
+    typeof body.idToken === "string" ? body.idToken : "";
+
+  if (!idToken || idToken.length > 4096) {
+    return sendJson(res, 400, {
+      success: false,
+      message: "Google sign-in failed. Please try again."
+    });
+  }
+
+  let decoded;
+
+  try {
+    decoded = await admin.auth().verifyIdToken(idToken);
+  } catch {
+    return sendJson(res, 401, {
+      success: false,
+      message: "Google sign-in failed. Please try again."
+    });
+  }
+
+  if (
+    !decoded.firebase ||
+    decoded.firebase.sign_in_provider !== "google.com" ||
+    !decoded.email ||
+    decoded.email_verified !== true
+  ) {
+    return sendJson(res, 401, {
+      success: false,
+      message: "Your Google email could not be verified."
+    });
+  }
+
+  const email = decoded.email.trim().toLowerCase();
+  const emailHash = hashEmail(email);
+
+  const blockedSnapshot = await db
+    .ref(`blockedUsers/${emailHash}/blocked`)
+    .get();
+
+  if (blockedSnapshot.val() === true) {
+    return sendJson(res, 403, {
+      success: false,
+      message: "This account is unavailable. Please contact support."
+    });
+  }
+
+  const emailRef = db.ref(`userEmails/${emailHash}`);
+  const mapping = (await emailRef.get()).val();
+
+  let uid = null;
+  let user = null;
+
+  if (typeof mapping === "string" && mapping.length > 0) {
+    uid = mapping;
+  } else if (
+    mapping &&
+    typeof mapping === "object" &&
+    !Array.isArray(mapping) &&
+    mapping.status === "active" &&
+    typeof mapping.uid === "string" &&
+    mapping.uid.length > 0
+  ) {
+    uid = mapping.uid;
+  } else if (mapping) {
+    // Reservation exists but is not active yet (signup in progress).
+    return sendJson(res, 409, {
+      success: false,
+      message: "Account setup is in progress. Please try again."
+    });
+  }
+
+  if (uid) {
+    // Existing account (email/password or Google): sign in.
+    user = (await db.ref(`users/${uid}`).get()).val();
+
+    if (!user || user.uid !== uid || user.status !== "active") {
+      return sendJson(res, 401, {
+        success: false,
+        message: "Unable to sign in with Google."
+      });
+    }
+  } else {
+    // New account: reserve the email atomically, then create the user.
+    uid = crypto.randomUUID();
+
+    const reservation = await emailRef.transaction(current => {
+      if (current !== null) {
+        return;
+      }
+
+      return { uid, status: "pending" };
+    });
+
+    if (!reservation.committed) {
+      return sendJson(res, 409, {
+        success: false,
+        message: "Please try again."
+      });
+    }
+
+    user = {
+      uid,
+      name: (decoded.name || "").toString().trim().slice(0, 80),
+      email,
+      provider: "google",
+      createdAt: new Date().toISOString(),
+      status: "active"
+    };
+
+    try {
+      await db.ref(`users/${uid}`).set(user);
+      await emailRef.set({ uid, status: "active" });
+    } catch (error) {
+      await emailRef.remove().catch(() => {});
+      await db.ref(`users/${uid}`).remove().catch(() => {});
+      throw error;
+    }
+  }
+
+  await setSessionCookie(res, {
+    uid: user.uid,
+    email: user.email,
+    name: user.name || ""
+  });
+
+  return sendJson(res, 200, {
+    success: true,
+    message: "Login successful.",
+    redirect: "/profile.html",
+
+    user: {
+      uid: user.uid,
+      name: user.name || "",
+      email: user.email
+    }
+  });
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -173,6 +322,13 @@ module.exports = async function handler(req, res) {
      */
     if (body.action === "referralProfile") {
       return await handleReferralProfile(req, res);
+    }
+
+    /*
+     * Continue with Google (login + signup in one step).
+     */
+    if (body.action === "googleLogin") {
+      return await handleGoogleLogin(req, res, body);
     }
 
     /*
