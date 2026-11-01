@@ -8,21 +8,31 @@ async function getRawBody(req) {
 }
 
 function validSignature(rawBody, timestamp, signature) {
-  const secret = process.env.CASHFREE_SECRET_KEY;
-  if (!secret || !timestamp || !signature) return false;
+  const secret = String(
+    process.env.CASHFREE_SECRET_KEY || ""
+  ).trim();
+
+  if (!secret || !timestamp || !signature) {
+    return false;
+  }
 
   const expected = crypto
     .createHmac("sha256", secret)
-    .update(timestamp + rawBody)
+    .update(String(timestamp) + rawBody)
     .digest("base64");
 
   const a = Buffer.from(expected);
   const b = Buffer.from(String(signature));
 
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
+  return (
+    a.length === b.length &&
+    crypto.timingSafeEqual(a, b)
+  );
 }
 
 async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).end();
@@ -41,26 +51,49 @@ async function handler(req, res) {
       return res.status(401).end();
     }
 
-    const event = JSON.parse(rawBody);
+    let event;
+
+    try {
+      event = JSON.parse(rawBody);
+    } catch (_) {
+      return res.status(400).end();
+    }
+
     const cfOrderId = event?.data?.order?.order_id;
 
-    // Test ping ya unknown event: bas 200 do
-    if (typeof cfOrderId !== "string" || !cfOrderId) {
+    // Cashfree test ping or unrelated event.
+    if (
+      typeof cfOrderId !== "string" ||
+      !cfOrderId.trim()
+    ) {
       return res.status(200).end();
     }
 
-    // Payload par bharosa nahi: Cashfree se dobara confirm karke order update karo
-    await syncPayment(getDatabase(), cfOrderId);
+    // Never trust webhook payment status or amount.
+    // syncPayment fetches the current order directly from Cashfree,
+    // checks the saved advance amount, and records ADVANCE_PAID.
+    await syncPayment(
+      getDatabase(),
+      cfOrderId.trim()
+    );
 
     return res.status(200).end();
   } catch (error) {
-    console.error("Cashfree webhook error:", error.message);
-    // 500 dene par Cashfree baad me dobara try karega
+    console.error(
+      "Cashfree webhook error:",
+      error.message
+    );
+
+    // A 500 response lets Cashfree retry the webhook.
     return res.status(500).end();
   }
 }
 
 module.exports = handler;
 
-// Signature ke liye raw body chahiye, isliye body parser band hai
-module.exports.config = { api: { bodyParser: false } };
+// Signature verification requires the untouched raw request body.
+module.exports.config = {
+  api: {
+    bodyParser: false
+  }
+};
