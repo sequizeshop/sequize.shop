@@ -20,6 +20,9 @@
   "destination": "https://apisequizeshoplite-two.vercel.app/api/image/:file"
 },
 
+    { "source": "/product.html", "destination": "/api/product?page=1" },
+{ "source": "/product", "destination": "/api/product?page=1" },
+
     {
   "source": "/product.html",
   "has": [{ "type": "query", "key": "id" }],
