@@ -1,3 +1,5 @@
+"use strict";
+
 const crypto = require("node:crypto");
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
@@ -60,8 +62,10 @@ function safeEqualHex(a, b) {
   const x = Buffer.from(String(a));
   const y = Buffer.from(String(b));
 
-  return x.length === y.length &&
-    crypto.timingSafeEqual(x, y);
+  return (
+    x.length === y.length &&
+    crypto.timingSafeEqual(x, y)
+  );
 }
 
 let transporter;
@@ -86,6 +90,7 @@ function getTransporter() {
 
 /* =========================================
    OTP EMAIL
+   Existing OTP email functionality
 ========================================= */
 
 async function sendOtpEmail(email, otp) {
@@ -122,30 +127,34 @@ async function sendOtpEmail(email, otp) {
 }
 
 /* =========================================
-   ADMIN AUTHENTICATION
+   EMAIL API KEY SECURITY
 ========================================= */
 
-async function verifyAdmin(req) {
-  const authorization = req.headers.authorization || "";
+function verifyEmailApiKey(req) {
+  const configuredKey = process.env.EMAIL_API_KEY;
 
-  if (!authorization.startsWith("Bearer ")) {
+  if (
+    typeof configuredKey !== "string" ||
+    configuredKey.length < 32
+  ) {
+    console.error("EMAIL_API_KEY is missing or too short.");
     return false;
   }
 
-  const token = authorization.slice(7).trim();
+  const suppliedKey =
+    req.headers["x-email-api-key"];
 
-  if (!token) return false;
-
-  try {
-    const decoded = await admin.auth().verifyIdToken(token);
-
-    // Firebase custom claim must be admin: true
-    return decoded.admin === true;
-
-  } catch (error) {
-    console.error("Admin authentication failed:", error.message);
+  if (typeof suppliedKey !== "string" || !suppliedKey) {
     return false;
   }
+
+  const expected = Buffer.from(configuredKey);
+  const supplied = Buffer.from(suppliedKey);
+
+  return (
+    expected.length === supplied.length &&
+    crypto.timingSafeEqual(expected, supplied)
+  );
 }
 
 /* =========================================
@@ -153,12 +162,8 @@ async function verifyAdmin(req) {
 ========================================= */
 
 async function handleCustomEmail(req, res) {
-
-  // Only authenticated Firebase Admins can send emails.
-  const authorized = await verifyAdmin(req);
-
-  if (!authorized) {
-    return fail(res, 403, "Admin authorization required.");
+  if (!verifyEmailApiKey(req)) {
+    return fail(res, 401, "Invalid email API key.");
   }
 
   const body = req.body || {};
@@ -197,19 +202,12 @@ async function handleCustomEmail(req, res) {
   }
 
   try {
-
     await getTransporter().sendMail({
-
       from: `"Sequize Shop" <${process.env.GMAIL_USER}>`,
-
       to,
-
       subject,
-
       text: text || undefined,
-
       html: html || undefined
-
     });
 
     return res.status(200).json({
@@ -219,7 +217,6 @@ async function handleCustomEmail(req, res) {
     });
 
   } catch (error) {
-
     console.error("Custom email failed:", error.message);
 
     return fail(res, 502, "Unable to send email.");
@@ -243,7 +240,6 @@ function fail(res, status, message, extra = {}) {
 ========================================= */
 
 async function handleSend(req, res, email) {
-
   const db = getDatabase();
 
   const ref = db.ref(`emailOtps/${emailKey(email)}`);
@@ -257,13 +253,11 @@ async function handleSend(req, res, email) {
   let blocked = null;
 
   await ref.transaction(current => {
-
     blocked = null;
 
     const c = current || {};
 
     if (c.sentAt && now - c.sentAt < RESEND_COOLDOWN_MS) {
-
       blocked = {
         status: 429,
         message: "Please wait a minute before requesting another code.",
@@ -286,7 +280,6 @@ async function handleSend(req, res, email) {
         : 0;
 
     if (sendCount >= MAX_SENDS_PER_HOUR) {
-
       blocked = {
         status: 429,
         message: "Too many codes requested. Please try again later."
@@ -303,7 +296,6 @@ async function handleSend(req, res, email) {
       windowStart,
       sendCount: sendCount + 1
     };
-
   });
 
   if (blocked) {
@@ -313,11 +305,9 @@ async function handleSend(req, res, email) {
   }
 
   try {
-
     await sendOtpEmail(email, otp);
 
   } catch (error) {
-
     console.error("OTP email failed:", error.message);
 
     await ref.remove().catch(() => {});
@@ -338,7 +328,6 @@ async function handleSend(req, res, email) {
 ========================================= */
 
 async function handleVerify(req, res, email) {
-
   const otp =
     typeof req.body?.otp === "string"
       ? req.body.otp.trim()
@@ -359,7 +348,6 @@ async function handleVerify(req, res, email) {
   let result = "none";
 
   await ref.transaction(current => {
-
     result = "none";
 
     if (current === null) return null;
@@ -377,9 +365,7 @@ async function handleVerify(req, res, email) {
     }
 
     if (safeEqualHex(current.hash, hashOtp(email, otp))) {
-
       result = "ok";
-
       return null;
     }
 
@@ -389,11 +375,9 @@ async function handleVerify(req, res, email) {
       ...current,
       attempts: Number(current.attempts || 0) + 1
     };
-
   });
 
   if (result === "ok") {
-
     await db.ref(`emailVerified/${key}`).set({
       verifiedAt: now,
       expiresAt: now + VERIFIED_TTL_MS
@@ -421,28 +405,21 @@ async function handleVerify(req, res, email) {
 ========================================= */
 
 async function handler(req, res) {
-
   res.setHeader("Cache-Control", "private, no-store");
 
   if (req.method !== "POST") {
-
     res.setHeader("Allow", "POST");
-
     return fail(res, 405, "Method not allowed.");
   }
 
   const action = req.body?.action;
 
   try {
-
-    // CUSTOM HTML EMAIL
     if (action === "send-email") {
       return await handleCustomEmail(req, res);
     }
 
-    // OTP ACTIONS
     if (action !== "send" && action !== "verify") {
-
       return fail(
         res,
         400,
@@ -463,7 +440,6 @@ async function handler(req, res) {
     return await handleVerify(req, res, email);
 
   } catch (error) {
-
     console.error("otp error:", error.message);
 
     return fail(res, 500, "Something went wrong. Please try again.");
@@ -475,7 +451,6 @@ async function handler(req, res) {
 ========================================= */
 
 async function consumeEmailVerification(email) {
-
   const clean = normalizeEmail(email);
 
   if (!clean) return false;
@@ -487,20 +462,16 @@ async function consumeEmailVerification(email) {
   let ok = false;
 
   await ref.transaction(current => {
-
     ok = false;
 
     if (current === null) return null;
 
     if (Number(current.expiresAt) > Date.now()) {
-
       ok = true;
-
       return null;
     }
 
     return null;
-
   });
 
   return ok;
