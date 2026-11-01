@@ -20,6 +20,13 @@
   "destination": "https://apisequizeshoplite-two.vercel.app/api/image/:file"
 },
 
+    {
+  "source": "/product.html",
+  "has": [{ "type": "query", "key": "id" }],
+  "missing": [{ "type": "header", "key": "x-meta-bypass" }],
+  "destination": "/api/product?page=1"
+    },
+
     { 
       "source": "/__/auth/:path*", 
       "destination": "https://shoppy-c289d.firebaseapp.com/__/auth/:path*"
