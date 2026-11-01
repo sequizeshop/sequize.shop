@@ -5572,10 +5572,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
       const id = normalizeProductId(card.dataset.productId);
 
-      if (authStatus !== "logged-in") {
-        window.location.href = "/login.html";
-        return;
-      }
       if (id) {
         window.location.href =
           `/product.html?id=${encodeURIComponent(id)}`;
@@ -5602,10 +5598,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
       event.preventDefault();
 
-      if (authStatus !== "logged-in") {
-        window.location.href = "/login.html";
-        return;
-      }
       const id = normalizeProductId(card.dataset.productId);
 
       if (id) {
@@ -7399,5 +7391,15 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button{width:100%;m
 })();
 </script>
 
+<style id="button-system-home">
+/* Guest: favourite button hidden */
+body.guest-mode .wish-btn{display:none !important}
+/* Buttons: smaller height, fully round */
+html body .hero-button,html body .load-more-button,html body .status button,
+html body .app-primary-button,html body .app-secondary-button,html body .app-danger-button,
+html body .app-logout,html body .category-current{min-height:44px !important;border-radius:999px !important;padding-top:10px !important;padding-bottom:10px !important}
+html body .app-qty{border-radius:999px !important}
+html body .app-qty button{border-radius:50% !important}
+</style>
 </body>
 </html>
