@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sequize Shop — Email Sender</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f5f6f8;
+  color: #171717;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: #111;
+  color: white;
+  padding: 22px 16px;
+  text-align: center;
+}
+
+header img {
+  width: 65px;
+  height: 65px;
+  object-fit: contain;
+  background: white;
+  border-radius: 50%;
+  padding: 5px;
+}
+
+header h2 {
+  margin: 10px 0 0;
+  font-size: 21px;
+}
+
+header p {
+  margin: 6px 0 0;
+  color: #ccc;
+  font-size: 13px;
+}
+
+.container {
+  max-width: 1050px;
+  margin: 25px auto;
+  padding: 0 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.panel {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.panel h3 {
+  margin: 0 0 18px;
+  font-size: 18px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 15px 0 7px;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid #d5d8de;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #2962ff;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 9px;
+  background: #2962ff;
+  color: white;
+  padding: 14px;
+  margin-top: 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.preview {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f5f6f8;
+}
+
+.preview iframe {
+  width: 100%;
+  height: 700px;
+  border: 0;
+  background: white;
+}
+
+.status {
+  display: none;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.status.success {
+  display: block;
+  background: #e8f8ee;
+  color: #087b37;
+}
+
+.status.error {
+  display: block;
+  background: #fff0f0;
+  color: #c62828;
+}
+
+.small {
+  color: #777;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media(max-width:750px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .preview iframe {
+    height: 650px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <img
+    src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+    alt="Sequize Shop"
+  >
+  <h2>Sequize Shop</h2>
+  <p>Custom Customer Email Sender</p>
+</header>
+
+<main class="container">
+
+  <section class="panel">
+
+    <h3>Email Details</h3>
+
+    <form id="emailForm">
+
+      <label>EMAIL API KEY</label>
+      <input
+        type="password"
+        id="apiKey"
+        placeholder="Enter EMAIL_API_KEY"
+        autocomplete="off"
+        required
+      >
+
+      <label>Customer Name</label>
+      <input
+        id="customerName"
+        value="Jyoti Charak"
+        required
+      >
+
+      <label>Customer Email</label>
+      <input
+        type="email"
+        id="customerEmail"
+        value="jyoticharak762@gmail.com"
+        required
+      >
+
+      <label>Email Subject</label>
+      <input
+        id="subject"
+        value="Your Sequize Shop Order Details"
+        required
+      >
+
+      <label>Product 1 Name</label>
+      <input
+        id="product1"
+        value="Calvin Klein CK ONE"
+        required
+      >
+
+      <label>Product 1 Price (₹)</label>
+      <input
+        type="number"
+        id="price1"
+        value="637"
+        min="0"
+        step="1"
+        required
+      >
+
+      <label>Product 2 Name</label>
+      <input
+        id="product2"
+        value="iPhone 18 Pro"
+        required
+      >
+
+      <label>Product 2 Price (₹)</label>
+      <input
+        type="number"
+        id="price2"
+        value="4799"
+        min="0"
+        step="1"
+        required
+      >
+
+      <label>Advance Payment (₹)</label>
+      <input
+        type="number"
+        id="advance"
+        value="600"
+        min="0"
+        step="1"
+        required
+      >
+
+      <label>Remaining COD Amount (₹)</label>
+      <input
+        type="number"
+        id="cod"
+        readonly
+      >
+
+      <button type="submit" id="sendButton">
+        Send Customer Email
+      </button>
+
+      <div id="status" class="status"></div>
+
+      <p class="small">
+        Your email API key is sent with the request and is not saved
+        in this HTML file.
+      </p>
+
+    </form>
+
+  </section>
+
+  <section class="panel">
+
+    <h3>Email Preview</h3>
+
+    <div class="preview">
+      <iframe id="previewFrame" title="Email Preview"></iframe>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+"use strict";
+
+/*
+  Relative API path.
+  This requires the frontend Vercel rewrite shown below
+  because the backend is deployed in a separate project.
+*/
+
+const API_ENDPOINT = "/api/auth/otp";
+
+const $ = id => document.getElementById(id);
+
+const fields = [
+  "customerName",
+  "customerEmail",
+  "subject",
+  "product1",
+  "price1",
+  "product2",
+  "price2",
+  "advance"
+];
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function money(value) {
+  return Number(value).toLocaleString("en-IN");
+}
+
+function getData() {
+  const name = $("customerName").value.trim();
+  const email = $("customerEmail").value.trim();
+  const subject = $("subject").value.trim();
+
+  const product1 = $("product1").value.trim();
+  const price1 = Number($("price1").value);
+
+  const product2 = $("product2").value.trim();
+  const price2 = Number($("price2").value);
+
+  const advance = Number($("advance").value);
+
+  if (!name || !email || !subject || !product1 || !product2) {
+    throw new Error("Please fill all required fields.");
+  }
+
+  if (!Number.isInteger(price1) || price1 < 0) {
+    throw new Error("Product 1 price must be a valid amount.");
+  }
+
+  if (!Number.isInteger(price2) || price2 < 0) {
+    throw new Error("Product 2 price must be a valid amount.");
+  }
+
+  if (!Number.isInteger(advance) || advance < 0) {
+    throw new Error("Advance amount must be a valid amount.");
+  }
+
+  const total = price1 + price2;
+
+  if (advance > total) {
+    throw new Error("Advance cannot be greater than total amount.");
+  }
+
+  const cod = total - advance;
+
+  $("cod").value = cod;
+
+  return {
+    name,
+    email,
+    subject,
+    product1,
+    price1,
+    product2,
+    price2,
+    advance,
+    total,
+    cod
+  };
+}
+
+function createEmailHTML(data) {
+  const name = escapeHTML(data.name);
+  const product1 = escapeHTML(data.product1);
+  const product2 = escapeHTML(data.product2);
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+
+<body style="
+  margin:0;
+  padding:20px 10px;
+  background:#f3f5f8;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#171717;
+">
+
+<div style="
+  max-width:560px;
+  margin:auto;
+  background:#ffffff;
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid #e5e7eb;
+">
+
+  <div style="
+    background:#111111;
+    text-align:center;
+    padding:25px 15px;
+  ">
+
+    <img
+      src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+      width="65"
+      height="65"
+      style="
+        background:#ffffff;
+        border-radius:50%;
+        padding:5px;
+        object-fit:contain;
+      "
+      alt="Sequize Shop"
+    >
+
+    <h2 style="
+      color:#ffffff;
+      margin:12px 0 0;
+      font-size:23px;
+    ">SEQUIZE SHOP</h2>
+
+    <p style="
+      color:#cccccc;
+      font-size:12px;
+      margin:7px 0 0;
+      letter-spacing:1px;
+    ">STYLE • QUALITY • BEST PRICES</p>
+
+  </div>
+
+  <div style="padding:25px 20px;">
+
+    <h2 style="
+      font-size:21px;
+      margin:0 0 12px;
+    ">Hello ${name}!</h2>
+
+    <p style="
+      color:#555555;
+      font-size:14px;
+      line-height:1.7;
+    ">
+      Thank you for choosing Sequize Shop.
+      Here are your order details and payment breakdown.
+    </p>
+
+    <div style="
+      background:#f7f8fa;
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      padding:16px;
+      margin-top:20px;
+    ">
+
+      <h3 style="
+        margin:0 0 15px;
+        font-size:16px;
+      ">Your Order Details</h3>
+
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        font-size:14px;
+      ">
+
+        <tr>
+          <td style="padding:10px 0;color:#555;">
+            ${product1}
+          </td>
+          <td style="
+            padding:10px 0;
+            text-align:right;
+            font-weight:bold;
+          ">
+            ₹${money(data.price1)}
+          </td>
+        </tr>
+
+        <tr>
+          <td style="
+            padding:10px 0;
+            color:#555;
+            border-bottom:1px solid #e5e7eb;
+          ">
+            ${product2}
+          </td>
+
+          <td style="
+            padding:10px 0;
+            text-align:right;
+            font-weight:bold;
+            border-bottom:1px solid #e5e7eb;
+          ">
+            ₹${money(data.price2)}
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:14px 0;font-weight:bold;">
+            Total Amount
+          </td>
+
+          <td style="
+            padding:14px 0;
+            text-align:right;
+            font-weight:bold;
+          ">
+            ₹${money(data.total)}
+          </td>
+        </tr>
+
+      </table>
+
+    </div>
+
+    <div style="
+      background:#edf2ff;
+      border:1px solid #d7e2ff;
+      border-radius:10px;
+      padding:17px;
+      margin-top:18px;
+    ">
+
+      <h3 style="
+        margin:0 0 15px;
+        font-size:16px;
+        color:#1746b5;
+      ">
+        Payment Breakdown
+      </h3>
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        padding:7px 0;
+        font-size:14px;
+      ">
+        <span>Advance Payment</span>
+        <strong>₹${money(data.advance)}</strong>
+      </div>
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        padding:7px 0;
+        font-size:14px;
+      ">
+        <span>Remaining COD</span>
+        <strong>₹${money(data.cod)}</strong>
+      </div>
+
+      <p style="
+        margin:13px 0 0;
+        color:#555;
+        font-size:12px;
+        line-height:1.6;
+      ">
+        The remaining amount is payable at delivery,
+        subject to the confirmed order and available COD service.
+      </p>
+
+    </div>
+
+    <p style="
+      margin-top:22px;
+      color:#555;
+      font-size:13px;
+      line-height:1.7;
+    ">
+      If you have any questions regarding your order,
+      please contact our support team.
+    </p>
+
+    <p style="
+      margin-top:25px;
+      font-size:14px;
+      line-height:1.7;
+    ">
+      Regards,<br>
+      <strong>Team Sequize Shop</strong>
+    </p>
+
+  </div>
+
+  <div style="
+    background:#111111;
+    color:#aaaaaa;
+    text-align:center;
+    padding:17px;
+    font-size:11px;
+  ">
+    © ${new Date().getFullYear()} Sequize Shop. All rights reserved.
+  </div>
+
+</div>
+
+</body>
+</html>`;
+}
+
+function updatePreview() {
+  try {
+    const data = getData();
+    const html = createEmailHTML(data);
+
+    $("previewFrame").srcdoc = html;
+
+  } catch (error) {
+    $("previewFrame").srcdoc = `
+      <body style="font-family:Arial;padding:20px;color:#777">
+        Complete the required fields to see the email preview.
+      </body>
+    `;
+  }
+}
+
+function showStatus(message, type) {
+  const status = $("status");
+
+  status.textContent = message;
+  status.className = "status " + type;
+}
+
+fields.forEach(id => {
+  $(id).addEventListener("input", updatePreview);
+});
+
+$("emailForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const button = $("sendButton");
+
+  try {
+    const apiKey = $("apiKey").value.trim();
+
+    if (!apiKey) {
+      throw new Error("Enter your EMAIL_API_KEY.");
+    }
+
+    const data = getData();
+
+    const html = createEmailHTML(data);
+
+    button.disabled = true;
+    button.textContent = "Sending Email...";
+
+    showStatus("Sending email. Please wait...", "success");
+
+    const response = await fetch(API_ENDPOINT, {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "x-email-api-key": apiKey
+      },
+
+      body: JSON.stringify({
+        action: "send-email",
+        to: data.email,
+        subject: data.subject,
+        html,
+        text:
+          `Hello ${data.name},\n` +
+          `Order total: ₹${data.total}\n` +
+          `Advance: ₹${data.advance}\n` +
+          `Remaining COD: ₹${data.cod}`
+      })
+    });
+
+    let result;
+
+    try {
+      result = await response.json();
+    } catch {
+      throw new Error("Invalid server response.");
+    }
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Email sending failed.");
+    }
+
+    showStatus(
+      "Email sent successfully to " + result.recipient,
+      "success"
+    );
+
+  } catch (error) {
+    showStatus(error.message, "error");
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Send Customer Email";
+  }
+});
+
+updatePreview();
+</script>
+
+</body>
+</html>
