@@ -1,11 +1,10 @@
 // api/product.js
-// Single product details. Reads ONLY from Firebase products/{id}.
-// Works for admin-added products and for imported DummyJSON products.
-//
-// GET /api/product?id=<40-char id>   (productId= also accepted)
-// A numeric DummyJSON id is also accepted and resolved through productSourceMap.
+// 1) GET /api/product?id=<40-char id>          -> JSON (public, login NOT required)
+// 2) GET /api/product?id=<id>&page=1           -> product.html with product meta tags
+//    (vercel.json rewrites /product.html?id=... to this, so social apps / crawlers
+//     see the real product image, title and description when a link is shared)
 
-const crypto = require("crypto"); // NEW
+const crypto = require("crypto");
 const admin = require("firebase-admin");
 
 const DATABASE_URL =
@@ -13,12 +12,8 @@ const DATABASE_URL =
 
 const PRODUCT_ID_PATTERN = /^[A-Za-z0-9]{40}$/;
 const INR_RATE = 85;
+const DEFAULT_IMAGE = "https://i.ibb.co/93kQCKxT/20261019-120246.png";
 
-// NEW: image proxy settings
-
-// NEW: original image URL -> encrypted proxy URL (domain hidden)
-// Images are served from our own domain: /img/<token>.jpg
-// (vercel.json rewrites /img/* to the image-proxy project)
 const IMAGE_PROXY_PATH = "/img/";
 const OLD_PROXY_PREFIX = "https://apisequizeshoplite-two.vercel.app/api/image";
 
@@ -71,7 +66,6 @@ function validNumber(value, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-// Category specifications: plain { label: value } strings only.
 function publicSpecs(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   const out = {};
@@ -87,7 +81,7 @@ function publicSpecs(value) {
 
 function toPublic(p, id) {
   const price = Math.max(0, validNumber(p.price, 0));
-  const images = Array.isArray(p.images) ? p.images.filter(Boolean).map(proxyImage) : []; // CHANGED
+  const images = Array.isArray(p.images) ? p.images.filter(Boolean).map(proxyImage) : [];
   const stock = Math.max(0, validNumber(p.stock, 0));
 
   return {
@@ -102,7 +96,7 @@ function toPublic(p, id) {
     category: p.category || "other",
     brand: p.brand || "",
     sku: p.sku || "",
-    thumbnail: proxyImage(p.thumbnail) || images[0] || "", // CHANGED
+    thumbnail: proxyImage(p.thumbnail) || images[0] || "",
     images,
     tags: Array.isArray(p.tags) ? p.tags : [],
     availabilityStatus: p.availabilityStatus || (stock > 0 ? "In Stock" : "Out of Stock"),
@@ -119,6 +113,100 @@ function toPublic(p, id) {
   };
 }
 
+/* Returns { id, product } or null when not found. */
+async function findProduct(db, rawId) {
+  let id = String(rawId || "").trim();
+
+  if (/^\d+$/.test(id)) {
+    const mapped = (await db.ref("productSourceMap").child(id).once("value")).val();
+    if (typeof mapped === "string") id = mapped;
+  }
+  if (!PRODUCT_ID_PATTERN.test(id)) return null;
+
+  const [snap, removedSnap] = await Promise.all([
+    db.ref("products").child(id).once("value"),
+    db.ref("removedProducts").child(id).once("value")
+  ]);
+
+  const data = snap.val();
+  if (!data || typeof data !== "object" || removedSnap.val()) return null;
+  return { id, product: toPublic(data, id) };
+}
+
+/* ---------- Share preview (meta tags) ---------- */
+
+const esc = s =>
+  String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
+function setMeta(html, id, value) {
+  return html.replace(
+    new RegExp('(<(?:meta|link)\\b[^>]*\\bid="' + id + '"[^>]*\\b(?:content|href)=")[^"]*(")'),
+    (_, a, b) => a + esc(value) + b
+  );
+}
+
+function getOrigin(req) {
+  const host = req.headers["x-forwarded-host"] || req.headers.host;
+  const proto = String(req.headers["x-forwarded-proto"] || "https").split(",")[0];
+  return `${proto}://${host}`;
+}
+
+async function sendProductPage(req, res, db) {
+  const origin = getOrigin(req);
+
+  // Original product.html (bypass header stops the rewrite from looping)
+  const pageRes = await fetch(`${origin}/product.html`, {
+    headers: { "x-meta-bypass": "1" }
+  });
+  let html = await pageRes.text();
+
+  try {
+    const found = await findProduct(db, req.query.id);
+
+    if (found) {
+      const p = found.product;
+      const title = `${p.title} — Sequize`;
+      const description =
+        String(p.description || `Explore ${p.title} on Sequize.`)
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 200);
+
+      let image = p.thumbnail || (p.images && p.images[0]) || "";
+      if (image.startsWith("/")) image = origin + image;
+      if (!image) image = DEFAULT_IMAGE;
+
+      const url = `${origin}/product.html?id=${encodeURIComponent(found.id)}`;
+
+      html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(title)}</title>`);
+      html = setMeta(html, "metaDescription", description);
+      html = setMeta(html, "canonicalUrl", url);
+      html = setMeta(html, "ogTitle", title);
+      html = setMeta(html, "ogDescription", description);
+      html = setMeta(html, "ogUrl", url);
+      html = setMeta(html, "ogImage", image);
+      html = setMeta(html, "ogImageAlt", p.title);
+      html = setMeta(html, "twitterTitle", title);
+      html = setMeta(html, "twitterDescription", description);
+      html = setMeta(html, "twitterImage", image);
+
+      // product images are not 1200x630, so remove the fixed size
+      html = html.replace(/<meta property="og:image:(?:width|height)"[^>]*>\s*/g, "");
+    }
+  } catch (error) {
+    console.error("Product meta error:", error);
+    // normal product.html is still sent
+  }
+
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
+  return res.status(200).send(html);
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
@@ -126,43 +214,28 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    let id = String(
-      (req.query && (req.query.id || req.query.productId || req.query.pid)) || ""
-    ).trim();
-
-    if (!id) {
-      return res.status(400).json({ success: false, message: "Product id is required." });
-    }
+    const rawId =
+      (req.query && (req.query.id || req.query.productId || req.query.pid)) || "";
 
     const db = initializeFirebase();
 
-    // Numeric DummyJSON id -> custom id through productSourceMap
-    if (/^\d+$/.test(id)) {
-      const mapped = (await db.ref("productSourceMap").child(id).once("value")).val();
-      if (typeof mapped === "string") id = mapped;
+    // Share-preview mode (called through the /product.html rewrite)
+    if (String(req.query.page || "") === "1") {
+      return await sendProductPage(req, res, db);
     }
 
-    if (!PRODUCT_ID_PATTERN.test(id)) {
+    if (!String(rawId).trim()) {
+      return res.status(400).json({ success: false, message: "Product id is required." });
+    }
+
+    // No login check here: guests can view product details.
+    const found = await findProduct(db, rawId);
+    if (!found) {
       return res.status(404).json({ success: false, message: "Product not found." });
     }
 
-    const [snap, removedSnap] = await Promise.all([
-      db.ref("products").child(id).once("value"),
-      db.ref("removedProducts").child(id).once("value")
-    ]);
-
-    const data = snap.val();
-    if (!data || typeof data !== "object" || removedSnap.val()) {
-      return res.status(404).json({ success: false, message: "Product not found." });
-    }
-
-    const product = toPublic(data, id);
-
-    // Cache only successful responses (never cache a 404)
     res.setHeader("Cache-Control", "s-maxage=30, stale-while-revalidate=120");
-
-    // `product` for wrapped responses, top-level fields for flat ones
-    return res.status(200).json({ success: true, product, ...product });
+    return res.status(200).json({ success: true, product: found.product, ...found.product });
   } catch (error) {
     console.error("Product API error:", error);
     return res.status(502).json({
