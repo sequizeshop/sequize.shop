@@ -1279,13 +1279,140 @@
         }
     });
 
-    /* Google sign-in placeholder */
+    /*
+     * CONTINUE WITH GOOGLE
+     * Creates the account if it is new, or signs in if it already exists.
+     * Google has already verified the email, so no OTP is needed.
+     */
+    const GOOGLE_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyBeP1PetEM536IEXSJUTFCQ91oqo8n-fT0",
+        authDomain: "shoppy-c289d.firebaseapp.com",
+        databaseURL: "https://shoppy-c289d-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "shoppy-c289d",
+        storageBucket: "shoppy-c289d.firebasestorage.app",
+        messagingSenderId: "154536439593",
+        appId: "1:154536439593:web:499b9de766bf6c06ce5138",
+        measurementId: "G-FZ3QTFRRZM"
+    };
 
-    document.getElementById("googleBtn").addEventListener("click", function () {
-        showMessage(
-            "Google sign-in is not connected yet. Please use email and password.",
-            "error"
-        );
+    let googleBusy = false;
+
+    document.getElementById("googleBtn").addEventListener("click", async function () {
+        if (googleBusy) {
+            return;
+        }
+
+        googleBusy = true;
+        message.className = "message";
+
+        showProgress("Connecting to Google", "Please wait...");
+
+        let redirect = null;
+
+        try {
+            const [appMod, authMod] = await Promise.all([
+                import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"),
+                import("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js")
+            ]);
+
+            const app = appMod.getApps().length
+                ? appMod.getApp()
+                : appMod.initializeApp(GOOGLE_FIREBASE_CONFIG);
+
+            const auth = authMod.getAuth(app);
+            const provider = new authMod.GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: "select_account" });
+
+            const credential = await authMod.signInWithPopup(auth, provider);
+            const idToken = await credential.user.getIdToken();
+
+            // Shoppy uses its own session cookie, so drop the Firebase client session.
+            authMod.signOut(auth).catch(() => {});
+
+            dialogText.textContent = "Setting up your account...";
+
+            const response = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                credentials: "same-origin",
+                body: JSON.stringify({
+                    action: "googleLogin",
+                    idToken: idToken
+                })
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok || data.success !== true) {
+                throw new Error(
+                    data.message || "Google sign-in failed. Please try again."
+                );
+            }
+
+            redirect = (
+                typeof data.redirect === "string" &&
+                data.redirect.startsWith("/") &&
+                !data.redirect.startsWith("//") &&
+                !data.redirect.includes("\\")
+            ) ? data.redirect : "/profile.html";
+
+        } catch (error) {
+            const cancelled =
+                error &&
+                (error.code === "auth/popup-closed-by-user" ||
+                 error.code === "auth/cancelled-popup-request");
+
+            if (cancelled) {
+                closeDialog();
+            } else {
+                console.error("Google sign-up error:", error);
+
+                const errorMessage =
+                    (error && error.code === "auth/popup-blocked")
+                        ? "The Google popup was blocked. Please allow popups and try again."
+                        : (error && error.message) ||
+                          "Google sign-in failed. Please try again.";
+
+                finishDialog(
+                    "Google sign-in failed",
+                    errorMessage,
+                    "Try again",
+                    closeDialog
+                );
+
+                showMessage(errorMessage, "error");
+            }
+        }
+
+        googleBusy = false;
+
+        if (redirect) {
+            finishDialog(
+                "You're in!",
+                "Taking you to your account...",
+                "Continue",
+                function () {
+                    window.location.assign(redirect);
+                }
+            );
+
+            // Optional notification setup; must never block or undo sign-in.
+            try {
+                if (typeof window.enableShoppyNotifications === "function") {
+                    await Promise.race([
+                        window.enableShoppyNotifications(),
+                        new Promise(resolve => setTimeout(resolve, 2500))
+                    ]);
+                }
+            } catch (notificationError) {
+                console.warn("Notification setup skipped:", notificationError);
+            }
+
+            window.location.assign(redirect);
+        }
     });
 </script>
 
