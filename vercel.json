@@ -19,6 +19,11 @@
   "source": "/img/:file",
   "destination": "https://apisequizeshoplite-two.vercel.app/api/image/:file"
 },
+
+    { 
+      "source": "/__/auth/:path*", 
+      "destination": "https://shoppy-c289d.firebaseapp.com/__/auth/:path*"
+    },
     
     {
       "source": "/firebase-messaging-sw.js",
