@@ -1,82 +1,44 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/product.js": { "includeFiles": "product-template.html" }
+  },
   "redirects": [
-    {
-      "source": "/account",
-      "destination": "/user/account/redirect?mode=checkout",
-      "permanent": false
-    },
-    {
-      "source": "/product.html",
-      "destination": "/product",
-      "permanent": true
-    }
+    { "source": "/account", "destination": "/user/account/redirect?mode=checkout", "permanent": false },
+    { "source": "/product.html", "destination": "/product", "permanent": true },
+    { "source": "/signin", "destination": "/login", "permanent": true },
+    { "source": "/sign-in", "destination": "/login", "permanent": true },
+    { "source": "/sign-up", "destination": "/signup", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/img/:file", "destination": "https://apisequizeshoplite-two.vercel.app/api/image/:file" },
+    { "source": "/product", "destination": "/api/product?page=1" },
+    { "source": "/product/:id", "destination": "/api/product?page=1&id=:id" },
+    { "source": "/p/:id", "destination": "/api/product?page=1&id=:id" },
+    { "source": "/sitemap.xml", "destination": "https://apisequizeshoplite-two.vercel.app/api/sitemap" },
+    { "source": "/__/auth/:path*", "destination": "https://shoppy-c289d.firebaseapp.com/__/auth/:path*" },
+    { "source": "/firebase-messaging-sw.js", "destination": "https://apisequizeshoplite.vercel.app/firebase-messaging-sw.js" },
+    { "source": "/home", "destination": "/index.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/signup", "destination": "/signup.html" },
+    { "source": "/address", "destination": "/address.html" },
+    { "source": "/addresses", "destination": "/addresses.html" },
+    { "source": "/cart", "destination": "/cart.html" },
+    { "source": "/profile", "destination": "/profile.html" },
+    { "source": "/user/account/redirect", "destination": "/profile.html" },
+    { "source": "/wishlist", "destination": "/wishlist.html" },
+    { "source": "/api/logout", "destination": "/api/signup" }
+  ],
+  "headers": [
     {
-      "source": "/",
-      "destination": "/index.html"
+      "source": "/product-template(.html)?",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     },
     {
-      "source": "/img/:file",
-      "destination": "https://apisequizeshoplite-two.vercel.app/api/image/:file"
-    },
-    {
-      "source": "/product",
-      "destination": "/api/product?page=1"
-    },
-    {
-      "source": "/sitemap.xml",
-      "destination": "https://apisequizeshoplite-two.vercel.app/api/sitemap"
-    },
-    {
-      "source": "/__/auth/:path*",
-      "destination": "https://shoppy-c289d.firebaseapp.com/__/auth/:path*"
-    },
-    {
-      "source": "/firebase-messaging-sw.js",
-      "destination": "https://apisequizeshoplite.vercel.app/firebase-messaging-sw.js"
-    },
-    {
-      "source": "/home",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/login",
-      "destination": "/login.html"
-    },
-    {
-      "source": "/signup",
-      "destination": "/signup.html"
-    },
-    {
-      "source": "/address",
-      "destination": "/address.html"
-    },
-    {
-      "source": "/addresses",
-      "destination": "/addresses.html"
-    },
-    {
-      "source": "/cart",
-      "destination": "/cart.html"
-    },
-    {
-      "source": "/profile",
-      "destination": "/profile.html"
-    },
-    {
-      "source": "/user/account/redirect",
-      "destination": "/profile.html"
-    },
-    {
-      "source": "/wishlist",
-      "destination": "/wishlist.html"
-    },
-    {
-      "source": "/api/logout",
-      "destination": "/api/signup"
+      "source": "/(login|signup|address|addresses|cart|profile|wishlist|account|user/(.*))",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
   ]
 }
