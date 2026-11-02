@@ -1,6 +1,8 @@
 "use strict";
 
 // Public product JSON API + server-rendered SEO product page.
+const fs = require("node:fs");
+const path = require("node:path");
 const crypto = require("node:crypto");
 const admin = require("firebase-admin");
 
@@ -11,6 +13,7 @@ const DEFAULT_IMAGE = "https://i.ibb.co/93kQCKxT/20261019-120246.png";
 const IMAGE_PROXY_PATH = "/img/";
 const OLD_PROXY_PREFIX = "https://apisequizeshoplite-two.vercel.app/api/image";
 const SITE_URL = "https://www.sequize.shop";
+const BRAND = "Sequize";
 
 function proxyImage(url) {
   if (typeof url !== "string" || !url) return "";
@@ -120,9 +123,34 @@ function setMeta(html, id, value, attribute = "content") {
   return html.replace(tagPattern, tag => {
     const attrPattern = new RegExp(`\\b${attribute}\\s*=\\s*(["'])[^"']*\\1`, "i");
     const replacement = `${attribute}="${esc(value)}"`;
-    if (attrPattern.test(tag)) return tag.replace(attrPattern, replacement);
-    return tag.replace(/>$/, ` ${replacement}>`);
+    if (attrPattern.test(tag)) return tag.replace(attrPattern, () => replacement);
+    return tag.replace(/>$/, () => ` ${replacement}>`);
   });
+}
+
+// Template is bundled with the function (see "includeFiles" in vercel.json).
+// Falls back to fetching it only if the file is missing.
+let templateCache = "";
+async function loadTemplate() {
+  if (templateCache) return templateCache;
+  const candidates = [
+    path.join(process.cwd(), "product-template.html"),
+    path.join(__dirname, "..", "product-template.html")
+  ];
+  for (const file of candidates) {
+    try {
+      templateCache = fs.readFileSync(file, "utf8");
+      return templateCache;
+    } catch (_) { /* try next */ }
+  }
+  const response = await fetch(`${SITE_URL}/product-template.html`, { redirect: "follow" });
+  if (!response.ok) throw new Error(`product-template.html unavailable (HTTP ${response.status})`);
+  templateCache = await response.text();
+  return templateCache;
+}
+
+function formatINR(value) {
+  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(validNumber(value, 0));
 }
 
 function makeSchema(product, id, image, canonical) {
@@ -131,7 +159,7 @@ function makeSchema(product, id, image, canonical) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: String(product.title || "Product"),
-    description: String(product.description || `Explore ${product.title || "this product"} on Sequize.`).slice(0, 5000),
+    description: String(product.description || `Explore ${product.title || "this product"} on ${BRAND}.`).slice(0, 5000),
     sku: String(product.sku || id),
     category: String(product.category || "Products"),
     image: [image],
@@ -141,11 +169,41 @@ function makeSchema(product, id, image, canonical) {
       priceCurrency: "INR",
       price: Math.max(0, validNumber(product.price, 0)).toFixed(2),
       availability: inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      itemCondition: "https://schema.org/NewCondition"
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@type": "Organization", name: BRAND }
     }
   };
   if (product.brand) schema.brand = { "@type": "Brand", name: String(product.brand) };
+  if (product.rating > 0 && Array.isArray(product.reviews) && product.reviews.length) {
+    schema.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: Number(product.rating).toFixed(1),
+      reviewCount: product.reviews.length
+    };
+  }
   return schema;
+}
+
+// Visible product content that exists in the raw HTML (no JavaScript needed),
+// so Google sees the real product name, image, price and description.
+// The page script replaces this block with the full interactive layout.
+function makeServerContent(product, image) {
+  return `<section id="productArea" aria-busy="true">
+      <div class="product-layout">
+        <div class="gallery">
+          <div class="main-image-wrap">
+            <img class="main-image" src="${esc(image)}" alt="${esc(product.title)}">
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-category">${esc(product.category || "Product")}</div>
+          <h1 class="product-title">${esc(product.title)}</h1>
+          ${product.brand ? `<p class="product-brand">Brand: <strong>${esc(product.brand)}</strong></p>` : ""}
+          <div class="price-block"><span class="current-price">${esc(formatINR(product.price))}</span></div>
+          <p class="product-description">${esc(product.description)}</p>
+        </div>
+      </div>
+    </section>`;
 }
 
 function getRequestQuery(req) {
@@ -156,49 +214,66 @@ function getRequestQuery(req) {
   };
 }
 
+function sendNotFound(res) {
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  res.setHeader("Cache-Control", "no-store");
+  return res.status(404).send("Product not found.");
+}
+
 async function sendProductPage(req, res, db, rawId) {
-  if (!String(rawId || "").trim()) {
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    res.setHeader("X-Robots-Tag", "noindex, nofollow");
-    return res.status(400).send("Product id is required.");
-  }
+  if (!String(rawId || "").trim()) return sendNotFound(res);
 
   const found = await findProduct(db, rawId);
-  if (!found) {
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    res.setHeader("X-Robots-Tag", "noindex, nofollow");
-    res.setHeader("Cache-Control", "no-store");
-    return res.status(404).send("Product not found.");
-  }
+  if (!found) return sendNotFound(res);
 
-  const templateResponse = await fetch(`${SITE_URL}/product-template.html`, { redirect: "follow" });
-  if (!templateResponse.ok) throw new Error(`product-template.html unavailable (HTTP ${templateResponse.status})`);
-  let html = await templateResponse.text();
+  let html = await loadTemplate();
   const product = found.product;
-  const title = `${product.title || "Product"} | Buy Online at Sequize`;
-  const description = String(product.description || `Buy ${product.title} online at Sequize.`)
-    .replace(/\s+/g, " ").trim().slice(0, 300);
+  const title = `${product.title || "Product"} — ${BRAND}`;
+  const description = String(product.description || `Buy ${product.title} online at ${BRAND}.`)
+    .replace(/\s+/g, " ").trim();
+  const metaDescription = description.slice(0, 155) + (description.length > 155 ? "…" : "");
+  // Link previews (WhatsApp, Facebook, Telegram, X, LinkedIn...) get a richer text with price.
+  const previewDescription = `${formatINR(product.price)} — ${description}`.slice(0, 200).trim();
   const canonical = `${SITE_URL}/product?id=${encodeURIComponent(found.id)}`;
   let image = product.thumbnail || (product.images && product.images[0]) || DEFAULT_IMAGE;
   if (image.startsWith("/")) image = SITE_URL + image;
 
-  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)}</title>`);
-  html = setMeta(html, "metaDescription", description);
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, () => `<title>${esc(title)}</title>`);
+  html = setMeta(html, "metaDescription", metaDescription);
   html = setMeta(html, "canonicalUrl", canonical, "href");
   html = setMeta(html, "ogTitle", title);
-  html = setMeta(html, "ogDescription", description);
+  html = setMeta(html, "ogDescription", previewDescription);
   html = setMeta(html, "ogUrl", canonical);
   html = setMeta(html, "ogImage", image);
   html = setMeta(html, "ogImageAlt", product.title);
   html = setMeta(html, "twitterTitle", title);
-  html = setMeta(html, "twitterDescription", description);
+  html = setMeta(html, "twitterDescription", previewDescription);
   html = setMeta(html, "twitterImage", image);
   html = html.replace(/<meta property="og:image:(?:width|height)"[^>]*>\s*/gi, "");
 
-  // Remove any template-level Product schema before inserting this product's unique schema.
+  // Real product content in the raw HTML instead of the empty skeleton.
+  html = html.replace(/<section id="productArea"[^>]*>[\s\S]*?<\/section>/i, () => makeServerContent(product, image));
+
+  // Unique Product schema for this product.
   html = html.replace(/<script\b[^>]*id=["']product-jsonld["'][^>]*>[\s\S]*?<\/script>/gi, "");
+  // Extra tags so every app can build a full product preview (absolute image URL, price, etc).
+  const inStockNow = Number(product.stock) > 0 && String(product.availabilityStatus || "").toLowerCase() !== "out of stock";
+  const extraMeta = [
+    `<meta property="og:image:secure_url" content="${esc(image)}">`,
+    `<meta property="og:locale" content="en_IN">`,
+    `<meta property="product:price:amount" content="${Math.max(0, validNumber(product.price, 0)).toFixed(2)}">`,
+    `<meta property="product:price:currency" content="INR">`,
+    `<meta property="product:availability" content="${inStockNow ? "in stock" : "out of stock"}">`,
+    product.brand ? `<meta property="product:brand" content="${esc(product.brand)}">` : "",
+    `<meta property="product:category" content="${esc(product.category || "Products")}">`,
+    `<meta name="twitter:label1" content="Price"><meta name="twitter:data1" content="${esc(formatINR(product.price))}">`,
+    `<link rel="image_src" href="${esc(image)}">`
+  ].filter(Boolean).join("\n");
+  html = html.replace(/<\/head>/i, () => `${extraMeta}\n</head>`);
+
   const jsonLd = `<script id="product-jsonld" type="application/ld+json">${JSON.stringify(makeSchema(product, found.id, image, canonical)).replace(/</g, "\\u003c")}</script>`;
-  html = html.replace(/<\/head>/i, `${jsonLd}\n</head>`);
+  html = html.replace(/<\/head>/i, () => `${jsonLd}\n</head>`);
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("X-Robots-Tag", "index, follow");
@@ -207,8 +282,8 @@ async function sendProductPage(req, res, db, rawId) {
 }
 
 module.exports = async function handler(req, res) {
-  if (req.method !== "GET") {
-    res.setHeader("Allow", "GET");
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    res.setHeader("Allow", "GET, HEAD");
     return res.status(405).json({ success: false, message: "Method not allowed." });
   }
 
