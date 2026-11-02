@@ -859,6 +859,8 @@
       gap: 24px 18px;
     }
     .related-card.product-card {
+      color: inherit;
+      text-decoration: none;
       min-width: 0;
       display: flex;
       flex-direction: column;
@@ -2499,7 +2501,7 @@ function proxyImage(url) {
         const rating = Number(item.rating) || 0;
         const percent = getDiscountPercent();
         return `
-          <article class="related-card product-card" data-product-id="${escapeHTML(id)}" tabindex="0" aria-label="View details for ${escapeHTML(item.title || "Product")}">
+          <a class="related-card product-card" href="/product?id=${encodeURIComponent(id)}" data-product-id="${escapeHTML(id)}" aria-label="View details for ${escapeHTML(item.title || "Product")}">
             <div class="product-image"><img src="${escapeHTML(image)}" alt="${escapeHTML(item.title || "Product")}" loading="lazy"></div>
             <div class="product-info">
               <div class="product-category">${escapeHTML(item.category || "Other").replace(/-/g, " ")}</div>
@@ -2511,24 +2513,12 @@ function proxyImage(url) {
                 ${percent > 0 ? `<span class="discount">${formatPercent(percent)} OFF</span>` : ""}
               </div>
             </div>
-          </article>`;
+          </a>`;
       }).join("");
     }
 
-    function bindRecommendationCards(root) {
-      root.querySelectorAll(".related-card[data-product-id]").forEach(card => {
-        const openProduct = () => {
-          const id = String(card.dataset.productId || "");
-          if (id) window.location.href = `/product?id=${encodeURIComponent(id)}`;
-        };
-        card.addEventListener("click", event => {
-          if (!event.target.closest("button")) openProduct();
-        });
-        card.addEventListener("keydown", event => {
-          if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openProduct(); }
-        });
-      });
-    }
+    /* Cards are real <a href> links, so the browser (and Google) follows them. */
+    function bindRecommendationCards(root) {}
 
     async function loadRelatedProducts() {
       const grid = document.getElementById("relatedProductGrid");
