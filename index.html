@@ -10,14 +10,14 @@
   <meta name="description" content="Discover products, explore categories and find your next favorite item at Sequize.">
   <meta name="robots" content="index, follow">
 
-  <link rel="canonical" href="https://YOUR-DOMAIN/home.html">
+  <link rel="canonical" href="https://www.sequize.shop/">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Sequize">
   <meta property="og:title" content="Sequize — Discover Products">
   <meta property="og:description" content="Discover products, explore categories and find your next favorite item at Sequize.">
   <meta property="og:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-  <meta property="og:url" content="https://YOUR-DOMAIN/home.html">
+  <meta property="og:url" content="https://www.sequize.shop/">
   <meta property="og:image:alt" content="Sequize logo">
 
   <meta name="twitter:card" content="summary">
@@ -25,6 +25,7 @@
   <meta name="twitter:description" content="Discover products, explore categories and find your next favorite item at Sequize.">
   <meta name="twitter:image" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","name":"Sequize","alternateName":"Sequize Shop","url":"https://www.sequize.shop/"},{"@type":"Organization","name":"Sequize","url":"https://www.sequize.shop/","logo":"https://i.ibb.co/93kQCKxT/20261019-120246.png"}]}</script>
   <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
   <link rel="apple-touch-icon" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
 
@@ -3496,7 +3497,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     <button type="button" class="desktop-top-avatar" id="desktopTopAvatar" aria-label="My profile" title="My profile">U</button>
 
 
-    <a href="/home.html" class="guest-header-brand" aria-label="Sequize home">Sequize</a>
+    <a href="/" class="guest-header-brand" aria-label="Sequize home">Sequize</a>
     <div class="guest-header-actions" id="guestHeaderActions" aria-label="Account actions">
       <a class="guest-auth-button guest-auth-login" href="/login.html">Login</a>
       <a class="guest-auth-button guest-auth-signup" href="/signup.html">Sign Up</a>
@@ -3542,7 +3543,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
     </nav>
 
-    <a href="/home.html" class="brand" aria-label="Sequize home"><span class="b1">S</span><span class="b2">equize</span></a>
+    <a href="/" class="brand" aria-label="Sequize home"><span class="b1">S</span><span class="b2">equize</span></a>
 
   </header>
 
@@ -3557,7 +3558,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         aria-label="Expand navigation" aria-expanded="false">
         <i class="ph ph-list" aria-hidden="true"></i>
       </button>
-      <a href="/home.html" class="brand" aria-label="Sequize home">Sequize</a>
+      <a href="/" class="brand" aria-label="Sequize home">Sequize</a>
     </div>
 
     <nav class="desktop-nav-links" aria-label="Desktop navigation links">
@@ -3844,7 +3845,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         </div>
         <a href="/membership.html" class="app-profile-row" id="appMembershipRow"><i class="ph ph-crown"></i><span><strong id="appMembershipRowTitle">Premium Membership</strong><small id="appMembershipRowDescription">Explore Premium plans and membership benefits.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong><small>View orders, track shipments and check delivery status.</small></span><i class="ph ph-caret-right"></i></a>
-        <a href="/home.html" class="app-profile-row" id="appBuyAgain"><i class="ph ph-arrow-clockwise"></i><span><strong>Buy Again</strong><small>Quickly find products you purchased before.</small></span><i class="ph ph-caret-right"></i></a>
+        <a href="/" class="app-profile-row" id="appBuyAgain"><i class="ph ph-arrow-clockwise"></i><span><strong>Buy Again</strong><small>Quickly find products you purchased before.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/wishlist.html" class="app-profile-row"><i class="ph ph-heart"></i><span><strong>My Wishlist</strong><small>Products you saved for later.</small></span><i class="ph ph-caret-right"></i></a>
         <button type="button" class="app-profile-row" id="appProfileCartRow" style="width:100%;border-top:0;border-left:0;border-right:0;background:transparent;text-align:left"><i class="ph ph-shopping-cart"></i><span><strong>My Cart</strong><small>Review your cart and continue shopping.</small></span><i class="ph ph-caret-right"></i></button>
         <a href="/addresses.html" class="app-profile-row"><i class="ph ph-map-pin"></i><span><strong>Saved Addresses</strong><small>Manage your delivery addresses.</small></span><i class="ph ph-caret-right"></i></a>
@@ -4714,7 +4715,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
             </div>
 
             <h3 class="product-title">
-              ${title}
+              <a class="product-link" href="/product?id=${encodeURIComponent(id)}" style="color:inherit;text-decoration:none">${title}</a>
             </h3>
 
             <p class="product-description">
@@ -5564,6 +5565,11 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         return;
       }
 
+      // Real link clicked: let the browser handle it normally.
+      if (event.target.closest("a.product-link")) {
+        return;
+      }
+
       const card = event.target.closest(
         ".product-card[data-product-id]"
       );
@@ -5574,7 +5580,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
       if (id) {
         window.location.href =
-          `/product.html?id=${encodeURIComponent(id)}`;
+          `/product?id=${encodeURIComponent(id)}`;
       }
     }
 
@@ -5602,7 +5608,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
       if (id) {
         window.location.href =
-          `/product.html?id=${encodeURIComponent(id)}`;
+          `/product?id=${encodeURIComponent(id)}`;
       }
     }
 
