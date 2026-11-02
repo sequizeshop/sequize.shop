@@ -18,8 +18,6 @@
   <meta property="og:url" id="ogUrl" content="https://www.sequize.shop/product">
   <meta property="og:image" id="ogImage" content="https://i.ibb.co/93kQCKxT/20261019-120246.png">
   <meta property="og:image:alt" id="ogImageAlt" content="Sequize product">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" id="twitterTitle" content="Product Details — Sequize">
@@ -1421,9 +1419,10 @@ function proxyImage(url) {
       ].filter(Boolean);
       const description = descriptionParts.join(" ").slice(0, 300);
 
-      const image = proxyImage(item.thumbnail) ||
+      let image = proxyImage(item.thumbnail) ||
         proxyImage(Array.isArray(item.images) ? item.images[0] : "") ||
         DEFAULT_IMAGE;
+      if (image.startsWith("/")) image = SITE_URL + image;
       const canonical =
         `${SITE_URL}/product?id=${encodeURIComponent(item.id)}`;
       const pageUrl = canonical;
@@ -1436,8 +1435,6 @@ function proxyImage(url) {
       updateMeta("#ogUrl", pageUrl);
       updateMeta("#ogImage", image);
       updateMeta("#ogImageAlt", item.title);
-      updateMeta('meta[property="og:image:width"]', "1200");
-      updateMeta('meta[property="og:image:height"]', "630");
       updateMeta("#twitterTitle", title);
       updateMeta("#twitterDescription", description);
       updateMeta("#twitterImage", image);
@@ -2278,8 +2275,8 @@ function proxyImage(url) {
 
       const shareData = {
         title: product.title,
-        text: `${product.title} — ${product.description || "Check out this product"} on Sequize!`,
-        url: `${window.location.origin}/product?id=${encodeURIComponent(product.id)}`
+        text: `${product.title} — ${formatPrice(Number(product.price) || 0)} on Sequize`,
+        url: `${SITE_URL}/product?id=${encodeURIComponent(product.id)}`
       };
 
       try {
