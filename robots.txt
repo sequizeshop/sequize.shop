@@ -1,10 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /cart
-Disallow: /checkout
-Disallow: /profile
-Disallow: /login
-Disallow: /signup
 
 Sitemap: https://www.sequize.shop/sitemap.xml
