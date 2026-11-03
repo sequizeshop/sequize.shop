@@ -1,9 +1,0 @@
-User-agent: *
-Allow: /
-Allow: /api/product
-Disallow: /api/profile
-Disallow: /api/cart
-Disallow: /api/addresses
-Disallow: /api/checkout
-
-Sitemap: https://www.sequize.shop/sitemap.xml
