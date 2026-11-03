@@ -13,6 +13,7 @@
   ],
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
+    { "source": "/robots.txt",  "destination": "https://apisequizeshoplite-two.vercel.app/api/robots"},
     { "source": "/img/:file", "destination": "https://apisequizeshoplite-two.vercel.app/api/image/:file" },
     { "source": "/product", "destination": "/api/product?page=1" },
     { "source": "/product/:id", "destination": "/api/product?page=1&id=:id" },
