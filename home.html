@@ -10,7 +10,7 @@
   <meta name="description" content="Discover products, explore categories and find your next favorite item at Sequize.">
   <meta name="robots" content="index, follow">
 
-  <link rel="canonical" href="https://YOUR-DOMAIN/home.html">
+  <link rel="canonical" href="https://sequize.shop/home.html">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Sequize">
@@ -61,16 +61,18 @@
         document.documentElement.setAttribute("data-start-tab", savedTab);
       }
     } catch (e) {}
-    const shouldUsePremiumSkin = cacheValid ? uiPreference !== "basic" : apple;
-    if (shouldUsePremiumSkin) {
-      document.documentElement.classList.add("premium-skin-early");
-      const apply = function () {
-        if (!document.body) return;
-        document.body.classList.add("app-premium-navigation");
-        document.body.classList.remove("app-basic-navigation", "nav-pending");
-      };
-      if (document.body) apply(); else document.addEventListener("DOMContentLoaded", apply, { once: true });
-    }
+    const shouldUsePremiumSkin = apple || cacheValid;
+    document.documentElement.classList.toggle("premium-skin-early", shouldUsePremiumSkin);
+    const apply = function () {
+      if (!document.body) return;
+      document.body.classList.toggle("app-premium-navigation", shouldUsePremiumSkin);
+      document.body.classList.toggle("app-basic-navigation", !shouldUsePremiumSkin);
+      /* Mobile navigation must be visible during membership/auth verification. */
+      if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
+        document.body.classList.remove("nav-pending");
+      }
+    };
+    if (document.body) apply(); else document.addEventListener("DOMContentLoaded", apply, { once: true });
   })();
   </script>
 
@@ -3483,7 +3485,16 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 </head>
 
 <body class="nav-pending">
-  <script>if(window.__appnetickAppleDevice || window.__appnetickCachedPremium){document.body.classList.add("app-premium-navigation");document.body.classList.remove("nav-pending");}</script>
+  <script>
+    (function () {
+      var premiumSkin = !!(window.__appnetickAppleDevice || window.__appnetickCachedPremium);
+      document.body.classList.toggle("app-premium-navigation", premiumSkin);
+      document.body.classList.toggle("app-basic-navigation", !premiumSkin);
+      if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
+        document.body.classList.remove("nav-pending");
+      }
+    })();
+  </script>
 
   <!-- HEADER -->
 
@@ -5756,10 +5767,9 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         lastVerifiedMembership = null;
         try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {}
       }
-      // Paid members can persistently choose either visual style on iOS and Android.
-      // Non-members retain the existing iOS visual treatment where applicable.
-      const preference = getPremiumUiPreference();
-      const usePremiumSkin = active ? preference !== "basic" : isAppleDevice;
+      // iOS devices and verified Premium members always share the same navigation skin.
+      // Basic Android users always retain the Basic navigation skin.
+      const usePremiumSkin = active || isAppleDevice;
       syncPremiumUiPreferenceControl(active);
       const hadPremiumSkin = document.body.classList.contains("app-premium-navigation");
       if (hadPremiumSkin !== usePremiumSkin) {
@@ -7407,5 +7417,69 @@ html body .app-qty button{border-radius:50% !important}
   #cartPage .app-summary-total { font-size:18px; }
   #cartPage .app-summary-note { color:var(--text-secondary); }
 </style>
+
+<style id="mobile-account-menu-flat-rows-and-stable-navigation">
+@media (max-width:760px) {
+  /* Never hide the mobile toolbar/navigation while auth or membership checks are pending. */
+  body.nav-pending .topbar,
+  body.nav-pending .topbar .nav-actions,
+  body.nav-pending .bottom-nav,
+  body.nav-pending .desktop-drawer,
+  body.nav-pending .desktop-nav-toggle {
+    visibility: visible !important;
+  }
+
+  /* Membership through About Us: remove card presentation and descriptions on mobile only. */
+  #appProfileLayout > section .app-profile-row {
+    width:100% !important;
+    min-height:54px !important;
+    margin:0 !important;
+    padding:12px 2px !important;
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:15px !important;
+    border:0 !important;
+    border-bottom:1px solid var(--divider) !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    color:var(--text-primary) !important;
+    text-align:left !important;
+    text-decoration:none !important;
+  }
+  #appProfileLayout > section .app-profile-row > i:first-child {
+    flex:0 0 23px !important;
+    width:23px !important;
+    margin:0 !important;
+    color:var(--primary) !important;
+    font-size:22px !important;
+    text-align:center !important;
+  }
+  #appProfileLayout > section .app-profile-row > span {
+    min-width:0 !important;
+    flex:0 1 auto !important;
+    display:flex !important;
+    align-items:center !important;
+    margin:0 !important;
+  }
+  #appProfileLayout > section .app-profile-row strong {
+    display:block !important;
+    margin:0 !important;
+    font-size:14px !important;
+    line-height:1.4 !important;
+    font-weight:600 !important;
+  }
+  #appProfileLayout > section .app-profile-row small,
+  #appProfileLayout > section .app-profile-row > i.ph-caret-right {
+    display:none !important;
+  }
+  #appProfileLayout > section .app-profile-row:active {
+    background:var(--primary-soft) !important;
+  }
+}
+</style>
+
 </body>
 </html>
