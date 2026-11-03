@@ -3822,8 +3822,9 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
   <section id="searchPage" class="search-page" hidden>
 
-    <div class="app-page-heading">
+    <div class="app-page-heading search-heading">
       <h1>Search Products</h1>
+      <button type="button" class="sh-clear" id="shClearAll" hidden>Clear all</button>
     </div>
 
     <div class="search-bar-wrap">
@@ -3860,7 +3861,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
     <div
       id="searchProductGrid"
-      class="product-grid list-view"
+      class="search-list"
       aria-live="polite"
       aria-busy="false"
     ></div>
@@ -3891,13 +3892,13 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     <div class="app-cart-layout" id="appCartLayout">
       <section id="appCartItems" class="app-cart-items" aria-live="polite" aria-busy="true"><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div></section>
       <aside class="app-summary">
-        <h2>Payment Summary</h2>
-        <div class="app-summary-line"><span>Items</span><strong id="appSummaryQuantity">0</strong></div>
-        <div class="app-summary-total"><span>Total to Pay</span><strong id="appSummaryAdvance">₹0.00</strong></div>
-        <div class="app-summary-line"><span>Remaining COD</span><strong id="appSummaryCod">₹0.00</strong></div>
-        <p class="app-summary-note" style="margin:12px 0;color:var(--text-secondary);font-size:12px;line-height:1.5">Pay ₹600 online in advance. The remaining amount will be collected at delivery.</p>
-        <button id="appCheckoutButton" class="app-primary-button" type="button" disabled>Continue to Checkout</button>
-        <button id="appClearCartButton" class="app-danger-button" type="button" hidden>Clear Cart</button>
+        <div class="cs-lines" id="appSummaryLines"></div>
+        <p class="app-summary-note" id="appSummaryNote"></p>
+        <span id="appSummaryQuantity" hidden>0</span><span id="appSummaryAdvance" hidden></span><span id="appSummaryCod" hidden></span>
+        <div class="cart-checkout-bar" id="cartCheckoutBar">
+          <button id="appCheckoutButton" class="app-primary-button" type="button" disabled>Continue to pay</button>
+        </div>
+        <button id="appClearCartButton" class="app-danger-button" type="button" hidden style="display:none !important">Clear Cart</button>
       </aside>
     </div>
   </main>
@@ -4998,6 +4999,22 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       updateProductCount();
     }
 
+    function capFirst(value) {
+      const text = String(value || "Product").trim();
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    function createSearchRow(product) {
+      const id = normalizeProductId(product.id);
+      if (!id) return "";
+      const image = product.thumbnail || (product.images && product.images[0]) || "";
+      const title = escapeHTML(capFirst(product.title));
+      return `<article class="ci sr-item" data-product-id="${id}" tabindex="0" role="link" aria-label="View details for ${title}">
+        <div class="ci-img"><img src="${escapeHTML(image)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div>
+        <div class="ci-info"><h3 class="ci-title">${title}</h3><p class="ci-price">${formatPrice(getHomeDisplayedPrice(product))}</p></div>
+      </article>`;
+    }
+
     function renderNextSearchBatch() {
       const start = searchDisplayedCount;
 
@@ -5015,13 +5032,11 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         "beforeend",
         searchProducts
           .slice(start, end)
-          .map(createProductCard)
+          .map(createSearchRow)
           .join("")
       );
 
       searchDisplayedCount = end;
-
-      attachProductHandlers(searchProductGrid);
       updateSearchProductCount();
     }
 
@@ -5298,6 +5313,28 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       return `${Math.floor(days / 30)}mo ago`;
     }
 
+    function historyRowHtml(item, index) {
+      const time = `<span class="sh-time" data-ts="${Number(item.ts) || 0}">${formatTimeAgo(item.ts)}</span>`;
+      if (item.type === "product") {
+        return `<div class="sh-item" role="button" tabindex="0" data-sh-index="${index}">
+          <span class="sh-thumb">${item.image ? `<img src="${escapeHTML(item.image)}" alt="" loading="lazy">` : ""}</span>
+          <span class="sh-text">${escapeHTML(item.title)}</span>${time}</div>`;
+      }
+      return `<div class="sh-item" role="button" tabindex="0" data-sh-index="${index}">
+        <span class="sh-icon"><i class="ph ph-magnifying-glass" aria-hidden="true"></i></span>
+        <span class="sh-text">${escapeHTML(item.text)}</span>${time}</div>`;
+    }
+
+    function startSearchHistoryClock() {
+      clearInterval(searchHistoryTimer);
+      searchHistoryTimer = setInterval(() => {
+        if (searchHistoryEl.hidden) return;
+        searchHistoryEl.querySelectorAll(".sh-time").forEach(node => {
+          node.textContent = formatTimeAgo(node.dataset.ts);
+        });
+      }, 30000);
+    }
+
     function renderSearchHistory() {
       if (!searchHistoryEl) return;
 
@@ -5310,6 +5347,8 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       searchHistoryEl.hidden = false;
 
       const list = readSearchHistory();
+      const clearAll = document.getElementById("shClearAll");
+      if (clearAll) clearAll.hidden = !list.length;
 
       if (!list.length) {
         searchHistoryEl.innerHTML = '<div class="sh-empty">No recent searches yet.</div>';
@@ -5317,27 +5356,25 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         return;
       }
 
-      searchHistoryEl.innerHTML =
-        '<div class="sh-top"><button type="button" class="sh-clear" data-sh-clear>Clear all</button></div>' +
-        list.map((item, index) => {
-          const time = `<span class="sh-time" data-ts="${Number(item.ts) || 0}">${formatTimeAgo(item.ts)}</span>`;
-          if (item.type === "product") {
-            return `<div class="sh-item" role="button" tabindex="0" data-sh-index="${index}">
-              <span class="sh-thumb">${item.image ? `<img src="${escapeHTML(item.image)}" alt="" loading="lazy">` : ""}</span>
-              <span class="sh-text">${escapeHTML(item.title)}</span>${time}</div>`;
-          }
-          return `<div class="sh-item" role="button" tabindex="0" data-sh-index="${index}">
-            <span class="sh-icon"><i class="ph ph-magnifying-glass" aria-hidden="true"></i></span>
-            <span class="sh-text">${escapeHTML(item.text)}</span>${time}</div>`;
-        }).join("");
+      searchHistoryEl.innerHTML = list.map(historyRowHtml).join("");
+      startSearchHistoryClock();
+    }
 
-      clearInterval(searchHistoryTimer);
-      searchHistoryTimer = setInterval(() => {
-        if (searchHistoryEl.hidden) return;
-        searchHistoryEl.querySelectorAll(".sh-time").forEach(node => {
-          node.textContent = formatTimeAgo(node.dataset.ts);
-        });
-      }, 30000);
+    /* While typing: matching history appears instantly above the product list */
+    function renderLiveHistoryMatches(query) {
+      if (!searchHistoryEl) return;
+      const q = query.toLowerCase();
+      const rows = [];
+      readSearchHistory().forEach((item, index) => {
+        const label = String(item.type === "product" ? item.title : item.text).toLowerCase();
+        if (label.includes(q) && !(item.type === "query" && label === q)) rows.push(historyRowHtml(item, index));
+      });
+      const clearAll = document.getElementById("shClearAll");
+      if (clearAll) clearAll.hidden = true;
+      searchProductGrid.hidden = false;
+      searchHistoryEl.hidden = rows.length === 0;
+      searchHistoryEl.innerHTML = rows.slice(0, 5).join("");
+      if (rows.length) startSearchHistoryClock(); else clearInterval(searchHistoryTimer);
     }
 
     function hideSearchHistory() {
@@ -5368,13 +5405,16 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       loadSearchProducts();
     }
 
+    const shClearAllButton = document.getElementById("shClearAll");
+    if (shClearAllButton) {
+      shClearAllButton.addEventListener("click", () => {
+        writeSearchHistory([]);
+        renderSearchHistory();
+      });
+    }
+
     if (searchHistoryEl) {
       searchHistoryEl.addEventListener("click", event => {
-        if (event.target.closest("[data-sh-clear]")) {
-          writeSearchHistory([]);
-          renderSearchHistory();
-          return;
-        }
         const row = event.target.closest("[data-sh-index]");
         if (row) openSearchHistoryItem(Number(row.dataset.shIndex));
       });
@@ -5389,104 +5429,116 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
     /* DEDICATED SEARCH */
 
+    /* SEARCH runs on a product list that is loaded once (reused from Home when available); typing never calls the API again */
+    let searchCatalog = [];
+    let searchCatalogPromise = null;
+
+    function searchHaystack(product) {
+      return [
+        product.title, product.brand, product.category,
+        Array.isArray(product.tags) ? product.tags.join(" ") : ""
+      ].filter(Boolean).join(" ").toLowerCase().replace(/-/g, " ");
+    }
+
+    function matchCatalog(list, query) {
+      const q = query.toLowerCase().replace(/-/g, " ").trim();
+      const tokens = q.split(/\s+/).filter(Boolean);
+      if (!tokens.length) return [];
+      const scored = [];
+      list.forEach(product => {
+        const title = String(product.title || "").toLowerCase();
+        const hay = searchHaystack(product);
+        if (!tokens.every(token => hay.includes(token))) return;
+        const score = title.includes(q) ? 0 : tokens.every(token => title.includes(token)) ? 1 : 2;
+        scored.push({ product, score });
+      });
+      if (!scored.length) {
+        list.forEach(product => {
+          const text = (hay => hay + " " + String(product.description || "").toLowerCase())(searchHaystack(product));
+          if (tokens.every(token => text.includes(token))) scored.push({ product, score: 3 });
+        });
+      }
+      return scored.sort((a, b) => a.score - b.score).map(entry => entry.product);
+    }
+
+    async function ensureSearchCatalog() {
+      if (searchCatalog.length) return searchCatalog;
+
+      if (typeof mfAll !== "undefined" && mfAll.length) {
+        searchCatalog = mfAll;
+        return searchCatalog;
+      }
+
+      if (!currentCategory && !currentSearch && exploreBaseProducts.length) {
+        searchCatalog = exploreBaseProducts.slice();
+        return searchCatalog;
+      }
+
+      if (!searchCatalogPromise) {
+        searchCatalogPromise = (async () => {
+          const response = await fetch("/api/products", {
+            method: "GET",
+            headers: { Accept: "application/json" },
+            credentials: "same-origin",
+            cache: "no-store"
+          });
+          const contentType = response.headers.get("content-type") || "";
+          if (!contentType.includes("application/json")) {
+            throw new Error(`Search API response invalid hai (HTTP ${response.status}).`);
+          }
+          const data = await response.json();
+          if (!response.ok || data.success !== true || !Array.isArray(data.products)) {
+            throw new Error(data.message || `Search failed (HTTP ${response.status}).`);
+          }
+          searchCatalog = data.products.slice();
+        })().finally(() => { searchCatalogPromise = null; });
+      }
+
+      await searchCatalogPromise;
+      return searchCatalog;
+    }
+
+    function searchListSkeleton(count) {
+      return Array.from({ length: count }, () =>
+        '<div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div></div></div>'
+      ).join("");
+    }
+
     async function loadSearchProducts() {
       const query = dedicatedSearchInput.value.trim();
+      const thisRequest = ++searchRequestNumber;
 
       if (searchRequestController) {
         searchRequestController.abort();
+        searchRequestController = null;
       }
 
       if (!query) {
-        searchRequestNumber++;
         renderSearchHistory();
         return;
       }
 
-      hideSearchHistory();
-
-      searchRequestController = new AbortController();
-
-      const signal = searchRequestController.signal;
-      const thisRequest = ++searchRequestNumber;
-
-      searchResultsHeading.textContent = "Search Results";
-
-      searchResultsSubtitle.textContent = query
-        ? `Products matching "${query}"`
-        : "Discover something you'll love.";
-
+      renderLiveHistoryMatches(query);
       searchProductCount.textContent = "";
       searchLoadMoreButton.hidden = true;
 
-      renderSkeletons(searchProductGrid, 6);
-
-      const params = new URLSearchParams();
-
-      if (query) {
-        params.set("search", query);
+      if (!searchCatalog.length) {
+        searchProductGrid.setAttribute("aria-busy", "true");
+        searchProductGrid.innerHTML = searchListSkeleton(4);
       }
 
       try {
-        const response = await fetch(
-          `/api/products?${params.toString()}`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json"
-            },
-            credentials: "same-origin",
-            cache: "no-store",
-            signal
-          }
-        );
-
-        const contentType =
-          response.headers.get("content-type") || "";
-
-        if (!contentType.includes("application/json")) {
-          throw new Error(
-            `Search API response invalid hai (HTTP ${response.status}).`
-          );
-        }
-
-        const data = await response.json();
-
-        if (
-          signal.aborted ||
-          thisRequest !== searchRequestNumber
-        ) {
-          return;
-        }
-
-        if (
-          !response.ok ||
-          data.success !== true ||
-          !Array.isArray(data.products)
-        ) {
-          throw new Error(
-            data.message ||
-            `Search failed (HTTP ${response.status}).`
-          );
-        }
-
-        renderSearchProducts(data.products);
-
+        await ensureSearchCatalog();
+        if (thisRequest !== searchRequestNumber) return;
+        renderSearchProducts(matchCatalog(searchCatalog, query));
       } catch (error) {
-        if (
-          error.name === "AbortError" ||
-          thisRequest !== searchRequestNumber
-        ) {
-          return;
-        }
-
+        if (thisRequest !== searchRequestNumber) return;
         console.error("Search loading error:", error);
-
         showError(
           searchProductGrid,
           error.message || "Search failed. Please try again.",
           loadSearchProducts
         );
-
         searchProductCount.textContent = "";
         searchLoadMoreButton.hidden = true;
       }
@@ -5750,8 +5802,11 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       loadSearchProducts();
     });
 
+    let searchInputTimer = null;
     dedicatedSearchInput.addEventListener("input", () => {
-      if (!dedicatedSearchInput.value.trim()) loadSearchProducts();
+      clearTimeout(searchInputTimer);
+      const empty = !dedicatedSearchInput.value.trim();
+      searchInputTimer = setTimeout(loadSearchProducts, empty ? 0 : 80);
     });
 
     searchForm.addEventListener("submit", event => {
@@ -6013,7 +6068,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       }
 
       const card = event.target.closest(
-        ".product-card[data-product-id]"
+        ".product-card[data-product-id], .sr-item[data-product-id]"
       );
 
       if (!card) return;
@@ -6040,7 +6095,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       }
 
       const card = event.target.closest(
-        ".product-card[data-product-id]"
+        ".product-card[data-product-id], .sr-item[data-product-id]"
       );
 
       if (!card) return;
@@ -7086,9 +7141,18 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       async function loadDiscountSettings(){try{let email="";try{const p=JSON.parse(localStorage.getItem("shoppy_profile_cache_v1")||"null");if(p&&p.user&&p.user.email&&Number(p.expiresAt)>Date.now())email=String(p.user.email).trim().toLowerCase();}catch(e){}if(!email){try{const pr=await fetch("/api/profile",{method:"GET",credentials:"same-origin",headers:{Accept:"application/json"},cache:"no-store"});const pd=await pr.json().catch(()=>({}));if(pr.ok&&pd.success&&pd.user&&pd.user.email)email=String(pd.user.email).trim().toLowerCase();}catch(e){}}const url="https://apisequizeshoplite.vercel.app/api/admin/productData?resource=discounts"+(email?"&email="+encodeURIComponent(email):"");const r=await fetch(url,{method:"GET",headers:{Accept:"application/json"},cache:"no-store"});const d=await r.json();if(r.ok&&d.success&&Array.isArray(d.discounts))eligibleDiscounts=d.discounts.filter(x=>x&&Number(x.percent)>0&&Number(x.percent)<=100);}catch(e){console.warn("Customer discounts unavailable.",e)}}
       function getAppliedDiscount(){if(!eligibleDiscounts.length)return null;return eligibleDiscounts.slice().sort((a,b)=>Number(b.percent)-Number(a.percent))[0]}
       async function request(method,body){const o={method,headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"};if(body!==undefined){o.headers["Content-Type"]="application/json";o.body=JSON.stringify(body);}const r=await fetch("/api/cart",o);const t=await r.text();let d;try{d=JSON.parse(t)}catch{throw Error(`Cart API response invalid (HTTP ${r.status}).`)}if(r.status===401){authStatus="guest";document.body.classList.add("guest-mode");document.getElementById("guestCartPanel").hidden=false;document.getElementById("appCartLayout").hidden=true;throw Error("Login required.")}if(!r.ok||d.success!==true)throw Error(d.message||"Cart request failed.");return d;}
-      function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);const totalPct=Math.min(100,eligibleDiscounts.reduce((n,d)=>n+(Number(d.percent)||0),0)),discountAmount=subtotal*totalPct/100,chargeBase=Math.max(0,subtotal-discountAmount); const charges=taxSettings.map(t=>({...t,amount:chargeBase*(Number(t.percent)||0)/100}));const total=chargeBase+charges.reduce((n,t)=>n+t.amount,0);const totalINR=Math.max(0,total*85),advanceINR=Math.min(600,totalINR),codINR=Math.max(0,totalINR-advanceINR);qtyEl.textContent=count;advanceEl.textContent=price(advanceINR/85);codEl.textContent=price(codINR/85);checkout.disabled=!items.length||busy;clear.hidden=!items.length;clear.disabled=busy;
+      function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);const totalPct=Math.min(100,eligibleDiscounts.reduce((n,d)=>n+(Number(d.percent)||0),0)),discountAmount=subtotal*totalPct/100,chargeBase=Math.max(0,subtotal-discountAmount); const charges=taxSettings.map(t=>({...t,amount:chargeBase*(Number(t.percent)||0)/100}));const total=chargeBase+charges.reduce((n,t)=>n+t.amount,0);const totalINR=Math.max(0,total*85),advanceINR=Math.min(600,totalINR),codINR=Math.max(0,totalINR-advanceINR);qtyEl.textContent=count;advanceEl.textContent=price(advanceINR/85);codEl.textContent=price(codINR/85);checkout.disabled=!items.length||busy;clear.hidden=true;clear.disabled=busy;
+        const rs=inr=>{const n=Number(inr)||0;return "₹"+new Intl.NumberFormat("en-IN",{minimumFractionDigits:Math.abs(n%1)>0.004?2:0,maximumFractionDigits:2}).format(n)};
+        checkout.textContent="Continue to pay "+rs(advanceINR);
+        const linesEl=document.getElementById("appSummaryLines"),noteEl=document.getElementById("appSummaryNote");
+        if(linesEl){let h=`<div class="cs-row"><span>Subtotal (${count} ${count===1?"item":"items"})</span><strong>${price(subtotal)}</strong></div>`;
+          if(totalPct>0){eligibleDiscounts.forEach(d=>{const pc=Number(d.percent)||0;if(pc>0)h+=`<div class="cs-row cs-disc"><span>${esc(d.title||d.name||d.label||"Discount")} (${Number(pc.toFixed(2))}%)</span><strong>-${price(subtotal*pc/100)}</strong></div>`})}
+          charges.forEach(t=>{h+=`<div class="cs-row"><span>${esc(t.title)} (${Number(Number(t.percent).toFixed(2))}%)</span><strong>${price(t.amount)}</strong></div>`});
+          h+=`<div class="cs-row cs-total"><span>Total amount</span><strong>${price(total)}</strong></div>`;
+          linesEl.innerHTML=items.length?h:"";}
+        if(noteEl)noteEl.textContent=items.length?`Pay ${rs(advanceINR)} online now. ${codINR>0?rs(codINR)+" is collected at delivery.":"Nothing is due at delivery."}`:"";
         if(!items.length){itemsEl.innerHTML='<div class="app-status"><i class="ph ph-shopping-cart"></i><h2>Your cart is empty</h2><p>Looks like you haven\'t added any products yet.</p><button type="button" class="app-primary-button" id="appStartShopping">Start Shopping</button></div>';document.getElementById("appStartShopping").onclick=()=>handleNavigation("home");return;}
-        itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),title=esc(x.title||"Product"),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="app-cart-item"><div class="app-cart-image"><img src="${img}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="app-cart-info"><h3 class="app-cart-title">${title}</h3><p class="app-cart-price">${price(p)} each</p><button class="app-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="app-cart-side"><div class="app-qty"><button type="button" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div><div class="app-cart-total">${price(p*q)}</div></div></article>`}).join("");
+        itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),rawTitle=String(x.title||"Product").trim(),title=esc(rawTitle.charAt(0).toUpperCase()+rawTitle.slice(1)),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="ci"><div class="ci-img"><img src="${img}" alt="" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="ci-info"><h3 class="ci-title">${title}</h3><p class="ci-price">${price(p)}</p><button class="ci-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="ci-side"><div class="ci-total">${price(p*q)}</div><div class="ci-qty"><button type="button" aria-label="Decrease quantity" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" aria-label="Increase quantity" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div></div></article>`}).join("");
         itemsEl.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>act(b.dataset.action,b.dataset.id));
       }
       async function load(){if(!root||root.hidden&&loaded)return;loaded=true;itemsEl.setAttribute("aria-busy","true");let cacheShown=false;try{const cache=JSON.parse(localStorage.getItem("shoppy_cart_cache_v2")||"null");if(cache&&Array.isArray(cache.items)&&Number(cache.expiresAt)>Date.now()){items=cache.items;render();cacheShown=true;}else{const old=JSON.parse(localStorage.getItem("shoppy_cart")||"null");if(Array.isArray(old)){items=old;render();cacheShown=true;}}}catch(e){}if(!cacheShown)itemsEl.innerHTML='<div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div>';try{const d=await request("GET");items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items));localStorage.setItem("shoppy_cart_cache_v2",JSON.stringify({items,expiresAt:Date.now()+86400000}));}catch{}render();}catch(e){if(e.message==="Login required.")return;if(!cacheShown){itemsEl.innerHTML=`<div class="app-status"><i class="ph ph-warning-circle"></i><h2>Unable to load cart</h2><p>${esc(e.message)}</p><button class="app-primary-button" id="appRetryCart" type="button">Try Again</button></div>`;document.getElementById("appRetryCart").onclick=()=>{loaded=false;load()};}}finally{itemsEl.setAttribute("aria-busy","false")}}
@@ -7801,7 +7865,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button{width:190px;
   /* 5. Cart summary only with items */
   var cart=$("cartPage"),items=$("appCartItems");
   if(cart&&items){
-    var sync=function(){cart.classList.toggle("has-items",!!items.querySelector(".app-cart-item"))};
+    var sync=function(){cart.classList.toggle("has-items",!!items.querySelector(".ci"))};
     new MutationObserver(sync).observe(items,{childList:true,subtree:true});sync();
   }
 
@@ -8123,6 +8187,81 @@ html body .mf-foot .app-primary-button{margin-top:0}
   /* first open / reload: bring the starting tab back to where it was left */
   function initial(){if(navigated||!mq.matches)return;var t="home";try{t=localStorage.getItem("shoppy_home_active_tab_v1")||"home"}catch(e){}if(t==="home"&&cur()==="home")restore("home",40)}
   if(document.readyState==="complete")setTimeout(initial,50);else window.addEventListener("load",function(){setTimeout(initial,50)});
+})();
+</script>
+
+<style id="requested-ui-update-3">
+/* ---------- shared product row (My Cart + Search results) ---------- */
+.ci{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--divider);min-width:0}
+.ci:first-child{padding-top:2px}
+.ci:last-child{border-bottom:0}
+.ci-img{flex:0 0 96px;width:96px;height:96px;border-radius:14px;background:#f1f2f4;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.ci-img img{width:100%;height:100%;object-fit:contain;padding:6px;box-sizing:border-box;display:block}
+.ci-info{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.ci-title{margin:-2px 0 0;font-size:14px;font-weight:700;line-height:1.35;color:var(--text-primary);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.ci-price{margin:0;font-size:13px;color:var(--text-secondary)}
+.ci-remove{border:0;background:transparent;padding:2px 0;margin-top:4px;color:var(--error);font-size:13px;font-weight:600;cursor:pointer}
+.ci-remove:disabled{opacity:.5}
+.ci-side{flex:0 0 auto;align-self:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+.ci-total{font-family:var(--font-heading);font-weight:800;font-size:14px;white-space:nowrap}
+.ci-qty{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:3px;border:1px solid var(--border);border-radius:999px;background:var(--surface)}
+.ci-qty button{width:26px;height:26px;padding:0;border:0;border-radius:50%;background:var(--surface-secondary);color:var(--text-primary);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ci-qty button:disabled{opacity:.4;cursor:default}
+.ci-qty strong{min-width:20px;text-align:center;font-size:13px}
+.sr-item{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sr-item:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:12px}
+.search-list{display:flex;flex-direction:column;margin-top:4px}
+.search-list[hidden]{display:none !important}
+
+/* ---------- Cart summary: compact, no heading ---------- */
+.cs-lines{margin:0}
+.cs-row{display:flex;justify-content:space-between;gap:10px;margin:5px 0;font-size:12.5px;line-height:1.4;color:var(--text-secondary)}
+.cs-row strong{color:var(--text-primary);font-weight:600;text-align:right;white-space:nowrap}
+.cs-row.cs-disc strong{color:var(--success)}
+.cs-row.cs-total{margin-top:9px;padding-top:9px;border-top:1px solid var(--divider);font-size:14px;font-weight:800;color:var(--text-primary)}
+.cs-row.cs-total strong{font-weight:800}
+html body #cartPage .app-summary-note{margin:8px 0 0 !important;font-size:11.5px !important;line-height:1.45 !important}
+.cart-checkout-bar{display:flex;justify-content:center;margin-top:14px}
+html body #cartPage .app-summary{position:static;top:auto}
+
+/* ---------- Search page: history without dividers, Clear all in the heading line ---------- */
+html body #searchPage .app-page-heading.search-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+html body #searchPage .search-heading .sh-clear[hidden]{display:none}
+.sh-item{border-bottom:0 !important}
+html body #searchPage #searchProductCount{display:none !important}
+
+@media (max-width:760px){
+  html body #cartPage .app-cart-items{order:1 !important}
+  html body #cartPage .app-summary{order:2 !important;position:static !important;top:auto !important;width:100% !important;margin-top:4px}
+  html body #cartPage.has-items{padding-bottom:calc(var(--cart-bar-h,74px) + 22px)}
+  html body #cartPage .cart-checkout-bar{
+    position:fixed;left:0;right:0;bottom:var(--cart-bar-bottom,0px);z-index:60;margin:0;
+    padding:10px 16px;background:#fff;border-top:1px solid var(--divider);border-bottom:1px solid var(--divider);
+    box-sizing:border-box;justify-content:stretch;
+  }
+  html body #cartPage .cart-checkout-bar #appCheckoutButton{width:100% !important;min-width:0 !important;max-width:none !important;height:48px !important;min-height:48px !important;margin:0 !important}
+}
+</style>
+
+<script id="cart-bar-position">
+/* keeps the fixed checkout bar exactly above the bottom navigation (mobile) */
+(function(){
+  var mq=window.matchMedia("(max-width:760px)");
+  function place(){
+    var nav=document.getElementById("bottomNav"),bar=document.getElementById("cartCheckoutBar");
+    if(!bar)return;
+    var root=document.documentElement;
+    if(!mq.matches){root.style.removeProperty("--cart-bar-bottom");return}
+    if(nav){var r=nav.getBoundingClientRect();if(r.height>0)root.style.setProperty("--cart-bar-bottom",Math.max(0,Math.round(window.innerHeight-r.top))+"px")}
+    if(bar.offsetHeight)root.style.setProperty("--cart-bar-h",bar.offsetHeight+"px");
+  }
+  window.addEventListener("resize",place,{passive:true});
+  window.addEventListener("orientationchange",place);
+  var tries=0;(function loop(){place();if(++tries<20)setTimeout(loop,150)})();
+  var cart=document.getElementById("cartPage");
+  if(cart){new MutationObserver(function(){place();setTimeout(place,200);setTimeout(place,600)}).observe(cart,{attributes:true,attributeFilter:["hidden","class"]})}
+  if(window.ResizeObserver){var n=document.getElementById("bottomNav");if(n)new ResizeObserver(place).observe(n)}
+  setInterval(place,1500);
 })();
 </script>
 
