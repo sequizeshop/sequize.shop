@@ -3826,7 +3826,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
     <div class="app-page-heading search-heading">
       <h1>Search Products</h1>
-      <button type="button" class="sh-clear" id="shClearAll" hidden>Clear all</button>
+      
     </div>
 
     <div class="search-bar-wrap">
@@ -3843,6 +3843,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
           autocomplete="off"
           maxlength="100"
         >
+        <button type="button" class="search-clear-icon" id="dedicatedSearchClear" aria-label="Clear search" hidden><i class="ph ph-x" aria-hidden="true"></i></button>
 
       </form>
 
@@ -3899,7 +3900,11 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         <p class="app-summary-note" id="appSummaryNote"></p>
         <span id="appSummaryQuantity" hidden>0</span><span id="appSummaryAdvance" hidden></span><span id="appSummaryCod" hidden></span>
         <div class="cart-checkout-bar" id="cartCheckoutBar">
-          <button id="appCheckoutButton" class="app-primary-button" type="button" disabled>Continue to pay</button>
+          <div class="cart-quick-summary" id="cartQuickSummary" aria-live="polite"></div>
+          <div class="cart-checkout-actions">
+            <button id="appCheckoutButton" class="app-primary-button" type="button" disabled>Continue to pay</button>
+            <button id="appViewSummaryButton" class="app-primary-button" type="button">View summary</button>
+          </div>
         </div>
         <button id="appClearCartButton" class="app-danger-button" type="button" hidden style="display:none !important">Clear Cart</button>
       </aside>
@@ -5278,27 +5283,9 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       } catch (_) {}
     }
 
-    function recordSearchQuery(text) {
-      const q = String(text || "").trim();
-      if (!q) return;
-      const list = readSearchHistory().filter(item => !(item.type === "query" && String(item.text).toLowerCase() === q.toLowerCase()));
-      list.unshift({ type: "query", text: q, ts: Date.now() });
-      writeSearchHistory(list);
-    }
+    function recordSearchQuery(text) { /* Search history is disabled. */ }
 
-    function recordSearchProduct(id) {
-      const product = searchProducts.find(item => normalizeProductId(item.id) === id);
-      if (!product) return;
-      const list = readSearchHistory().filter(item => !(item.type === "product" && item.id === id));
-      list.unshift({
-        type: "product",
-        id,
-        title: String(product.title || "Product"),
-        image: String(product.thumbnail || (product.images && product.images[0]) || ""),
-        ts: Date.now()
-      });
-      writeSearchHistory(list);
-    }
+    function recordSearchProduct(id) { /* Search history is disabled. */ }
 
     function formatTimeAgo(ts) {
       const diff = Math.max(0, Date.now() - Number(ts || 0));
@@ -5336,44 +5323,12 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
     function renderSearchHistory() {
       if (!searchHistoryEl) return;
-
-      searchProducts = [];
-      searchDisplayedCount = 0;
-      searchProductGrid.innerHTML = "";
-      searchProductGrid.hidden = true;
-      searchProductCount.textContent = "";
-      searchLoadMoreButton.hidden = true;
-      searchHistoryEl.hidden = false;
-
-      const list = readSearchHistory();
-      const clearAll = document.getElementById("shClearAll");
-      if (clearAll) clearAll.hidden = !list.length;
-
-      if (!list.length) {
-        searchHistoryEl.innerHTML = sqState({ icon: "ph-magnifying-glass", title: "Nothing searched yet", text: "Search for a product and it will show up here." });
-        clearInterval(searchHistoryTimer);
-        return;
-      }
-
-      searchHistoryEl.innerHTML = list.map(historyRowHtml).join("");
-      startSearchHistoryClock();
+      searchHistoryEl.hidden = true;
+      searchHistoryEl.innerHTML = "";
     }
 
-    /* While typing: matching history appears instantly above the product list */
     function renderLiveHistoryMatches(query) {
-      if (!searchHistoryEl) return;
-      const q = query.toLowerCase();
-      const rows = [];
-      readSearchHistory().forEach((item, index) => {
-        const label = String(item.type === "product" ? item.title : item.text).toLowerCase();
-        if (label.includes(q) && !(item.type === "query" && label === q)) rows.push(historyRowHtml(item, index));
-      });
-      const clearAll = document.getElementById("shClearAll");
-      if (clearAll) clearAll.hidden = true;
-      searchProductGrid.hidden = false;
-      searchHistoryEl.hidden = rows.length === 0;
-      searchHistoryEl.innerHTML = rows.slice(0, 5).join("");
-      if (rows.length) startSearchHistoryClock(); else clearInterval(searchHistoryTimer);
+      if (searchHistoryEl) { searchHistoryEl.hidden = true; searchHistoryEl.innerHTML = ""; }
     }
 
     function hideSearchHistory() {
@@ -5905,6 +5860,11 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     const mfBody = document.getElementById("mfBody");
     const mfApplyButton = document.getElementById("mfApply");
     const mfTrigger = document.getElementById("exploreFilterTrigger");
+    const toolbarActions = document.querySelector("header.topbar .nav-actions");
+    if (mfTrigger && toolbarActions && mfTrigger.parentElement !== toolbarActions) {
+      mfTrigger.classList.add("toolbar-explore-filter");
+      toolbarActions.appendChild(mfTrigger);
+    }
 
     function mfIsMobile() { return window.matchMedia("(max-width:760px)").matches; }
     function mfCount(st) { return st.categories.size + st.prices.size + st.ratings.size; }
@@ -7139,6 +7099,8 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);const totalPct=Math.min(100,eligibleDiscounts.reduce((n,d)=>n+(Number(d.percent)||0),0)),discountAmount=subtotal*totalPct/100,chargeBase=Math.max(0,subtotal-discountAmount); const charges=taxSettings.map(t=>({...t,amount:chargeBase*(Number(t.percent)||0)/100}));const total=chargeBase+charges.reduce((n,t)=>n+t.amount,0);const totalINR=Math.max(0,total*85),advanceINR=Math.min(600,totalINR),codINR=Math.max(0,totalINR-advanceINR);qtyEl.textContent=count;advanceEl.textContent=price(advanceINR/85);codEl.textContent=price(codINR/85);checkout.disabled=!items.length||busy;clear.hidden=true;clear.disabled=busy;
         const rs=inr=>{const n=Number(inr)||0;return "₹"+new Intl.NumberFormat("en-IN",{minimumFractionDigits:Math.abs(n%1)>0.004?2:0,maximumFractionDigits:2}).format(n)};
         checkout.textContent="Continue to pay "+rs(advanceINR);
+        const quick=document.getElementById("cartQuickSummary");
+        if(quick)quick.innerHTML=items.length?`<span>${rs(subtotal*85)} Total</span><span>− ${rs(discountAmount*85)} Discount</span><strong>${rs(totalINR)} Payable Amount</strong>`:"";
         const linesEl=document.getElementById("appSummaryLines"),noteEl=document.getElementById("appSummaryNote");
         if(linesEl){let h=`<div class="cs-row"><span>Subtotal (${count} ${count===1?"item":"items"})</span><strong>${price(subtotal)}</strong></div>`;
           if(totalPct>0){eligibleDiscounts.forEach(d=>{const pc=Number(d.percent)||0;if(pc>0)h+=`<div class="cs-row cs-disc"><span>${esc(d.title||d.name||d.label||"Discount")} (${Number(pc.toFixed(2))}%)</span><strong>-${price(subtotal*pc/100)}</strong></div>`})}
@@ -7147,13 +7109,15 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
           linesEl.innerHTML=items.length?h:"";}
         if(noteEl)noteEl.textContent=items.length?`Pay ${rs(advanceINR)} online now. ${codINR>0?rs(codINR)+" is collected at delivery.":"Nothing is due at delivery."}`:"";
         if(!items.length){itemsEl.innerHTML=sqState({icon:"ph-shopping-cart",title:"Your cart is empty",text:"Looks like you haven't added any products yet.",actions:'<button type="button" class="app-primary-button" id="appStartShopping">Start Shopping</button>'});document.getElementById("appStartShopping").onclick=()=>handleNavigation("home");return;}
-        itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),rawTitle=String(x.title||"Product").trim(),title=esc(rawTitle.charAt(0).toUpperCase()+rawTitle.slice(1)),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="ci"><div class="ci-img"><img src="${img}" alt="" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="ci-info"><h3 class="ci-title">${title}</h3><p class="ci-price">${price(p)}</p><button class="ci-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="ci-side"><div class="ci-total">${price(p*q)}</div><div class="ci-qty"><button type="button" aria-label="Decrease quantity" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" aria-label="Increase quantity" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div></div></article>`}).join("");
+        itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),rawTitle=String(x.title||"Product").trim(),title=esc(rawTitle.charAt(0).toUpperCase()+rawTitle.slice(1)),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="ci"><div class="ci-img"><img src="${img}" alt="" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="ci-info"><h3 class="ci-title">${title}</h3><div class="ci-price-row"><p class="ci-price">${price(p)} × ${q}</p><button class="ci-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="ci-qty"><button type="button" aria-label="Decrease quantity" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" aria-label="Increase quantity" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div></div></article>`}).join("");
         itemsEl.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>act(b.dataset.action,b.dataset.id));
       }
       async function load(){if(!root||root.hidden&&loaded)return;loaded=true;itemsEl.setAttribute("aria-busy","true");let cacheShown=false;try{const cache=JSON.parse(localStorage.getItem("shoppy_cart_cache_v2")||"null");if(cache&&Array.isArray(cache.items)&&Number(cache.expiresAt)>Date.now()){items=cache.items;render();cacheShown=true;}else{const old=JSON.parse(localStorage.getItem("shoppy_cart")||"null");if(Array.isArray(old)){items=old;render();cacheShown=true;}}}catch(e){}if(!cacheShown)itemsEl.innerHTML='<div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div>';try{const d=await request("GET");items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items));localStorage.setItem("shoppy_cart_cache_v2",JSON.stringify({items,expiresAt:Date.now()+86400000}));}catch{}render();}catch(e){if(e.message==="Login required.")return;if(!cacheShown){itemsEl.innerHTML=sqState({icon:"ph-warning-circle",title:"Unable to load cart",text:"Please check your connection and try again.",actions:'<button class="app-primary-button" id="appRetryCart" type="button">Try Again</button>'});document.getElementById("appRetryCart").onclick=()=>{loaded=false;load()};}}finally{itemsEl.setAttribute("aria-busy","false")}}
       async function act(action,id){if(busy)return;const item=items.find(x=>String(x.id)===String(id));if(!item)return;busy=true;render();try{let d;if(action==="increase"||action==="decrease"){let q=Number(item.quantity)||1;q=action==="increase"?Math.min(99,q+1):Math.max(1,q-1);d=await request("PATCH",{id,quantity:q});}else d=await request("DELETE",{id});items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items))}catch{}if(window.ShoppyInPageCartBadge)window.ShoppyInPageCartBadge();}catch(e){if(e.message!=="Login required.")alert(e.message||"Cart update failed.")}finally{busy=false;render()}}
       clear.onclick=async()=>{if(busy||!items.length||!confirm("Kya aap apne cart ke saare products remove karna chahte hain?"))return;busy=true;render();try{const d=await request("DELETE",{clear:true});items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items))}catch{}if(window.ShoppyInPageCartBadge)window.ShoppyInPageCartBadge();}catch(e){if(e.message!=="Login required.")alert(e.message||"Cart clear failed.")}finally{busy=false;render()}};
       checkout.onclick=()=>{if(items.length&&!busy)location.href="/addresses.html?mode=checkout"};
+      const viewSummary=document.getElementById("appViewSummaryButton");
+      if(viewSummary)viewSummary.onclick=()=>{let overlay=document.getElementById("cartSummarySheet");if(!overlay){overlay=document.createElement("div");overlay.id="cartSummarySheet";overlay.className="cart-summary-overlay";overlay.innerHTML='<section class="cart-summary-sheet" role="dialog" aria-modal="true" aria-label="Order summary"><div class="cart-summary-sheet-head"><strong>Order Summary</strong><button type="button" id="cartSummaryClose" aria-label="Close summary">×</button></div><div id="cartSummarySheetContent"></div></section>';document.body.appendChild(overlay);overlay.addEventListener("click",e=>{if(e.target===overlay||e.target.id==="cartSummaryClose")overlay.classList.remove("open")});}document.getElementById("cartSummarySheetContent").innerHTML=(document.getElementById("appSummaryLines")?.innerHTML||"")+`<p class="app-summary-note">${document.getElementById("appSummaryNote")?.textContent||""}</p>`;overlay.classList.add("open")};
       Promise.all([loadTaxSettings(),loadDiscountSettings()]).then(()=>{if(items.length)render()});
       window.ShoppyInPageCart={load};
     })();
@@ -8241,7 +8205,8 @@ html body #searchPage #searchProductCount{display:none !important}
     padding:10px 16px;background:#fff;border-top:1px solid var(--divider);border-bottom:1px solid var(--divider);
     box-sizing:border-box;justify-content:stretch;
   }
-  html body #cartPage .cart-checkout-bar #appCheckoutButton{width:100% !important;min-width:0 !important;max-width:none !important;height:48px !important;min-height:48px !important;margin:0 !important}
+  html body #cartPage .cart-checkout-bar{padding:8px 12px 10px!important}
+  html body #cartPage .cart-checkout-bar #appCheckoutButton,html body #cartPage .cart-checkout-bar #appViewSummaryButton{width:auto!important;min-width:0!important;max-width:none!important;height:42px!important;min-height:42px!important;margin:0!important}
 }
 </style>
 
@@ -8399,27 +8364,35 @@ html body .state-card.compact .state-title{font-size:16px}
     [/phone|mobile|smart/,"ph-device-mobile"],[/laptop|computer|pc/,"ph-laptop"],[/tablet/,"ph-device-tablet"],
     [/watch/,"ph-watch"],[/head|ear|audio|speaker|music/,"ph-headphones"],[/camera|photo/,"ph-camera"],
     [/tv|television/,"ph-television"],[/game|gaming/,"ph-game-controller"],
-    [/women|dress|fashion|cloth|shirt|wear|apparel/,"ph-t-shirt"],[/men/,"ph-t-shirt"],
+    [/women|dress|fashion|cloth|shirt|wear|apparel/,"ph-t-shirt"],[/men/,"ph-user"],
     [/shoe|sneaker|foot/,"ph-sneaker"],[/bag|luggage/,"ph-handbag"],[/glass|sunglass/,"ph-sunglasses"],
     [/jewel|ring|necklace/,"ph-diamond"],[/beauty|makeup|skin|fragrance|perfume|cosmetic/,"ph-sparkle"],
     [/home|furniture|decor|kitchen|lighting/,"ph-house"],[/grocer|food|fruit|vegetable/,"ph-shopping-basket"],
     [/sport|fitness|gym/,"ph-barbell"],[/car|auto|vehicle|motor/,"ph-car"],[/book|stationery/,"ph-book-open"],
-    [/toy|baby|kid/,"ph-baby"],[/health|medic/,"ph-heartbeat"],[/tool/,"ph-wrench"]
+    [/toy|baby|kid/,"ph-baby"],[/health|medic/,"ph-first-aid"],[/tool/,"ph-wrench"],
+    [/pet|animal/,"ph-paw-print"],[/office|business/,"ph-briefcase"],[/garden|plant/,"ph-plant"],
+    [/travel|trip/,"ph-airplane"],[/watch|clock/,"ph-clock"],[/electri/,"ph-plug"],[/accessor/,"ph-key"],
+    [/default/,"ph-tag"]
   ];
-  function iconFor(v){
-    if(!v)return"ph-squares-four";
-    v=String(v).toLowerCase();
-    for(var i=0;i<ICONS.length;i++)if(ICONS[i][0].test(v))return ICONS[i][1];
-    return"ph-tag";
+  var FALLBACK_ICONS=["ph-circles-four","ph-cube","ph-package","ph-star","ph-lightning","ph-leaf","ph-globe","ph-gift","ph-medal","ph-compass","ph-basket","ph-shield-check","ph-ticket","ph-palette","ph-wrench","ph-gear-six","ph-sun","ph-moon","ph-drop","ph-fire"];
+  function iconMapFor(list){
+    var used=new Set(),map={"":"ph-squares-four"};used.add("ph-squares-four");
+    list.forEach(function(v){var key=String(v).toLowerCase(),icon="";
+      for(var i=0;i<ICONS.length;i++)if(ICONS[i][0].test(key)){icon=ICONS[i][1];break;}
+      if(!icon)icon="ph-tag";
+      if(used.has(icon)){var alt=FALLBACK_ICONS.find(function(x){return !used.has(x)});icon=alt||"ph-tag";}
+      used.add(icon);map[v]=icon;
+    });return map;
   }
   function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
   function build(){
     var cats=[];try{cats=allCategories||[]}catch(e){}
     var list=[{v:"",l:"All"}].concat(cats.map(function(c){return{v:c,l:String(c).replace(/-/g," ")}}));
+    var iconMap=iconMapFor(cats);
     rail.innerHTML=list.map(function(c){
       var on=false;try{on=(c.v===currentCategory)}catch(e){}
       return '<button type="button" class="hc'+(on?" active":"")+'" data-v="'+esc(c.v)+'">'+
-        '<span class="hc-circle"><i class="ph-fill '+iconFor(c.v)+'" aria-hidden="true"></i></span>'+
+        '<span class="hc-circle"><i class="ph-fill '+(iconMap[c.v]||'ph-tag')+'" aria-hidden="true"></i></span>'+
         '<span class="hc-name">'+esc(c.l)+'</span></button>';
     }).join("");
   }
@@ -8507,6 +8480,60 @@ html body.products-load-failed #productGrid .status {
   padding:24px 0 !important;
 }
 </style>
+
+
+<style id="requested-home-search-explore-cart-refinements">
+/* Search: clean clear-X control, no history and no search pagination. */
+html body #searchPage #searchHistory,html body #searchPage #shClearAll,html body #searchPage .load-more-wrap{display:none!important}
+html body #searchPage .search-heading{display:none!important}
+html body #searchPage .search{position:relative}
+html body #searchPage #dedicatedSearchInput{padding-right:48px!important}
+html body #searchPage .search-clear-icon{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:1px solid #d9dce1;border-radius:50%;background:transparent;color:#6b7280;font-size:17px;padding:0}
+html body #searchPage .search-clear-icon[hidden]{display:none!important}
+/* Restore regular-weight cart and wishlist glyphs in the mobile toolbar. */
+@media(max-width:760px){
+ html body header.topbar .nav-actions #hdrWishlist i.ph,html body header.topbar .nav-actions [data-top-nav="cart"] i.ph{font-family:"Phosphor"!important;font-weight:400!important}
+ html body header.topbar .nav-actions .toolbar-explore-filter{display:flex;align-items:center;justify-content:center;flex:0 0 40px;width:40px;height:40px;min-width:40px;padding:0;margin:0;border:0;border-radius:50%;background:transparent;color:#111;font-size:22px;opacity:0;visibility:hidden;transform:translateX(12px);pointer-events:none;transition:opacity .28s ease,transform .28s ease,visibility .28s ease}
+ html body.explore-mode header.topbar .nav-actions .toolbar-explore-filter{opacity:1;visibility:visible;transform:translateX(0);pointer-events:auto}
+ html body header.topbar .nav-actions .toolbar-explore-filter i{font-family:"Phosphor"!important}
+ html body.explore-mode .explore-page-heading #exploreFilterTrigger{display:none!important}
+}
+/* Cart item: one-line title, total price with remove at the end, then quantity. */
+html body #cartPage .ci{display:flex;align-items:flex-start;gap:10px}
+html body #cartPage .ci-img{flex:0 0 77px;width:77px;height:77px}
+html body #cartPage .ci-info{min-width:0;gap:6px}
+html body #cartPage .ci-title{display:block!important;-webkit-line-clamp:unset!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;overflow-wrap:normal!important;max-width:100%;font-size:13px;line-height:1.35}
+html body #cartPage .ci-price-row{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-width:0}
+html body #cartPage .ci-price{font-size:13px;font-weight:700;color:var(--text-primary);white-space:nowrap}
+html body #cartPage .ci-unit-price{font-size:10px;font-weight:500;color:var(--text-secondary)}
+html body #cartPage .ci-remove{flex:0 0 auto;margin:0!important;padding:0!important;font-size:10px!important;line-height:1.2}
+html body #cartPage .ci-qty{margin-top:1px}
+html body #cartPage .ci-side{display:none!important}
+html body #cartPage .cart-quick-summary{display:flex;flex-wrap:wrap;justify-content:space-between;gap:5px 10px;padding:8px 0 2px;font-size:10px;line-height:1.25;color:var(--text-secondary)}
+html body #cartPage .cart-quick-summary strong{color:var(--text-primary);font-weight:800}
+html body #cartPage .cart-checkout-bar{display:block;gap:8px;align-items:center}
+html body #cartPage .cart-quick-summary{width:100%;box-sizing:border-box}
+html body #cartPage .cart-checkout-actions{display:flex;gap:8px;align-items:center;width:100%}
+html body #cartPage .cart-checkout-bar button{flex:1 1 0;width:auto!important;min-width:0!important;height:42px!important;min-height:42px!important;max-height:42px!important;margin:0!important;padding:0 8px!important;border:0!important;border-radius:999px!important;background:#2962ff!important;color:#fff!important;font-size:12px!important;font-weight:700!important;box-shadow:none!important}
+html body #cartPage .cart-checkout-bar #appViewSummaryButton{background:#2962ff!important;color:#fff!important}
+html body #cartPage .app-summary>.cs-lines,html body #cartPage .app-summary>.app-summary-note{display:none!important}
+.cart-summary-overlay{position:fixed;inset:0;z-index:10020;background:rgba(0,0,0,.42);display:flex;align-items:flex-end;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease}
+.cart-summary-overlay.open{opacity:1;visibility:visible}
+.cart-summary-sheet{width:100%;max-height:78vh;overflow:auto;background:#fff;border-radius:20px 20px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));box-sizing:border-box;transform:translateY(24px);transition:transform .28s ease}
+.cart-summary-overlay.open .cart-summary-sheet{transform:translateY(0)}
+.cart-summary-sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;font-size:17px}
+.cart-summary-sheet-head button{width:34px;height:34px;border:1px solid #d9dce1;border-radius:50%;background:#fff;color:#333;font-size:22px}
+@media(max-width:760px){html body #cartPage .ci-img{flex-basis:77px;width:77px;height:77px}html body #cartPage .ci{gap:9px}}
+</style>
+<script id="search-clear-and-explore-toolbar-sync">
+(function(){
+ const input=document.getElementById('dedicatedSearchInput'),clear=document.getElementById('dedicatedSearchClear');
+ if(input&&clear){const sync=()=>{clear.hidden=!input.value};input.addEventListener('input',sync);clear.addEventListener('click',()=>{input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();const form=document.getElementById('dedicatedSearchForm');if(form)form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));});sync();}
+ const trigger=document.getElementById('exploreFilterTrigger');
+ const syncExplore=()=>{if(!trigger)return;const active=document.body.classList.contains('explore-mode');trigger.setAttribute('aria-hidden',String(!active));};
+ new MutationObserver(syncExplore).observe(document.body,{attributes:true,attributeFilter:['class']});syncExplore();
+})();
+</script>
 
 </body>
 </html>
