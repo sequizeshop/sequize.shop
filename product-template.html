@@ -1448,6 +1448,56 @@ function proxyImage(url) {
       }
     }
 
+
+
+    function updateProductSchema(item) {
+  const price = getDiscountedPrice(item);
+
+  const image = [
+    proxyImage(item.thumbnail),
+    ...(Array.isArray(item.images) ? item.images.map(proxyImage) : [])
+  ].filter(Boolean);
+
+  const inStock =
+    Number(item.stock) > 0 &&
+    String(item.availabilityStatus).toLowerCase() !== "out of stock";
+
+  const schema = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": item.title,
+    "description": item.description || item.title,
+    "image": image,
+    "sku": String(item.id),
+    "brand": {
+      "@type": "Brand",
+      "name": item.brand || "Generic"
+    },
+    "category": item.category || "Products",
+    "offers": {
+      "@type": "Offer",
+      "url": window.location.href,
+      "priceCurrency": "INR",
+      "price": Number(price.toFixed(2)),
+      "availability": inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      "itemCondition": "https://schema.org/NewCondition"
+    }
+  };
+
+  let script = document.getElementById("productJsonLd");
+
+  if (!script) {
+    script = document.createElement("script");
+    script.id = "productJsonLd";
+    script.type = "application/ld+json";
+    document.head.appendChild(script);
+  }
+
+  script.textContent = JSON.stringify(schema);
+    }
+
     /* API */
 
     async function fetchJSON(url, options = {}) {
@@ -1638,6 +1688,8 @@ function proxyImage(url) {
           : [];
 
         updateProductMetadata(product);
+
+        updateProductSchema(product);
 
         renderProduct();
 
