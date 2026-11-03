@@ -37,6 +37,7 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/Phosphor-Fill.woff2">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
 
   <link rel="stylesheet" href="/global.css">
 
@@ -3555,6 +3556,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
     </nav>
 
+    <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu" title="Menu"><i class="ph-bold ph-list" aria-hidden="true"></i></button>
     <a href="/home.html" class="brand" aria-label="Sequize home"><span class="b1">S</span><span class="b2">equize</span></a>
 
   </header>
@@ -3885,9 +3887,10 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
   <!-- IN-PAGE CART VIEW -->
   <main id="cartPage" class="app-view" hidden>
     <div class="app-page-heading"><h1>My Shopping Cart</h1></div>
-    <div id="guestCartPanel" class="guest-auth-panel" hidden>
-      <h2>Login to access your cart</h2><p>You can browse products without an account, but you need to sign in to add or manage cart items.</p>
-      <div class="guest-auth-actions"><a class="guest-auth-button guest-auth-login" href="/login.html">Login</a><a class="guest-auth-button guest-auth-signup" href="/signup.html">Sign Up</a></div>
+    <div id="guestCartPanel" class="guest-auth-panel state-card" hidden>
+      <span class="state-icon"><i class="ph-fill ph-shopping-cart" aria-hidden="true"></i></span>
+      <h2 class="state-title">Login to view your cart</h2><p class="state-text">Sign in to add and manage items in your cart.</p>
+      <div class="guest-auth-actions state-actions"><a class="guest-auth-button guest-auth-login" href="/login.html">Login</a><a class="guest-auth-button guest-auth-signup" href="/signup.html">Sign Up</a></div>
     </div>
     <div class="app-cart-layout" id="appCartLayout">
       <section id="appCartItems" class="app-cart-items" aria-live="polite" aria-busy="true"><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div></section>
@@ -3906,9 +3909,10 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
   <!-- IN-PAGE ACCOUNT VIEW -->
   <main id="accountPage" class="app-view" hidden>
     <div class="app-page-heading"><h1>My Account</h1></div>
-    <div id="guestAccountPanel" class="guest-auth-panel" hidden>
-      <h2>Login or create an account</h2><p>Browse Sequize freely. Sign in or create an account to access your profile, wishlist, orders and other personal features.</p>
-      <div class="guest-auth-actions"><a class="guest-auth-button guest-auth-login" href="/login.html">Login</a><a class="guest-auth-button guest-auth-signup" href="/signup.html">Sign Up</a></div>
+    <div id="guestAccountPanel" class="guest-auth-panel state-card" hidden>
+      <span class="state-icon"><i class="ph-fill ph-user-circle" aria-hidden="true"></i></span>
+      <h2 class="state-title">Login to view your profile</h2><p class="state-text">Sign in or create an account to see your profile, orders and wishlist.</p>
+      <div class="guest-auth-actions state-actions"><a class="guest-auth-button guest-auth-login" href="/login.html">Login</a><a class="guest-auth-button guest-auth-signup" href="/signup.html">Sign Up</a></div>
     </div>
     <div id="appProfileLoading" class="app-profile-skeleton" role="status" aria-busy="true" aria-label="Loading your profile"><div class="aps-card"><div class="skeleton aps-avatar"></div><div class="aps-lines"><div class="skeleton aps-line aps-w60"></div><div class="skeleton aps-line aps-w80"></div></div></div><div class="skeleton aps-promo"></div><div class="skeleton aps-heading"></div><div class="aps-rows"><div class="skeleton aps-row"></div><div class="skeleton aps-row"></div><div class="skeleton aps-row"></div><div class="skeleton aps-row"></div><div class="skeleton aps-row"></div><div class="skeleton aps-row"></div><div class="skeleton aps-row"></div><div class="skeleton aps-row"></div><div class="skeleton aps-row"></div><div class="skeleton aps-row"></div></div></div>
     <div id="appProfileLayout" class="app-profile-layout" hidden>
@@ -4185,14 +4189,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
   </nav>
 
-  <!-- FOOTER -->
-
-  <footer class="footer" id="pageFooter">
-
-    <span>© <span id="year"></span> Sequize</span>
-    <span>Your shopping, all in one place.</span>
-
-  </footer>
 
   <div
     id="toast"
@@ -4200,6 +4196,19 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     role="status"
     aria-live="polite"
   ></div>
+
+  <script>
+  /* Shared empty / error / login state (blue filled icon on a soft theme circle) */
+  window.sqState = function (o) {
+    var e = function (v) { return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); };
+    return '<div class="state-card' + (o.compact ? ' compact' : '') + '" role="status">' +
+      '<span class="state-icon"><i class="ph-fill ' + o.icon + '" aria-hidden="true"></i></span>' +
+      '<h2 class="state-title">' + e(o.title) + '</h2>' +
+      (o.text ? '<p class="state-text">' + e(o.text) + '</p>' : '') +
+      (o.actions ? '<div class="state-actions">' + o.actions + '</div>' : '') +
+      '</div>';
+  };
+  </script>
 
   <script>
     "use strict";
@@ -4282,9 +4291,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     let currentView = "home";
     let searchPreviousView = "home";
     let searchMode = false;
-
-    document.getElementById("year").textContent =
-      new Date().getFullYear();
 
     function isValidProductId(id) {
       return typeof id === "string" &&
@@ -4761,18 +4767,16 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       ).join("");
     }
 
-    function showError(container, message, retryFunction) {
+    function showError(container, message, retryFunction, title) {
       container.setAttribute("aria-busy", "false");
+      if (message) console.error("Load error:", message);
 
-      container.innerHTML = `
-        <div class="status">
-          ${escapeHTML(message)}
-
-          <button type="button" class="retry-button">
-            Try Again
-          </button>
-        </div>
-      `;
+      container.innerHTML = sqState({
+        icon: "ph-warning-circle",
+        title: title || "Unable to load products",
+        text: "Please check your connection and try again.",
+        actions: '<button type="button" class="retry-button">Try Again</button>'
+      });
 
       container
         .querySelector(".retry-button")
@@ -5051,11 +5055,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         productCount.textContent = "";
         loadMoreButton.hidden = true;
 
-        productGrid.innerHTML = `
-          <div class="status">
-            No products found. Try another search or category.
-          </div>
-        `;
+        productGrid.innerHTML = sqState({ icon: "ph-magnifying-glass", title: "No products found", text: "Try another search or category." });
 
         return;
       }
@@ -5079,11 +5079,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         searchProductCount.textContent = "";
         searchLoadMoreButton.hidden = true;
 
-        searchProductGrid.innerHTML = `
-          <div class="status">
-            No products found. Try another search.
-          </div>
-        `;
+        searchProductGrid.innerHTML = sqState({ icon: "ph-magnifying-glass", title: "No products found", text: "Try another keyword." });
 
         return;
       }
@@ -5167,6 +5163,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       const signal = requestController.signal;
       const thisRequest = ++requestNumber;
 
+      document.body.classList.remove("products-load-failed");
       updatePageLayout();
       renderSkeletons(productGrid, 8);
 
@@ -5245,11 +5242,13 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
         console.error("Products loading error:", error);
 
+        document.body.classList.add("products-load-failed");
         showError(
           productGrid,
           error.message ||
           "Products load nahi ho paaye. Dobara try karein.",
-          loadProducts
+          loadProducts,
+          "Unable to load products"
         );
 
         productCount.textContent = "";
@@ -5351,7 +5350,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       if (clearAll) clearAll.hidden = !list.length;
 
       if (!list.length) {
-        searchHistoryEl.innerHTML = '<div class="sh-empty">No recent searches yet.</div>';
+        searchHistoryEl.innerHTML = sqState({ icon: "ph-magnifying-glass", title: "Nothing searched yet", text: "Search for a product and it will show up here." });
         clearInterval(searchHistoryTimer);
         return;
       }
@@ -5537,7 +5536,8 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         showError(
           searchProductGrid,
           error.message || "Search failed. Please try again.",
-          loadSearchProducts
+          loadSearchProducts,
+          "Unable to load results"
         );
         searchProductCount.textContent = "";
         searchLoadMoreButton.hidden = true;
@@ -5554,7 +5554,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       document.getElementById("accountPage").hidden = true;
       document.body.classList.remove("explore-mode");
       document.getElementById("exploreFilterRow").hidden = true;
-      document.getElementById("pageFooter").hidden = false;
 
       updateNavigationState("home");
 
@@ -5579,7 +5578,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       document.body.classList.remove("explore-mode");
       document.getElementById("exploreFilterRow").hidden = true;
 
-      document.getElementById("pageFooter").hidden = true;
 
       updateNavigationState("search");
 
@@ -5716,7 +5714,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         searchPage.hidden = true;
         document.getElementById("cartPage").hidden = true;
         document.getElementById("accountPage").hidden = true;
-        document.getElementById("pageFooter").hidden = true;
         document.body.classList.add("explore-mode");
         document.getElementById("exploreFilterRow").hidden = false;
         updateNavigationState("explore");
@@ -5730,7 +5727,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         searchPage.hidden = true;
         document.getElementById("cartPage").hidden = false;
         document.getElementById("accountPage").hidden = true;
-        document.getElementById("pageFooter").hidden = true;
         document.body.classList.remove("explore-mode");
         document.getElementById("exploreFilterRow").hidden = true;
         updateNavigationState("cart");
@@ -5761,7 +5757,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         searchPage.hidden = true;
         document.getElementById("cartPage").hidden = true;
         document.getElementById("accountPage").hidden = false;
-        document.getElementById("pageFooter").hidden = true;
         document.body.classList.remove("explore-mode");
         document.getElementById("exploreFilterRow").hidden = true;
         updateNavigationState("account");
@@ -6742,14 +6737,14 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       }
     }
 
-    function renderNotificationsEmpty(message) {
-      notifList.innerHTML = `<div class="notif-empty"><i class="ph ph-bell-slash" aria-hidden="true"></i>${escapeHTML(message)}</div><a class="notif-all" href="/notifications.html">View all notifications</a>`;
+    function renderNotificationsEmpty(title, text, icon) {
+      notifList.innerHTML = sqState({ compact: true, icon: icon || "ph-bell-slash", title: title, text: text }) + '<a class="notif-all" href="/notifications.html">View all notifications</a>';
     }
 
     function renderNotifications() {
       updateNotificationBadge();
       if (!customerNotifications.length) {
-        renderNotificationsEmpty("You're all caught up. No new notifications.");
+        renderNotificationsEmpty("No notifications", "You're all caught up.");
         return;
       }
       notifList.innerHTML = customerNotifications.slice(0, 20).map(item => {
@@ -6818,7 +6813,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         }
       } catch (error) {
         // Cached notifications remain visible when the network is temporarily unavailable.
-        if (render && !customerNotifications.length) renderNotificationsEmpty("Notifications couldn't be loaded right now. Please try again.");
+        if (render && !customerNotifications.length) renderNotificationsEmpty("Unable to load notifications", "Please try again in a moment.", "ph-warning-circle");
         console.warn("Notifications refresh failed:", error.message);
       } finally {
         notificationRefreshInFlight = false;
@@ -6841,7 +6836,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
     async function loadNotifications() {
       if (authStatus !== "logged-in") {
-        renderNotificationsEmpty("Login to see your notifications.");
+        renderNotificationsEmpty("Login to view notifications", "Sign in to see your latest updates.", "ph-user-circle");
         notifList.insertAdjacentHTML("beforeend", '<a class="notif-all" href="/login.html">Login</a>');
         return;
       }
@@ -7151,11 +7146,11 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
           h+=`<div class="cs-row cs-total"><span>Total amount</span><strong>${price(total)}</strong></div>`;
           linesEl.innerHTML=items.length?h:"";}
         if(noteEl)noteEl.textContent=items.length?`Pay ${rs(advanceINR)} online now. ${codINR>0?rs(codINR)+" is collected at delivery.":"Nothing is due at delivery."}`:"";
-        if(!items.length){itemsEl.innerHTML='<div class="app-status"><i class="ph ph-shopping-cart"></i><h2>Your cart is empty</h2><p>Looks like you haven\'t added any products yet.</p><button type="button" class="app-primary-button" id="appStartShopping">Start Shopping</button></div>';document.getElementById("appStartShopping").onclick=()=>handleNavigation("home");return;}
+        if(!items.length){itemsEl.innerHTML=sqState({icon:"ph-shopping-cart",title:"Your cart is empty",text:"Looks like you haven't added any products yet.",actions:'<button type="button" class="app-primary-button" id="appStartShopping">Start Shopping</button>'});document.getElementById("appStartShopping").onclick=()=>handleNavigation("home");return;}
         itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),rawTitle=String(x.title||"Product").trim(),title=esc(rawTitle.charAt(0).toUpperCase()+rawTitle.slice(1)),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="ci"><div class="ci-img"><img src="${img}" alt="" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="ci-info"><h3 class="ci-title">${title}</h3><p class="ci-price">${price(p)}</p><button class="ci-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="ci-side"><div class="ci-total">${price(p*q)}</div><div class="ci-qty"><button type="button" aria-label="Decrease quantity" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" aria-label="Increase quantity" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div></div></article>`}).join("");
         itemsEl.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>act(b.dataset.action,b.dataset.id));
       }
-      async function load(){if(!root||root.hidden&&loaded)return;loaded=true;itemsEl.setAttribute("aria-busy","true");let cacheShown=false;try{const cache=JSON.parse(localStorage.getItem("shoppy_cart_cache_v2")||"null");if(cache&&Array.isArray(cache.items)&&Number(cache.expiresAt)>Date.now()){items=cache.items;render();cacheShown=true;}else{const old=JSON.parse(localStorage.getItem("shoppy_cart")||"null");if(Array.isArray(old)){items=old;render();cacheShown=true;}}}catch(e){}if(!cacheShown)itemsEl.innerHTML='<div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div>';try{const d=await request("GET");items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items));localStorage.setItem("shoppy_cart_cache_v2",JSON.stringify({items,expiresAt:Date.now()+86400000}));}catch{}render();}catch(e){if(e.message==="Login required.")return;if(!cacheShown){itemsEl.innerHTML=`<div class="app-status"><i class="ph ph-warning-circle"></i><h2>Unable to load cart</h2><p>${esc(e.message)}</p><button class="app-primary-button" id="appRetryCart" type="button">Try Again</button></div>`;document.getElementById("appRetryCart").onclick=()=>{loaded=false;load()};}}finally{itemsEl.setAttribute("aria-busy","false")}}
+      async function load(){if(!root||root.hidden&&loaded)return;loaded=true;itemsEl.setAttribute("aria-busy","true");let cacheShown=false;try{const cache=JSON.parse(localStorage.getItem("shoppy_cart_cache_v2")||"null");if(cache&&Array.isArray(cache.items)&&Number(cache.expiresAt)>Date.now()){items=cache.items;render();cacheShown=true;}else{const old=JSON.parse(localStorage.getItem("shoppy_cart")||"null");if(Array.isArray(old)){items=old;render();cacheShown=true;}}}catch(e){}if(!cacheShown)itemsEl.innerHTML='<div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div>';try{const d=await request("GET");items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items));localStorage.setItem("shoppy_cart_cache_v2",JSON.stringify({items,expiresAt:Date.now()+86400000}));}catch{}render();}catch(e){if(e.message==="Login required.")return;if(!cacheShown){itemsEl.innerHTML=sqState({icon:"ph-warning-circle",title:"Unable to load cart",text:"Please check your connection and try again.",actions:'<button class="app-primary-button" id="appRetryCart" type="button">Try Again</button>'});document.getElementById("appRetryCart").onclick=()=>{loaded=false;load()};}}finally{itemsEl.setAttribute("aria-busy","false")}}
       async function act(action,id){if(busy)return;const item=items.find(x=>String(x.id)===String(id));if(!item)return;busy=true;render();try{let d;if(action==="increase"||action==="decrease"){let q=Number(item.quantity)||1;q=action==="increase"?Math.min(99,q+1):Math.max(1,q-1);d=await request("PATCH",{id,quantity:q});}else d=await request("DELETE",{id});items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items))}catch{}if(window.ShoppyInPageCartBadge)window.ShoppyInPageCartBadge();}catch(e){if(e.message!=="Login required.")alert(e.message||"Cart update failed.")}finally{busy=false;render()}}
       clear.onclick=async()=>{if(busy||!items.length||!confirm("Kya aap apne cart ke saare products remove karna chahte hain?"))return;busy=true;render();try{const d=await request("DELETE",{clear:true});items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items))}catch{}if(window.ShoppyInPageCartBadge)window.ShoppyInPageCartBadge();}catch(e){if(e.message!=="Login required.")alert(e.message||"Cart clear failed.")}finally{busy=false;render()}};
       checkout.onclick=()=>{if(items.length&&!busy)location.href="/addresses.html?mode=checkout"};
@@ -7216,7 +7211,14 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
           authStatus="logged-in";const u=d.user,m=d.membership||{};
           try{localStorage.setItem(PROFILE_CACHE_KEY,JSON.stringify({user:{name:u.name||"User",email:u.email||""},membership:m,expiresAt:Date.now()+PROFILE_CACHE_TTL}));}catch(e){}
           applyProfile(u,m);
-        }catch(e){if(!cacheValid){loaded=false;loading.hidden=false;loading.textContent="Unable to refresh your profile. Check your connection and try again.";const b=document.createElement("button");b.className="app-primary-button";b.textContent="Try Again";b.onclick=load;loading.appendChild(b);}}
+        }catch(e){
+          loaded=false;
+          layout.hidden=true;
+          loading.hidden=false;
+          loading.setAttribute("aria-busy","false");
+          loading.innerHTML=sqState({icon:"ph-warning-circle",title:"Unable to load profile",text:"Please check your connection and try again.",actions:'<button type="button" class="app-primary-button" id="appRetryProfile">Try Again</button>'});
+          document.getElementById("appRetryProfile").onclick=load;
+        }
       }
       async function logout(){const b=document.getElementById("appLogoutButton");if(b.disabled)return;b.disabled=true;try{const r=await fetch("/api/logout",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"logout"}),cache:"no-store"});const d=await r.json();if(r.ok&&d.success){location.replace(d.redirect||"/login.html");return;}b.disabled=false;alert(d.message||"Unable to log out.");}catch(e){b.disabled=false;alert("Server se connect nahi ho paya.");console.error("Logout error:",e);}}
       document.getElementById("appLogoutButton").addEventListener("click",logout);document.getElementById("appProfileCartShortcut").onclick=()=>handleNavigation("cart");document.getElementById("appProfileCartRow").onclick=()=>handleNavigation("cart");
@@ -7535,7 +7537,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
 <!-- ===== SHOPPY HOME UI UPDATE v2 ===== -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
 
 <style id="shoppy-ui-update-2026">
 :root{
@@ -8264,6 +8266,247 @@ html body #searchPage #searchProductCount{display:none !important}
   setInterval(place,1500);
 })();
 </script>
+
+
+<style id="mobile-home-toolbar-and-categories">
+/* ===== Mobile only (<=760px): toolbar + home tab. Desktop is untouched. ===== */
+.mobile-menu-btn,#locStrip,#homeCatRail{display:none}
+@media (max-width:760px){
+  /* ---- Toolbar (shared by all 5 tabs) ---- */
+  html body header.topbar{justify-content:flex-start!important;gap:0!important}
+  html body header.topbar > .mobile-menu-btn{
+    order:-2;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+    width:32px;height:40px;margin:0 2px 0 -8px;padding:0;border:0;border-radius:50%;
+    background:transparent;color:#111;font-size:24px;line-height:1}
+  html body header.topbar > .brand,html body header.topbar > .guest-header-brand{order:-1}
+  html body header.topbar .nav-actions{order:1;margin-left:auto!important;gap:2px!important;display:flex!important}
+  /* only heart + bell on the right */
+  html body header.topbar .nav-actions [data-top-nav="home"],
+  html body header.topbar .nav-actions [data-top-nav="cart"],
+  html body header.topbar .nav-actions [data-top-nav="account"],
+  html body header.topbar .nav-actions #headerLocationButton{display:none!important}
+  html body header.topbar .nav-actions #hdrWishlist,
+  html body header.topbar .nav-actions #notifButton{
+    display:flex!important;align-items:center;justify-content:center;
+    width:40px;height:40px;min-width:40px;padding:0;border:0!important;border-radius:50%;
+    background:transparent!important;color:#111;font-size:24px;box-shadow:none}
+  html body header.topbar .nav-actions #hdrWishlist{order:1}
+  html body header.topbar .nav-actions #notifButton{order:2}
+  /* slightly bolder icons: Phosphor Bold shares codepoints with Regular */
+  html body header.topbar i.ph{font-family:"Phosphor-Bold"!important;font-weight:normal}
+
+  /* ---- Home: delivery location strip ---- */
+  html body #locStrip{
+    display:flex;align-items:center;gap:8px;width:100%;height:36px;margin:var(--gut) 0 0;
+    padding:0 var(--gut);border:0;border-radius:0;background:#f1f2f4;color:#1b1d21;
+    font-size:12.5px;font-weight:500;text-align:left;cursor:pointer}
+  html body #locStrip > i:first-child{font-size:16px;flex:0 0 auto}
+  html body #locStrip > span{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  html body #locStrip > i:last-child{font-size:14px;flex:0 0 auto;color:#555}
+
+  /* ---- Home: horizontal categories ---- */
+  html body #homeCatRail{
+    display:flex;gap:16px;overflow-x:auto;margin:var(--gut) 0 0;padding:0 var(--gut) 4px;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  html body #homeCatRail::-webkit-scrollbar{display:none}
+  html body #homeCatRail .hc{flex:0 0 auto;width:64px;display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:0;border:0;background:transparent;color:#1b1d21;cursor:pointer}
+  html body #homeCatRail .hc-circle{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,rgba(41,98,255,.14),rgba(108,140,255,.10));border:2px solid transparent;box-sizing:border-box}
+  html body #homeCatRail .hc.active .hc-circle{border-color:#2962FF}
+  html body #homeCatRail .hc-circle i{font-size:28px;line-height:1;font-family:"Phosphor-Fill"!important;
+    background:linear-gradient(135deg,#2962FF,#7C9BFF);-webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent}
+  html body #homeCatRail .hc-name{width:100%;font-size:11.5px;font-weight:700;line-height:1.2;text-align:center;
+    text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  html body #homeCatRail .hc.active .hc-name{color:#2962FF}
+  /* old dropdown selector is replaced by the rail on the mobile home tab */
+  html body:not(.explore-mode) #categories,
+  html body:not(.explore-mode) #categoriesHeading{display:none!important}
+  html body.explore-mode #locStrip,html body.explore-mode #homeCatRail{display:none!important}
+  html body #offerBanner.show{margin-top:var(--gut)!important}
+}
+</style>
+
+<style id="ui-update-3">
+/* ===== Brand: uppercase, clean sans-serif, theme colour ===== */
+html body:not(#_u):not(#_v) .brand,
+html body:not(#_u):not(#_v) .guest-header-brand,
+html body:not(#_u):not(#_v) header.topbar > .brand,
+html body:not(#_u):not(#_v) header.topbar > .guest-header-brand,
+html body:not(#_u):not(#_v) .topbar > .brand,
+html body:not(#_u):not(#_v) #desktopDrawer .desktop-drawer-head > .brand{
+  font-family:"Plus Jakarta Sans","DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif !important;
+  font-weight:800 !important; font-size:20px !important; letter-spacing:.08em !important;
+  text-transform:uppercase !important; line-height:1.2 !important; color:var(--primary) !important;
+}
+html body:not(#_u):not(#_v):not(#_w):not(.zz):not(.yy):not(.nav-never) header.topbar > .brand{
+  font-family:"Plus Jakarta Sans","DM Sans",system-ui,sans-serif !important;
+  font-weight:800 !important; font-size:22px !important; letter-spacing:.08em !important;
+  text-transform:uppercase !important; color:var(--primary) !important;
+}
+
+/* ===== Shared empty / error / login state ===== */
+.state-card{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;max-width:380px;min-height:46vh;margin:0 auto;padding:32px 20px;text-align:center;box-sizing:border-box}
+.state-card[hidden]{display:none !important}
+html body .state-card.guest-auth-panel{border:0;background:transparent;border-radius:0}
+.state-card .state-icon{width:88px;height:88px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;background:var(--primary-soft);margin:0 0 18px}
+html body .state-card .state-icon i{display:block;margin:0;font-size:42px;line-height:1;color:var(--primary)}
+html body .state-card .state-title{margin:0 0 6px;font-family:var(--font-heading);font-size:18px;font-weight:800;line-height:1.3;color:var(--text-primary)}
+html body .state-card .state-text{margin:0;max-width:300px;font-size:14px;line-height:1.6;color:var(--text-secondary)}
+html body .state-card .state-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:20px 0 0}
+.state-card.compact{min-height:0;padding:26px 12px}
+.state-card.compact .state-icon{width:64px;height:64px;margin-bottom:12px}
+html body .state-card.compact .state-icon i{font-size:30px}
+html body .state-card.compact .state-title{font-size:16px}
+
+@media (max-width:760px){
+  /* ===== Remove the small page headings (Search / Explore / Cart / Account / Home) ===== */
+  html body .app-page-heading h1,
+  html body #productsHeading{display:none !important}
+  html body #cartPage > .app-page-heading,
+  html body #accountPage > .app-page-heading{display:none !important}
+  html body.explore-mode .app-page-heading.explore-page-heading,
+  html body #searchPage .app-page-heading.search-heading{justify-content:flex-end !important}
+  html body #searchPage .app-page-heading.search-heading:has(.sh-clear[hidden]){display:none !important}
+
+  /* ===== Toolbar: login / sign up stay on the right, next to nothing ===== */
+  html body.guest-mode header.topbar .guest-header-actions{order:3;display:flex !important;margin-left:auto !important}
+  html body header.topbar > .guest-header-brand{margin-left:2px}
+}
+</style>
+<script id="mobile-home-toolbar-and-categories-js">
+(function(){
+  "use strict";
+  var $=function(i){return document.getElementById(i)};
+  var search=$("homeSearchWrap");if(!search)return;
+
+  /* location strip (opens the existing location sheet) */
+  var strip=document.createElement("button");
+  strip.type="button";strip.id="locStrip";strip.setAttribute("data-open-location","");
+  strip.innerHTML='<i class="ph-bold ph-map-pin" aria-hidden="true"></i><span>Add delivery location to check extra discount</span><i class="ph-bold ph-caret-right" aria-hidden="true"></i>';
+  strip.addEventListener("click",function(){if(typeof openLocationSheet==="function")openLocationSheet()});
+
+  var rail=document.createElement("div");rail.id="homeCatRail";rail.setAttribute("aria-label","Categories");
+
+  /* order: search -> strip -> categories -> (offer banner) -> products */
+  search.after(strip);strip.after(rail);
+  var banner=$("offerBanner");if(banner)rail.after(banner);
+
+  var ICONS=[
+    [/phone|mobile|smart/,"ph-device-mobile"],[/laptop|computer|pc/,"ph-laptop"],[/tablet/,"ph-device-tablet"],
+    [/watch/,"ph-watch"],[/head|ear|audio|speaker|music/,"ph-headphones"],[/camera|photo/,"ph-camera"],
+    [/tv|television/,"ph-television"],[/game|gaming/,"ph-game-controller"],
+    [/women|dress|fashion|cloth|shirt|wear|apparel/,"ph-t-shirt"],[/men/,"ph-t-shirt"],
+    [/shoe|sneaker|foot/,"ph-sneaker"],[/bag|luggage/,"ph-handbag"],[/glass|sunglass/,"ph-sunglasses"],
+    [/jewel|ring|necklace/,"ph-diamond"],[/beauty|makeup|skin|fragrance|perfume|cosmetic/,"ph-sparkle"],
+    [/home|furniture|decor|kitchen|lighting/,"ph-house"],[/grocer|food|fruit|vegetable/,"ph-shopping-basket"],
+    [/sport|fitness|gym/,"ph-barbell"],[/car|auto|vehicle|motor/,"ph-car"],[/book|stationery/,"ph-book-open"],
+    [/toy|baby|kid/,"ph-baby"],[/health|medic/,"ph-heartbeat"],[/tool/,"ph-wrench"]
+  ];
+  function iconFor(v){
+    if(!v)return"ph-squares-four";
+    v=String(v).toLowerCase();
+    for(var i=0;i<ICONS.length;i++)if(ICONS[i][0].test(v))return ICONS[i][1];
+    return"ph-tag";
+  }
+  function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+  function build(){
+    var cats=[];try{cats=allCategories||[]}catch(e){}
+    var list=[{v:"",l:"All"}].concat(cats.map(function(c){return{v:c,l:String(c).replace(/-/g," ")}}));
+    rail.innerHTML=list.map(function(c){
+      var on=false;try{on=(c.v===currentCategory)}catch(e){}
+      return '<button type="button" class="hc'+(on?" active":"")+'" data-v="'+esc(c.v)+'">'+
+        '<span class="hc-circle"><i class="ph-fill '+iconFor(c.v)+'" aria-hidden="true"></i></span>'+
+        '<span class="hc-name">'+esc(c.l)+'</span></button>';
+    }).join("");
+  }
+  rail.addEventListener("click",function(e){
+    var t=e.target.closest(".hc");if(!t)return;
+    currentCategory=t.dataset.v||"";currentSearch="";
+    var si=$("searchInput");if(si)si.value="";
+    var lbl=$("selectedCategoryLabel");
+    if(lbl)lbl.textContent=currentCategory?currentCategory.replace(/-/g," "):"All Products";
+    loadProducts();build();
+    var cc=$("categoryChips");if(cc)cc.dispatchEvent(new Event("sync"));
+  });
+  var sheet=$("sheetCategories");
+  if(sheet)new MutationObserver(build).observe(sheet,{childList:true});
+  build();
+  setTimeout(build,1500);
+})();
+</script>
+
+<style id="sequize-shared-button-and-load-error-fix">
+/* Keep action buttons consistent with the My Cart action buttons. */
+html body :is(
+  .hero-button,.load-more-button,.status button,.retry-button,
+  .app-primary-button,.app-secondary-button,.app-danger-button,
+  .guest-auth-panel .guest-auth-button,.notif-all,
+  .app-profile-promo-button,.offer-banner button,.offer-banner-desk button
+):not(#_u) {
+  box-sizing:border-box !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  width:190px !important;
+  min-width:190px !important;
+  max-width:190px !important;
+  height:44px !important;
+  min-height:44px !important;
+  padding:10px 16px !important;
+  border-radius:999px !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+html body :is(.status button,.retry-button,.app-primary-button,.app-secondary-button,.app-danger-button,.notif-all):not(#_u) {
+  display:flex !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+/* Filter/category controls use the same rounded button language without changing their function. */
+html body :is(.explore-filter-button,.category-btn,.category-current,.mf-chip) {
+  min-height:44px !important;
+  border-radius:999px !important;
+}
+html body .explore-filter-trigger {
+  border-radius:999px !important;
+}
+
+/* If product data cannot be loaded, show only the error/retry state in the content area.
+   The global header and navigation remain available. */
+html body.products-load-failed #homeSearchWrap,
+html body.products-load-failed #locStrip,
+html body.products-load-failed #homeCatRail,
+html body.products-load-failed #offerBanner,
+html body.products-load-failed #offerBannerDesk,
+html body.products-load-failed #heroWrap,
+html body.products-load-failed #categoriesHeading,
+html body.products-load-failed #categories,
+html body.products-load-failed #categoryChips,
+html body.products-load-failed #exploreFilterRow,
+html body.products-load-failed #exploreFilterTrigger,
+html body.products-load-failed #productsSectionHead,
+html body.products-load-failed #homeDiscountOffers,
+html body.products-load-failed #mfOverlay,
+html body.products-load-failed #productsSection > .load-more-wrap {
+  display:none !important;
+}
+html body.products-load-failed #productsSection,
+html body.products-load-failed #productsSection .product-grid {
+  min-height:55vh !important;
+}
+html body.products-load-failed #productGrid .status {
+  min-height:55vh !important;
+  padding:24px 0 !important;
+}
+</style>
 
 </body>
 </html>
