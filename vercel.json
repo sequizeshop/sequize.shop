@@ -32,14 +32,18 @@
     { "source": "/wishlist", "destination": "/wishlist.html" },
     { "source": "/api/logout", "destination": "/api/signup" }
   ],
-  "headers": [
-    {
-      "source": "/product-template(.html)?",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
-    },
-    {
-      "source": "/(login|signup|address|addresses|cart|profile|wishlist|account|user/(.*))",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
-    }
-  ]
+"headers": [
+  {
+    "source": "/product-template(.html)?",
+    "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+  },
+  {
+    "source": "/(login|signup|address|addresses|cart|profile|wishlist|account)",
+    "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+  },
+  {
+    "source": "/user/:path*",
+    "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+  }
+ ]
 }
