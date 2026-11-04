@@ -8946,5 +8946,147 @@ html body header.topbar {
 }
 </style>
 
+
+<!-- Unified customer UI: premium membership is retained as a purchase/status only. -->
+<style id="single-shared-customer-ui-final">
+/* Premium membership must never switch the site into a separate visual skin. */
+html body.app-premium-navigation,
+html body.app-basic-navigation { --bottom-nav-height:66px; }
+html body.app-premium-navigation { padding-left:0 !important; }
+html body #premiumUiPreferenceRow,
+html body #appProfileLayout #premiumUiPreferenceRow,
+html body .premium-ui-preference-row { display:none !important; }
+html body #appProfileLayout.app-premium-active .app-profile-aside {
+  padding:0 !important; border:0 !important; border-radius:0 !important;
+  background:transparent !important; box-shadow:none !important;
+}
+html body #appProfileLayout.app-premium-active .app-avatar {
+  outline:0 !important; outline-offset:0 !important; box-shadow:none !important;
+}
+html body #appProfileLayout.app-premium-active .app-profile-name,
+html body #appProfileLayout.app-premium-active .app-profile-email { color:var(--text-primary) !important; }
+html body #appProfileLayout.app-premium-active #appMembershipSummary {
+  display:block !important; margin-top:14px !important; padding:14px !important;
+  border:1px solid var(--border) !important; border-radius:12px !important;
+  background:var(--surface-secondary) !important; box-shadow:none !important;
+}
+html body #appProfileLayout.app-premium-active #appMembershipSummary:after { display:none !important; content:none !important; }
+html body #appProfileLayout.app-premium-active #appMembershipSummary strong { color:var(--text-primary) !important; }
+html body #appProfileLayout.app-premium-active #appMembershipSummary small { color:var(--text-secondary) !important; }
+html body #appProfileLayout.app-premium-active .app-member-badge,
+html body #appProfileLayout.app-premium-active .app-member-badge.app-premium-badge {
+  padding:4px 12px !important; border:0 !important; border-radius:999px !important;
+  background:var(--success-bg) !important; color:var(--success) !important;
+  letter-spacing:0 !important;
+}
+html body #appProfileLayout.app-premium-active #appMembershipRow {
+  margin:8px 0 5px !important; padding:12px !important;
+  border:1px solid var(--border) !important; border-radius:12px !important;
+  background:var(--surface) !important;
+}
+html body #appProfileLayout.app-premium-active #appMembershipRow > i:first-child,
+html body #appProfileLayout.app-premium-active #appMembershipRow strong,
+html body #appProfileLayout.app-premium-active #appMembershipRowDescription { color:inherit !important; }
+
+/* Shared toolbar: three compact right-side actions — Cart, Wishlist, Notifications. */
+html body header.topbar .nav-actions {
+  display:flex !important; align-items:center !important; justify-content:flex-end !important;
+  gap:3px !important; margin-left:auto !important; width:auto !important; flex:0 0 auto !important;
+}
+html body header.topbar .nav-actions [data-top-nav="cart"],
+html body header.topbar .nav-actions #hdrWishlist,
+html body header.topbar .nav-actions #notifButton {
+  display:inline-flex !important; position:relative !important;
+  align-items:center !important; justify-content:center !important;
+  flex:0 0 40px !important; width:40px !important; min-width:40px !important;
+  height:40px !important; min-height:40px !important; padding:0 !important;
+  margin:0 !important; border:0 !important; border-radius:50% !important;
+  background:transparent !important; color:var(--text-primary,#1E1F1C) !important;
+  box-shadow:none !important; font-size:21px !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+html body header.topbar .nav-actions [data-top-nav="cart"] { order:1 !important; }
+html body header.topbar .nav-actions #hdrWishlist { order:2 !important; }
+html body header.topbar .nav-actions #notifButton { order:3 !important; }
+html body header.topbar .nav-actions #notifButton i,
+html body header.topbar .nav-actions #hdrWishlist i,
+html body header.topbar .nav-actions [data-top-nav="cart"] i {
+  font-family:"Phosphor" !important; font-weight:400 !important; font-size:21px !important;
+}
+html body header.topbar .nav-actions #notifButton .shoppy-notification-badge,
+html body header.topbar .nav-actions [data-top-nav="cart"] .cart-count { font-family:var(--font-body) !important; }
+html body header.topbar .nav-actions .toolbar-explore-filter { display:none !important; }
+html body header.topbar .nav-actions #headerLocationButton { display:none !important; }
+
+/* Explore filter lives beside the product count, not in the toolbar. */
+html body #productsSectionHead .products-heading-copy {
+  display:block !important; min-width:0 !important; width:100% !important;
+}
+html body #productsSectionHead .products-heading-copy #productCount {
+  display:inline-flex !important; align-items:center !important; min-width:0 !important;
+  width:max-content !important; max-width:calc(100% - 38px) !important;
+  margin-top:4px !important; vertical-align:middle !important;
+}
+html body #productsSectionHead .products-heading-copy #exploreFilterTrigger {
+  display:none !important; flex:0 0 30px !important; width:30px !important;
+  min-width:30px !important; height:30px !important; padding:0 !important;
+  margin:0 !important; align-items:center !important; justify-content:center !important;
+  border:1px solid var(--border) !important; border-radius:50% !important;
+  background:var(--surface) !important; color:var(--text-primary) !important;
+  font-size:17px !important; line-height:1 !important; cursor:pointer !important;
+}
+html body.explore-mode #productsSectionHead .products-heading-copy #exploreFilterTrigger {
+  display:inline-flex !important;
+}
+html body #productsSectionHead .products-heading-copy #exploreFilterTrigger i {
+  font-family:"Phosphor" !important; font-weight:400 !important; font-size:17px !important;
+}
+@media (max-width:760px) {
+  html body header.topbar .nav-actions { gap:2px !important; }
+  html body header.topbar .nav-actions [data-top-nav="cart"],
+  html body header.topbar .nav-actions #hdrWishlist,
+  html body header.topbar .nav-actions #notifButton { width:38px !important; min-width:38px !important; flex-basis:38px !important; }
+}
+</style>
+<script id="force-one-shared-ui-and-place-explore-filter">
+(function(){
+  "use strict";
+  function applySharedUI(){
+    if(!document.body) return;
+    document.body.classList.remove("app-premium-navigation");
+    document.body.classList.add("app-basic-navigation");
+    document.documentElement.classList.remove("premium-skin-early");
+    try { localStorage.removeItem("shoppy_premium_ui_preference_v1"); } catch(e) {}
+    var trigger=document.getElementById("exploreFilterTrigger");
+    var count=document.getElementById("productCount");
+    var copy=document.querySelector("#productsSectionHead .products-heading-copy");
+    if(trigger && copy){
+      trigger.classList.remove("toolbar-explore-filter");
+      if(trigger.parentElement!==copy){
+        if(count && count.parentElement===copy) count.insertAdjacentElement("afterend",trigger);
+        else copy.appendChild(trigger);
+      }
+      trigger.setAttribute("aria-hidden",String(!document.body.classList.contains("explore-mode")));
+    }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",applySharedUI,{once:true});
+  else applySharedUI();
+  new MutationObserver(function(){
+    if(document.body.classList.contains("app-premium-navigation")){
+      document.body.classList.remove("app-premium-navigation");
+      document.body.classList.add("app-basic-navigation");
+    }
+    var trigger=document.getElementById("exploreFilterTrigger");
+    var copy=document.querySelector("#productsSectionHead .products-heading-copy");
+    var count=document.getElementById("productCount");
+    if(trigger && copy && trigger.parentElement!==copy){
+      trigger.classList.remove("toolbar-explore-filter");
+      if(count && count.parentElement===copy) count.insertAdjacentElement("afterend",trigger);
+      else copy.appendChild(trigger);
+    }
+  }).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["class"]});
+})();
+</script>
+
 </body>
 </html>
