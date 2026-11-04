@@ -3531,21 +3531,11 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       >
         <i class="ph ph-list" aria-hidden="true"></i>
       </button>
-
-      <button class="nav-icon" type="button" data-top-nav="home" aria-label="Home" title="Home">
-        <i class="ph ph-house" aria-hidden="true"></i>
-      </button>
-
-      <button class="nav-icon" type="button" data-top-nav="cart" aria-label="Cart" title="Shopping cart">
+<button class="nav-icon" type="button" data-top-nav="cart" aria-label="Cart" title="Shopping cart">
         <i class="ph ph-shopping-cart" aria-hidden="true"></i>
         <span class="cart-count" id="cartCount" hidden>0</span>
       </button>
-
-      <button class="nav-icon" type="button" data-top-nav="account" aria-label="My profile" title="My profile">
-        <i class="ph ph-user-circle" aria-hidden="true"></i>
-      </button>
-
-      <a class="nav-icon" id="hdrWishlist" href="/wishlist.html" aria-label="Wishlist" title="Wishlist"><i class="ph ph-heart" aria-hidden="true"></i></a>
+<a class="nav-icon" id="hdrWishlist" href="/wishlist.html" aria-label="Wishlist" title="Wishlist"><i class="ph ph-heart" aria-hidden="true"></i></a>
 
       <button class="location-chip premium-toolbar-control" id="headerLocationButton" type="button" data-open-location aria-label="Change location" title="Change location">
         <i class="ph-fill ph-map-pin" aria-hidden="true"></i>
@@ -8863,6 +8853,95 @@ html body #searchPage .search-history, html body #searchPage #searchHistory { ma
     column-gap:0 !important;
     row-gap:0 !important;
     align-items:start !important;
+  }
+}
+</style>
+
+
+<style id="restore-original-page-spacing-and-basic-toolbar">
+/* Shared correction for iOS, Premium and Basic: restore the original centered page gutters. */
+@media (min-width:761px) {
+  html body #homePage,
+  html body #searchPage,
+  html body #explorePage,
+  html body #cartPage,
+  html body #accountPage,
+  html body #appProfileLayout {
+    box-sizing:border-box !important;
+  }
+  html body .app-view,
+  html body .search-page {
+    width:min(1050px,90%) !important;
+    max-width:1050px !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+  }
+}
+/* Restore equal left/right gutters for the shared home content and all five tabs. */
+html body #homePage,
+html body #searchPage,
+html body #explorePage,
+html body #cartPage,
+html body #accountPage {
+  box-sizing:border-box !important;
+}
+html body #searchPage,
+html body .search-page {
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+/* Basic toolbar: no shadow or glass effect; retain the thin divider below it. */
+html body header.topbar {
+  box-shadow:none !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+  border-bottom:1px solid var(--border,#E5E7EB) !important;
+}
+@media (max-width:760px) {
+  html body header.topbar {
+    width:100% !important;
+    max-width:none !important;
+    margin:0 !important;
+    border-top:0 !important;
+    border-left:0 !important;
+    border-right:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+}
+@media (min-width:761px) {
+  html body header.topbar {
+    border-top:0 !important;
+    border-left:0 !important;
+    border-right:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+}
+</style>
+
+
+<style id="match-page-gutters-to-toolbar-icon-inset">
+/* Mobile: page content starts and ends at the same 5% inset as the Basic toolbar controls. */
+@media (max-width:760px) {
+  html body #searchPage,
+  html body .app-view {
+    width:90% !important;
+    max-width:none !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    box-sizing:border-box !important;
+  }
+  html body #homeContent .search-bar-wrap,
+  html body #homeContent .hero-wrap,
+  html body #homeContent .offers-wrap,
+  html body #homeContent .container,
+  html body #homeContent #productsSection {
+    width:90% !important;
+    max-width:none !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    box-sizing:border-box !important;
   }
 }
 </style>
