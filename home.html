@@ -65,12 +65,12 @@
         document.documentElement.setAttribute("data-start-tab", savedTab);
       }
     } catch (e) {}
-    const shouldUsePremiumSkin = apple || (cacheValid && uiPreference !== "basic");
-    document.documentElement.classList.toggle("premium-skin-early", shouldUsePremiumSkin);
+    /* One shared navigation layout for iOS, Android and all membership states. */
+    document.documentElement.classList.remove("premium-skin-early");
     const apply = function () {
       if (!document.body) return;
-      document.body.classList.toggle("app-premium-navigation", shouldUsePremiumSkin);
-      document.body.classList.toggle("app-basic-navigation", !shouldUsePremiumSkin);
+      document.body.classList.remove("app-premium-navigation");
+      document.body.classList.add("app-basic-navigation");
       /* Mobile navigation must be visible during membership/auth verification. */
       if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
         document.body.classList.remove("nav-pending");
@@ -3494,9 +3494,8 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 <body class="nav-pending">
   <script>
     (function () {
-      var premiumSkin = !!(window.__appnetickAppleDevice || window.__appnetickCachedPremium);
-      document.body.classList.toggle("app-premium-navigation", premiumSkin);
-      document.body.classList.toggle("app-basic-navigation", !premiumSkin);
+      document.body.classList.remove("app-premium-navigation");
+      document.body.classList.add("app-basic-navigation");
       if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
         document.body.classList.remove("nav-pending");
       }
@@ -3948,13 +3947,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       </aside>
       <section>
         <h2 class="app-section-heading">Your Shopping</h2>
-        <div id="premiumUiPreferenceRow" class="premium-ui-preference-row" hidden>
-          <div class="premium-ui-preference-copy"><strong>Premium UI</strong><small>Switch between Premium and Basic design on this device.</small></div>
-          <label class="premium-ui-switch" for="premiumUiPreferenceToggle" aria-label="Use Premium UI">
-            <input type="checkbox" id="premiumUiPreferenceToggle" role="switch" aria-label="Use Premium UI">
-            <span class="premium-ui-switch-track"></span>
-          </label>
-        </div>
+
         <a href="/membership.html" class="app-profile-row" id="appMembershipRow"><i class="ph ph-crown"></i><span><strong id="appMembershipRowTitle">Premium Membership</strong><small id="appMembershipRowDescription">Explore Premium plans and membership benefits.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/orders.html" class="app-profile-row"><i class="ph ph-package"></i><span><strong>My Orders</strong><small>View orders, track shipments and check delivery status.</small></span><i class="ph ph-caret-right"></i></a>
         <a href="/home.html" class="app-profile-row" id="appBuyAgain"><i class="ph ph-arrow-clockwise"></i><span><strong>Buy Again</strong><small>Quickly find products you purchased before.</small></span><i class="ph ph-caret-right"></i></a>
@@ -6238,18 +6231,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       return Number.isFinite(parsed) ? parsed : 0;
     }
 
-    const PREMIUM_UI_PREFERENCE_KEY = "shoppy_premium_ui_preference_v1";
     let lastMembershipForPresentation = null;
-    function getPremiumUiPreference() {
-      try { return localStorage.getItem(PREMIUM_UI_PREFERENCE_KEY) || ""; } catch (e) { return ""; }
-    }
-    function syncPremiumUiPreferenceControl(active) {
-      const row = document.getElementById("premiumUiPreferenceRow");
-      const toggle = document.getElementById("premiumUiPreferenceToggle");
-      if (!row || !toggle) return;
-      row.hidden = !active;
-      toggle.checked = active && getPremiumUiPreference() !== "basic";
-    }
     function setPremiumPresentation(membership, verified) {
       lastMembershipForPresentation = membership && typeof membership === "object" ? membership : {};
       const expiry = membership ? expiryTimestamp(membership.expiresAt) : 0;
@@ -6261,30 +6243,12 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         lastVerifiedMembership = null;
         try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {}
       }
-      // iOS devices and verified Premium members always share the same navigation skin.
-      // Basic Android users always retain the Basic navigation skin.
-      const usePremiumSkin = isAppleDevice || (active && getPremiumUiPreference() !== "basic");
-      syncPremiumUiPreferenceControl(active);
-      const hadPremiumSkin = document.body.classList.contains("app-premium-navigation");
-      if (hadPremiumSkin !== usePremiumSkin) {
-        document.body.classList.toggle("app-premium-navigation", usePremiumSkin);
-        requestAnimationFrame(() => positionNavIndicator(true));
-      }
-      document.body.classList.toggle("app-basic-navigation", !usePremiumSkin);
-      updateBrowserThemeColor(usePremiumSkin);
+      /* Membership remains active when purchased; it no longer changes the site's UI skin. */
+      document.body.classList.remove("app-premium-navigation");
+      document.body.classList.add("app-basic-navigation");
+      updateBrowserThemeColor(false);
       return active;
     }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const toggle = document.getElementById("premiumUiPreferenceToggle");
-      if (!toggle) return;
-      toggle.addEventListener("change", () => {
-        const preference = toggle.checked ? "premium" : "basic";
-        try { localStorage.setItem(PREMIUM_UI_PREFERENCE_KEY, preference); } catch (e) {}
-        setPremiumPresentation(lastMembershipForPresentation || {}, true);
-        requestAnimationFrame(() => positionNavIndicator(true));
-      });
-    });
 
     function updateBrowserThemeColor(usePremiumTheme) {
       const meta = document.querySelector('meta[name="theme-color"]');
@@ -6337,9 +6301,9 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         const expiry = cache ? expiryTimestamp(cache.expiresAt) : 0;
         const cacheValid = !!(cache && cache.active === true && expiry > Date.now());
         if (!cacheValid) { try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {} }
-        document.body.classList.toggle("app-premium-navigation", isAppleDevice || cacheValid);
-        document.body.classList.toggle("app-basic-navigation", !isAppleDevice && !cacheValid);
-        updateBrowserThemeColor(isAppleDevice || cacheValid);
+        document.body.classList.remove("app-premium-navigation");
+        document.body.classList.add("app-basic-navigation");
+        updateBrowserThemeColor(false);
       }
 
       let savedTab = "home";
@@ -8692,6 +8656,216 @@ html body #cartPage{scroll-margin-top:var(--header-h,64px)}
   sync();
 })();
 </script>
+
+
+
+<style id="unified-ui-and-desktop-explore-final">
+/* All devices and membership states share one basic page and bottom-navigation design. */
+html body.app-premium-navigation { padding-left:0 !important; }
+html body #premiumUiPreferenceRow,
+html body #appProfileLayout #premiumUiPreferenceRow,
+html body .premium-ui-preference-row { display:none !important; }
+/* Keep membership status visible, but remove the separate premium-only profile skin. */
+html body #appProfileLayout.app-premium-active .app-profile-aside {
+  padding:0 !important; border:0 !important; border-radius:0 !important;
+  background:transparent !important; box-shadow:none !important; color:var(--text-primary) !important;
+}
+html body #appProfileLayout.app-premium-active .app-avatar {
+  outline:0 !important; outline-offset:0 !important; box-shadow:none !important;
+}
+html body #appProfileLayout.app-premium-active .app-profile-name,
+html body #appProfileLayout.app-premium-active .app-profile-email { color:var(--text-primary) !important; }
+/* Do not show the premium-only location/notification controls or suppress normal nav items conditionally. */
+html body header.topbar .premium-toolbar-control { display:inline-flex !important; }
+html body header.topbar .nav-actions [data-top-nav] { display:inline-flex !important; }
+html body.app-basic-navigation header.topbar .premium-toolbar-control { display:inline-flex !important; }
+html body.app-basic-navigation header.topbar .nav-actions [data-top-nav] { display:inline-flex !important; }
+/* Remove the duplicated, global desktop search. Search stays inside the page where it belongs. */
+html body header.topbar #globalSearchForm,
+html body header.topbar .desktop-top-search { display:none !important; }
+@media (min-width:761px) {
+  html body #homeSearchWrap,
+  html body #searchPage .search-bar-wrap { display:block !important; }
+  html body.explore-mode #homeSearchWrap { display:none !important; }
+  /* Explore desktop: no discount banner; filters are directly above the product list. */
+  html body.explore-mode #offerBannerDesk,
+  html body.explore-mode #offerBanner { display:none !important; }
+  html body.explore-mode #productsSection {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) !important;
+    grid-template-areas:"ehead" "filters" "chips" "cathead" "phead" "grid" "more" !important;
+    column-gap:0 !important; row-gap:0 !important; align-items:start !important;
+  }
+  html body.explore-mode #productsSection > .explore-page-heading { grid-area:ehead !important; }
+  html body.explore-mode #exploreFilterRow,
+  html body.explore-mode #exploreFilterRow[hidden] {
+    grid-area:filters !important; display:flex !important; flex-direction:row !important;
+    flex-wrap:wrap !important; align-items:center !important; gap:9px !important;
+    width:100% !important; margin:0 0 16px !important; overflow:visible !important;
+  }
+  html body.explore-mode #exploreFilterRow .explore-filter-button {
+    width:auto !important; min-width:145px !important; min-height:42px !important;
+    justify-content:space-between !important; border-radius:999px !important;
+  }
+  html body.explore-mode #categoryChips { grid-area:chips !important; margin:0 0 14px !important; }
+  html body.explore-mode #categoriesHeading { grid-area:cathead !important; display:none !important; }
+  html body.explore-mode #productsSectionHead { grid-area:phead !important; margin:4px 0 16px !important; }
+  /* Show the filter icon in the desktop toolbar too; the direct filter controls remain above products. */
+  html body.explore-mode header.topbar .toolbar-explore-filter,
+  html body.explore-mode header.topbar #exploreFilterTrigger {
+    display:inline-flex !important; visibility:visible !important; opacity:1 !important;
+    pointer-events:auto !important; transform:none !important; position:relative !important;
+    width:40px !important; height:40px !important; min-width:40px !important;
+    align-items:center !important; justify-content:center !important; border-radius:50% !important;
+    border:1px solid var(--border) !important; background:#fff !important; color:var(--text-primary) !important;
+  }
+}
+/* iOS-style floating glass toolbar for everyone; bottom navigation deliberately stays Basic. */
+@media (max-width:760px) {
+  html body header.topbar {
+    position:sticky !important; top:calc(8px + env(safe-area-inset-top,0px)) !important;
+    z-index:1200 !important; width:calc(100% - 32px) !important;
+    height:56px !important; min-height:56px !important; margin:8px auto 10px !important;
+    padding:0 12px 0 16px !important; border:1px solid rgba(255,255,255,.72) !important;
+    border-radius:999px !important;
+    background:linear-gradient(180deg,rgba(41,98,255,.18),rgba(41,98,255,.08)) !important;
+    -webkit-backdrop-filter:blur(22px) saturate(180%) !important;
+    backdrop-filter:blur(22px) saturate(180%) !important;
+    box-shadow:0 12px 32px rgba(41,98,255,.20),0 2px 8px rgba(0,0,0,.08),
+      inset 0 1px 1px rgba(255,255,255,.85),inset 0 -1px 1px rgba(255,255,255,.25) !important;
+    overflow:visible !important; pointer-events:auto !important;
+  }
+  html body header.topbar::before {
+    content:"" !important; display:block !important; position:absolute !important; inset:0 !important;
+    z-index:0 !important; border-radius:inherit !important; pointer-events:none !important;
+    background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.1) 40%,transparent 62%),
+      radial-gradient(110% 90% at 8% 0%,rgba(255,255,255,.38),transparent 55%) !important;
+  }
+  html body header.topbar > * { position:relative; z-index:1; }
+}
+@media (min-width:761px) {
+  /* Keep the shared desktop toolbar and options consistent without activating the premium side-nav skin. */
+  html body header.topbar {
+    background:rgba(255,255,255,.94) !important;
+    box-shadow:0 4px 18px rgba(20,35,70,.08) !important;
+    -webkit-backdrop-filter:blur(16px) saturate(160%) !important;
+    backdrop-filter:blur(16px) saturate(160%) !important;
+  }
+}
+/* Short tabs must use only their real content height: no artificial scroll area. */
+html, html body { min-height:0 !important; }
+html body #searchPage, html body #cartPage, html body #explorePage,
+html body .app-view, html body #searchHistory, html body #searchProductGrid,
+html body #productGrid { min-height:0 !important; }
+html body #searchPage, html body #cartPage, html body .app-view { overflow:visible !important; }
+html body #searchPage .search-history, html body #searchPage #searchHistory { max-height:none !important; overflow:visible !important; }
+</style>
+
+<script id="shared-image-proxy-all-tabs">
+(function(){
+  "use strict";
+  /* Route every remote content image through one consistent image proxy on every tab. */
+  var PREFIX="https://images.weserv.nl/?url=";
+  function proxied(value){
+    var raw=String(value||"").trim();
+    if(!raw || raw.startsWith("data:") || raw.startsWith("blob:") || raw.startsWith("/") || raw.startsWith("#")) return raw;
+    if(raw.indexOf("images.weserv.nl/?url=")!==-1) return raw;
+    if(!/^https?:\/\//i.test(raw)) return raw;
+    return PREFIX + encodeURIComponent(raw.replace(/^https?:\/\//i,""));
+  }
+  function apply(img){
+    if(!(img instanceof HTMLImageElement) || img.dataset.sharedProxyApplied==="1") return;
+    var original=img.getAttribute("src");
+    if(!original) return;
+    var next=proxied(original);
+    if(next!==original){
+      img.dataset.sharedProxyOriginal=original;
+      img.dataset.sharedProxyApplied="1";
+      img.removeAttribute("srcset");
+      img.setAttribute("src",next);
+    }
+  }
+  function scan(root){
+    if(!root) return;
+    if(root instanceof HTMLImageElement) apply(root);
+    if(root.querySelectorAll) root.querySelectorAll("img").forEach(apply);
+  }
+  scan(document);
+  new MutationObserver(function(records){
+    records.forEach(function(record){
+      if(record.type==="childList") record.addedNodes.forEach(scan);
+      else if(record.type==="attributes") apply(record.target);
+    });
+  }).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["src"]});
+})();
+</script>
+
+<style id="basic-toolbar-shadow-and-explore-discount-fix">
+/* BASIC toolbar structure for every user/device: retain only a soft shadow, not the Premium glass/floating skin. */
+@media (max-width:760px) {
+  html body header.topbar {
+    position:sticky !important;
+    position:-webkit-sticky !important;
+    top:0 !important;
+    left:auto !important;
+    right:auto !important;
+    width:100% !important;
+    max-width:none !important;
+    height:var(--header-h,64px) !important;
+    min-height:var(--header-h,64px) !important;
+    margin:0 !important;
+    padding:0 5% !important;
+    border:0 !important;
+    border-bottom:1px solid var(--border,#E5E7EB) !important;
+    border-radius:0 !important;
+    background:var(--background,#fff) !important;
+    background-image:none !important;
+    -webkit-backdrop-filter:none !important;
+    backdrop-filter:none !important;
+    box-shadow:0 3px 12px rgba(20,35,70,.09) !important;
+    overflow:visible !important;
+    pointer-events:auto !important;
+  }
+  html body header.topbar::before { display:none !important; content:none !important; }
+  html body header.topbar > * { position:relative; z-index:1; }
+}
+@media (min-width:761px) {
+  /* Keep the normal Basic desktop toolbar dimensions/alignment; add shadow only. */
+  html body:not(.nav-never) header.topbar {
+    background:#fff !important;
+    background-image:none !important;
+    border:0 !important;
+    border-radius:0 !important;
+    box-shadow:0 3px 14px rgba(20,35,70,.10) !important;
+    -webkit-backdrop-filter:none !important;
+    backdrop-filter:none !important;
+  }
+  html body:not(.nav-never) header.topbar::before { display:none !important; content:none !important; }
+
+  /* Discount/offer card must not appear anywhere inside Desktop Explore. */
+  html body.explore-mode #offerBannerDesk,
+  html body.explore-mode #offerBanner,
+  html body.explore-mode .offer-banner-desk,
+  html body.explore-mode .home-discount-offers,
+  html body.explore-mode #offersSection {
+    display:none !important;
+    visibility:hidden !important;
+    width:0 !important;
+    height:0 !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+  html body.explore-mode #productsSection {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) !important;
+    grid-template-areas:"ehead" "filters" "chips" "cathead" "phead" "grid" "more" !important;
+    column-gap:0 !important;
+    row-gap:0 !important;
+    align-items:start !important;
+  }
+}
+</style>
 
 </body>
 </html>
