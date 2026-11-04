@@ -42,6 +42,7 @@
   <link rel="stylesheet" href="/global.css">
 
   <script>
+  document.documentElement.classList.add("auth-state-pending");
   /* Early navigation state: apply iOS skin or a still-valid verified membership cache before first paint. */
   (function () {
     const ua = navigator.userAgent || "";
@@ -80,6 +81,9 @@
   </script>
 
   <style>
+    html.auth-state-pending body header.topbar .nav-actions,
+    html.auth-state-pending body header.topbar .guest-header-actions,
+    html.auth-state-pending body header.topbar .desktop-top-avatar { visibility:hidden!important; opacity:0!important; pointer-events:none!important; }
     :root {
       --primary: #2962FF;
       --primary-hover: #0059D7;
@@ -5263,14 +5267,21 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
 
     /* SEARCH HISTORY (saved in this browser's localStorage; will move to the database later) */
-    const SEARCH_HISTORY_KEY = "sequize_search_history_v1";
+    const SEARCH_HISTORY_KEY = "sequize_search_history_v2:";
     const SEARCH_HISTORY_MAX = 30;
     const searchHistoryEl = document.getElementById("searchHistory");
     let searchHistoryTimer = null;
 
+    function getSearchHistoryStorageKey() {
+      if (authStatus !== "logged-in" || !window.__sequizeSearchAccountKey) return "";
+      return SEARCH_HISTORY_KEY + window.__sequizeSearchAccountKey;
+    }
+
     function readSearchHistory() {
+      const key = getSearchHistoryStorageKey();
+      if (!key) return [];
       try {
-        const list = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) || "[]");
+        const list = JSON.parse(localStorage.getItem(key) || "[]");
         return Array.isArray(list) ? list.filter(item => item && (item.type === "query" || item.type === "product")) : [];
       } catch (_) {
         return [];
@@ -5278,8 +5289,10 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     }
 
     function writeSearchHistory(list) {
+      const key = getSearchHistoryStorageKey();
+      if (!key) return;
       try {
-        localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(list.slice(0, SEARCH_HISTORY_MAX)));
+        localStorage.setItem(key, JSON.stringify(list.slice(0, SEARCH_HISTORY_MAX)));
       } catch (_) {}
     }
 
@@ -5341,6 +5354,11 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       const list = readSearchHistory();
       searchHistoryEl.hidden = false;
       searchProductGrid.hidden = true;
+      if (authStatus !== "logged-in") {
+        searchHistoryEl.innerHTML = `<div class="search-empty-state"><span class="search-empty-icon"><i class="ph ph-magnifying-glass" aria-hidden="true"></i></span><strong>Start your search</strong><p>Sign in to keep your recent searches saved to your account.</p></div>`;
+        clearInterval(searchHistoryTimer);
+        return;
+      }
       if (!list.length) {
         searchHistoryEl.innerHTML = `<div class="search-empty-state"><span class="search-empty-icon"><i class="ph ph-magnifying-glass" aria-hidden="true"></i></span><strong>Start your search</strong><p>Search for products you love. Your recent searches will appear here.</p></div>`;
         clearInterval(searchHistoryTimer);
@@ -6299,6 +6317,8 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         } else if (data.success === true && data.user) {
           verified = true;
           authStatus = "logged-in";
+          const accountIdentity = data.user.id || data.user.uid || data.user._id || data.user.email;
+          window.__sequizeSearchAccountKey = accountIdentity ? encodeURIComponent(String(accountIdentity).trim().toLowerCase()) : "";
           const membership = data.membership && typeof data.membership === "object" ? data.membership : {};
           setPremiumPresentation(membership, true);
           try { localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ user: { name: data.user.name || "User", email: data.user.email || "" }, membership: membership, expiresAt: Date.now() + PROFILE_CACHE_TTL })); } catch (e) {}
@@ -6334,6 +6354,8 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
       document.body.classList.remove("nav-pending");
       document.body.classList.toggle("guest-mode", authStatus !== "logged-in");
+      if (verified) document.documentElement.classList.remove("auth-state-pending");
+      if (currentView === "search" && typeof renderSearchHistory === "function") renderSearchHistory();
       requestAnimationFrame(() => requestAnimationFrame(() => positionNavIndicator(true)));
       const guest = authStatus === "guest";
       document.getElementById("guestCartPanel").hidden = !guest;
@@ -7127,7 +7149,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         const rs=inr=>{const n=Number(inr)||0;return "₹"+new Intl.NumberFormat("en-IN",{minimumFractionDigits:Math.abs(n%1)>0.004?2:0,maximumFractionDigits:2}).format(n)};
         checkout.textContent="Pay "+rs(advanceINR);
         const quick=document.getElementById("cartQuickSummary");
-        if(quick)quick.innerHTML=items.length?`<span>${rs(subtotal*85)} Total</span><span>− ${rs(discountAmount*85)} Discount</span><strong>${rs(totalINR)} Payable Amount</strong>`:"";
+        if(quick)quick.innerHTML=items.length?`<div class="cart-quick-summary-top"><span>${rs(subtotal*85)} Total</span><span class="cart-summary-dot">•</span><span>− ${rs(discountAmount*85)} Discount</span></div><strong class="cart-quick-summary-payable">${rs(totalINR)} Payable Amount</strong>`:"";
         const linesEl=document.getElementById("appSummaryLines"),noteEl=document.getElementById("appSummaryNote");
         if(linesEl){let h=`<div class="cs-row"><span>Subtotal (${count} ${count===1?"item":"items"})</span><strong>${price(subtotal)}</strong></div>`;
           if(totalPct>0){eligibleDiscounts.forEach(d=>{const pc=Number(d.percent)||0;if(pc>0)h+=`<div class="cs-row cs-disc"><span>${esc(d.title||d.name||d.label||"Discount")} (${Number(pc.toFixed(2))}%)</span><strong>-${price(subtotal*pc/100)}</strong></div>`})}
@@ -7136,7 +7158,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
           linesEl.innerHTML=items.length?h:"";}
         if(noteEl)noteEl.textContent=items.length?`Pay ${rs(advanceINR)} online now. ${codINR>0?rs(codINR)+" is collected at delivery.":"Nothing is due at delivery."}`:"";
         if(!items.length){itemsEl.innerHTML=sqState({icon:"ph-shopping-cart",title:"Your cart is empty",text:"Looks like you haven't added any products yet.",actions:'<button type="button" class="app-primary-button" id="appStartShopping">Start Shopping</button>'});document.getElementById("appStartShopping").onclick=()=>handleNavigation("home");return;}
-        itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),rawTitle=String(x.title||"Product").trim(),title=esc(rawTitle.replace(/([a-z])([0-9])/gi,"$1$2").replace(/([0-9])([a-z])/gi,"$1 $2").split(/\s+/).filter(Boolean).map(word=>word.charAt(0).toUpperCase()+word.slice(1).toLowerCase()).join(" ")),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="ci"><div class="ci-img"><img src="${img}" alt="" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="ci-info"><h3 class="ci-title">${title}</h3><div class="ci-price-row"><p class="ci-price">${price(p)} × ${q}</p><button class="ci-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="ci-qty"><button type="button" aria-label="Decrease quantity" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" aria-label="Increase quantity" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div></div></article>`}).join("");
+        itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),rawTitle=String(x.title||"Product").trim(),title=esc(rawTitle.replace(/([a-z])([0-9])/gi,"$1$2").replace(/([0-9])([a-z])/gi,"$1 $2").split(/\s+/).filter(Boolean).map(word=>word.charAt(0).toUpperCase()+word.slice(1).toLowerCase()).join(" ")),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="ci"><div class="ci-img"><img src="${img}" alt="" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="ci-info"><div class="ci-copy"><h3 class="ci-title">${title}</h3><p class="ci-price">${price(p)} × ${q}</p><button class="ci-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="ci-qty"><button type="button" aria-label="Decrease quantity" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" aria-label="Increase quantity" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div></div></article>`}).join("");
         itemsEl.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>act(b.dataset.action,b.dataset.id));
       }
       async function load(){if(!root||root.hidden&&loaded)return;loaded=true;itemsEl.setAttribute("aria-busy","true");let cacheShown=false;try{const cache=JSON.parse(localStorage.getItem("shoppy_cart_cache_v2")||"null");if(cache&&Array.isArray(cache.items)&&Number(cache.expiresAt)>Date.now()){items=cache.items;render();cacheShown=true;}else{const old=JSON.parse(localStorage.getItem("shoppy_cart")||"null");if(Array.isArray(old)){items=old;render();cacheShown=true;}}}catch(e){}if(!cacheShown)itemsEl.innerHTML='<div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div>';try{const d=await request("GET");items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items));localStorage.setItem("shoppy_cart_cache_v2",JSON.stringify({items,expiresAt:Date.now()+86400000}));}catch{}render();}catch(e){if(e.message==="Login required.")return;if(!cacheShown){itemsEl.innerHTML=sqState({icon:"ph-warning-circle",title:"Unable to load cart",text:"Please check your connection and try again.",actions:'<button class="app-primary-button" id="appRetryCart" type="button">Try Again</button>'});document.getElementById("appRetryCart").onclick=()=>{loaded=false;load()};}}finally{itemsEl.setAttribute("aria-busy","false")}}
@@ -8586,6 +8608,90 @@ html body #premiumUiPreferenceRow,html body #appProfileLayout #premiumUiPreferen
 html body #premiumUiPreferenceRow[hidden]{display:none!important}
 @media(min-width:761px){html body #premiumUiPreferenceRow,html body #appProfileLayout #premiumUiPreferenceRow,html body .premium-ui-preference-row{display:flex!important}}
 </style>
+
+
+<style id="search-cart-sticky-auth-final-fixes">
+/* Keep the dedicated search field pinned below the global sticky toolbar while history scrolls. */
+html body #searchPage .search-bar-wrap{
+  position:sticky!important;top:var(--header-h,64px)!important;z-index:950!important;
+  margin:0 0 16px!important;padding:8px 0 10px!important;
+  background:var(--background,#fff)!important;
+}
+html body #searchPage .search-bar-wrap .search{margin:0!important}
+
+/* Do not flash either guest or signed-in toolbar controls before /api/profile confirms the session. */
+html.auth-state-pending body header.topbar .nav-actions,
+html.auth-state-pending body header.topbar .guest-header-actions,
+html.auth-state-pending body header.topbar .desktop-top-avatar{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+
+/* Cart item: product copy stays together on the left; quantity controls stay at the far right. */
+html body #cartPage .ci{align-items:center!important;gap:10px!important}
+html body #cartPage .ci-info{
+  min-width:0!important;flex:1 1 auto!important;display:flex!important;
+  flex-direction:row!important;align-items:center!important;justify-content:space-between!important;
+  gap:8px!important;
+}
+html body #cartPage .ci-copy{min-width:0!important;flex:1 1 auto!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:2px!important}
+html body #cartPage .ci-title{margin:0!important;max-width:100%!important;line-height:1.25!important}
+html body #cartPage .ci-price{margin:0!important;line-height:1.25!important}
+html body #cartPage .ci-remove{display:block!important;margin:1px 0 0!important;padding:0!important;line-height:1.2!important}
+html body #cartPage .ci-qty{flex:0 0 auto!important;margin:0!important;align-self:center!important;white-space:nowrap!important}
+html body #cartPage .cart-quick-summary{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  gap:3px!important;padding:9px 0 0!important;margin:0!important;
+  font-size:12px!important;line-height:1.35!important;
+}
+html body #cartPage .cart-quick-summary-top{display:flex;align-items:center;flex-wrap:wrap;gap:5px;color:var(--text-secondary)}
+html body #cartPage .cart-summary-dot{font-weight:700;color:var(--text-muted)}
+html body #cartPage .cart-quick-summary-payable{display:block!important;text-align:left!important;color:var(--text-primary)!important;font-size:14px!important;font-weight:800!important}
+html body #cartPage .cart-checkout-bar{margin-top:14px!important;padding-top:2px!important}
+html body #cartPage .cart-checkout-actions{margin-top:10px!important}
+
+/* A short cart should fit without a tiny accidental page scroll; long carts remain scrollable. */
+html body.cart-content-fits{overflow:hidden!important;overscroll-behavior:none!important}
+html body.cart-content-fits #cartPage{min-height:0!important;margin-bottom:0!important;padding-bottom:0!important}
+html body.cart-content-fits #cartPage.has-items{padding-bottom:0!important}
+html body.cart-content-fits #cartPage .app-cart-layout,
+html body.cart-content-fits #cartPage .app-cart-items{min-height:0!important}
+html body #cartPage{scroll-margin-top:var(--header-h,64px)}
+@media(max-width:760px){
+ html body #cartPage .ci-img{flex-basis:77px!important;width:77px!important;height:77px!important}
+ html body #cartPage .ci{gap:8px!important}
+ html body #cartPage .ci-info{gap:6px!important}
+ html body #cartPage .ci-title{font-size:12.5px!important;white-space:normal!important;overflow-wrap:anywhere!important}
+ html body #cartPage .ci-price{font-size:12px!important}
+ html body #cartPage .ci-remove{font-size:11px!important}
+ html body #cartPage .ci-qty{gap:3px!important;padding:2px!important}
+ html body #cartPage .ci-qty button{width:23px!important;height:23px!important}
+}
+</style>
+<script id="cart-fit-scroll-guard">
+(function(){
+  const cart=document.getElementById("cartPage");
+  if(!cart)return;
+  let frame=0;
+  function activeCart(){return !cart.hidden;}
+  function sync(){
+    cancelAnimationFrame(frame);
+    frame=requestAnimationFrame(()=>{
+      if(!activeCart()){document.body.classList.remove("cart-content-fits");return;}
+      const doc=document.documentElement;
+      const body=document.body;
+      /* Ignore sub-pixel rounding and the browser's one-pixel viewport variance. */
+      const fullHeight=Math.max(doc.scrollHeight,body.scrollHeight);
+      const fits=fullHeight<=window.innerHeight+2;
+      body.classList.toggle("cart-content-fits",fits);
+    });
+  }
+  const observer=new MutationObserver(sync);
+  observer.observe(cart,{attributes:true,childList:true,subtree:true,characterData:true});
+  window.addEventListener("resize",sync,{passive:true});
+  window.addEventListener("orientationchange",()=>setTimeout(sync,100),{passive:true});
+  document.addEventListener("click",event=>{if(event.target.closest("[data-bottom-nav], [data-top-nav], .bottom-nav-item"))setTimeout(sync,80);});
+  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  sync();
+})();
+</script>
 
 </body>
 </html>
