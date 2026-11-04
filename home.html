@@ -42,41 +42,22 @@
   <link rel="stylesheet" href="/global.css">
 
   <script>
-  document.documentElement.classList.add("auth-state-pending");
-  /* Early navigation state: apply iOS skin or a still-valid verified membership cache before first paint. */
+  /* Shared early state: one UI for everyone. Restores last tab + last known login state before first paint. */
   (function () {
-    const ua = navigator.userAgent || "";
-    const apple = /iPhone|iPad|iPod/i.test(ua) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    window.__appnetickAppleDevice = apple;
-    window.__appnetickMembershipCacheKey = "shoppy_verified_premium_cache_v2";
-    let cached = null;
-    try { cached = JSON.parse(localStorage.getItem(window.__appnetickMembershipCacheKey) || "null"); } catch (e) {}
-    const expiry = cached ? (Number(cached.expiresAt) || Date.parse(cached.expiresAt || "")) : 0;
-    const cacheValid = !!(cached && cached.active === true && Number.isFinite(expiry) && expiry > Date.now());
-    if (!cacheValid && cached) { try { localStorage.removeItem(window.__appnetickMembershipCacheKey); } catch (e) {} }
-    window.__appnetickCachedPremium = cacheValid;
-    let uiPreference = "";
-    try { uiPreference = localStorage.getItem("shoppy_premium_ui_preference_v1") || ""; } catch (e) {}
-    window.__appnetickPremiumUiPreference = uiPreference;
+    var root = document.documentElement;
+    var loggedIn = false;
     try {
-      const savedTab = localStorage.getItem("shoppy_home_active_tab_v1");
-      if (["home", "search", "explore", "cart", "account"].includes(savedTab)) {
-        document.documentElement.setAttribute("data-start-tab", savedTab);
+      var p = JSON.parse(localStorage.getItem("shoppy_profile_cache_v1") || "null");
+      loggedIn = !!(p && p.user && Number(p.expiresAt) > Date.now());
+    } catch (e) {}
+    root.classList.add(loggedIn ? "auth-known-user" : "auth-state-pending");
+    window.__sequizeCachedLogin = loggedIn;
+    try {
+      var savedTab = localStorage.getItem("shoppy_home_active_tab_v1");
+      if (["home", "search", "explore", "cart", "account"].indexOf(savedTab) > -1) {
+        root.setAttribute("data-start-tab", savedTab);
       }
     } catch (e) {}
-    /* One shared navigation layout for iOS, Android and all membership states. */
-    document.documentElement.classList.remove("premium-skin-early");
-    const apply = function () {
-      if (!document.body) return;
-      document.body.classList.remove("app-premium-navigation");
-      document.body.classList.add("app-basic-navigation");
-      /* Mobile navigation must be visible during membership/auth verification. */
-      if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
-        document.body.classList.remove("nav-pending");
-      }
-    };
-    if (document.body) apply(); else document.addEventListener("DOMContentLoaded", apply, { once: true });
   })();
   </script>
 
@@ -1625,18 +1606,18 @@
     .app-profile-layout.app-premium-active #appMembershipRow strong { color:#855B00; }
     .app-profile-layout.app-premium-active #appMembershipRowDescription { color:#795F20; }
     @media (max-width:760px) { .app-profile-layout.app-premium-active .app-profile-aside { padding:18px; } }
-    .premium-ui-preference-row { margin:18px 0 0; padding:14px 12px; display:flex; align-items:center; gap:12px; border:1px solid var(--border); border-radius:14px; background:var(--surface-secondary); }
-    .premium-ui-preference-row[hidden] { display:none !important; }
-    .premium-ui-preference-copy { flex:1; min-width:0; }
-    .premium-ui-preference-copy strong { display:block; font-size:14px; font-weight:800; line-height:1.35; }
-    .premium-ui-preference-copy small { display:block; margin-top:4px; color:var(--text-secondary); font-size:12px; line-height:1.45; }
-    .premium-ui-switch { position:relative; display:inline-flex; flex:0 0 48px; width:48px; height:28px; cursor:pointer; }
-    .premium-ui-switch input { position:absolute; width:1px; height:1px; opacity:0; }
-    .premium-ui-switch-track { position:absolute; inset:0; border-radius:99px; background:#A6A6A6; transition:background .2s ease; }
-    .premium-ui-switch-track::after { content:""; position:absolute; width:22px; height:22px; left:3px; top:3px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.22); transition:transform .2s ease; }
-    .premium-ui-switch input:checked + .premium-ui-switch-track { background:var(--primary); }
-    .premium-ui-switch input:checked + .premium-ui-switch-track::after { transform:translateX(20px); }
-    .premium-ui-switch input:focus-visible + .premium-ui-switch-track { outline:3px solid rgba(41,98,255,.3); outline-offset:2px; }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     .app-profile-row { min-height:60px; padding:14px 0; display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--divider); }
     .app-profile-row > i { color:var(--primary); font-size:22px; }
     .app-profile-row > span { min-width:0; flex:1; }
@@ -1683,178 +1664,32 @@
   
     /* PREMIUM-ONLY NAVIGATION SKIN.
        Basic members keep the original toolbar and bottom navigation unchanged. */
-    body.app-premium-navigation .topbar {
-      position: sticky;
-      position: -webkit-sticky;
-      top: 12px;
-      height: 48px;
-      min-height: 48px;
-      margin: 12px 0 8px;
-      background: transparent;
-      border: 0;
-      pointer-events: none;
-    }
-    body.app-premium-navigation .topbar > * { pointer-events: auto; }
-    body.app-premium-navigation .nav-icon {
-      border: 0;
-      border-radius: 100px;
-      background: transparent;
-      color: var(--text-primary);
-      font-size: 24px;
-    }
-    body.app-premium-navigation .nav-icon:hover { background: var(--surface-secondary); }
-    body.app-premium-navigation .brand {
-      font-family: var(--font-heading);
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -.7px;
-      color: var(--primary);
-      white-space: nowrap;
-    }
-    body.app-premium-navigation .nav-indicator { display: none; }
-    body.app-premium-navigation .bottom-nav-item {
-      position: relative;
-      z-index: 2;
-      height: 52px;
-      min-height: 0;
-      padding: 0;
-      border-radius: 100px;
-      justify-content: center;
-      transition: background .28s ease, color .28s ease, box-shadow .28s ease, transform .15s ease;
-    }
-    body.app-premium-navigation .bottom-nav-item:active { transform: scale(.94); }
-    body.app-premium-navigation .bottom-nav-item .nav-item-icon {
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      line-height: 1;
-    }
-    body.app-premium-navigation .bottom-nav-item.active,
-    body.app-premium-navigation .bottom-nav-item.active .nav-item-icon { color: #fff; }
-    body.app-premium-navigation .nav-indicator {
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      z-index: 1;
-      display: block;
-      width: 0;
-      height: 52px;
-      border-radius: 100px;
-      background: var(--primary);
-      box-shadow: 0 4px 14px rgba(41,98,255,.38), inset 0 1px 1px rgba(255,255,255,.38);
-      transform: translate3d(0,0,0);
-      transition: transform .5s cubic-bezier(.34,1.36,.5,1), width .5s cubic-bezier(.34,1.36,.5,1);
-      pointer-events: none;
-      will-change: transform;
-    }
-    body.app-premium-navigation .nav-indicator.no-anim { transition: none; }
-    body.app-premium-navigation .bottom-nav .cart-count {
-      top: -7px; right: -11px; min-width: 17px; height: 17px;
-    }
-    body.app-premium-navigation .bottom-nav-item.active .cart-count {
-      background: #fff; color: var(--primary); border-color: var(--primary);
-    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
-    @media (max-width:760px) {
-      body.app-premium-navigation .topbar {
-        top: 10px;
-        width: calc(100% - 32px);
-        height: 56px;
-        min-height: 56px;
-        margin: 10px auto 8px;
-        padding: 0 10px 0 16px;
-        overflow: hidden;
-        pointer-events: auto;
-        border-radius: 100px;
-        border: 1px solid rgba(255,255,255,.6);
-        background: linear-gradient(180deg,rgba(41,98,255,.18),rgba(41,98,255,.08));
-        -webkit-backdrop-filter: blur(22px) saturate(180%);
-        backdrop-filter: blur(22px) saturate(180%);
-        box-shadow: 0 12px 32px rgba(41,98,255,.2), 0 2px 8px rgba(0,0,0,.08),
-          inset 0 1px 1px rgba(255,255,255,.85), inset 0 -1px 1px rgba(255,255,255,.25);
-      }
-      body.app-premium-navigation .topbar::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        border-radius: inherit;
-        background: linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.1) 40%,rgba(255,255,255,0) 62%),
-          radial-gradient(110% 90% at 8% 0%,rgba(255,255,255,.38),transparent 55%);
-        pointer-events: none;
-      }
-      body.app-premium-navigation .topbar > * { position: relative; z-index: 1; }
-      body.app-premium-navigation .topbar .nav-icon { border-radius: 100px; }
-      body.app-premium-navigation .topbar .nav-icon:hover { background: rgba(41,98,255,.1); }
-      body.app-premium-navigation .topbar .cart-count { border-color: transparent; }
-
-      body.app-premium-navigation .bottom-nav {
-        position: fixed;
-        left: 50%;
-        right: auto;
-        bottom: calc(14px + env(safe-area-inset-bottom,0px));
-        z-index: 1500;
-        width: min(calc(100% - 32px),400px);
-        height: var(--bottom-nav-height);
-        min-height: 0;
-        padding: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 2px;
-        overflow: hidden;
-        transform: translateX(-50%);
-        border-radius: 100px;
-        border: 1px solid rgba(255,255,255,.6);
-        background: linear-gradient(180deg,rgba(41,98,255,.18),rgba(41,98,255,.08));
-        -webkit-backdrop-filter: blur(22px) saturate(180%);
-        backdrop-filter: blur(22px) saturate(180%);
-        box-shadow: 0 12px 32px rgba(41,98,255,.22), 0 2px 8px rgba(0,0,0,.08),
-          inset 0 1px 1px rgba(255,255,255,.85), inset 0 -1px 1px rgba(255,255,255,.25);
-        touch-action: none;
-        user-select: none;
-        -webkit-user-select: none;
-        -webkit-touch-callout: none;
-      }
-      body.app-premium-navigation .bottom-nav::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        border-radius: inherit;
-        background: linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.1) 40%,rgba(255,255,255,0) 62%),
-          radial-gradient(110% 90% at 8% 0%,rgba(255,255,255,.38),transparent 55%);
-        pointer-events: none;
-      }
-      body.app-premium-navigation .bottom-nav-item > span:not(.nav-item-icon) { display: none !important; }
-      body.app-premium-navigation .bottom-nav-item { flex: 1; }
-      body.app-premium-navigation .nav-indicator { top: 6px; left: 0; }
-      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active,
-      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active .nav-item-icon { color: var(--text-primary); }
-      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over,
-      body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over .nav-item-icon { color: #fff; }
-      @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-        body.app-premium-navigation .bottom-nav { background: rgba(232,238,255,.95); }
-      }
-    }
+    
 
   
     /* Premium-only location/notification controls; basic navigation remains unchanged. */
     .premium-toolbar-control,
     .premium-drawer-control { display: none !important; }
 
-    body.app-premium-navigation .premium-toolbar-control {
-      display: inline-flex !important;
-    }
-    body.app-premium-navigation .nav-actions [data-top-nav] {
-      display: none !important;
-    }
-    body.app-premium-navigation .premium-drawer-control {
-      display: flex !important;
-    }
-    body:not(.app-premium-navigation) .premium-drawer-control {
+    
+    
+    
+    body.app-basic-navigation .premium-drawer-control {
       display: none !important;
     }
     body.nav-pending .topbar,
@@ -1864,234 +1699,71 @@
     body.nav-pending .desktop-nav-toggle {
       visibility: hidden !important;
     }
-    body.app-premium-navigation .location-chip {
-      max-width: 150px;
-      min-width: 0;
-      height: 38px;
-      padding: 0 12px;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid rgba(255,255,255,.75);
-      border-radius: 100px;
-      background: rgba(255,255,255,.55);
-      color: var(--text-primary);
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1;
-    }
-    body.app-premium-navigation .location-chip i {
-      flex-shrink: 0;
-      color: var(--primary);
-      font-size: 17px;
-    }
-    body.app-premium-navigation .location-chip span {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    body.app-premium-navigation .bottom-nav { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-    body.app-premium-navigation .nav-indicator.dragging {
-      transition: none;
-      box-shadow: 0 8px 22px rgba(41,98,255,.5), inset 0 1px 1px rgba(255,255,255,.5);
-    }
-    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active,
-    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.active .nav-item-icon { color: var(--text-primary); }
-    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over,
-    body.app-premium-navigation .bottom-nav.nav-dragging .bottom-nav-item.drag-over .nav-item-icon { color: #fff; }
-    body.app-premium-navigation .notif-list { padding: 10px 16px 20px; overflow-y: auto; overscroll-behavior: contain; }
-    body.app-premium-navigation .notif-item { padding: 12px 14px; display:flex; align-items:flex-start; gap:12px; border-radius:var(--radius-lg); }
-    body.app-premium-navigation .notif-item:hover { background:var(--primary-soft); }
-    body.app-premium-navigation .notif-item > i { width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--primary-soft);color:var(--primary);font-size:20px; }
-    body.app-premium-navigation .notif-item strong { display:block;font-size:14px;font-weight:700;line-height:1.4; }
-    body.app-premium-navigation .notif-item p { margin:2px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.5; }
-    body.app-premium-navigation .notif-item small { display:block;margin-top:4px;color:var(--text-muted);font-size:12px; }
-    body.app-premium-navigation .notif-item.notif-unread { background:color-mix(in srgb, var(--primary-soft) 48%, transparent); }
-    body.app-premium-navigation .notif-copy { min-width:0;flex:1; }
-    body.app-premium-navigation .notif-time { color:var(--text-muted);font-size:12px;font-weight:500;white-space:nowrap; }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     .shoppy-notification-badge { position:absolute; top:-5px; right:-6px; min-width:17px; height:17px; padding:0 4px; display:none; align-items:center; justify-content:center; border:2px solid var(--surface, #fff); border-radius:999px; background:#e53935; color:#fff; font-size:10px; font-weight:800; line-height:1; z-index:3; }
     #notifButton { position:relative; }
     #notifButton .shoppy-notification-badge { top:6px; right:6px; }
     #drawerNotifButton { position:relative; }
     #drawerNotifButton .shoppy-notification-badge { position:static; margin-left:auto; border-color:transparent; }
 
-    body.app-premium-navigation .notif-empty { padding:36px 12px;text-align:center;color:var(--text-secondary);font-size:14px; }
-    body.app-premium-navigation .notif-empty i { display:block;margin-bottom:10px;color:var(--text-muted);font-size:40px; }
-    body.app-premium-navigation .notif-all { width:100%;min-height:48px;margin-top:8px;padding:12px 16px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-lg);background:var(--primary-soft);color:var(--primary);font-weight:700; }
-    @media (min-width:761px) {
-      body.app-premium-navigation .nav-actions { display:none !important; }
-      body.app-premium-navigation .desktop-drawer { display:flex; }
-    }
-    /* Desktop Premium: compact right toolbar + icon-only vertical floating navigation on the left. */
-    @media (min-width:761px) {
-      body.app-premium-navigation { padding-bottom:36px; padding-left:92px; }
-      body.app-premium-navigation .topbar {
-        box-sizing:border-box; width:calc(100% - 64px); max-width:none; margin:18px 24px 14px 40px;
-        padding:8px 10px 8px 16px; min-height:58px; height:auto; display:flex; align-items:center;
-        justify-content:flex-end; gap:10px; border:0; border-radius:0; background:transparent; box-shadow:none; overflow:visible;
-      }
-      body.app-premium-navigation .topbar::before { display:none; }
-      body.app-premium-navigation .topbar .brand {
-        order:1; position:static; display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;
-        width:auto; min-width:0; padding:9px 13px; margin:0; border:1px solid rgba(255,255,255,.7); border-radius:100px;
-        background:linear-gradient(180deg,rgba(41,98,255,.17),rgba(41,98,255,.08));
-        -webkit-backdrop-filter:blur(22px) saturate(180%); backdrop-filter:blur(22px) saturate(180%);
-        box-shadow:0 6px 18px rgba(41,98,255,.12),inset 0 1px 1px rgba(255,255,255,.8);
-      }
-      body.app-premium-navigation .topbar .nav-actions {
-        order:2; display:flex !important; align-items:center; justify-content:flex-end; gap:10px;
-        width:auto; margin:0; padding:0; flex:0 0 auto;
-      }
-      body.app-premium-navigation .topbar .premium-toolbar-control {
-        box-sizing:border-box; flex:0 0 auto; width:auto; max-width:170px; min-width:0; height:42px;
-        border:1px solid rgba(255,255,255,.7); border-radius:100px;
-        background:linear-gradient(180deg,rgba(41,98,255,.17),rgba(41,98,255,.08));
-        -webkit-backdrop-filter:blur(22px) saturate(180%); backdrop-filter:blur(22px) saturate(180%);
-        box-shadow:0 6px 18px rgba(41,98,255,.12),inset 0 1px 1px rgba(255,255,255,.8);
-      }
-      body.app-premium-navigation .topbar #headerLocationButton { order:1; }
-      body.app-premium-navigation .topbar #notifButton { order:2; width:42px; min-width:42px; padding:0; justify-content:center; }
-      body.app-premium-navigation .topbar #notifButton i { font-size:21px; }
-      body.app-premium-navigation .topbar .location-chip { padding:0 9px; gap:6px; }
-      body.app-premium-navigation .topbar .location-chip span { max-width:125px; }
-      body.app-premium-navigation .bottom-nav {
-        position:fixed; top:22px; left:16px; right:auto; bottom:22px; z-index:1500; box-sizing:border-box;
-        width:64px; height:auto; min-height:0; padding:8px 6px; display:flex; flex-direction:column;
-        align-items:stretch; justify-content:flex-start; gap:8px; overflow:hidden; transform:none;
-        border:1px solid rgba(255,255,255,.68); border-radius:34px;
-        background:linear-gradient(180deg,rgba(41,98,255,.17),rgba(41,98,255,.08));
-        -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%);
-        box-shadow:0 14px 38px rgba(41,98,255,.2),0 3px 10px rgba(0,0,0,.08),inset 0 1px 1px rgba(255,255,255,.85);
-      }
-      body.app-premium-navigation .bottom-nav::before { content:""; position:absolute; inset:0; z-index:0; border-radius:inherit; pointer-events:none; background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 68%); }
-      body.app-premium-navigation .bottom-nav-item { flex:0 0 52px; width:100%; height:52px; min-height:52px; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; border-radius:26px; }
-      body.app-premium-navigation .bottom-nav-item > span:not(.nav-item-icon) { display:none !important; }
-      body.app-premium-navigation .bottom-nav-item .nav-item-icon { width:100%; height:24px; font-size:24px; }
-      body.app-premium-navigation .nav-indicator { top:0; left:6px; width:50px; height:52px !important; border-radius:26px; transition:transform .5s cubic-bezier(.34,1.36,.5,1),height .5s cubic-bezier(.34,1.36,.5,1); }
-      body.app-premium-navigation .desktop-drawer, body.app-premium-navigation .desktop-drawer-overlay, body.app-premium-navigation .desktop-nav-toggle { display:none !important; }
-    }
+    
+    
+    
+    
+    
+    
     /* Basic mobile navigation: force five equal-width slots and keep the active state predictable. */
     @media (max-width:760px) {
-      body:not(.app-premium-navigation) .bottom-nav {
+      body.app-basic-navigation .bottom-nav {
         position:fixed; box-sizing:border-box; width:100%; left:0; right:0; transform:none;
         display:flex; align-items:stretch; justify-content:flex-start; gap:0;
         padding-left:0; padding-right:0; overflow:visible; isolation:isolate;
       }
       /* The indicator is a positioned overlay, never a sixth flex item. */
-      body:not(.app-premium-navigation) .bottom-nav > .nav-indicator {
+      body.app-basic-navigation .bottom-nav > .nav-indicator {
         position:absolute; display:none; pointer-events:none; z-index:0;
       }
-      body:not(.app-premium-navigation) .bottom-nav > .bottom-nav-item {
+      body.app-basic-navigation .bottom-nav > .bottom-nav-item {
         box-sizing:border-box; flex:1 1 0 !important; width:0 !important; min-width:0; max-width:none !important;
         margin:0; padding-left:0; padding-right:0; align-items:center; justify-content:center; text-align:center;
       }
-      body:not(.app-premium-navigation) .bottom-nav > .bottom-nav-item .nav-item-icon {
+      body.app-basic-navigation .bottom-nav > .bottom-nav-item .nav-item-icon {
         width:100%; display:flex; align-items:center; justify-content:center;
       }
-      body:not(.app-premium-navigation) .bottom-nav > .bottom-nav-item.active,
-      body:not(.app-premium-navigation) .bottom-nav > .bottom-nav-item.active .nav-item-icon { color:var(--primary); }
+      body.app-basic-navigation .bottom-nav > .bottom-nav-item.active,
+      body.app-basic-navigation .bottom-nav > .bottom-nav-item.active .nav-item-icon { color:var(--primary); }
     }
 
     /* Keep the page scrolling behind the device's bottom safe-area while the web nav stays in place. */
     @media (max-width:760px) {
       html { background:transparent; }
-      body.app-premium-navigation { padding-bottom:calc(var(--bottom-nav-height) + 28px + env(safe-area-inset-bottom,0px)); }
-      body.app-premium-navigation .bottom-nav { bottom:calc(14px + env(safe-area-inset-bottom,0px)); }
+      
+      
     }
 
-    @media (max-width:760px) {
-      body.app-premium-navigation .premium-toolbar-control.location-chip { display:inline-flex !important; }
-      body.app-premium-navigation .desktop-drawer,
-      body.app-premium-navigation .desktop-drawer-overlay,
-      body.app-premium-navigation .desktop-nav-toggle { display:none !important; }
-    }
+    
 
   
 
-    /* Desktop Premium layout refinements requested: floating nav, icon badge, and two-column cards. */
-    @media (min-width:761px) {
-      /* The vertical navigation floats over the page instead of reserving a blank left rail. */
-      body.app-premium-navigation { padding-left:0 !important; padding-bottom:0 !important; }
-      body.app-premium-navigation .topbar { margin-left:24px !important; }
-      body.app-premium-navigation .bottom-nav {
-        position:fixed !important; top:50% !important; left:16px !important; right:auto !important; bottom:auto !important;
-        width:64px !important; height:max-content !important; min-height:0 !important;
-        max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px);
-        padding:8px 6px !important; justify-content:center !important; overflow-y:auto !important; overflow-x:hidden !important;
-        transform:translateY(-50%) !important; z-index:1500 !important;
-      }
-      /* Pin the red count to the bell glyph's top-right, not outside the toolbar button. */
-      body.app-premium-navigation #notifButton .shoppy-notification-badge {
-        top:6px !important; right:6px !important; border-width:1px !important; min-width:15px; height:15px;
-        padding:0 3px; font-size:9px;
-      }
-      /* Cart products appear two per row; the order summary follows beneath the full grid. */
-      body.app-premium-navigation #cartPage .app-cart-layout {
-        display:grid !important; grid-template-columns:minmax(0,1fr) !important; gap:28px !important;
-      }
-      body.app-premium-navigation #cartPage .app-cart-items {
-        display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-        align-items:stretch; column-gap:28px; row-gap:0;
-      }
-      body.app-premium-navigation #cartPage .app-cart-item {
-        min-width:0; align-items:flex-start; flex-wrap:wrap; gap:12px; padding:18px 0;
-      }
-      body.app-premium-navigation #cartPage .app-cart-item:first-child { padding-top:0; }
-      body.app-premium-navigation #cartPage .app-cart-image { width:76px; height:76px; }
-      body.app-premium-navigation #cartPage .app-cart-info { flex:1 1 120px; }
-      body.app-premium-navigation #cartPage .app-cart-total { width:100%; text-align:right; }
-      body.app-premium-navigation #cartPage .app-summary { position:static; width:100%; }
-      /* Profile identity/actions stay in a horizontal top card; shopping settings form a two-column grid below. */
-      body.app-premium-navigation #appProfileLayout {
-        display:grid !important; grid-template-columns:minmax(0,1fr) !important; gap:28px !important;
-      }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside {
-        display:flex; flex-wrap:wrap; align-items:center; gap:14px 18px; padding:20px !important;
-      }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-avatar { flex:0 0 76px; width:76px; height:76px; margin:0 8px 0 0; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-name { flex:0 1 180px; margin:0; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-email { flex:1 1 190px; margin:0; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-member-badge { flex:0 0 auto; margin:0; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > #appMembershipSummary { flex:1 1 210px; margin:0; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow { flex:1 1 230px; margin:0; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > div[style*="height:1px"] { display:none !important; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row { box-sizing:border-box; flex:1 1 150px; width:auto !important; min-width:130px; margin:0; padding:13px 12px; border:1px solid var(--divider) !important; border-radius:14px; }
-      body.app-premium-navigation #appProfileLayout > section {
-        min-width:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 16px;
-      }
-      body.app-premium-navigation #appProfileLayout > section > .app-section-heading,
-      body.app-premium-navigation #appProfileLayout > section > #appLogoutButton { grid-column:1 / -1; }
-      body.app-premium-navigation #appProfileLayout > section > .app-section-heading { margin-bottom:4px; }
-      body.app-premium-navigation #appProfileLayout > section > .app-profile-row { box-sizing:border-box; min-width:0; margin:0; padding:15px 14px; border:1px solid var(--divider); border-radius:14px; }
-      body.app-premium-navigation #appProfileLayout > section > #appLogoutButton { margin-top:8px; }
-    }
-    @media (min-width:761px) {
-      body.app-premium-navigation #appProfileLayout .app-profile-aside {
-        display:grid !important;
-        grid-template-columns:repeat(6,minmax(0,1fr));
-        grid-template-rows:auto auto auto auto;
-        align-items:center;
-        gap:12px;
-      }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-avatar { grid-column:1; grid-row:1 / span 2; align-self:center; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-name { grid-column:2 / 5; grid-row:1; align-self:end; min-width:0; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-email { grid-column:2 / 5; grid-row:2; align-self:start; min-width:0; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-member-badge { grid-column:5 / 7; grid-row:1 / span 2; justify-self:end; align-self:center; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > #appMembershipSummary { grid-column:1 / 4; grid-row:3; width:100%; box-sizing:border-box; margin:0; min-width:0; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow { grid-column:4 / 7; grid-row:3; width:100%; box-sizing:border-box; min-width:0; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > div[style*="height:1px"] { display:none !important; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > a.app-profile-row[href="/orders.html"],
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > a.app-profile-row[href="/wishlist.html"],
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > #appProfileCartShortcut {
-        grid-row:4; grid-column:span 2; min-width:0; width:100% !important; box-sizing:border-box;
-        display:flex; align-items:center; gap:8px; margin:0; padding:12px 10px; border:1px solid var(--divider) !important;
-        border-radius:14px; background:var(--surface) !important; text-align:left; overflow:hidden;
-      }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row > i:first-child { flex:0 0 auto; font-size:19px; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row > span { min-width:0; flex:1; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row strong { font-size:12px; white-space:nowrap; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row .ph-caret-right { display:none; }
-    }
+    
+    
+    
     /* Restore the last selected tab before first paint, preventing a brief jump to Home on refresh. */
     html[data-start-tab="search"] #homeContent,
     html[data-start-tab="search"] #cartPage,
@@ -2117,41 +1789,10 @@
 
     /* Final profile fixes: real verification icon, shared membership background, compact switch, and reliable desktop tabs. */
     .app-profile-name { display:flex; align-items:center; flex-wrap:wrap; gap:0; }
-    @media (min-width:761px) {
-      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-aside {
-        background:linear-gradient(135deg,#173D8F 0%,#2962FF 58%,#7C5CDB 100%) !important;
-        border:1px solid rgba(255,255,255,.35) !important;
-        box-shadow:0 12px 32px rgba(41,98,255,.2) !important;
-        color:#fff !important;
-      }
-      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-name,
-      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-email { color:#fff !important; }
-      body.app-premium-navigation #appProfileLayout.app-premium-active #appMembershipSummary { display:none !important; }
-      body.app-premium-navigation #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow { display:none !important; }
-      body.app-premium-navigation #appProfileLayout > section > #premiumUiPreferenceRow {
-        display:flex; justify-content:flex-end; align-items:center; min-height:26px;
-        margin:0 0 0 auto; padding:0; border:0; border-radius:0; background:transparent;
-        width:auto; grid-column:1 / -1; grid-row:auto; gap:0;
-      }
-      body.app-premium-navigation #appProfileLayout > section > #premiumUiPreferenceRow .premium-ui-preference-copy { display:none !important; }
-      body.app-premium-navigation #appProfileLayout > section > #premiumUiPreferenceRow .premium-ui-switch { margin-left:auto; }
-      body.app-premium-navigation #appProfileLayout.app-premium-active .app-verified-badge { color:#55A6FF !important; }
-      /* Keep the real icon above the name baseline and visible on the blue profile card. */
-      body.app-premium-navigation #appProfileLayout .app-profile-name { display:flex; align-items:center; }
-    }
-    @media (max-width:760px) {
-      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-aside { background:linear-gradient(135deg,#173D8F 0%,#2962FF 58%,#7C5CDB 100%); color:#fff; }
-      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-name,
-      body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-email { color:#fff; }
-      body.app-premium-navigation #appProfileLayout.app-premium-active #appMembershipSummary { display:none !important; }
-      body.app-premium-navigation #appProfileLayout.app-premium-active .app-verified-badge { color:#55A6FF; }
-    }
+    
+    
     /* Ensure floating navigation buttons stay above decorative glass layers and remain clickable. */
-    @media (min-width:761px) {
-      body.app-premium-navigation #bottomNav { pointer-events:auto !important; }
-      body.app-premium-navigation #bottomNav > .bottom-nav-item { position:relative !important; z-index:3 !important; pointer-events:auto !important; cursor:pointer; }
-      body.app-premium-navigation #bottomNav::before { pointer-events:none !important; }
-    }
+    
 
 
 
@@ -2204,8 +1845,7 @@
     #appProfileLayout > .app-profile-aside > div[style*="height:1px"],
     #appProfileLayout > .app-profile-aside > a.app-profile-row[href="/orders.html"],
     #appProfileLayout > .app-profile-aside > a.app-profile-row[href="/wishlist.html"],
-    #appProfileLayout > .app-profile-aside > #appProfileCartShortcut,
-    #appProfileLayout > .app-profile-aside > #premiumUiPreferenceRow {
+    #appProfileLayout > .app-profile-aside > #appProfileCartShortcut{
       display:none !important;
     }
     #appProfileLayout > section {
@@ -2216,24 +1856,11 @@
       align-content:start;
     }
     #appProfileLayout > section > .app-section-heading,
-    #appProfileLayout > section > #premiumUiPreferenceRow,
     #appProfileLayout > section > #appLogoutButton { grid-column:1 / -1; }
     #appProfileLayout > section > .app-section-heading { margin:0 0 4px; }
-    #appProfileLayout > section > #premiumUiPreferenceRow {
-      display:flex;
-      justify-content:flex-end;
-      align-items:center;
-      min-height:28px;
-      margin:0 0 0 auto;
-      padding:0;
-      border:0;
-      border-radius:0;
-      background:transparent;
-      width:100%;
-      gap:0;
-    }
-    #appProfileLayout > section > #premiumUiPreferenceRow .premium-ui-preference-copy { display:none !important; }
-    #appProfileLayout > section > #premiumUiPreferenceRow .premium-ui-switch { margin-left:auto; }
+    
+    
+    
     #appProfileLayout > section > .app-profile-row {
       box-sizing:border-box;
       min-width:0;
@@ -2247,19 +1874,15 @@
       box-shadow:0 3px 10px rgba(25,45,80,.035);
     }
     #appProfileLayout > section > #appLogoutButton { margin-top:8px; }
-    #appProfileLayout.app-premium-active .app-profile-aside,
-    body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-aside {
+    #appProfileLayout.app-premium-active .app-profile-aside{
       background:#FFFFFF !important;
       color:#172033 !important;
       border:1px solid #E5EAF2 !important;
       box-shadow:0 12px 32px rgba(25,45,80,.09),0 2px 6px rgba(25,45,80,.04) !important;
     }
     #appProfileLayout.app-premium-active .app-profile-name,
-    #appProfileLayout.app-premium-active .app-profile-email,
-    body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-name,
-    body.app-premium-navigation #appProfileLayout.app-premium-active .app-profile-email { color:#172033 !important; }
-    #appProfileLayout .app-verified-badge,
-    body.app-premium-navigation #appProfileLayout .app-verified-badge {
+    #appProfileLayout.app-premium-active .app-profile-email{ color:#172033 !important; }
+    #appProfileLayout .app-verified-badge{
       color:#2962FF !important;
       font-size:22px;
       filter:drop-shadow(0 1px 1px rgba(41,98,255,.2));
@@ -2290,28 +1913,16 @@
 
     /* Requested desktop-only layout and navigation updates. Mobile styles remain unchanged. */
     @media (min-width:761px) {
-      body.app-premium-navigation .desktop-sheet-nav-item { display:flex !important; }
-      body.app-premium-navigation .bottom-nav { width:64px !important; }
-      body.app-premium-navigation .bottom-nav-item { flex:0 0 52px !important; }
-      body.app-premium-navigation .topbar { position:relative; margin-left:0 !important; padding-left:180px !important; }
-      body.app-premium-navigation .topbar > .brand {
-        position:absolute !important; left:24px !important; top:50% !important; right:auto !important;
-        margin:0 !important; transform:translateY(-50%) !important; z-index:3;
-      }
-      body.app-premium-navigation .app-view {
-        width:calc(100% - 124px) !important; max-width:none !important;
-        margin:30px 24px 60px 100px !important; box-sizing:border-box;
-      }
-      body.app-premium-navigation #cartPage .app-summary { min-width:0; }
-      body.app-premium-navigation #cartPage #appCheckoutButton,
-      body.app-premium-navigation #cartPage #appContinueShopping,
-      body.app-premium-navigation #cartPage #appClearCartButton {
-        display:inline-flex; vertical-align:top; width:calc(33.333% - 9px) !important;
-        min-width:0; min-height:44px; margin:12px 8px 0 0; padding:10px 8px;
-        box-sizing:border-box; font-size:12px; white-space:normal; line-height:1.25;
-      }
-      body.app-premium-navigation #cartPage #appClearCartButton { margin-right:0; }
-      body.app-premium-navigation #cartPage #appClearCartButton[hidden] { display:none !important; }
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       body.guest-mode #appProfileLayout,
       body.guest-mode #appProfileLoading { display:none !important; }
     }
@@ -2324,78 +1935,7 @@
 
 
     /* Desktop follow-up: balanced nav bubble, persistent brand, relocated sheet controls, and unified page width. */
-    @media (min-width:761px) {
-      body.app-premium-navigation .bottom-nav {
-        box-sizing:border-box !important;
-        padding:8px 6px !important;
-        align-items:center !important;
-        gap:0 !important;
-      }
-      body.app-premium-navigation .bottom-nav-item {
-        box-sizing:border-box !important;
-        width:52px !important;
-        min-width:52px !important;
-        max-width:52px !important;
-        margin:0 !important;
-      }
-      body.app-premium-navigation .nav-indicator {
-        left:6px !important;
-        width:52px !important;
-        border-radius:26px !important;
-      }
-      /* The brand remains visible while page content scrolls. */
-      body.app-premium-navigation .topbar > .brand {
-        position:fixed !important;
-        top:18px !important;
-        left:24px !important;
-        right:auto !important;
-        margin:0 !important;
-        transform:none !important;
-        z-index:1601 !important;
-        line-height:1.2;
-      }
-      /* Location and notifications now live in the vertical navigation. */
-      body.app-premium-navigation .topbar #headerLocationButton,
-      body.app-premium-navigation .topbar #notifButton { display:none !important; }
-      body.app-premium-navigation #bottomNav .nav-item-icon { position:relative !important; overflow:visible !important; }
-      body.app-premium-navigation #bottomNav #notifBadge {
-        position:absolute !important;
-        top:-5px !important;
-        right:-7px !important;
-        z-index:5 !important;
-        min-width:15px !important;
-        height:15px !important;
-        padding:0 3px !important;
-        border:1px solid #fff !important;
-        border-radius:999px !important;
-        font-size:9px !important;
-        line-height:13px !important;
-        box-sizing:border-box !important;
-        justify-content:center !important;
-      }
-      /* Use the same available page width and left/right gutters on every desktop view. */
-      body.app-premium-navigation #homeContent .search-bar-wrap,
-      body.app-premium-navigation #homeContent .hero-wrap,
-      body.app-premium-navigation #homeContent .offers-wrap,
-      body.app-premium-navigation #homeContent .container,
-      body.app-premium-navigation #searchPage {
-        width:calc(100% - 124px) !important;
-        max-width:none !important;
-        margin-left:100px !important;
-        margin-right:24px !important;
-        box-sizing:border-box !important;
-      }
-      body.app-premium-navigation #searchPage,
-      body.app-premium-navigation .app-view {
-        width:calc(100% - 124px) !important;
-        max-width:none !important;
-        margin-left:100px !important;
-        margin-right:24px !important;
-        box-sizing:border-box !important;
-      }
-      body.app-premium-navigation #homeContent .search-bar-wrap { margin-top:20px; }
-      body.app-premium-navigation #homeContent .hero-wrap { margin-top:28px; }
-    }
+    
 
 </style>
 <style id="desktop-nav-profile-refinements">
@@ -2403,95 +1943,43 @@
   .desktop-nav-expand-toggle { display:none; }
   @media (min-width:761px) {
     /* Balanced active pill and icon; keep the indicator centered within every tab. */
-    body.app-premium-navigation #bottomNav { align-items:center !important; flex-direction:column !important; }
-    body.app-premium-navigation #bottomNav .bottom-nav-item {
-      position:relative !important; display:flex !important; align-items:center !important; justify-content:center !important;
-      box-sizing:border-box !important; padding:0 !important; margin:0 !important;
-    }
-    body.app-premium-navigation #bottomNav .bottom-nav-item .nav-item-icon {
-      position:relative !important; display:flex !important; align-items:center !important; justify-content:center !important;
-      flex:0 0 24px !important; width:24px !important; min-width:24px !important; height:24px !important; margin:0 !important;
-      overflow:visible !important; line-height:1 !important;
-    }
-    body.app-premium-navigation #bottomNav .bottom-nav-item .nav-item-icon > i { display:block; line-height:1; }
-    body.app-premium-navigation #bottomNav .nav-indicator {
-      box-sizing:border-box !important; width:52px !important; left:6px !important; margin:0 !important;
-    }
+    
+    
+    
+    
+    
     /* The count badge is positioned against the 24px bell-icon wrapper, not the tab pill. */
-    body.app-premium-navigation #bottomNav [data-bottom-nav="notifications"] .nav-item-icon #notifBadge {
-      top:-5px !important; right:-5px !important; left:auto !important; bottom:auto !important;
-      transform:none !important; z-index:8 !important; pointer-events:none !important;
-    }
-    body.app-premium-navigation #bottomNav .desktop-nav-expand-toggle {
-      display:flex !important; align-items:center !important; justify-content:center !important; gap:10px !important;
-      position:relative !important; z-index:3 !important; flex:0 0 44px !important; width:100% !important; min-height:44px !important;
-      margin-top:auto !important; padding:0 12px !important; border:0 !important; border-radius:22px !important;
-      background:transparent !important; color:var(--text-secondary) !important; cursor:pointer !important; white-space:nowrap !important;
-    }
-    body.app-premium-navigation #bottomNav .desktop-nav-expand-toggle i { font-size:20px; flex:0 0 auto; transition:transform .25s ease; }
-    body.app-premium-navigation #bottomNav .desktop-nav-expand-toggle span { display:none; font-size:13px; font-weight:700; }
-    body.app-premium-navigation #bottomNav.nav-expanded {
-      top:16px !important; bottom:16px !important; left:16px !important; transform:none !important;
-      width:224px !important; max-height:none !important; height:auto !important; min-height:0 !important;
-      padding:14px 12px !important; align-items:stretch !important; justify-content:flex-start !important; gap:8px !important;
-      overflow-x:hidden !important; overflow-y:auto !important; border-radius:24px !important;
-    }
-    body.app-premium-navigation #bottomNav.nav-expanded .bottom-nav-item {
-      flex:0 0 48px !important; width:100% !important; max-width:none !important; min-width:0 !important; height:48px !important;
-      min-height:48px !important; flex-direction:row !important; justify-content:flex-start !important; gap:14px !important;
-      padding:0 14px !important; border-radius:16px !important;
-    }
-    body.app-premium-navigation #bottomNav.nav-expanded .bottom-nav-item > span:not(.nav-item-icon) {
-      display:inline-flex !important; align-items:center !important; min-width:0 !important; white-space:nowrap !important;
-      font-size:13px !important; font-weight:700 !important;
-    }
-    body.app-premium-navigation #bottomNav.nav-expanded .bottom-nav-item .nav-item-icon { flex:0 0 24px !important; width:24px !important; }
-    body.app-premium-navigation #bottomNav.nav-expanded .nav-indicator {
-      left:12px !important; width:200px !important; border-radius:16px !important;
-    }
-    body.app-premium-navigation #bottomNav.nav-expanded .desktop-nav-expand-toggle { justify-content:flex-start !important; padding:0 14px !important; }
-    body.app-premium-navigation #bottomNav.nav-expanded .desktop-nav-expand-toggle i { transform:rotate(180deg); }
-    body.app-premium-navigation #bottomNav.nav-expanded .desktop-nav-expand-toggle span { display:inline !important; }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /* Profile identity card wraps its content; the themed promo occupies the adjacent free space. */
-    body.app-premium-navigation #appProfileLayout {
-      display:grid !important; grid-template-columns:max-content minmax(260px,1fr) !important; gap:16px 20px !important; align-items:stretch !important;
-    }
-    body.app-premium-navigation #appProfileLayout .app-profile-aside {
-      display:flex !important; flex-wrap:wrap !important; align-content:flex-start !important; align-items:center !important;
-      justify-content:flex-start !important; gap:6px 10px !important; width:max-content !important; max-width:100% !important;
-      min-width:0 !important; padding:18px !important; box-sizing:border-box !important;
-    }
-    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-avatar {
-      flex:0 0 58px !important; width:58px !important; height:58px !important; margin:0 2px 0 0 !important;
-    }
-    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-name {
-      flex:0 1 auto !important; max-width:230px !important; margin:0 !important; font-size:19px !important; line-height:1.2 !important;
-    }
-    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-email {
-      flex:1 0 100% !important; max-width:100% !important; margin:0 !important; font-size:13px !important; line-height:1.35 !important;
-      overflow-wrap:anywhere !important;
-    }
-    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-member-badge { flex:0 0 auto !important; margin:4px 0 0 !important; }
-    body.app-premium-navigation #appProfileLayout .app-profile-aside > #appMembershipSummary,
-    body.app-premium-navigation #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow { flex:1 0 100% !important; width:100% !important; margin:4px 0 0 !important; }
-    body.app-premium-navigation #appProfileLayout .app-profile-aside > div[style*="height:1px"] { display:none !important; }
-    body.app-premium-navigation #appProfileLayout .app-profile-aside > .app-profile-row { flex:1 0 100% !important; width:100% !important; }
-    body.app-premium-navigation #appProfileLayout .app-profile-promo {
-      position:relative !important; isolation:isolate !important; overflow:hidden !important; display:flex !important; flex-direction:column !important;
-      align-items:flex-start !important; justify-content:center !important; min-width:0 !important; min-height:190px !important;
-      box-sizing:border-box !important; padding:24px 28px !important; border-radius:22px !important;
-      border:1px solid rgba(255,255,255,.55) !important;
-      background:linear-gradient(125deg,#173D8F 0%,#2962FF 52%,#7856D8 100%) !important;
-      box-shadow:0 14px 36px rgba(41,98,255,.18),inset 0 1px 0 rgba(255,255,255,.32) !important; color:#fff !important;
-    }
-    body.app-premium-navigation #appProfileLayout .app-profile-promo-eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.92; }
-    body.app-premium-navigation #appProfileLayout .app-profile-promo > strong { display:block; margin-top:10px; font-family:var(--font-heading); font-size:clamp(34px,3.2vw,48px); font-weight:800; line-height:1; letter-spacing:-.04em; }
-    body.app-premium-navigation #appProfileLayout .app-profile-promo > strong span { font-size:.62em; letter-spacing:-.02em; }
-    body.app-premium-navigation #appProfileLayout .app-profile-promo p { position:relative; z-index:1; max-width:340px; margin:10px 0 16px; color:rgba(255,255,255,.88); font-size:13px; line-height:1.5; }
-    body.app-premium-navigation #appProfileLayout .app-profile-promo-button { position:relative; z-index:2; display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1px solid rgba(255,255,255,.45); border-radius:999px; background:rgba(255,255,255,.16); color:#fff; font:700 12px var(--font-body); cursor:pointer; backdrop-filter:blur(10px); }
-    body.app-premium-navigation #appProfileLayout .app-profile-promo-art { position:absolute; right:18px; bottom:-24px; z-index:-1; font-size:155px; line-height:1; color:rgba(255,255,255,.13); transform:rotate(-12deg); }
-    body.app-premium-navigation #appProfileLayout > section { grid-column:1 / -1 !important; min-width:0 !important; }
-    body.app-premium-navigation #appProfileLayout .app-verified-badge,
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     #appProfileLayout .app-verified-badge { color:var(--primary,#2962FF) !important; }
   }
   /* Profile card tidy-up is intentionally limited to the requested profile elements on mobile. */
@@ -2603,7 +2091,6 @@
   body:not(.nav-never) #appProfileLayout .app-profile-aside > .app-profile-name { flex:0 1 auto !important; max-width:230px !important; margin:0 !important; font-size:19px !important; line-height:1.2 !important; }
   body:not(.nav-never) #appProfileLayout .app-profile-aside > .app-profile-email { flex:1 0 100% !important; max-width:100% !important; margin:0 !important; font-size:13px !important; line-height:1.35 !important; overflow-wrap:anywhere !important; }
   body:not(.nav-never) #appProfileLayout .app-profile-aside > #appMembershipSummary,
-  body:not(.nav-never) #appProfileLayout .app-profile-aside > #premiumUiPreferenceRow,
   body:not(.nav-never) #appProfileLayout .app-profile-aside > .app-profile-row { flex:1 0 100% !important; width:100% !important; margin:4px 0 0 !important; }
   body:not(.nav-never) #appProfileLayout .app-profile-promo {
     position:relative !important; isolation:isolate !important; overflow:hidden !important; display:flex !important; flex-direction:column !important;
@@ -2836,7 +2323,6 @@
 @media (min-width:761px) {
   html body #desktopDrawer,
   html body.nav-pending #desktopDrawer,
-  html body.app-premium-navigation #desktopDrawer,
   html body.app-basic-navigation #desktopDrawer {
     display:flex !important;
     position:fixed !important;
@@ -2862,7 +2348,6 @@
   }
   html body #desktopDrawer.expanded,
   html body.nav-pending #desktopDrawer.expanded,
-  html body.app-premium-navigation #desktopDrawer.expanded,
   html body.app-basic-navigation #desktopDrawer.expanded { width:226px !important; }
   html body #desktopDrawerOverlay,
   html body #desktopNavToggle { display:none !important; }
@@ -3118,8 +2603,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 @media (min-width:761px) {
   html body:not(.nav-never) { padding-top:68px !important; }
   html body header.topbar,
-  html body.app-basic-navigation header.topbar,
-  html body.app-premium-navigation header.topbar {
+  html body.app-basic-navigation header.topbar{
     position:fixed !important; inset:0 0 auto 0 !important;
     width:100% !important; height:68px !important; min-height:68px !important;
     margin:0 !important; padding:0 24px 0 0 !important;
@@ -3491,14 +2975,11 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 </style>
 </head>
 
-<body class="nav-pending">
+<body class="nav-pending app-basic-navigation">
   <script>
     (function () {
-      document.body.classList.remove("app-premium-navigation");
-      document.body.classList.add("app-basic-navigation");
-      if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
-        document.body.classList.remove("nav-pending");
-      }
+      if (window.__sequizeCachedLogin !== true) { /* guest/unknown until verified */ }
+      if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) document.body.classList.remove("nav-pending");
     })();
   </script>
 
@@ -3654,7 +3135,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
     <main class="container" id="productsSection">
 
-      <div class="app-page-heading explore-page-heading"><h1>Explore</h1><button type="button" class="explore-filter-trigger" id="exploreFilterTrigger" aria-label="Filters" aria-haspopup="dialog"><i class="ph ph-sliders-horizontal" aria-hidden="true"></i><span class="mf-count" id="mfCount" hidden>0</span></button></div>
+      <div class="app-page-heading explore-page-heading"><h1>Explore</h1></div>
 
       <div class="section-head" id="categoriesHeading">
 
@@ -3696,6 +3177,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
           <p id="productsSubtitle">Discover something you'll love.</p>
           <p id="homeDiscountOffers" class="home-discount-offers" hidden aria-live="polite"></p>
           <span id="productCount" class="product-count"></span>
+          <button type="button" class="explore-filter-trigger" id="exploreFilterTrigger" aria-label="Filters" aria-haspopup="dialog"><i class="ph ph-sliders-horizontal" aria-hidden="true"></i><span class="mf-count" id="mfCount" hidden>0</span></button>
         </div>
 
       </div>
@@ -5637,7 +5119,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       const premiumIndicator = document.getElementById("navIndicator");
       const premiumNav = document.getElementById("bottomNav");
       const premiumActive = premiumNav && premiumNav.querySelector("[data-bottom-nav].active");
-      if (premiumIndicator && premiumNav && premiumActive && (window.innerWidth > 760 || document.body.classList.contains("app-premium-navigation"))) {
+      if (premiumIndicator && premiumNav && premiumActive && window.innerWidth > 760) {
         const navRect = premiumNav.getBoundingClientRect();
         const itemRect = premiumActive.getBoundingClientRect();
         if (window.innerWidth > 760) {
@@ -6210,10 +5692,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     });
 
     /* AUTH STATE: browsing is public; cart, wishlist and product detail actions require login. */
-    const PREMIUM_CACHE_KEY = window.__appnetickMembershipCacheKey || "shoppy_verified_premium_cache_v2";
-    const isAppleDevice = !!window.__appnetickAppleDevice;
-    let lastVerifiedMembership = null;
-
     function expiryTimestamp(value) {
       const n = Number(value);
       if (Number.isFinite(n) && n > 0) return n;
@@ -6221,35 +5699,10 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       return Number.isFinite(parsed) ? parsed : 0;
     }
 
-    let lastMembershipForPresentation = null;
-    function setPremiumPresentation(membership, verified) {
-      lastMembershipForPresentation = membership && typeof membership === "object" ? membership : {};
+    /* Membership only affects the Profile card; it never changes the site UI/skin. */
+    function setPremiumPresentation(membership) {
       const expiry = membership ? expiryTimestamp(membership.expiresAt) : 0;
-      const active = !!(verified && membership && membership.active === true && expiry > Date.now());
-      if (active) {
-        lastVerifiedMembership = { active: true, expiresAt: expiry, checkedAt: Date.now() };
-        try { localStorage.setItem(PREMIUM_CACHE_KEY, JSON.stringify(lastVerifiedMembership)); } catch (e) {}
-      } else if (verified) {
-        lastVerifiedMembership = null;
-        try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {}
-      }
-      /* Membership remains active when purchased; it no longer changes the site's UI skin. */
-      document.body.classList.remove("app-premium-navigation");
-      document.body.classList.add("app-basic-navigation");
-      updateBrowserThemeColor(false);
-      return active;
-    }
-
-    function updateBrowserThemeColor(usePremiumTheme) {
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if (!meta) return;
-      let color = "#ffffff";
-      if (usePremiumTheme) {
-        const primary = getComputedStyle(document.documentElement).getPropertyValue("--primary").trim();
-        color = /^#[0-9a-f]{3,8}$/i.test(primary) ? primary : "#2962FF";
-      }
-      meta.setAttribute("content", color);
-      meta.removeAttribute("media");
+      return !!(membership && membership.active === true && expiry > Date.now());
     }
 
     async function checkShoppyAuth() {
@@ -6263,7 +5716,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         if (response.status === 401) {
           verified = true;
           authStatus = "guest";
-          setPremiumPresentation({}, true);
+          setPremiumPresentation({});
           try { localStorage.removeItem(PROFILE_CACHE_KEY); localStorage.removeItem(CART_CACHE_KEY); localStorage.removeItem(CART_STORAGE_KEY); } catch (e) {}
         } else if (!response.ok) {
           // A temporary server failure is not proof that the session or membership was revoked.
@@ -6274,26 +5727,18 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
           const accountIdentity = data.user.id || data.user.uid || data.user._id || data.user.email;
           window.__sequizeSearchAccountKey = accountIdentity ? encodeURIComponent(String(accountIdentity).trim().toLowerCase()) : "";
           const membership = data.membership && typeof data.membership === "object" ? data.membership : {};
-          setPremiumPresentation(membership, true);
+          setPremiumPresentation(membership);
           try { localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ user: { name: data.user.name || "User", email: data.user.email || "" }, membership: membership, expiresAt: Date.now() + PROFILE_CACHE_TTL })); } catch (e) {}
         } else {
           // Only an explicit, successful response without a user can invalidate cached state.
           verified = true;
           authStatus = "guest";
-          setPremiumPresentation({}, true);
+          setPremiumPresentation({});
           try { localStorage.removeItem(PROFILE_CACHE_KEY); localStorage.removeItem(CART_CACHE_KEY); localStorage.removeItem(CART_STORAGE_KEY); } catch (e) {}
         }
       } catch (error) {
         // Keep a not-yet-expired verified cache on temporary network failure; do not trust it for API permissions.
         authStatus = "unknown";
-        let cache = null;
-        try { cache = JSON.parse(localStorage.getItem(PREMIUM_CACHE_KEY) || "null"); } catch (e) {}
-        const expiry = cache ? expiryTimestamp(cache.expiresAt) : 0;
-        const cacheValid = !!(cache && cache.active === true && expiry > Date.now());
-        if (!cacheValid) { try { localStorage.removeItem(PREMIUM_CACHE_KEY); } catch (e) {} }
-        document.body.classList.remove("app-premium-navigation");
-        document.body.classList.add("app-basic-navigation");
-        updateBrowserThemeColor(false);
       }
 
       let savedTab = "home";
@@ -6331,7 +5776,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         if (response.status === 401) {
           try { localStorage.removeItem(PROFILE_CACHE_KEY); localStorage.removeItem(CART_CACHE_KEY); localStorage.removeItem(CART_STORAGE_KEY); } catch(e) {}
           authStatus = "guest";
-          setPremiumPresentation({}, true);
+          setPremiumPresentation({});
           document.body.classList.add("guest-mode");
           document.getElementById("guestCartPanel").hidden = false;
           document.getElementById("appCartLayout").hidden = true;
@@ -6348,7 +5793,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
           if (response.status === 200) {
             try { localStorage.removeItem(PROFILE_CACHE_KEY); localStorage.removeItem(CART_CACHE_KEY); localStorage.removeItem(CART_STORAGE_KEY); } catch (e) {}
             authStatus = "guest";
-            setPremiumPresentation({}, true);
+            setPremiumPresentation({});
             document.body.classList.add("guest-mode");
             document.getElementById("guestCartPanel").hidden = false;
             document.getElementById("appCartLayout").hidden = true;
@@ -6360,7 +5805,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         }
         const membership = data.membership && typeof data.membership === "object" ? data.membership : {};
         try { localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({ user:{name:data.user.name||"User",email:data.user.email||""}, membership, expiresAt:Date.now()+PROFILE_CACHE_TTL })); } catch(e) {}
-        setPremiumPresentation(membership, true);
+        setPremiumPresentation(membership);
       } catch (error) {
         // Preserve an unexpired verified cache while offline; no navigation/layout changes.
       } finally { membershipCheckInFlight = false; }
@@ -6851,152 +6296,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       });
     });
 
-    /* iOS-STYLE PRESS-AND-HOLD DRAG OF THE SELECTED BOTTOM-NAV TAB */
-
-    (function () {
-      let state = null;
-      let holdTimer = null;
-      let suppressClick = false;
-
-      const getItems = () =>
-        [...bottomNav.querySelectorAll(".bottom-nav-item")];
-
-      function moveBubble(clientX, clientY) {
-        const items = getItems();
-        const first = items[0];
-        const rect = bottomNav.getBoundingClientRect();
-        const verticalDesktop = window.innerWidth > 760;
-        let bubbleCenter;
-        if (verticalDesktop) {
-          const bubbleHeight = navIndicator.offsetHeight || first.offsetHeight;
-          let y = clientY - rect.top - bottomNav.clientTop - bubbleHeight / 2;
-          y = Math.max(0, Math.min(Math.max(0, bottomNav.clientHeight - bubbleHeight), y));
-          navIndicator.style.transform = `translate3d(0, ${y}px, 0)`;
-          bubbleCenter = y + bubbleHeight / 2;
-        } else {
-          const bubbleWidth = navIndicator.offsetWidth || first.offsetWidth;
-          let x = clientX - rect.left - bottomNav.clientLeft - bubbleWidth / 2;
-          x = Math.max(0, Math.min(Math.max(0, bottomNav.clientWidth - bubbleWidth), x));
-          navIndicator.style.transform = `translate3d(${x}px, 0, 0)`;
-          bubbleCenter = x + bubbleWidth / 2;
-        }
-        let nearest = first;
-        let best = Infinity;
-        items.forEach(item => {
-          const itemCenter = verticalDesktop ? item.offsetTop + item.offsetHeight / 2 : item.offsetLeft + item.offsetWidth / 2;
-          const distance = Math.abs(itemCenter - bubbleCenter);
-          if (distance < best) { best = distance; nearest = item; }
-        });
-        items.forEach(item => item.classList.toggle("drag-over", item === nearest));
-        state.target = nearest;
-      }
-
-      function beginDrag() {
-        if (!state) return;
-
-        state.dragging = true;
-        suppressClick = true;
-
-        try {
-          bottomNav.setPointerCapture(state.id);
-        } catch (error) { /* ignore */ }
-
-        navIndicator.classList.add("dragging");
-        bottomNav.classList.add("nav-dragging");
-
-        if (navigator.vibrate) {
-          try { navigator.vibrate(12); } catch (error) { /* ignore */ }
-        }
-
-        moveBubble(state.x, state.y);
-      }
-
-      function endDrag(commit) {
-        clearTimeout(holdTimer);
-
-        if (!state) return;
-
-        const finished = state;
-        state = null;
-
-        if (!finished.dragging) return;
-
-        try {
-          bottomNav.releasePointerCapture(finished.id);
-        } catch (error) { /* ignore */ }
-
-        navIndicator.classList.remove("dragging");
-        bottomNav.classList.remove("nav-dragging");
-
-        getItems().forEach(item => item.classList.remove("drag-over"));
-
-        void navIndicator.offsetWidth;
-
-        const target = commit ? finished.target : null;
-        const current = bottomNav.querySelector(".bottom-nav-item.active");
-
-        if (target && target !== current && target.dataset.bottomNav) {
-          handleNavigation(target.dataset.bottomNav);
-        } else {
-          positionNavIndicator();
-        }
-
-        setTimeout(() => { suppressClick = false; }, 80);
-      }
-
-      bottomNav.addEventListener("pointerdown", event => {
-        if (!document.body.classList.contains("app-premium-navigation")) return;
-        if (event.pointerType === "mouse" && event.button !== 0) return;
-        if (!event.target.closest(".bottom-nav-item.active")) return;
-
-        state = {
-          id: event.pointerId,
-          startX: event.clientX,
-          x: event.clientX,
-          y: event.clientY,
-          startY: event.clientY,
-          dragging: false,
-          target: null
-        };
-
-        clearTimeout(holdTimer);
-        holdTimer = setTimeout(beginDrag, 220);
-      });
-
-      window.addEventListener("pointermove", event => {
-        if (!state || event.pointerId !== state.id) return;
-
-        state.x = event.clientX;
-        state.y = event.clientY;
-
-        if (state.dragging) {
-          event.preventDefault();
-          moveBubble(event.clientX, event.clientY);
-        } else if (Math.abs(event.clientX - state.startX) > 10 || Math.abs(event.clientY - state.startY) > 10) {
-          clearTimeout(holdTimer);
-          state = null;
-        }
-      });
-
-      window.addEventListener("pointerup", event => {
-        if (state && event.pointerId === state.id) endDrag(true);
-      });
-
-      window.addEventListener("pointercancel", event => {
-        if (state && event.pointerId === state.id) endDrag(false);
-      });
-
-      bottomNav.addEventListener("click", event => {
-        if (suppressClick) {
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      }, true);
-
-      bottomNav.addEventListener("contextmenu", event => {
-        event.preventDefault();
-      });
-    })();
 
 
     /* ADMIN-MANAGED DISCOUNT OFFERS: use the same discount source as the cart. */
@@ -7085,7 +6384,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     }
 
     initializeHomePage();
-    updateBrowserThemeColor(isAppleDevice || window.__appnetickCachedPremium);
 
 
     /* IN-PAGE CART: preserves /api/cart endpoints and checkout route */
@@ -7138,7 +6436,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         const profileLayout=document.getElementById("appProfileLayout");
         const rowTitle=document.getElementById("appMembershipRowTitle");
         const rowDescription=document.getElementById("appMembershipRowDescription");
-        setPremiumPresentation(m, true);
+        setPremiumPresentation(m);
         const verifiedBadge=document.getElementById("appVerifiedBadge");
         if(verifiedBadge) verifiedBadge.hidden=!isActive;
         if(isActive){
@@ -7259,7 +6557,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 /* Desktop: make the floating rail start in the correct position immediately and stay there. */
 @media (min-width:761px) {
   html body #bottomNav,
-  html body.app-premium-navigation #bottomNav,
   html body.app-basic-navigation #bottomNav {
     position:fixed !important;
     top:8px !important;
@@ -7282,10 +6579,8 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
     animation:none !important;
     transition:none !important;
   }
-  /* Remove the Premium UI switch from desktop Account completely. */
-  html body #premiumUiPreferenceRow,
-  html body #appProfileLayout #premiumUiPreferenceRow,
-  html body .premium-ui-preference-row { display:none !important; }
+  
+  
   /* Compact the rail vertically while keeping all navigation options reachable. */
   html body #bottomNav > .bottom-nav-item { min-height:48px !important; }
 }
@@ -7310,7 +6605,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
   /* Full-height drawer pinned to the very top, flush left, no shadow, no rounded floating card. */
   html body #desktopDrawer,
   html body.nav-pending #desktopDrawer,
-  html body.app-premium-navigation #desktopDrawer,
   html body.app-basic-navigation #desktopDrawer {
     position:fixed !important; top:0 !important; left:0 !important; bottom:0 !important; right:auto !important;
     width:226px !important; height:100vh !important; height:100dvh !important; max-height:none !important;
@@ -7340,7 +6634,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 @media (min-width:761px) {
   html body:not(.nav-never) { padding-top:68px !important; }
   /* Fixed header: never scrolls with the page. */
-  html body .topbar, html body.app-premium-navigation .topbar, html body.app-basic-navigation .topbar {
+  html body .topbar, html body.app-basic-navigation .topbar {
     position:fixed !important; top:0 !important; left:226px !important; right:0 !important;
     width:auto !important; height:68px !important; min-height:68px !important; margin:0 !important;
     padding:0 24px !important; display:flex !important; align-items:center !important;
@@ -7421,7 +6715,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
   /* Very high specificity so older topbar rules (relative / padding-left:180px / flex-end) can never win. */
   html body:not(.nav-never) header.topbar,
   html body.nav-pending header.topbar,
-  html body.app-premium-navigation:not(.nav-never) header.topbar,
   html body.app-basic-navigation:not(.nav-never) header.topbar {
     position:fixed !important; top:0 !important; left:226px !important; right:0 !important; bottom:auto !important;
     width:auto !important; max-width:none !important; height:68px !important; min-height:68px !important;
@@ -7446,7 +6739,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
   /* An older rule set padding-top:0 with higher specificity; this one wins so content starts below the 68px header. */
   html body:not(.zz):not(.yy):not(.nav-never),
   html body:not(.zz):not(.yy):not(.nav-never).desktop-drawer-expanded,
-  html body.app-premium-navigation:not(.zz):not(.nav-never),
   html body.app-basic-navigation:not(.zz):not(.nav-never) {
     padding-top:68px !important;
   }
@@ -7593,28 +6885,9 @@ body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-w
   html body .footer{padding-left:var(--gut);padding-right:var(--gut)}
 }
 
-/* ================= PREMIUM / iOS mobile: floating glass ================= */
-.fx-fade{display:none}
-@media (max-width:760px){
-  html body.app-premium-navigation{--bottom-nav-height:52px;padding-bottom:calc(52px + 14px + var(--gut) + env(safe-area-inset-bottom,0px))!important}
 
-  /* header floats: no bar, no divider; content scrolls underneath and fades */
-  html body.app-premium-navigation .topbar{top:0!important;width:100%!important;margin:0!important;border-radius:0!important;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;overflow:visible!important}
-  html body.app-premium-navigation .topbar::before{display:none!important}
-  body.app-premium-navigation .fx-fade{display:block;position:fixed;left:0;right:0;z-index:900;pointer-events:none}
-  body.app-premium-navigation .fx-fade.top{top:0;height:calc(env(safe-area-inset-top,0px) + 86px);background:linear-gradient(180deg,rgba(255,255,255,.96) 45%,rgba(255,255,255,0));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
-  body.app-premium-navigation .fx-fade.bottom{bottom:0;height:calc(env(safe-area-inset-bottom,0px) + 100px);background:linear-gradient(0deg,rgba(255,255,255,.96) 35%,rgba(255,255,255,0))}
 
-  /* bottom bar: equal 4px gap between bar edge and selected pill on all four sides */
-  html body.app-premium-navigation .bottom-nav{
-    height:52px;padding:4px;gap:0;
-    background:linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.16));
-    -webkit-backdrop-filter:blur(30px) saturate(220%);backdrop-filter:blur(30px) saturate(220%);
-    border:1px solid rgba(255,255,255,.75);
-    box-shadow:0 12px 32px rgba(0,0,0,.24),0 2px 8px rgba(0,0,0,.14),inset 0 1px 1px rgba(255,255,255,.95),inset 0 -1px 1px rgba(255,255,255,.3)}
-  html body.app-premium-navigation .bottom-nav-item{height:42px}
-  html body.app-premium-navigation .nav-indicator{top:4px!important;height:42px!important}
-}
+
 
 /* ================= DESKTOP: one full-width header, drawer + divider below it ================= */
 #dwHandle{display:none}
@@ -7636,10 +6909,10 @@ body.explore-mode #exploreFilterRow{flex-wrap:nowrap;overflow-x:auto;scrollbar-w
   html body:not(.zz):not(.yy):not(.nav-never):not(.guest-mode) header.topbar .nav-actions #hdrWishlist{order:3}
   html body:not(.zz):not(.yy):not(.nav-never):not(.guest-mode) header.topbar .nav-actions [data-top-nav="cart"]{order:4}
   html body:not(.zz):not(.yy):not(.nav-never):not(.guest-mode) header.topbar .nav-actions #headerLocationButton{display:inline-flex!important;order:5;align-items:center;gap:6px;height:40px!important;min-width:0;max-width:170px!important;padding:0 14px!important;border:1px solid #d9dce1!important;border-radius:999px!important;background:#fff!important;color:#1b1d21;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-  /* Premium/iOS: header floats, content scrolls underneath and fades (same as mobile) */
-  html body.app-premium-navigation:not(.zz):not(.yy):not(.nav-never) header.topbar{background:transparent!important}
-  html body.app-premium-navigation .fx-fade.top{display:block;position:fixed;top:0;left:0;right:0;height:96px;z-index:900;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.96) 45%,rgba(255,255,255,0));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
-  html body.app-premium-navigation .fx-fade.bottom{display:none}
+  
+  
+  
+  
 
   /* drawer sits below the header; vertical divider (drawer edge) starts below the header too */
   html body:not(.zz):not(.yy):not(.nav-never){padding-left:calc(var(--dw) + 20px)!important}
@@ -7837,9 +7110,6 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button{width:190px;
     var sync=function(){cart.classList.toggle("has-items",!!items.querySelector(".ci"))};
     new MutationObserver(sync).observe(items,{childList:true,subtree:true});sync();
   }
-
-  /* 6. Fade layers under the floating iOS header / bottom bar */
-  ["top","bottom"].forEach(function(p){var d=document.createElement("div");d.className="fx-fade "+p;d.setAttribute("aria-hidden","true");document.body.appendChild(d)});
 
   /* 7. Header profile picture (circular) */
   var acc=document.querySelector('.nav-actions [data-top-nav="account"]');
@@ -8557,10 +7827,10 @@ html body #cartPage .ci-info{display:flex;flex-direction:column;justify-content:
 html body #cartPage .ci-title{line-height:1.3!important;margin:0 0 2px!important}
 html body #cartPage .ci-price-row{margin:0!important;gap:6px!important}
 html body #cartPage .ci-qty{margin-top:3px!important}
-/* Premium members on Android can switch their Premium navigation skin off and on. */
-html body #premiumUiPreferenceRow,html body #appProfileLayout #premiumUiPreferenceRow,html body .premium-ui-preference-row{display:flex!important}
-html body #premiumUiPreferenceRow[hidden]{display:none!important}
-@media(min-width:761px){html body #premiumUiPreferenceRow,html body #appProfileLayout #premiumUiPreferenceRow,html body .premium-ui-preference-row{display:flex!important}}
+
+
+
+
 </style>
 
 
@@ -8651,10 +7921,8 @@ html body #cartPage{scroll-margin-top:var(--header-h,64px)}
 
 <style id="unified-ui-and-desktop-explore-final">
 /* All devices and membership states share one basic page and bottom-navigation design. */
-html body.app-premium-navigation { padding-left:0 !important; }
-html body #premiumUiPreferenceRow,
-html body #appProfileLayout #premiumUiPreferenceRow,
-html body .premium-ui-preference-row { display:none !important; }
+
+
 /* Keep membership status visible, but remove the separate premium-only profile skin. */
 html body #appProfileLayout.app-premium-active .app-profile-aside {
   padding:0 !important; border:0 !important; border-radius:0 !important;
@@ -8950,12 +8218,10 @@ html body header.topbar {
 <!-- Unified customer UI: premium membership is retained as a purchase/status only. -->
 <style id="single-shared-customer-ui-final">
 /* Premium membership must never switch the site into a separate visual skin. */
-html body.app-premium-navigation,
+
 html body.app-basic-navigation { --bottom-nav-height:66px; }
-html body.app-premium-navigation { padding-left:0 !important; }
-html body #premiumUiPreferenceRow,
-html body #appProfileLayout #premiumUiPreferenceRow,
-html body .premium-ui-preference-row { display:none !important; }
+
+
 html body #appProfileLayout.app-premium-active .app-profile-aside {
   padding:0 !important; border:0 !important; border-radius:0 !important;
   background:transparent !important; box-shadow:none !important;
@@ -9048,45 +8314,55 @@ html body #productsSectionHead .products-heading-copy #exploreFilterTrigger i {
   html body header.topbar .nav-actions #notifButton { width:38px !important; min-width:38px !important; flex-basis:38px !important; }
 }
 </style>
-<script id="force-one-shared-ui-and-place-explore-filter">
+
+
+<style id="requested-ui-updates-final">
+/* ===== Explore: filter icon sits at the right end of the "200 products · Showing 24" line, no stroke ===== */
+html body #productsSectionHead .products-heading-copy{display:flex!important;flex-wrap:wrap;align-items:center;column-gap:8px;width:100%!important;min-width:0}
+html body #productsSectionHead .products-heading-copy > :not(#productCount):not(#exploreFilterTrigger){flex:0 0 100%}
+html body #productsSectionHead .products-heading-copy #productCount{flex:1 1 0!important;min-width:0!important;width:auto!important;max-width:none!important;margin-top:0!important}
+html body #productsSectionHead .products-heading-copy #exploreFilterTrigger,
+html body.explore-mode #productsSectionHead .products-heading-copy #exploreFilterTrigger{
+  margin:0 0 0 auto!important;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;
+  width:34px!important;min-width:34px!important;height:34px!important;padding:0!important;flex:0 0 34px!important;
+  align-items:center!important;justify-content:center!important;border-radius:50%!important;position:relative}
+html body.explore-mode #productsSectionHead .products-heading-copy #exploreFilterTrigger{display:inline-flex!important}
+html body #productsSectionHead .products-heading-copy #exploreFilterTrigger.active{background:transparent!important;border:0!important;color:var(--primary)!important}
+html body #productsSectionHead .products-heading-copy #exploreFilterTrigger i{display:block;line-height:1;font-size:21px!important}
+
+/* ===== My Cart: all items inside one soft grey rounded card, no dividers, vertical quantity ===== */
+html body #cartPage.has-items .app-cart-items{
+  background:var(--surface-secondary)!important;border:0!important;border-radius:20px!important;
+  padding:6px 14px!important;box-shadow:none!important;gap:0!important}
+html body #cartPage .ci{border:0!important;border-bottom:0!important;padding:14px 0!important;gap:18px!important;align-items:center!important}
+html body #cartPage .ci:first-child{padding-top:14px!important}
+html body #cartPage .ci-img{background:#fff!important}
+html body #cartPage .ci-info{gap:14px!important}
+html body #cartPage .ci-copy{gap:7px!important}
+html body #cartPage .ci-title{margin:0!important}
+html body #cartPage .ci-remove{margin-top:2px!important}
+html body #cartPage .ci-qty{
+  display:inline-flex!important;flex-direction:column-reverse!important;align-items:center!important;justify-content:center!important;
+  gap:6px!important;padding:4px!important;margin:0!important;border:1px solid var(--border)!important;border-radius:999px!important;
+  background:var(--surface)!important;flex:0 0 auto!important;align-self:center!important}
+html body #cartPage .ci-qty button{width:26px!important;height:26px!important;flex:0 0 26px!important}
+html body #cartPage .ci-qty strong{min-width:0!important;line-height:1.2}
+
+/* ===== Profile: Premium Membership Active card takes full width of the profile card ===== */
+html body #appProfileLayout > .app-profile-aside > #appMembershipSummary{
+  grid-column:1 / -1!important;grid-row:auto!important;justify-self:stretch!important;
+  flex:1 0 100%!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;margin:8px 0 0!important}
+html body #appProfileLayout #appMembershipSummary strong,
+html body #appProfileLayout #appMembershipSummary small{white-space:normal!important;overflow-wrap:anywhere}
+
+/* ===== No first-paint transitions: refreshed page shows its final state immediately ===== */
+html:not(.ui-ready) body *,html:not(.ui-ready) body *::before,html:not(.ui-ready) body *::after{transition:none!important}
+</style>
+<script>
 (function(){
-  "use strict";
-  function applySharedUI(){
-    if(!document.body) return;
-    document.body.classList.remove("app-premium-navigation");
-    document.body.classList.add("app-basic-navigation");
-    document.documentElement.classList.remove("premium-skin-early");
-    try { localStorage.removeItem("shoppy_premium_ui_preference_v1"); } catch(e) {}
-    var trigger=document.getElementById("exploreFilterTrigger");
-    var count=document.getElementById("productCount");
-    var copy=document.querySelector("#productsSectionHead .products-heading-copy");
-    if(trigger && copy){
-      trigger.classList.remove("toolbar-explore-filter");
-      if(trigger.parentElement!==copy){
-        if(count && count.parentElement===copy) count.insertAdjacentElement("afterend",trigger);
-        else copy.appendChild(trigger);
-      }
-      trigger.setAttribute("aria-hidden",String(!document.body.classList.contains("explore-mode")));
-    }
-  }
-  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",applySharedUI,{once:true});
-  else applySharedUI();
-  new MutationObserver(function(){
-    if(document.body.classList.contains("app-premium-navigation")){
-      document.body.classList.remove("app-premium-navigation");
-      document.body.classList.add("app-basic-navigation");
-    }
-    var trigger=document.getElementById("exploreFilterTrigger");
-    var copy=document.querySelector("#productsSectionHead .products-heading-copy");
-    var count=document.getElementById("productCount");
-    if(trigger && copy && trigger.parentElement!==copy){
-      trigger.classList.remove("toolbar-explore-filter");
-      if(count && count.parentElement===copy) count.insertAdjacentElement("afterend",trigger);
-      else copy.appendChild(trigger);
-    }
-  }).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["class"]});
+  function ready(){requestAnimationFrame(function(){requestAnimationFrame(function(){document.documentElement.classList.add("ui-ready")})})}
+  if(document.readyState==="complete")ready();else window.addEventListener("load",ready,{once:true});
 })();
 </script>
-
 </body>
 </html>
