@@ -64,7 +64,7 @@
         document.documentElement.setAttribute("data-start-tab", savedTab);
       }
     } catch (e) {}
-    const shouldUsePremiumSkin = apple || cacheValid;
+    const shouldUsePremiumSkin = apple || (cacheValid && uiPreference !== "basic");
     document.documentElement.classList.toggle("premium-skin-early", shouldUsePremiumSkin);
     const apply = function () {
       if (!document.body) return;
@@ -5283,9 +5283,24 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       } catch (_) {}
     }
 
-    function recordSearchQuery(text) { /* Search history is disabled. */ }
+    function recordSearchQuery(text) {
+      const query = String(text || "").trim().replace(/\s+/g, " ");
+      if (query.length < 2) return;
+      const list = readSearchHistory().filter(item => !(item.type === "query" && item.text.toLowerCase() === query.toLowerCase()));
+      list.unshift({ type: "query", text: query, ts: Date.now() });
+      writeSearchHistory(list);
+      renderSearchHistory();
+    }
 
-    function recordSearchProduct(id) { /* Search history is disabled. */ }
+    function recordSearchProduct(id) {
+      const product = searchCatalog.find(item => String(normalizeProductId(item.id)) === String(normalizeProductId(id)));
+      if (!product) return;
+      const productId = normalizeProductId(product.id);
+      const list = readSearchHistory().filter(item => !(item.type === "product" && String(item.id) === String(productId)));
+      list.unshift({ type: "product", id: productId, title: String(product.title || product.name || "Product"), image: String(product.thumbnail || product.image || product.image_url || ""), ts: Date.now() });
+      writeSearchHistory(list);
+      renderSearchHistory();
+    }
 
     function formatTimeAgo(ts) {
       const diff = Math.max(0, Date.now() - Number(ts || 0));
@@ -5323,12 +5338,23 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
 
     function renderSearchHistory() {
       if (!searchHistoryEl) return;
-      searchHistoryEl.hidden = true;
-      searchHistoryEl.innerHTML = "";
+      const list = readSearchHistory();
+      searchHistoryEl.hidden = false;
+      searchProductGrid.hidden = true;
+      if (!list.length) {
+        searchHistoryEl.innerHTML = `<div class="search-empty-state"><span class="search-empty-icon"><i class="ph ph-magnifying-glass" aria-hidden="true"></i></span><strong>Start your search</strong><p>Search for products you love. Your recent searches will appear here.</p></div>`;
+        clearInterval(searchHistoryTimer);
+        return;
+      }
+      searchHistoryEl.innerHTML = `<div class="sh-top"><span class="sh-label">Recent searches</span><button type="button" class="sh-clear" id="shClearAll">Clear all</button></div>` + list.map(historyRowHtml).join("");
+      startSearchHistoryClock();
+      const clearButton = searchHistoryEl.querySelector("#shClearAll");
+      if (clearButton) clearButton.addEventListener("click", () => { writeSearchHistory([]); renderSearchHistory(); });
     }
 
     function renderLiveHistoryMatches(query) {
       if (searchHistoryEl) { searchHistoryEl.hidden = true; searchHistoryEl.innerHTML = ""; }
+      if (searchProductGrid) searchProductGrid.hidden = false;
     }
 
     function hideSearchHistory() {
@@ -5471,6 +5497,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
         renderSearchHistory();
         return;
       }
+      searchProductGrid.hidden = false;
 
       renderLiveHistoryMatches(query);
       searchProductCount.textContent = "";
@@ -6218,7 +6245,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       }
       // iOS devices and verified Premium members always share the same navigation skin.
       // Basic Android users always retain the Basic navigation skin.
-      const usePremiumSkin = active || isAppleDevice;
+      const usePremiumSkin = isAppleDevice || (active && getPremiumUiPreference() !== "basic");
       syncPremiumUiPreferenceControl(active);
       const hadPremiumSkin = document.body.classList.contains("app-premium-navigation");
       if (hadPremiumSkin !== usePremiumSkin) {
@@ -7098,7 +7125,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
       async function request(method,body){const o={method,headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"};if(body!==undefined){o.headers["Content-Type"]="application/json";o.body=JSON.stringify(body);}const r=await fetch("/api/cart",o);const t=await r.text();let d;try{d=JSON.parse(t)}catch{throw Error(`Cart API response invalid (HTTP ${r.status}).`)}if(r.status===401){authStatus="guest";document.body.classList.add("guest-mode");document.getElementById("guestCartPanel").hidden=false;document.getElementById("appCartLayout").hidden=true;throw Error("Login required.")}if(!r.ok||d.success!==true)throw Error(d.message||"Cart request failed.");return d;}
       function render(){const count=items.reduce((n,x)=>n+(Number(x.quantity)||1),0),subtotal=items.reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);const totalPct=Math.min(100,eligibleDiscounts.reduce((n,d)=>n+(Number(d.percent)||0),0)),discountAmount=subtotal*totalPct/100,chargeBase=Math.max(0,subtotal-discountAmount); const charges=taxSettings.map(t=>({...t,amount:chargeBase*(Number(t.percent)||0)/100}));const total=chargeBase+charges.reduce((n,t)=>n+t.amount,0);const totalINR=Math.max(0,total*85),advanceINR=Math.min(600,totalINR),codINR=Math.max(0,totalINR-advanceINR);qtyEl.textContent=count;advanceEl.textContent=price(advanceINR/85);codEl.textContent=price(codINR/85);checkout.disabled=!items.length||busy;clear.hidden=true;clear.disabled=busy;
         const rs=inr=>{const n=Number(inr)||0;return "₹"+new Intl.NumberFormat("en-IN",{minimumFractionDigits:Math.abs(n%1)>0.004?2:0,maximumFractionDigits:2}).format(n)};
-        checkout.textContent="Continue to pay "+rs(advanceINR);
+        checkout.textContent="Pay "+rs(advanceINR);
         const quick=document.getElementById("cartQuickSummary");
         if(quick)quick.innerHTML=items.length?`<span>${rs(subtotal*85)} Total</span><span>− ${rs(discountAmount*85)} Discount</span><strong>${rs(totalINR)} Payable Amount</strong>`:"";
         const linesEl=document.getElementById("appSummaryLines"),noteEl=document.getElementById("appSummaryNote");
@@ -7109,7 +7136,7 @@ html body #cartPage:not(.has-items) .app-status .app-primary-button {
           linesEl.innerHTML=items.length?h:"";}
         if(noteEl)noteEl.textContent=items.length?`Pay ${rs(advanceINR)} online now. ${codINR>0?rs(codINR)+" is collected at delivery.":"Nothing is due at delivery."}`:"";
         if(!items.length){itemsEl.innerHTML=sqState({icon:"ph-shopping-cart",title:"Your cart is empty",text:"Looks like you haven't added any products yet.",actions:'<button type="button" class="app-primary-button" id="appStartShopping">Start Shopping</button>'});document.getElementById("appStartShopping").onclick=()=>handleNavigation("home");return;}
-        itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),rawTitle=String(x.title||"Product").trim(),title=esc(rawTitle.charAt(0).toUpperCase()+rawTitle.slice(1)),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="ci"><div class="ci-img"><img src="${img}" alt="" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="ci-info"><h3 class="ci-title">${title}</h3><div class="ci-price-row"><p class="ci-price">${price(p)} × ${q}</p><button class="ci-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="ci-qty"><button type="button" aria-label="Decrease quantity" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" aria-label="Increase quantity" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div></div></article>`}).join("");
+        itemsEl.innerHTML=items.map(x=>{const id=esc(x.id),rawTitle=String(x.title||"Product").trim(),title=esc(rawTitle.replace(/([a-z])([0-9])/gi,"$1$2").replace(/([0-9])([a-z])/gi,"$1 $2").split(/\s+/).filter(Boolean).map(word=>word.charAt(0).toUpperCase()+word.slice(1).toLowerCase()).join(" ")),q=Math.max(1,Number(x.quantity)||1),p=Math.max(0,Number(x.price)||0),img=esc(x.thumbnail||"");return `<article class="ci"><div class="ci-img"><img src="${img}" alt="" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f5f5f2/969991?text=Product'"></div><div class="ci-info"><h3 class="ci-title">${title}</h3><div class="ci-price-row"><p class="ci-price">${price(p)} × ${q}</p><button class="ci-remove" type="button" data-action="remove" data-id="${id}" ${busy?'disabled':''}>Remove</button></div><div class="ci-qty"><button type="button" aria-label="Decrease quantity" data-action="decrease" data-id="${id}" ${q<=1||busy?'disabled':''}>−</button><strong>${q}</strong><button type="button" aria-label="Increase quantity" data-action="increase" data-id="${id}" ${q>=99||busy?'disabled':''}>+</button></div></div></article>`}).join("");
         itemsEl.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>act(b.dataset.action,b.dataset.id));
       }
       async function load(){if(!root||root.hidden&&loaded)return;loaded=true;itemsEl.setAttribute("aria-busy","true");let cacheShown=false;try{const cache=JSON.parse(localStorage.getItem("shoppy_cart_cache_v2")||"null");if(cache&&Array.isArray(cache.items)&&Number(cache.expiresAt)>Date.now()){items=cache.items;render();cacheShown=true;}else{const old=JSON.parse(localStorage.getItem("shoppy_cart")||"null");if(Array.isArray(old)){items=old;render();cacheShown=true;}}}catch(e){}if(!cacheShown)itemsEl.innerHTML='<div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div><div class="acs-item"><div class="skeleton acs-img"></div><div class="acs-copy"><div class="skeleton skeleton-line long"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div></div></div>';try{const d=await request("GET");items=Array.isArray(d.items)?d.items:[];try{localStorage.setItem("shoppy_cart",JSON.stringify(items));localStorage.setItem("shoppy_cart_cache_v2",JSON.stringify({items,expiresAt:Date.now()+86400000}));}catch{}render();}catch(e){if(e.message==="Login required.")return;if(!cacheShown){itemsEl.innerHTML=sqState({icon:"ph-warning-circle",title:"Unable to load cart",text:"Please check your connection and try again.",actions:'<button class="app-primary-button" id="appRetryCart" type="button">Try Again</button>'});document.getElementById("appRetryCart").onclick=()=>{loaded=false;load()};}}finally{itemsEl.setAttribute("aria-busy","false")}}
@@ -8534,6 +8561,31 @@ html body #cartPage .app-summary>.cs-lines,html body #cartPage .app-summary>.app
  new MutationObserver(syncExplore).observe(document.body,{attributes:true,attributeFilter:['class']});syncExplore();
 })();
 </script>
+
+
+<style id="requested-search-cart-scroll-and-premium-fixes">
+/* Search history and a helpful first-visit empty state. */
+html body #searchPage #searchHistory{display:flex!important}
+html body #searchPage #searchHistory[hidden]{display:none!important}
+html body #searchPage .search-empty-state{min-height:190px;padding:26px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1px solid var(--border);border-radius:16px;background:var(--surface-secondary);box-sizing:border-box}
+html body #searchPage .search-empty-icon{width:52px;height:52px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--primary-soft);color:var(--primary);font-size:25px}
+html body #searchPage .search-empty-state strong{font-size:16px;font-weight:800;color:var(--text-primary)}
+html body #searchPage .search-empty-state p{max-width:310px;margin:6px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.5}
+html body #searchPage .sh-label{margin-right:auto;color:var(--text-secondary);font-size:13px;font-weight:700}
+/* Do not create artificial page height or scroll room when a tab's content is short. */
+html body #searchPage,html body .app-view{min-height:0!important}
+html body #searchPage{margin-bottom:24px!important}
+html body .app-view{margin-bottom:24px!important}
+html body #cartPage .ci{align-items:center!important}
+html body #cartPage .ci-info{display:flex;flex-direction:column;justify-content:center;gap:3px!important}
+html body #cartPage .ci-title{line-height:1.3!important;margin:0 0 2px!important}
+html body #cartPage .ci-price-row{margin:0!important;gap:6px!important}
+html body #cartPage .ci-qty{margin-top:3px!important}
+/* Premium members on Android can switch their Premium navigation skin off and on. */
+html body #premiumUiPreferenceRow,html body #appProfileLayout #premiumUiPreferenceRow,html body .premium-ui-preference-row{display:flex!important}
+html body #premiumUiPreferenceRow[hidden]{display:none!important}
+@media(min-width:761px){html body #premiumUiPreferenceRow,html body #appProfileLayout #premiumUiPreferenceRow,html body .premium-ui-preference-row{display:flex!important}}
+</style>
 
 </body>
 </html>
