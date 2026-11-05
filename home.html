@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=block" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=block" rel="stylesheet">
 
   <link rel="preload" as="font" type="font/woff2" crossorigin href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/Phosphor.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/Phosphor-Fill.woff2">
@@ -4443,6 +4443,27 @@ html body #cartPage #appCartItems .acs-copy .skeleton-line{height:14px;margin-to
 html body #cartPage #appCartItems .acs-copy .skeleton-line:first-child{margin-top:0;height:16px}
 html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;height:100px;border-radius:999px;background:rgba(0,0,0,.07)}
 </style>
+
+<style id="offer-card-transition">
+.offer-wrap{display:none}
+@media (max-width:760px){
+  html body .offer-wrap{display:grid;grid-template-rows:0fr;opacity:0;visibility:hidden;margin:0!important;
+    transition:grid-template-rows .45s cubic-bezier(.22,.8,.25,1),opacity .35s ease,visibility 0s linear .45s}
+  html body .offer-wrap.show{grid-template-rows:1fr;opacity:1;visibility:visible;
+    transition:grid-template-rows .45s cubic-bezier(.22,.8,.25,1),opacity .35s ease .05s,visibility 0s}
+  html body .offer-wrap > .offer-wrap-inner{min-height:0;overflow:hidden}
+  html body #offerWrap #offerBanner{display:flex!important}
+  html body.explore-mode #offerWrap{display:none!important}
+  /* keep the effect on first load too (global "no first-paint transition" rule would otherwise block it) */
+  html:not(.ui-ready) body .offer-wrap{transition:grid-template-rows .45s cubic-bezier(.22,.8,.25,1),opacity .35s ease,visibility 0s linear .45s!important}
+  html:not(.ui-ready) body .offer-wrap.show{transition:grid-template-rows .45s cubic-bezier(.22,.8,.25,1),opacity .35s ease .05s,visibility 0s!important}
+}
+@media (min-width:761px){ html body #offerWrap{display:none!important} }
+@media (prefers-reduced-motion:reduce){
+  html body .offer-wrap,html body .offer-wrap.show,
+  html:not(.ui-ready) body .offer-wrap,html:not(.ui-ready) body .offer-wrap.show{transition:none!important}
+}
+</style>
 </head>
 
 <body class="nav-pending app-basic-navigation">
@@ -5077,6 +5098,24 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
   </nav>
 
 
+  <script>
+  /* Highlight the saved tab in the navigation before first paint (prevents a Home flash on refresh). */
+  (function () {
+    var t = document.documentElement.getAttribute("data-start-tab");
+    if (!t || t === "home") return;
+    var names = { home: "house", search: "magnifying-glass", explore: "compass", cart: "shopping-cart", account: "user-circle" };
+    document.querySelectorAll("[data-bottom-nav],[data-desktop-nav]").forEach(function (b) {
+      var isBottom = b.hasAttribute("data-bottom-nav");
+      var k = b.getAttribute("data-bottom-nav") || b.getAttribute("data-desktop-nav");
+      var on = k === t;
+      b.classList.toggle("active", on);
+      if (isBottom) { if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); }
+      var i = b.querySelector("i");
+      if (i && names[k]) i.className = "ph" + (on ? "-fill" : "") + " ph-" + names[k];
+    });
+  })();
+  </script>
+
   <div
     id="toast"
     class="toast"
@@ -5174,7 +5213,36 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
       return listedPrice * (1 - getHomeDiscountPercent() / 100);
     }
 
-    let allCategories = [];
+    /* Static categories (same slugs as the products feed): text + icon are always available, nothing waits for the network. */
+    const STATIC_CATEGORIES = [
+      { slug: "beauty",              icon: "ph-flower-lotus" },
+      { slug: "fragrances",          icon: "ph-drop" },
+      { slug: "furniture",           icon: "ph-armchair" },
+      { slug: "groceries",           icon: "ph-basket" },
+      { slug: "home-decoration",     icon: "ph-house-line" },
+      { slug: "kitchen-accessories", icon: "ph-cooking-pot" },
+      { slug: "laptops",             icon: "ph-laptop" },
+      { slug: "mens-shirts",         icon: "ph-t-shirt" },
+      { slug: "mens-shoes",          icon: "ph-sneaker" },
+      { slug: "mens-watches",        icon: "ph-watch" },
+      { slug: "mobile-accessories",  icon: "ph-plugs" },
+      { slug: "motorcycle",          icon: "ph-motorcycle" },
+      { slug: "skin-care",           icon: "ph-sparkle" },
+      { slug: "smartphones",         icon: "ph-device-mobile" },
+      { slug: "sports-accessories",  icon: "ph-basketball" },
+      { slug: "sunglasses",          icon: "ph-sunglasses" },
+      { slug: "tablets",             icon: "ph-device-tablet" },
+      { slug: "tops",                icon: "ph-coat-hanger" },
+      { slug: "vehicle",             icon: "ph-car" },
+      { slug: "womens-bags",         icon: "ph-handbag" },
+      { slug: "womens-dresses",      icon: "ph-crown-simple" },
+      { slug: "womens-jewellery",    icon: "ph-diamond" },
+      { slug: "womens-shoes",        icon: "ph-boot" },
+      { slug: "womens-watches",      icon: "ph-clock" }
+    ];
+    const CATEGORY_ICONS = {};
+    STATIC_CATEGORIES.forEach(c => { CATEGORY_ICONS[c.slug] = c.icon; });
+    let allCategories = STATIC_CATEGORIES.map(c => c.slug);
     let currentView = "home";
     let searchPreviousView = "home";
     let searchMode = false;
@@ -5549,7 +5617,7 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
         ...allCategories.map(category => ({
           value: category,
           label: category.replace(/-/g, " "),
-          icon: "ph-tag"
+          icon: CATEGORY_ICONS[category] || "ph-tag"
         }))
       ];
 
@@ -5624,6 +5692,8 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
         }
       }
     });
+
+    renderSheetCategories();
 
     function renderSkeletons(container, count = 8) {
       container.setAttribute("aria-busy", "true");
@@ -5952,13 +6022,7 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
     }
 
     function renderCategories(products) {
-      allCategories = [
-        ...new Set(
-          products
-            .map(product => product.category)
-            .filter(Boolean)
-        )
-      ].sort();
+      allCategories = [...allCategories, ...[...new Set(products.map(product => product.category).filter(Boolean))].filter(c => !allCategories.includes(c)).sort()];
 
       if (
         currentCategory &&
@@ -7764,6 +7828,10 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
     /* INITIALIZATION */
 
     async function initializeHomePage() {
+      try {
+        const earlyTab = localStorage.getItem(ACTIVE_NAV_STORAGE_KEY);
+        if (["home", "search", "explore", "cart", "account"].includes(earlyTab)) updateNavigationState(earlyTab);
+      } catch (error) { /* storage may be unavailable */ }
       updateResponsiveNavigation();
       initLocation();
       await checkShoppyAuth();
@@ -7975,7 +8043,7 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
 
 <!-- ===== SHOPPY HOME UI UPDATE v2 ===== -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+
 
 
 
@@ -7989,12 +8057,16 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
   if(home&&search){
     var b=document.createElement("section");b.className="offer-banner";b.id="offerBanner";
     b.innerHTML='<div><b>UP TO</b><strong><span id="offerPct">0</span>%<em>OFF</em></strong><small>ENDS SOON</small><button type="button" id="offerShop">Shop Now →</button></div><i class="ph-fill ph-seal-percent" aria-hidden="true"></i>';
-    search.after(b);
+    b.className="offer-banner show";
+    var offerWrap=document.createElement("div");offerWrap.id="offerWrap";offerWrap.className="offer-wrap";
+    var offerInner=document.createElement("div");offerInner.className="offer-wrap-inner";
+    offerInner.appendChild(b);offerWrap.appendChild(offerInner);
+    search.after(offerWrap);
     $("offerShop").addEventListener("click",function(){var s=$("productsSection");if(s)s.scrollIntoView({behavior:"smooth"})});
     var upd=function(){
       var p=0;try{p=Math.max(0,Number(getHomeDiscountPercent())||0)}catch(e){}
       $("offerPct").textContent=Number(p.toFixed(2)).toString();
-      b.classList.toggle("show",p>0);
+      window.__offerOn=p>0;
     };
     var line=$("homeDiscountOffers");
     if(line)new MutationObserver(function(){upd()}).observe(line,{childList:true,characterData:true,subtree:true,attributes:true});
@@ -8006,7 +8078,36 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
       $("offerShopD").addEventListener("click",function(){var g=$("productGrid");if(g)g.scrollIntoView({behavior:"smooth"})});
     }
     var upd0=upd;
-    upd=function(){upd0();var pc=$("offerPct").textContent;var e=$("offerPctD");if(e)e.textContent=pc;document.body.classList.toggle("has-offer",Number(pc)>0)};
+    var offerState=null;
+    upd=function(){
+      upd0();
+      var on=!!window.__offerOn,pc=$("offerPct").textContent,e=$("offerPctD");
+      if(e)e.textContent=pc;
+      if(offerState===on)return;
+      var firstRun=offerState===null;offerState=on;
+      var apply=function(){offerWrap.classList.toggle("show",on);document.body.classList.toggle("has-offer",on);};
+      var desktop=window.matchMedia("(min-width:761px)").matches;
+      var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if(firstRun&&!on){apply();return;}
+      /* mobile: the wrapper animates its own height, so the products below slide automatically */
+      if(!desktop||reduce||!d||!d.animate||home.hidden||document.body.classList.contains("explore-mode")){apply();return;}
+      /* desktop: FLIP - everything below the card translates to its new place */
+      var els=[$("productsSectionHead"),$("categories"),$("productGrid"),document.querySelector("#productsSection > .load-more-wrap")].filter(Boolean);
+      var ease="cubic-bezier(.22,.8,.25,1)";
+      var flip=function(){
+        var first=els.map(function(el){return el.getBoundingClientRect()});
+        apply();
+        els.forEach(function(el,i){
+          var l=el.getBoundingClientRect(),dx=first[i].left-l.left,dy=first[i].top-l.top;
+          if(Math.abs(dx)+Math.abs(dy)>0.5)el.animate([{transform:"translate("+dx+"px,"+dy+"px)"},{transform:"none"}],{duration:420,easing:ease});
+        });
+        if(on)d.animate([{opacity:0,transform:"translateY(-10px)"},{opacity:1,transform:"none"}],{duration:420,easing:ease});
+      };
+      if(on){flip();return;}
+      var out=d.animate([{opacity:1,transform:"none"},{opacity:0,transform:"translateY(-10px)"}],{duration:260,easing:"ease",fill:"forwards"});
+      var done=false,go=function(){if(done)return;done=true;out.cancel();flip();};
+      out.onfinish=go;setTimeout(go,450);
+    };
     setInterval(upd,1500);upd();
   }
 
@@ -8216,7 +8317,7 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
 
   /* order: search -> strip -> categories -> (offer banner) -> products */
   search.after(strip);strip.after(rail);
-  var banner=$("offerBanner");if(banner)rail.after(banner);
+  var banner=$("offerWrap");if(banner)rail.after(banner);
 
   var ICONS=[
     [/phone|mobile|smart/,"ph-device-mobile"],[/laptop|computer|pc/,"ph-laptop"],[/tablet/,"ph-device-tablet"],
@@ -8246,14 +8347,17 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
   function build(){
     var cats=[];try{cats=allCategories||[]}catch(e){}
     var list=[{v:"",l:"All"}].concat(cats.map(function(c){return{v:c,l:String(c).replace(/-/g," ")}}));
-    var iconMap=iconMapFor(cats);
-    rail.innerHTML=list.map(function(c){
+    var iconMap=Object.assign({"":"ph-squares-four"},(typeof CATEGORY_ICONS!=="undefined"?CATEGORY_ICONS:{}));
+    var html=list.map(function(c){
       var on=false;try{on=(c.v===currentCategory)}catch(e){}
       return '<button type="button" class="hc'+(on?" active":"")+'" data-v="'+esc(c.v)+'">'+
         '<span class="hc-circle"><i class="ph-fill '+(iconMap[c.v]||'ph-tag')+'" aria-hidden="true"></i></span>'+
         '<span class="hc-name">'+esc(c.l)+'</span></button>';
     }).join("");
+    if(html===lastHtml)return;
+    lastHtml=html;rail.innerHTML=html;
   }
+  var lastHtml="";
   rail.addEventListener("click",function(e){
     var t=e.target.closest(".hc");if(!t)return;
     currentCategory=t.dataset.v||"";currentSearch="";
