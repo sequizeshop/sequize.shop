@@ -61,6 +61,13 @@
     window.__sequizeCachedLogin = loggedIn;
     window.__sequizeGuestHint = guestHint;
     try { if (localStorage.getItem("shoppy_hdr_pic_v1") === "1") root.classList.add("hdr-pic-known"); } catch (e) {}
+    /* brand logo fallback chain: Simple Icons -> site favicon -> brand name as text */
+    window.__lf = function (i) {
+      var s = (i.dataset.step | 0); i.dataset.step = s + 1;
+      if (s === 0) { i.src = "https://www.google.com/s2/favicons?domain=" + i.dataset.d + "&sz=128"; return; }
+      i.onerror = null;
+      var t = document.createElement("span"); t.className = "bs-txt"; t.textContent = i.alt; i.replaceWith(t);
+    };
     window.__cachedOfferPct = 0;
     try { window.__cachedOfferPct = Math.max(0, Math.min(100, Number(localStorage.getItem("shoppy_offer_pct_v1")) || 0)); } catch (e) {}
     try {
@@ -4456,7 +4463,7 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
 
 <style id="offer-card-transition">
 .offer-wrap{display:none}
-@media (max-width:760px){
+@media all{
   html body .offer-wrap{display:grid;grid-template-rows:0fr;opacity:0;visibility:hidden;margin:0!important;
     transition:grid-template-rows .45s cubic-bezier(.22,.8,.25,1),opacity .35s ease,visibility 0s linear .45s}
   html body .offer-wrap.show{grid-template-rows:1fr;opacity:1;visibility:visible;
@@ -4468,7 +4475,6 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
   html:not(.ui-ready) body .offer-wrap{transition:grid-template-rows .45s cubic-bezier(.22,.8,.25,1),opacity .35s ease,visibility 0s linear .45s!important}
   html:not(.ui-ready) body .offer-wrap.show{transition:grid-template-rows .45s cubic-bezier(.22,.8,.25,1),opacity .35s ease .05s,visibility 0s!important}
 }
-@media (min-width:761px){ html body #offerWrap{display:none!important} }
 @media (prefers-reduced-motion:reduce){
   html body .offer-wrap,html body .offer-wrap.show,
   html:not(.ui-ready) body .offer-wrap,html:not(.ui-ready) body .offer-wrap.show{transition:none!important}
@@ -4484,6 +4490,154 @@ html.hdr-pic-known body .topbar .nav-actions [data-top-nav="account"] i{display:
 .hero-art img{background:transparent}
 /* nothing may fade/transition during the very first paint of a refresh */
 html:not(.ui-ready) #homeCatRail,html:not(.ui-ready) #homeCatRail *,html:not(.ui-ready) #locStrip,html:not(.ui-ready) .topbar *{transition:none!important;animation:none!important}
+</style>
+
+<style id="desktop-v2">
+.dt-only,.dt-label,.dt-sec-head,.brand-strip,.dt-arrow,.dt-menu{display:none}
+.bs-txt{font:700 12px/1.2 var(--font-heading,sans-serif);color:#1b1d21;text-align:center;padding:4px}
+html body #homeCatRail .hc[data-x]{display:none}
+@keyframes dtMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (min-width:761px){
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #desktopDrawer,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #desktopDrawerOverlay,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #dwHandle,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #bottomNav,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #desktopNavToggle,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) .desktop-nav-toggle{display:none!important;visibility:hidden!important;pointer-events:none!important;width:0!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) {padding-left:0!important;padding-top:68px!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4)::before,html body:not(#a1):not(#a2):not(#a3):not(#a4)::after{display:none!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar{position:fixed!important;inset:0 0 auto 0!important;width:100%!important;height:68px!important;min-height:68px!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:14px!important;margin:0!important;padding:0 24px!important;box-sizing:border-box!important;background:#fff!important;border:0!important;border-bottom:1px solid #e7e9ed!important;border-radius:0!important;box-shadow:0 2px 12px rgba(16,24,40,.05)!important;overflow:visible!important;z-index:10000!important;visibility:visible!important;opacity:1!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar > .mobile-menu-btn{order:0!important;display:flex!important;align-items:center!important;justify-content:center!important;flex:0 0 44px!important;width:44px!important;height:44px!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;background:#f1f3f7!important;color:#111!important;font-size:22px!important;cursor:pointer;visibility:visible!important;opacity:1!important;transition:background .2s}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar > .mobile-menu-btn:hover,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar > .mobile-menu-btn[aria-expanded="true"]{background:#e3e9ff!important;color:#2962FF!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar > .brand{order:1!important;position:static!important;display:flex!important;align-items:center!important;flex:0 0 auto!important;width:auto!important;height:68px!important;margin:0 10px 0 0!important;padding:0!important;transform:none!important;visibility:visible!important;opacity:1!important;overflow:visible!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar > .guest-header-brand{display:none!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .desktop-top-search{order:2!important;display:flex!important;flex:1 1 360px!important;width:auto!important;max-width:360px!important;min-width:150px!important;height:42px!important;margin:0!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .desktop-top-search input{min-width:0!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .desktop-top-avatar{display:none!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions{order:3!important;display:flex!important;flex:0 0 auto!important;align-items:center!important;gap:8px!important;margin:0 0 0 auto!important;width:auto!important;padding:0!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions [data-top-nav="home"]{display:none!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #headerLocationButton,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > [data-top-nav="cart"],
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #hdrOrders,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #hdrWishlist,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #notifButton{flex:0 0 auto!important;display:inline-flex!important;position:relative!important;align-items:center!important;justify-content:center!important;gap:7px!important;width:auto!important;min-width:0!important;height:42px!important;padding:0 14px!important;border:1px solid #dfe3ea!important;border-radius:999px!important;background:#fff!important;color:#1b1d21!important;font-size:14px!important;font-weight:600!important;line-height:1!important;white-space:nowrap!important;text-decoration:none!important;box-shadow:none!important;cursor:pointer;visibility:visible!important;opacity:1!important;pointer-events:auto!important;transition:background .18s,border-color .18s,color .18s}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #headerLocationButton:hover,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > [data-top-nav="cart"]:hover,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #hdrOrders:hover,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #hdrWishlist:hover,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #notifButton:hover{background:#f3f6ff!important;border-color:#c9d6ff!important;color:#2962FF!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #headerLocationButton{order:1!important;max-width:190px!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #headerLocationButton > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > [data-top-nav="cart"]{order:2!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #hdrOrders{order:3!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #hdrWishlist{order:4!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #notifButton{order:5!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions .dt-label{display:inline!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions .nav-icon i{font-size:19px!important;line-height:1!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions .cart-count,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions .shoppy-notification-badge{position:absolute!important;top:-6px!important;right:-4px!important;left:auto!important;margin:0!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > [data-top-nav="account"]{order:6!important;display:flex!important;align-items:center!important;justify-content:center!important;position:relative!important;width:42px!important;min-width:42px!important;height:42px!important;padding:0!important;border:0!important;border-radius:50%!important;background:#e9ecf1!important;overflow:hidden!important;cursor:pointer;visibility:visible!important;opacity:1!important}
+html body.guest-mode:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions{display:flex!important}
+html body.guest-mode:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar > .brand{display:flex!important}
+html body.guest-mode:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > [data-top-nav="account"]{display:none!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .guest-header-actions{display:none!important}
+html body.guest-mode:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .guest-header-actions{order:4!important;display:flex!important;align-items:center!important;gap:8px!important;margin:0 0 0 12px!important}
+html body .dt-menu{display:block;position:fixed;z-index:10050;width:272px;padding:10px;box-sizing:border-box;border:1px solid #e3e7ee;border-radius:22px;background:#fff;
+  box-shadow:0 18px 48px rgba(16,24,40,.18),0 2px 8px rgba(16,24,40,.06);opacity:0;transform:translateY(-8px) scale(.98);transform-origin:top left;pointer-events:none;
+  transition:opacity .18s ease,transform .2s cubic-bezier(.22,.8,.25,1)}
+html body .dt-menu[hidden]{display:none}
+html body .dt-menu.open{opacity:1;transform:none;pointer-events:auto}
+html body .dt-menu-item{display:flex;align-items:center;gap:14px;width:100%;box-sizing:border-box;min-height:46px;padding:0 14px;border:0;border-radius:14px;background:transparent;color:#1b1d21;
+  font-size:14.5px;font-weight:600;line-height:1.2;font-family:inherit;text-align:left;text-decoration:none;cursor:pointer;transition:background .15s,color .15s}
+html body .dt-menu-item i{font-size:21px;line-height:1;flex:0 0 auto;color:#5a6270}
+html body .dt-menu-item:hover{background:#f3f6ff;color:#2962FF}
+html body .dt-menu-item:hover i{color:#2962FF}
+html body .dt-menu-item.active{background:#eaf0ff;color:#2962FF}
+html body .dt-menu-item.active i{color:#2962FF}
+html body .dt-menu-sep{height:1px;margin:8px 10px;background:#eceff4}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeContent:not([hidden]){display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeSearchWrap,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #locStrip{display:none!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #heroWrap{order:1!important;display:block!important;width:100%!important;max-width:none!important;margin:0!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerWrap{order:2!important;width:100%!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #brandStrip{order:3!important;display:block!important;width:min(1240px,calc(100% - 48px))!important;margin:34px auto 0!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatWrap{order:4!important;display:block!important;width:min(1240px,calc(100% - 48px))!important;margin:34px auto 0!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #productsSection{order:5!important;display:block!important;width:min(1240px,calc(100% - 48px))!important;max-width:1240px!important;margin:34px auto 56px!important;padding:0!important;box-sizing:border-box!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #productsSection > *{grid-area:auto!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #heroWrap .hero{position:relative!important;box-sizing:border-box!important;width:100%!important;min-height:340px!important;margin:0!important;padding:44px max(24px,calc((100% - 1240px)/2))!important;border:0!important;border-radius:0!important;background:radial-gradient(900px 420px at 88% 20%,rgba(120,160,255,.55),transparent 60%),linear-gradient(115deg,#1239B8 0%,#2962FF 52%,#4C84FF 100%)!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:40px!important;overflow:hidden!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #heroWrap .hero h1{color:#fff!important;font-size:clamp(34px,3.6vw,50px)!important;line-height:1.1!important;max-width:620px}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #heroWrap .hero-copy p{color:rgba(255,255,255,.88)!important;font-size:17px!important;max-width:520px}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #heroWrap .hero .eyebrow{color:#fff!important;background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.28)!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #heroWrap .hero .eyebrow i{color:#fff!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #heroWrap .hero-button{background:#fff!important;color:#1239B8!important;border:0!important;box-shadow:0 10px 24px rgba(8,30,110,.28)!important;font-weight:700!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #heroWrap .hero-button:hover{background:#eef3ff!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #heroWrap .hero-art{width:240px!important;height:240px!important;background:#fff!important;box-shadow:0 18px 44px rgba(8,30,110,.35)!important;flex:0 0 auto}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerWrap #offerBanner{display:flex!important;align-items:center!important;justify-content:space-between!important;box-sizing:border-box!important;width:100%!important;margin:0!important;padding:26px max(24px,calc((100% - 1240px)/2))!important;border-radius:0!important;position:relative!important;overflow:hidden!important;color:#fff!important;background:linear-gradient(100deg,#0B2A8A 0%,#1744B5 55%,#2962FF 100%)!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerWrap #offerBanner > div{display:flex!important;align-items:center!important;gap:30px!important;flex-wrap:wrap;position:relative;z-index:1}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerWrap #offerBanner strong{font-size:46px!important;line-height:1!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerWrap #offerBanner strong em{font-style:normal!important;font-size:26px!important;margin-left:8px!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerWrap #offerBanner b{font-size:15px!important;letter-spacing:2px!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerWrap #offerBanner small{margin:0!important;letter-spacing:2px!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerWrap #offerBanner button{margin:0!important;padding:13px 28px!important;border:0!important;border-radius:999px!important;background:#fff!important;color:#1239B8!important;font-weight:700!important;cursor:pointer}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerWrap #offerBanner > i{font-size:92px!important;opacity:.22!important;color:#fff!important;position:absolute;right:max(24px,calc((100% - 1240px)/2));top:50%;transform:translateY(-50%)}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerBannerDesk{display:none!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) .dt-sec-head{display:flex!important;align-items:center;justify-content:space-between;margin:0 0 14px}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) .dt-sec-head h2{margin:0!important;font-size:22px!important;font-weight:800!important;color:#111!important;letter-spacing:-.2px}
+html body .bs-band{position:relative;overflow:hidden;padding:16px 0;border-radius:24px;background:#e8f0ff;border:1px solid #d4e2ff;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%)}
+html body .bs-track{display:flex;gap:16px;width:max-content;animation:dtMarquee 70s linear infinite;will-change:transform}
+html body .bs-item{flex:0 0 auto;width:92px;height:92px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;border-radius:22px;background:#fff;
+  box-shadow:0 2px 8px rgba(23,68,181,.10);border:1px solid #e3ebfb}
+html body .bs-item img{width:56px;height:56px;object-fit:contain;display:block}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatWrap{position:relative}
+html body .dt-rail-box{position:relative}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatRail{display:flex!important;gap:20px!important;overflow-x:auto!important;margin:0!important;padding:6px 4px 10px!important;scroll-behavior:smooth;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatRail .hc{display:flex!important;flex-direction:column!important;align-items:center!important;flex:0 0 auto!important;width:104px!important;gap:10px!important;padding:0!important;border:0!important;background:transparent!important;color:#1b1d21!important;cursor:pointer;font-family:inherit}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatRail .hc[data-x]{display:flex!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatRail .hc-circle{display:flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;width:96px!important;height:96px!important;border-radius:30px!important;border:2px solid transparent!important;background:linear-gradient(135deg,#eaf0ff,#f6f8ff)!important;transition:transform .2s,box-shadow .2s,border-color .2s}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatRail .hc:hover .hc-circle{transform:translateY(-3px);box-shadow:0 10px 22px rgba(41,98,255,.16)}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatRail .hc.active .hc-circle{border-color:#2962FF!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatRail .hc-circle i{font-size:42px!important;line-height:1!important;font-family:"Phosphor-Fill"!important;background:linear-gradient(135deg,#2962FF,#7C9BFF);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatRail .hc-name{display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;width:100%!important;min-height:32px!important;font-size:13px!important;font-weight:700!important;line-height:1.25!important;text-align:center!important;text-transform:capitalize!important;white-space:normal!important;overflow:hidden!important;word-break:break-word}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatRail .hc.active .hc-name{color:#2962FF!important}
+html body .dt-arrow{display:flex;align-items:center;justify-content:center;position:absolute;top:44px;z-index:3;width:40px;height:40px;padding:0;border:1px solid #dfe3ea;border-radius:50%;
+  background:#fff;color:#1b1d21;font-size:16px;cursor:pointer;box-shadow:0 6px 16px rgba(16,24,40,.14);transition:opacity .2s,background .2s}
+html body .dt-arrow:hover{background:#f3f6ff;color:#2962FF}
+html body .dt-arrow.prev{left:-14px}
+html body .dt-arrow.next{right:-14px}
+html body .dt-arrow.off{opacity:0;pointer-events:none}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #categoriesHeading,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #categories,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) .app-page-heading.explore-page-heading{display:none!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #categoryChips,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #offerBannerDesk,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #exploreFilterRow{display:none!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #productsSectionHead{display:block!important;margin:0 0 16px!important;padding:0!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #productsSectionHead .products-heading-copy h2{font-size:24px!important;font-weight:800!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #productGrid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:20px!important;margin:0!important}
+html body.explore-mode:not(#a1):not(#a2):not(#a3):not(#a4) #heroWrap,
+html body.explore-mode:not(#a1):not(#a2):not(#a3):not(#a4) #offerWrap,
+html body.explore-mode:not(#a1):not(#a2):not(#a3):not(#a4) #brandStrip,
+html body.explore-mode:not(#a1):not(#a2):not(#a3):not(#a4) #homeCatWrap{display:none!important}
+html body.explore-mode:not(#a1):not(#a2):not(#a3):not(#a4) #categoryChips{display:flex!important;margin:0 0 16px!important}
+html body.explore-mode:not(#a1):not(#a2):not(#a3):not(#a4) #exploreFilterRow:not([hidden]){display:flex!important;margin:0 0 16px!important}
+html body.explore-mode:not(#a1):not(#a2):not(#a3):not(#a4) #productsSection{margin-top:28px!important}
+html body.explore-mode:not(#a1):not(#a2):not(#a3):not(#a4) #productsSectionHead{display:block!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #searchPage,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) .app-view{width:min(1240px,calc(100% - 48px))!important;max-width:1240px!important;margin:28px auto 48px!important;box-sizing:border-box!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions .toolbar-explore-filter,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .toolbar-explore-filter{display:none!important}
+}
+@media (min-width:761px) and (max-width:1279px){
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions .dt-label{display:none!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #headerLocationButton > span{display:inline!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > [data-top-nav="cart"],
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #hdrOrders,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #hdrWishlist,
+html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #notifButton{padding:0!important;width:42px!important}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) #productGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
 </style>
 </head>
 
@@ -4527,10 +4681,11 @@ html:not(.ui-ready) #homeCatRail,html:not(.ui-ready) #homeCatRail *,html:not(.ui
         <i class="ph ph-list" aria-hidden="true"></i>
       </button>
 <button class="nav-icon" type="button" data-top-nav="cart" aria-label="Cart" title="Shopping cart">
-        <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+        <i class="ph ph-shopping-cart" aria-hidden="true"></i><span class="dt-label">My Cart</span>
         <span class="cart-count" id="cartCount" hidden>0</span>
       </button>
-<a class="nav-icon" id="hdrWishlist" href="/wishlist.html" aria-label="Wishlist" title="Wishlist"><i class="ph ph-heart" aria-hidden="true"></i></a>
+<a class="nav-icon dt-only" id="hdrOrders" href="/orders.html" aria-label="My Orders" title="My Orders"><i class="ph ph-package" aria-hidden="true"></i><span class="dt-label">My Orders</span></a>
+<a class="nav-icon" id="hdrWishlist" href="/wishlist.html" aria-label="Wishlist" title="Wishlist"><i class="ph ph-heart" aria-hidden="true"></i><span class="dt-label">Wishlist</span></a>
 
       <button class="location-chip premium-toolbar-control" id="headerLocationButton" type="button" data-open-location aria-label="Change location" title="Change location">
         <i class="ph-fill ph-map-pin" aria-hidden="true"></i>
@@ -4538,16 +4693,28 @@ html:not(.ui-ready) #homeCatRail,html:not(.ui-ready) #homeCatRail *,html:not(.ui
       </button>
 
       <button class="nav-icon premium-toolbar-control" id="notifButton" type="button" aria-label="Notifications" title="Notifications">
-        <i class="ph ph-bell" aria-hidden="true"></i>
+        <i class="ph ph-bell" aria-hidden="true"></i><span class="dt-label">Alerts</span>
         <span class="shoppy-notification-badge" id="notifBadge" aria-label="Unread notifications">0</span>
       </button>
 
     </nav>
 
-    <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu" title="Menu"><i class="ph-bold ph-list" aria-hidden="true"></i></button>
+    <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu" title="Menu" aria-haspopup="true" aria-expanded="false"><i class="ph-bold ph-list" aria-hidden="true"></i></button>
     <a href="/home.html" class="brand" aria-label="Sequize home"><span class="b1">S</span><span class="b2">equize</span></a>
 
   </header>
+
+  <!-- DESKTOP MENU POPUP (opened from the three-line button) -->
+  <div class="dt-menu" id="dtMenu" role="menu" aria-label="Menu" hidden>
+    <button class="dt-menu-item" type="button" role="menuitem" data-desktop-nav="home"><i class="ph-fill ph-house" aria-hidden="true"></i><span>Home</span></button>
+    <button class="dt-menu-item" type="button" role="menuitem" data-desktop-nav="search"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><span>Search</span></button>
+    <button class="dt-menu-item" type="button" role="menuitem" data-desktop-nav="explore"><i class="ph ph-compass" aria-hidden="true"></i><span>Explore</span></button>
+    <button class="dt-menu-item" type="button" role="menuitem" data-desktop-nav="account"><i class="ph ph-user-circle" aria-hidden="true"></i><span>Account</span></button>
+    <div class="dt-menu-sep" role="separator"></div>
+    <a class="dt-menu-item" role="menuitem" href="/addresses.html"><i class="ph ph-map-pin-line" aria-hidden="true"></i><span>Saved Addresses</span></a>
+    <a class="dt-menu-item" role="menuitem" href="/coupons.html"><i class="ph ph-ticket" aria-hidden="true"></i><span>Coupons &amp; Offers</span></a>
+    <a class="dt-menu-item" role="menuitem" href="/payments.html"><i class="ph ph-credit-card" aria-hidden="true"></i><span>My Payments</span></a>
+  </div>
 
   <!-- DESKTOP EXPANDABLE NAVIGATION -->
 
@@ -4607,9 +4774,21 @@ html:not(.ui-ready) #homeCatRail,html:not(.ui-ready) #homeCatRail *,html:not(.ui
     </div>
 
     <button type="button" id="locStrip" data-open-location><i class="ph-bold ph-map-pin" aria-hidden="true"></i><span>Add delivery location to check extra discount</span><i class="ph-bold ph-caret-right" aria-hidden="true"></i></button>
-    <div id="homeCatRail" aria-label="Categories"><button type="button" class="hc active" data-v=""><span class="hc-circle"><i class="ph-fill ph-squares-four" aria-hidden="true"></i></span><span class="hc-name">All</span></button><button type="button" class="hc" data-v="beauty"><span class="hc-circle"><i class="ph-fill ph-flower-lotus" aria-hidden="true"></i></span><span class="hc-name">beauty</span></button><button type="button" class="hc" data-v="fragrances"><span class="hc-circle"><i class="ph-fill ph-drop" aria-hidden="true"></i></span><span class="hc-name">fragrances</span></button><button type="button" class="hc" data-v="furniture"><span class="hc-circle"><i class="ph-fill ph-armchair" aria-hidden="true"></i></span><span class="hc-name">furniture</span></button><button type="button" class="hc" data-v="groceries"><span class="hc-circle"><i class="ph-fill ph-basket" aria-hidden="true"></i></span><span class="hc-name">groceries</span></button><button type="button" class="hc" data-v="home-decoration"><span class="hc-circle"><i class="ph-fill ph-house-line" aria-hidden="true"></i></span><span class="hc-name">home decoration</span></button><button type="button" class="hc" data-v="kitchen-accessories"><span class="hc-circle"><i class="ph-fill ph-cooking-pot" aria-hidden="true"></i></span><span class="hc-name">kitchen accessories</span></button><button type="button" class="hc" data-v="laptops"><span class="hc-circle"><i class="ph-fill ph-laptop" aria-hidden="true"></i></span><span class="hc-name">laptops</span></button><button type="button" class="hc" data-v="mens-shirts"><span class="hc-circle"><i class="ph-fill ph-t-shirt" aria-hidden="true"></i></span><span class="hc-name">mens shirts</span></button><button type="button" class="hc" data-v="mens-shoes"><span class="hc-circle"><i class="ph-fill ph-sneaker" aria-hidden="true"></i></span><span class="hc-name">mens shoes</span></button><button type="button" class="hc" data-v="mens-watches"><span class="hc-circle"><i class="ph-fill ph-watch" aria-hidden="true"></i></span><span class="hc-name">mens watches</span></button><button type="button" class="hc" data-v="mobile-accessories"><span class="hc-circle"><i class="ph-fill ph-plugs" aria-hidden="true"></i></span><span class="hc-name">mobile accessories</span></button><button type="button" class="hc" data-v="motorcycle"><span class="hc-circle"><i class="ph-fill ph-motorcycle" aria-hidden="true"></i></span><span class="hc-name">motorcycle</span></button><button type="button" class="hc" data-v="skin-care"><span class="hc-circle"><i class="ph-fill ph-sparkle" aria-hidden="true"></i></span><span class="hc-name">skin care</span></button><button type="button" class="hc" data-v="smartphones"><span class="hc-circle"><i class="ph-fill ph-device-mobile" aria-hidden="true"></i></span><span class="hc-name">smartphones</span></button><button type="button" class="hc" data-v="sports-accessories"><span class="hc-circle"><i class="ph-fill ph-basketball" aria-hidden="true"></i></span><span class="hc-name">sports accessories</span></button><button type="button" class="hc" data-v="sunglasses"><span class="hc-circle"><i class="ph-fill ph-sunglasses" aria-hidden="true"></i></span><span class="hc-name">sunglasses</span></button><button type="button" class="hc" data-v="tablets"><span class="hc-circle"><i class="ph-fill ph-device-tablet" aria-hidden="true"></i></span><span class="hc-name">tablets</span></button><button type="button" class="hc" data-v="tops"><span class="hc-circle"><i class="ph-fill ph-coat-hanger" aria-hidden="true"></i></span><span class="hc-name">tops</span></button><button type="button" class="hc" data-v="vehicle"><span class="hc-circle"><i class="ph-fill ph-car" aria-hidden="true"></i></span><span class="hc-name">vehicle</span></button><button type="button" class="hc" data-v="womens-bags"><span class="hc-circle"><i class="ph-fill ph-handbag" aria-hidden="true"></i></span><span class="hc-name">womens bags</span></button><button type="button" class="hc" data-v="womens-dresses"><span class="hc-circle"><i class="ph-fill ph-crown-simple" aria-hidden="true"></i></span><span class="hc-name">womens dresses</span></button><button type="button" class="hc" data-v="womens-jewellery"><span class="hc-circle"><i class="ph-fill ph-diamond" aria-hidden="true"></i></span><span class="hc-name">womens jewellery</span></button><button type="button" class="hc" data-v="womens-shoes"><span class="hc-circle"><i class="ph-fill ph-boot" aria-hidden="true"></i></span><span class="hc-name">womens shoes</span></button><button type="button" class="hc" data-v="womens-watches"><span class="hc-circle"><i class="ph-fill ph-clock" aria-hidden="true"></i></span><span class="hc-name">womens watches</span></button></div>
+    <div id="homeCatWrap" class="home-cat-wrap">
+      <div class="dt-sec-head"><h2>Shop by Category</h2></div>
+      <div class="dt-rail-box">
+        <button type="button" class="dt-arrow prev" id="catPrev" aria-label="Scroll categories left"><i class="ph-bold ph-caret-left" aria-hidden="true"></i></button>
+        <div id="homeCatRail" aria-label="Categories"><button type="button" class="hc active" data-v=""><span class="hc-circle"><i class="ph-fill ph-squares-four" aria-hidden="true"></i></span><span class="hc-name">All</span></button><button type="button" class="hc" data-v="beauty"><span class="hc-circle"><i class="ph-fill ph-flower-lotus" aria-hidden="true"></i></span><span class="hc-name">beauty</span></button><button type="button" class="hc" data-v="fragrances"><span class="hc-circle"><i class="ph-fill ph-drop" aria-hidden="true"></i></span><span class="hc-name">fragrances</span></button><button type="button" class="hc" data-v="furniture"><span class="hc-circle"><i class="ph-fill ph-armchair" aria-hidden="true"></i></span><span class="hc-name">furniture</span></button><button type="button" class="hc" data-v="groceries"><span class="hc-circle"><i class="ph-fill ph-basket" aria-hidden="true"></i></span><span class="hc-name">groceries</span></button><button type="button" class="hc" data-v="home-decoration"><span class="hc-circle"><i class="ph-fill ph-house-line" aria-hidden="true"></i></span><span class="hc-name">home decoration</span></button><button type="button" class="hc" data-v="kitchen-accessories"><span class="hc-circle"><i class="ph-fill ph-cooking-pot" aria-hidden="true"></i></span><span class="hc-name">kitchen accessories</span></button><button type="button" class="hc" data-v="laptops"><span class="hc-circle"><i class="ph-fill ph-laptop" aria-hidden="true"></i></span><span class="hc-name">laptops</span></button><button type="button" class="hc" data-v="mens-shirts"><span class="hc-circle"><i class="ph-fill ph-t-shirt" aria-hidden="true"></i></span><span class="hc-name">mens shirts</span></button><button type="button" class="hc" data-v="mens-shoes"><span class="hc-circle"><i class="ph-fill ph-sneaker" aria-hidden="true"></i></span><span class="hc-name">mens shoes</span></button><button type="button" class="hc" data-v="mens-watches"><span class="hc-circle"><i class="ph-fill ph-watch" aria-hidden="true"></i></span><span class="hc-name">mens watches</span></button><button type="button" class="hc" data-v="mobile-accessories"><span class="hc-circle"><i class="ph-fill ph-plugs" aria-hidden="true"></i></span><span class="hc-name">mobile accessories</span></button><button type="button" class="hc" data-v="motorcycle"><span class="hc-circle"><i class="ph-fill ph-motorcycle" aria-hidden="true"></i></span><span class="hc-name">motorcycle</span></button><button type="button" class="hc" data-v="skin-care"><span class="hc-circle"><i class="ph-fill ph-sparkle" aria-hidden="true"></i></span><span class="hc-name">skin care</span></button><button type="button" class="hc" data-v="smartphones"><span class="hc-circle"><i class="ph-fill ph-device-mobile" aria-hidden="true"></i></span><span class="hc-name">smartphones</span></button><button type="button" class="hc" data-v="sports-accessories"><span class="hc-circle"><i class="ph-fill ph-basketball" aria-hidden="true"></i></span><span class="hc-name">sports accessories</span></button><button type="button" class="hc" data-v="sunglasses"><span class="hc-circle"><i class="ph-fill ph-sunglasses" aria-hidden="true"></i></span><span class="hc-name">sunglasses</span></button><button type="button" class="hc" data-v="tablets"><span class="hc-circle"><i class="ph-fill ph-device-tablet" aria-hidden="true"></i></span><span class="hc-name">tablets</span></button><button type="button" class="hc" data-v="tops"><span class="hc-circle"><i class="ph-fill ph-coat-hanger" aria-hidden="true"></i></span><span class="hc-name">tops</span></button><button type="button" class="hc" data-v="vehicle"><span class="hc-circle"><i class="ph-fill ph-car" aria-hidden="true"></i></span><span class="hc-name">vehicle</span></button><button type="button" class="hc" data-v="womens-bags"><span class="hc-circle"><i class="ph-fill ph-handbag" aria-hidden="true"></i></span><span class="hc-name">womens bags</span></button><button type="button" class="hc" data-v="womens-dresses"><span class="hc-circle"><i class="ph-fill ph-crown-simple" aria-hidden="true"></i></span><span class="hc-name">womens dresses</span></button><button type="button" class="hc" data-v="womens-jewellery"><span class="hc-circle"><i class="ph-fill ph-diamond" aria-hidden="true"></i></span><span class="hc-name">womens jewellery</span></button><button type="button" class="hc" data-v="womens-shoes"><span class="hc-circle"><i class="ph-fill ph-boot" aria-hidden="true"></i></span><span class="hc-name">womens shoes</span></button><button type="button" class="hc" data-v="womens-watches"><span class="hc-circle"><i class="ph-fill ph-clock" aria-hidden="true"></i></span><span class="hc-name">womens watches</span></button><button type="button" class="hc" data-v="headphones" data-x="1"><span class="hc-circle"><i class="ph-fill ph-headphones" aria-hidden="true"></i></span><span class="hc-name">headphones</span></button><button type="button" class="hc" data-v="cameras" data-x="1"><span class="hc-circle"><i class="ph-fill ph-camera" aria-hidden="true"></i></span><span class="hc-name">cameras</span></button><button type="button" class="hc" data-v="televisions" data-x="1"><span class="hc-circle"><i class="ph-fill ph-television" aria-hidden="true"></i></span><span class="hc-name">televisions</span></button><button type="button" class="hc" data-v="gaming" data-x="1"><span class="hc-circle"><i class="ph-fill ph-game-controller" aria-hidden="true"></i></span><span class="hc-name">gaming</span></button><button type="button" class="hc" data-v="books" data-x="1"><span class="hc-circle"><i class="ph-fill ph-book-open" aria-hidden="true"></i></span><span class="hc-name">books</span></button><button type="button" class="hc" data-v="baby-products" data-x="1"><span class="hc-circle"><i class="ph-fill ph-baby" aria-hidden="true"></i></span><span class="hc-name">baby products</span></button><button type="button" class="hc" data-v="pet-supplies" data-x="1"><span class="hc-circle"><i class="ph-fill ph-paw-print" aria-hidden="true"></i></span><span class="hc-name">pet supplies</span></button><button type="button" class="hc" data-v="office-supplies" data-x="1"><span class="hc-circle"><i class="ph-fill ph-briefcase" aria-hidden="true"></i></span><span class="hc-name">office supplies</span></button><button type="button" class="hc" data-v="garden" data-x="1"><span class="hc-circle"><i class="ph-fill ph-plant" aria-hidden="true"></i></span><span class="hc-name">garden</span></button><button type="button" class="hc" data-v="travel" data-x="1"><span class="hc-circle"><i class="ph-fill ph-airplane" aria-hidden="true"></i></span><span class="hc-name">travel</span></button><button type="button" class="hc" data-v="health-care" data-x="1"><span class="hc-circle"><i class="ph-fill ph-first-aid" aria-hidden="true"></i></span><span class="hc-name">health care</span></button><button type="button" class="hc" data-v="tools" data-x="1"><span class="hc-circle"><i class="ph-fill ph-wrench" aria-hidden="true"></i></span><span class="hc-name">tools</span></button><button type="button" class="hc" data-v="fitness" data-x="1"><span class="hc-circle"><i class="ph-fill ph-barbell" aria-hidden="true"></i></span><span class="hc-name">fitness</span></button><button type="button" class="hc" data-v="gifts" data-x="1"><span class="hc-circle"><i class="ph-fill ph-gift" aria-hidden="true"></i></span><span class="hc-name">gifts</span></button><button type="button" class="hc" data-v="musical-instruments" data-x="1"><span class="hc-circle"><i class="ph-fill ph-music-notes" aria-hidden="true"></i></span><span class="hc-name">musical instruments</span></button><button type="button" class="hc" data-v="stationery" data-x="1"><span class="hc-circle"><i class="ph-fill ph-pencil-simple" aria-hidden="true"></i></span><span class="hc-name">stationery</span></button><button type="button" class="hc" data-v="bicycles" data-x="1"><span class="hc-circle"><i class="ph-fill ph-bicycle" aria-hidden="true"></i></span><span class="hc-name">bicycles</span></button><button type="button" class="hc" data-v="camping" data-x="1"><span class="hc-circle"><i class="ph-fill ph-tent" aria-hidden="true"></i></span><span class="hc-name">camping</span></button><button type="button" class="hc" data-v="lighting" data-x="1"><span class="hc-circle"><i class="ph-fill ph-lightbulb" aria-hidden="true"></i></span><span class="hc-name">lighting</span></button><button type="button" class="hc" data-v="printers" data-x="1"><span class="hc-circle"><i class="ph-fill ph-printer" aria-hidden="true"></i></span><span class="hc-name">printers</span></button><button type="button" class="hc" data-v="computer-accessories" data-x="1"><span class="hc-circle"><i class="ph-fill ph-mouse" aria-hidden="true"></i></span><span class="hc-name">computer accessories</span></button><button type="button" class="hc" data-v="bags-luggage" data-x="1"><span class="hc-circle"><i class="ph-fill ph-backpack" aria-hidden="true"></i></span><span class="hc-name">bags luggage</span></button><button type="button" class="hc" data-v="bedding" data-x="1"><span class="hc-circle"><i class="ph-fill ph-bed" aria-hidden="true"></i></span><span class="hc-name">bedding</span></button><button type="button" class="hc" data-v="tea-coffee" data-x="1"><span class="hc-circle"><i class="ph-fill ph-coffee" aria-hidden="true"></i></span><span class="hc-name">tea coffee</span></button></div>
+        <button type="button" class="dt-arrow next" id="catNext" aria-label="Scroll categories right"><i class="ph-bold ph-caret-right" aria-hidden="true"></i></button>
+      </div>
+    </div>
     <div id="offerWrap" class="offer-wrap"><div class="offer-wrap-inner"><section class="offer-banner show" id="offerBanner"><div><b>UP TO</b><strong><span id="offerPct">0</span>%<em>OFF</em></strong><small>ENDS SOON</small><button type="button" id="offerShop">Shop Now →</button></div><i class="ph-fill ph-seal-percent" aria-hidden="true"></i></section></div></div>
     <script>(function(){var p=window.__cachedOfferPct||0;if(p>0){document.getElementById("offerPct").textContent=Number(p.toFixed(2)).toString();document.getElementById("offerWrap").classList.add("show");document.body.classList.add("has-offer");}})();</script>
+
+    <section class="brand-strip" id="brandStrip" aria-label="Popular brands">
+      <div class="dt-sec-head"><h2>Popular Brands</h2></div>
+      <div class="bs-band"><div class="bs-track"><div class="bs-item" title="Nike"><img src="https://cdn.simpleicons.org/nike" alt="Nike" width="56" height="56" data-d="nike.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Adidas"><img src="https://cdn.simpleicons.org/adidas" alt="Adidas" width="56" height="56" data-d="adidas.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Puma"><img src="https://cdn.simpleicons.org/puma" alt="Puma" width="56" height="56" data-d="puma.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Reebok"><img src="https://cdn.simpleicons.org/reebok" alt="Reebok" width="56" height="56" data-d="reebok.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="New Balance"><img src="https://cdn.simpleicons.org/newbalance" alt="New Balance" width="56" height="56" data-d="newbalance.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Under Armour"><img src="https://cdn.simpleicons.org/underarmour" alt="Under Armour" width="56" height="56" data-d="underarmour.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Converse"><img src="https://cdn.simpleicons.org/converse" alt="Converse" width="56" height="56" data-d="converse.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Samsung"><img src="https://cdn.simpleicons.org/samsung" alt="Samsung" width="56" height="56" data-d="samsung.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Apple"><img src="https://cdn.simpleicons.org/apple" alt="Apple" width="56" height="56" data-d="apple.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Sony"><img src="https://cdn.simpleicons.org/sony" alt="Sony" width="56" height="56" data-d="sony.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="LG"><img src="https://cdn.simpleicons.org/lg" alt="LG" width="56" height="56" data-d="lg.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="HP"><img src="https://cdn.simpleicons.org/hp" alt="HP" width="56" height="56" data-d="hp.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Dell"><img src="https://cdn.simpleicons.org/dell" alt="Dell" width="56" height="56" data-d="dell.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="ASUS"><img src="https://cdn.simpleicons.org/asus" alt="ASUS" width="56" height="56" data-d="asus.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Lenovo"><img src="https://cdn.simpleicons.org/lenovo" alt="Lenovo" width="56" height="56" data-d="lenovo.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Acer"><img src="https://cdn.simpleicons.org/acer" alt="Acer" width="56" height="56" data-d="acer.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Xiaomi"><img src="https://cdn.simpleicons.org/xiaomi" alt="Xiaomi" width="56" height="56" data-d="mi.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="OnePlus"><img src="https://cdn.simpleicons.org/oneplus" alt="OnePlus" width="56" height="56" data-d="oneplus.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Canon"><img src="https://cdn.simpleicons.org/canon" alt="Canon" width="56" height="56" data-d="canon.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Nikon"><img src="https://cdn.simpleicons.org/nikon" alt="Nikon" width="56" height="56" data-d="nikon.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Philips"><img src="https://cdn.simpleicons.org/philips" alt="Philips" width="56" height="56" data-d="philips.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Bosch"><img src="https://cdn.simpleicons.org/bosch" alt="Bosch" width="56" height="56" data-d="bosch.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Logitech"><img src="https://cdn.simpleicons.org/logitech" alt="Logitech" width="56" height="56" data-d="logitech.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="JBL"><img src="https://cdn.simpleicons.org/jbl" alt="JBL" width="56" height="56" data-d="jbl.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="IKEA"><img src="https://cdn.simpleicons.org/ikea" alt="IKEA" width="56" height="56" data-d="ikea.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Zara"><img src="https://cdn.simpleicons.org/zara" alt="Zara" width="56" height="56" data-d="zara.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="H&amp;M"><img src="https://cdn.simpleicons.org/handm" alt="H&amp;M" width="56" height="56" data-d="hm.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Levi&#39;s"><img src="https://cdn.simpleicons.org/levis" alt="Levi&#39;s" width="56" height="56" data-d="levi.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Gucci"><img src="https://cdn.simpleicons.org/gucci" alt="Gucci" width="56" height="56" data-d="gucci.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Casio"><img src="https://cdn.simpleicons.org/casio" alt="Casio" width="56" height="56" data-d="casio.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Nike"><img src="https://cdn.simpleicons.org/nike" alt="Nike" width="56" height="56" data-d="nike.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Adidas"><img src="https://cdn.simpleicons.org/adidas" alt="Adidas" width="56" height="56" data-d="adidas.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Puma"><img src="https://cdn.simpleicons.org/puma" alt="Puma" width="56" height="56" data-d="puma.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Reebok"><img src="https://cdn.simpleicons.org/reebok" alt="Reebok" width="56" height="56" data-d="reebok.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="New Balance"><img src="https://cdn.simpleicons.org/newbalance" alt="New Balance" width="56" height="56" data-d="newbalance.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Under Armour"><img src="https://cdn.simpleicons.org/underarmour" alt="Under Armour" width="56" height="56" data-d="underarmour.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Converse"><img src="https://cdn.simpleicons.org/converse" alt="Converse" width="56" height="56" data-d="converse.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Samsung"><img src="https://cdn.simpleicons.org/samsung" alt="Samsung" width="56" height="56" data-d="samsung.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Apple"><img src="https://cdn.simpleicons.org/apple" alt="Apple" width="56" height="56" data-d="apple.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Sony"><img src="https://cdn.simpleicons.org/sony" alt="Sony" width="56" height="56" data-d="sony.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="LG"><img src="https://cdn.simpleicons.org/lg" alt="LG" width="56" height="56" data-d="lg.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="HP"><img src="https://cdn.simpleicons.org/hp" alt="HP" width="56" height="56" data-d="hp.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Dell"><img src="https://cdn.simpleicons.org/dell" alt="Dell" width="56" height="56" data-d="dell.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="ASUS"><img src="https://cdn.simpleicons.org/asus" alt="ASUS" width="56" height="56" data-d="asus.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Lenovo"><img src="https://cdn.simpleicons.org/lenovo" alt="Lenovo" width="56" height="56" data-d="lenovo.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Acer"><img src="https://cdn.simpleicons.org/acer" alt="Acer" width="56" height="56" data-d="acer.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Xiaomi"><img src="https://cdn.simpleicons.org/xiaomi" alt="Xiaomi" width="56" height="56" data-d="mi.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="OnePlus"><img src="https://cdn.simpleicons.org/oneplus" alt="OnePlus" width="56" height="56" data-d="oneplus.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Canon"><img src="https://cdn.simpleicons.org/canon" alt="Canon" width="56" height="56" data-d="canon.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Nikon"><img src="https://cdn.simpleicons.org/nikon" alt="Nikon" width="56" height="56" data-d="nikon.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Philips"><img src="https://cdn.simpleicons.org/philips" alt="Philips" width="56" height="56" data-d="philips.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Bosch"><img src="https://cdn.simpleicons.org/bosch" alt="Bosch" width="56" height="56" data-d="bosch.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Logitech"><img src="https://cdn.simpleicons.org/logitech" alt="Logitech" width="56" height="56" data-d="logitech.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="JBL"><img src="https://cdn.simpleicons.org/jbl" alt="JBL" width="56" height="56" data-d="jbl.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="IKEA"><img src="https://cdn.simpleicons.org/ikea" alt="IKEA" width="56" height="56" data-d="ikea.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Zara"><img src="https://cdn.simpleicons.org/zara" alt="Zara" width="56" height="56" data-d="zara.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="H&amp;M"><img src="https://cdn.simpleicons.org/handm" alt="H&amp;M" width="56" height="56" data-d="hm.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Levi&#39;s"><img src="https://cdn.simpleicons.org/levis" alt="Levi&#39;s" width="56" height="56" data-d="levi.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Gucci"><img src="https://cdn.simpleicons.org/gucci" alt="Gucci" width="56" height="56" data-d="gucci.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div><div class="bs-item" title="Casio"><img src="https://cdn.simpleicons.org/casio" alt="Casio" width="56" height="56" data-d="casio.com" data-shared-proxy-applied="1" referrerpolicy="no-referrer" decoding="async" onerror="window.__lf(this)"></div></div></div>
+    </section>
 
     <!-- HERO -->
 
@@ -8105,7 +8284,7 @@ html:not(.ui-ready) #homeCatRail,html:not(.ui-ready) #homeCatRail *,html:not(.ui
       if(offerState===on)return;
       offerState=on;
       var apply=function(){offerWrap.classList.toggle("show",on);document.body.classList.toggle("has-offer",on);};
-      var desktop=window.matchMedia("(min-width:761px)").matches;
+      var desktop=false;
       var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if(!desktop||reduce||!d||!d.animate||home.hidden||document.body.classList.contains("explore-mode")){apply();return;}
       var els=[$("productsSectionHead"),$("categories"),$("productGrid"),document.querySelector("#productsSection > .load-more-wrap")].filter(Boolean);
@@ -8364,8 +8543,10 @@ html:not(.ui-ready) #homeCatRail,html:not(.ui-ready) #homeCatRail *,html:not(.ui
     var list=[{v:"",l:"All"}].concat(cats.map(function(c){return{v:c,l:String(c).replace(/-/g," ")}}));
     var iconMap=Object.assign({"":"ph-squares-four"},(typeof CATEGORY_ICONS!=="undefined"?CATEGORY_ICONS:{}));
     /* the rail is already in the HTML: only append unknown categories and move the active mark - never re-create nodes */
-    if(rail.children.length<list.length){
-      rail.insertAdjacentHTML("beforeend",list.slice(rail.children.length).map(function(c){
+    var have={};Array.prototype.forEach.call(rail.children,function(el){have[el.dataset.v||""]=1});
+    var missing=list.filter(function(c){return !have[c.v]});
+    if(missing.length){
+      rail.insertAdjacentHTML("beforeend",missing.map(function(c){
         return '<button type="button" class="hc" data-v="'+esc(c.v)+'">'+
           '<span class="hc-circle"><i class="ph-fill '+(iconMap[c.v]||'ph-tag')+'" aria-hidden="true"></i></span>'+
           '<span class="hc-name">'+esc(c.l)+'</span></button>';
@@ -8501,6 +8682,46 @@ html:not(.ui-ready) #homeCatRail,html:not(.ui-ready) #homeCatRail *,html:not(.ui
 (function(){
   function ready(){requestAnimationFrame(function(){requestAnimationFrame(function(){document.documentElement.classList.add("ui-ready")})})}
   if(document.readyState==="complete")ready();else window.addEventListener("load",ready,{once:true});
+})();
+</script>
+
+<script id="desktop-v2-js">
+(function(){
+  "use strict";
+  var $=function(i){return document.getElementById(i)};
+  var mq=window.matchMedia("(min-width:761px)");
+
+  /* ----- three-line menu popup (desktop only) ----- */
+  var btn=$("mobileMenuBtn"),menu=$("dtMenu");
+  if(btn&&menu){
+    var timer=0;
+    var place=function(){var r=btn.getBoundingClientRect();menu.style.left=Math.max(12,Math.round(r.left))+"px";menu.style.top=Math.round(r.bottom+10)+"px";};
+    var isOpen=function(){return menu.classList.contains("open")};
+    var open=function(){clearTimeout(timer);place();menu.hidden=false;void menu.offsetWidth;menu.classList.add("open");btn.setAttribute("aria-expanded","true");};
+    var close=function(){menu.classList.remove("open");btn.setAttribute("aria-expanded","false");clearTimeout(timer);timer=setTimeout(function(){if(!isOpen())menu.hidden=true},200);};
+    btn.addEventListener("click",function(e){if(!mq.matches)return;e.stopPropagation();isOpen()?close():open();});
+    document.addEventListener("click",function(e){if(isOpen()&&!menu.contains(e.target)&&!btn.contains(e.target))close();});
+    menu.addEventListener("click",function(e){if(e.target.closest("a,button"))close();});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"&&isOpen()){close();btn.focus();}});
+    window.addEventListener("resize",function(){if(isOpen()){if(!mq.matches)close();else place();}},{passive:true});
+    window.addEventListener("scroll",function(){if(isOpen())close();},{passive:true});
+  }
+
+  /* ----- category rail arrows ----- */
+  var rail=$("homeCatRail"),prev=$("catPrev"),next=$("catNext");
+  if(rail&&prev&&next){
+    var step=function(dir){rail.scrollBy({left:dir*Math.max(320,rail.clientWidth*0.8),behavior:"smooth"})};
+    prev.addEventListener("click",function(){step(-1)});
+    next.addEventListener("click",function(){step(1)});
+    var sync=function(){
+      var max=rail.scrollWidth-rail.clientWidth-2;
+      prev.classList.toggle("off",rail.scrollLeft<=2);
+      next.classList.toggle("off",rail.scrollLeft>=max);
+    };
+    rail.addEventListener("scroll",sync,{passive:true});
+    window.addEventListener("resize",sync,{passive:true});
+    sync();setTimeout(sync,600);
+  }
 })();
 </script>
 </body>
