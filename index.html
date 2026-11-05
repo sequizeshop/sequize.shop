@@ -30,8 +30,11 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://images.weserv.nl" crossorigin>
+  <link rel="preload" as="image" href="https://images.weserv.nl/?url=i.ibb.co%2F93kQCKxT%2F20261019-120246.png">
+  <link rel="preload" as="image" href="https://images.weserv.nl/?url=randomuser.me%2Fapi%2Fportraits%2Fwomen%2F44.jpg">
 
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=block" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=Pacifico&display=block" rel="stylesheet">
 
   <link rel="preload" as="font" type="font/woff2" crossorigin href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/Phosphor.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/Phosphor-Fill.woff2">
@@ -51,8 +54,15 @@
       var p = JSON.parse(localStorage.getItem("shoppy_profile_cache_v1") || "null");
       loggedIn = !!(p && p.user);
     } catch (e) {}
-    root.classList.add(loggedIn ? "auth-known-user" : "auth-state-pending");
+    var guestHint = false;
+    try { guestHint = !loggedIn && localStorage.getItem("shoppy_auth_hint_v1") === "guest"; } catch (e) {}
+    /* A returning guest must not wait for the network before the header appears. */
+    root.classList.add(loggedIn ? "auth-known-user" : (guestHint ? "auth-known-guest" : "auth-state-pending"));
     window.__sequizeCachedLogin = loggedIn;
+    window.__sequizeGuestHint = guestHint;
+    try { if (localStorage.getItem("shoppy_hdr_pic_v1") === "1") root.classList.add("hdr-pic-known"); } catch (e) {}
+    window.__cachedOfferPct = 0;
+    try { window.__cachedOfferPct = Math.max(0, Math.min(100, Number(localStorage.getItem("shoppy_offer_pct_v1")) || 0)); } catch (e) {}
     try {
       var savedTab = localStorage.getItem("shoppy_home_active_tab_v1");
       if (["home", "search", "explore", "cart", "account"].indexOf(savedTab) > -1) {
@@ -4464,11 +4474,23 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
   html:not(.ui-ready) body .offer-wrap,html:not(.ui-ready) body .offer-wrap.show{transition:none!important}
 }
 </style>
+
+<style id="no-blink-refresh">
+/* avatar: show the picture slot (not the placeholder icon) from the very first paint when it was loaded before */
+html.hdr-pic-known body .topbar .nav-actions [data-top-nav="account"] i{display:none}
+/* desktop offer banner already exists in the HTML; it only needs the cached state class */
+.offer-banner-desk{display:none}
+/* category chips / rail exist in the HTML: nothing is created later, nothing shifts */
+.hero-art img{background:transparent}
+/* nothing may fade/transition during the very first paint of a refresh */
+html:not(.ui-ready) #homeCatRail,html:not(.ui-ready) #homeCatRail *,html:not(.ui-ready) #locStrip,html:not(.ui-ready) .topbar *{transition:none!important;animation:none!important}
+</style>
 </head>
 
 <body class="nav-pending app-basic-navigation">
   <script>
     (function () {
+      if (window.__sequizeGuestHint) document.body.classList.add("guest-mode");
       var st = document.documentElement.getAttribute("data-start-tab");
       if (st === "explore") document.body.classList.add("explore-mode");
       if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) document.body.classList.remove("nav-pending");
@@ -4584,6 +4606,11 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
 
     </div>
 
+    <button type="button" id="locStrip" data-open-location><i class="ph-bold ph-map-pin" aria-hidden="true"></i><span>Add delivery location to check extra discount</span><i class="ph-bold ph-caret-right" aria-hidden="true"></i></button>
+    <div id="homeCatRail" aria-label="Categories"><button type="button" class="hc active" data-v=""><span class="hc-circle"><i class="ph-fill ph-squares-four" aria-hidden="true"></i></span><span class="hc-name">All</span></button><button type="button" class="hc" data-v="beauty"><span class="hc-circle"><i class="ph-fill ph-flower-lotus" aria-hidden="true"></i></span><span class="hc-name">beauty</span></button><button type="button" class="hc" data-v="fragrances"><span class="hc-circle"><i class="ph-fill ph-drop" aria-hidden="true"></i></span><span class="hc-name">fragrances</span></button><button type="button" class="hc" data-v="furniture"><span class="hc-circle"><i class="ph-fill ph-armchair" aria-hidden="true"></i></span><span class="hc-name">furniture</span></button><button type="button" class="hc" data-v="groceries"><span class="hc-circle"><i class="ph-fill ph-basket" aria-hidden="true"></i></span><span class="hc-name">groceries</span></button><button type="button" class="hc" data-v="home-decoration"><span class="hc-circle"><i class="ph-fill ph-house-line" aria-hidden="true"></i></span><span class="hc-name">home decoration</span></button><button type="button" class="hc" data-v="kitchen-accessories"><span class="hc-circle"><i class="ph-fill ph-cooking-pot" aria-hidden="true"></i></span><span class="hc-name">kitchen accessories</span></button><button type="button" class="hc" data-v="laptops"><span class="hc-circle"><i class="ph-fill ph-laptop" aria-hidden="true"></i></span><span class="hc-name">laptops</span></button><button type="button" class="hc" data-v="mens-shirts"><span class="hc-circle"><i class="ph-fill ph-t-shirt" aria-hidden="true"></i></span><span class="hc-name">mens shirts</span></button><button type="button" class="hc" data-v="mens-shoes"><span class="hc-circle"><i class="ph-fill ph-sneaker" aria-hidden="true"></i></span><span class="hc-name">mens shoes</span></button><button type="button" class="hc" data-v="mens-watches"><span class="hc-circle"><i class="ph-fill ph-watch" aria-hidden="true"></i></span><span class="hc-name">mens watches</span></button><button type="button" class="hc" data-v="mobile-accessories"><span class="hc-circle"><i class="ph-fill ph-plugs" aria-hidden="true"></i></span><span class="hc-name">mobile accessories</span></button><button type="button" class="hc" data-v="motorcycle"><span class="hc-circle"><i class="ph-fill ph-motorcycle" aria-hidden="true"></i></span><span class="hc-name">motorcycle</span></button><button type="button" class="hc" data-v="skin-care"><span class="hc-circle"><i class="ph-fill ph-sparkle" aria-hidden="true"></i></span><span class="hc-name">skin care</span></button><button type="button" class="hc" data-v="smartphones"><span class="hc-circle"><i class="ph-fill ph-device-mobile" aria-hidden="true"></i></span><span class="hc-name">smartphones</span></button><button type="button" class="hc" data-v="sports-accessories"><span class="hc-circle"><i class="ph-fill ph-basketball" aria-hidden="true"></i></span><span class="hc-name">sports accessories</span></button><button type="button" class="hc" data-v="sunglasses"><span class="hc-circle"><i class="ph-fill ph-sunglasses" aria-hidden="true"></i></span><span class="hc-name">sunglasses</span></button><button type="button" class="hc" data-v="tablets"><span class="hc-circle"><i class="ph-fill ph-device-tablet" aria-hidden="true"></i></span><span class="hc-name">tablets</span></button><button type="button" class="hc" data-v="tops"><span class="hc-circle"><i class="ph-fill ph-coat-hanger" aria-hidden="true"></i></span><span class="hc-name">tops</span></button><button type="button" class="hc" data-v="vehicle"><span class="hc-circle"><i class="ph-fill ph-car" aria-hidden="true"></i></span><span class="hc-name">vehicle</span></button><button type="button" class="hc" data-v="womens-bags"><span class="hc-circle"><i class="ph-fill ph-handbag" aria-hidden="true"></i></span><span class="hc-name">womens bags</span></button><button type="button" class="hc" data-v="womens-dresses"><span class="hc-circle"><i class="ph-fill ph-crown-simple" aria-hidden="true"></i></span><span class="hc-name">womens dresses</span></button><button type="button" class="hc" data-v="womens-jewellery"><span class="hc-circle"><i class="ph-fill ph-diamond" aria-hidden="true"></i></span><span class="hc-name">womens jewellery</span></button><button type="button" class="hc" data-v="womens-shoes"><span class="hc-circle"><i class="ph-fill ph-boot" aria-hidden="true"></i></span><span class="hc-name">womens shoes</span></button><button type="button" class="hc" data-v="womens-watches"><span class="hc-circle"><i class="ph-fill ph-clock" aria-hidden="true"></i></span><span class="hc-name">womens watches</span></button></div>
+    <div id="offerWrap" class="offer-wrap"><div class="offer-wrap-inner"><section class="offer-banner show" id="offerBanner"><div><b>UP TO</b><strong><span id="offerPct">0</span>%<em>OFF</em></strong><small>ENDS SOON</small><button type="button" id="offerShop">Shop Now →</button></div><i class="ph-fill ph-seal-percent" aria-hidden="true"></i></section></div></div>
+    <script>(function(){var p=window.__cachedOfferPct||0;if(p>0){document.getElementById("offerPct").textContent=Number(p.toFixed(2)).toString();document.getElementById("offerWrap").classList.add("show");document.body.classList.add("has-offer");}})();</script>
+
     <!-- HERO -->
 
     <section class="hero-wrap" id="heroWrap">
@@ -4613,7 +4640,7 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
         <div class="hero-art" aria-hidden="true">
 
           <img
-            src="https://i.ibb.co/93kQCKxT/20261019-120246.png"
+            src="https://images.weserv.nl/?url=i.ibb.co%2F93kQCKxT%2F20261019-120246.png"
             alt=""
           >
 
@@ -4626,6 +4653,11 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
     <!-- PRODUCTS -->
 
     <main class="container" id="productsSection">
+
+      <div class="category-chips" id="categoryChips"><button type="button" class="chip active" data-v="">All</button><button type="button" class="chip" data-v="beauty">beauty</button><button type="button" class="chip" data-v="fragrances">fragrances</button><button type="button" class="chip" data-v="furniture">furniture</button><button type="button" class="chip" data-v="groceries">groceries</button><button type="button" class="chip" data-v="home-decoration">home decoration</button><button type="button" class="chip" data-v="kitchen-accessories">kitchen accessories</button><button type="button" class="chip" data-v="laptops">laptops</button><button type="button" class="chip" data-v="mens-shirts">mens shirts</button><button type="button" class="chip" data-v="mens-shoes">mens shoes</button><button type="button" class="chip" data-v="mens-watches">mens watches</button><button type="button" class="chip" data-v="mobile-accessories">mobile accessories</button><button type="button" class="chip" data-v="motorcycle">motorcycle</button><button type="button" class="chip" data-v="skin-care">skin care</button><button type="button" class="chip" data-v="smartphones">smartphones</button><button type="button" class="chip" data-v="sports-accessories">sports accessories</button><button type="button" class="chip" data-v="sunglasses">sunglasses</button><button type="button" class="chip" data-v="tablets">tablets</button><button type="button" class="chip" data-v="tops">tops</button><button type="button" class="chip" data-v="vehicle">vehicle</button><button type="button" class="chip" data-v="womens-bags">womens bags</button><button type="button" class="chip" data-v="womens-dresses">womens dresses</button><button type="button" class="chip" data-v="womens-jewellery">womens jewellery</button><button type="button" class="chip" data-v="womens-shoes">womens shoes</button><button type="button" class="chip" data-v="womens-watches">womens watches</button></div>
+      <section class="offer-banner-desk" id="offerBannerDesk"><b>UP TO</b><strong><span id="offerPctD">0</span>%<em>OFF</em></strong><small>ENDS SOON</small><button type="button" id="offerShopD">Shop Now →</button><i class="ph-fill ph-seal-percent" aria-hidden="true"></i></section>
+      <script>(function(){var p=window.__cachedOfferPct||0;if(p>0)document.getElementById("offerPctD").textContent=Number(p.toFixed(2)).toString();})();</script>
+
 
       <div class="app-page-heading explore-page-heading"><h1>Explore</h1></div>
 
@@ -4665,7 +4697,7 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
       <div class="section-head" id="productsSectionHead">
 
         <div class="products-heading-copy">
-          <h2 id="productsHeading">Popular Products</h2>
+          <h2 id="productsHeading">Recommended Products</h2>
           <p id="productsSubtitle">Discover something you'll love.</p>
           <p id="homeDiscountOffers" class="home-discount-offers" hidden aria-live="polite"></p>
           <span id="productCount" class="product-count"></span>
@@ -7207,6 +7239,7 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
 
       document.body.classList.remove("nav-pending");
       document.body.classList.toggle("guest-mode", authStatus !== "logged-in");
+      if (verified) { try { localStorage.setItem("shoppy_auth_hint_v1", authStatus === "logged-in" ? "user" : "guest"); } catch (e) {} }
       if (verified) document.documentElement.classList.remove("auth-state-pending");
       if (currentView === "search" && typeof renderSearchHistory === "function") renderSearchHistory();
       requestAnimationFrame(() => requestAnimationFrame(() => positionNavIndicator(true)));
@@ -7798,6 +7831,8 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
         // Use the first valid API offer in API order; do not accidentally select
         // a different, larger percentage (for example 60%) from the list.
         homeAdminDiscountPercent = Math.min(100, numericPercentages.reduce((a, b) => a + b, 0));
+        window.__offerLoaded = true;
+        if (typeof window.__offerUpd === "function") window.__offerUpd();
 
         if (!numericPercentages.length) {
           line.hidden = true;
@@ -8052,46 +8087,27 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
   "use strict";
   var $=function(id){return document.getElementById(id)};
 
-  /* 1. Offer banner "UP TO X% OFF" from the admin discount already loaded by the page */
+  /* 1. Offer banner "UP TO X% OFF": markup is static; state comes from the last known value and changes (with a transition) only when the server says something different */
   var home=$("homeContent"),search=$("homeSearchWrap");
   if(home&&search){
-    var b=document.createElement("section");b.className="offer-banner";b.id="offerBanner";
-    b.innerHTML='<div><b>UP TO</b><strong><span id="offerPct">0</span>%<em>OFF</em></strong><small>ENDS SOON</small><button type="button" id="offerShop">Shop Now →</button></div><i class="ph-fill ph-seal-percent" aria-hidden="true"></i>';
-    b.className="offer-banner show";
-    var offerWrap=document.createElement("div");offerWrap.id="offerWrap";offerWrap.className="offer-wrap";
-    var offerInner=document.createElement("div");offerInner.className="offer-wrap-inner";
-    offerInner.appendChild(b);offerWrap.appendChild(offerInner);
-    search.after(offerWrap);
-    $("offerShop").addEventListener("click",function(){var s=$("productsSection");if(s)s.scrollIntoView({behavior:"smooth"})});
-    var upd=function(){
-      var p=0;try{p=Math.max(0,Number(getHomeDiscountPercent())||0)}catch(e){}
-      $("offerPct").textContent=Number(p.toFixed(2)).toString();
-      window.__offerOn=p>0;
-    };
+    var offerWrap=$("offerWrap"),d=$("offerBannerDesk");
+    var offerShop=$("offerShop");if(offerShop)offerShop.addEventListener("click",function(){var s=$("productsSection");if(s)s.scrollIntoView({behavior:"smooth"})});
+    var offerShopD=$("offerShopD");if(offerShopD)offerShopD.addEventListener("click",function(){var g=$("productGrid");if(g)g.scrollIntoView({behavior:"smooth"})});
     var line=$("homeDiscountOffers");
-    if(line)new MutationObserver(function(){upd()}).observe(line,{childList:true,characterData:true,subtree:true,attributes:true});
-    var ps=$("productsSection");
-    if(ps){
-      var d=document.createElement("section");d.className="offer-banner-desk";d.id="offerBannerDesk";
-      d.innerHTML='<b>UP TO</b><strong><span id="offerPctD">0</span>%<em>OFF</em></strong><small>ENDS SOON</small><button type="button" id="offerShopD">Shop Now →</button><i class="ph-fill ph-seal-percent" aria-hidden="true"></i>';
-      ps.insertBefore(d,ps.firstChild);
-      $("offerShopD").addEventListener("click",function(){var g=$("productGrid");if(g)g.scrollIntoView({behavior:"smooth"})});
-    }
-    var upd0=upd;
-    var offerState=null;
-    upd=function(){
-      upd0();
-      var on=!!window.__offerOn,pc=$("offerPct").textContent,e=$("offerPctD");
-      if(e)e.textContent=pc;
+    var offerState=(window.__cachedOfferPct||0)>0;
+    var upd=function(){
+      if(!window.__offerLoaded)return;            /* no data yet: keep exactly what is on screen */
+      var p=0;try{p=Math.max(0,Number(getHomeDiscountPercent())||0)}catch(e){}
+      var txt=Number(p.toFixed(2)).toString(),on=p>0;
+      var a=$("offerPct"),b=$("offerPctD");
+      if(on){if(a&&a.textContent!==txt)a.textContent=txt;if(b&&b.textContent!==txt)b.textContent=txt;}
+      try{localStorage.setItem("shoppy_offer_pct_v1",String(p))}catch(e){}
       if(offerState===on)return;
-      var firstRun=offerState===null;offerState=on;
+      offerState=on;
       var apply=function(){offerWrap.classList.toggle("show",on);document.body.classList.toggle("has-offer",on);};
       var desktop=window.matchMedia("(min-width:761px)").matches;
       var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if(firstRun&&!on){apply();return;}
-      /* mobile: the wrapper animates its own height, so the products below slide automatically */
       if(!desktop||reduce||!d||!d.animate||home.hidden||document.body.classList.contains("explore-mode")){apply();return;}
-      /* desktop: FLIP - everything below the card translates to its new place */
       var els=[$("productsSectionHead"),$("categories"),$("productGrid"),document.querySelector("#productsSection > .load-more-wrap")].filter(Boolean);
       var ease="cubic-bezier(.22,.8,.25,1)";
       var flip=function(){
@@ -8108,6 +8124,8 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
       var done=false,go=function(){if(done)return;done=true;out.cancel();flip();};
       out.onfinish=go;setTimeout(go,450);
     };
+    window.__offerUpd=upd;
+    if(line)new MutationObserver(function(){upd()}).observe(line,{childList:true,characterData:true,subtree:true,attributes:true});
     setInterval(upd,1500);upd();
   }
 
@@ -8144,13 +8162,17 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
   /* 4. Explore: horizontal category chips */
   var main=$("productsSection"),sheet=$("sheetCategories");
   if(main){
-    var chips=document.createElement("div");chips.className="category-chips";chips.id="categoryChips";
-    main.insertBefore(chips,main.firstChild);
+    var chips=$("categoryChips");
     var build=function(){
+      if(!chips)return;
       var list=[{v:"",l:"All"}].concat(allCategories.map(function(c){return{v:c,l:c.replace(/-/g," ")}}));
-      chips.innerHTML=list.map(function(c){
-        return '<button type="button" class="chip'+(c.v===currentCategory?" active":"")+'" data-v="'+c.v.replace(/"/g,"&quot;")+'">'+c.l.replace(/</g,"&lt;")+'</button>';
-      }).join("");
+      for(var i=chips.children.length;i<list.length;i++){
+        var c=list[i],bt=document.createElement("button");bt.type="button";bt.className="chip";bt.dataset.v=c.v;bt.textContent=c.l;chips.appendChild(bt);
+      }
+      Array.prototype.forEach.call(chips.children,function(el){
+        var on=(el.dataset.v||"")===(currentCategory||"");
+        if(el.classList.contains("active")!==on)el.classList.toggle("active",on);
+      });
     };
     chips.addEventListener("click",function(e){
       var t=e.target.closest(".chip");if(!t)return;
@@ -8173,9 +8195,9 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
   var acc=document.querySelector('.nav-actions [data-top-nav="account"]');
   if(acc){
     var im=document.createElement("img");im.className="hdr-avatar";im.alt="";
-    im.src="https://randomuser.me/api/portraits/women/44.jpg";
-    im.addEventListener("load",function(){acc.classList.add("has-pic")});
-    im.addEventListener("error",function(){im.remove();acc.classList.remove("has-pic")});
+    im.src="https://images.weserv.nl/?url=randomuser.me%2Fapi%2Fportraits%2Fwomen%2F44.jpg";
+    im.addEventListener("load",function(){acc.classList.add("has-pic");try{localStorage.setItem("shoppy_hdr_pic_v1","1")}catch(e){}});
+    im.addEventListener("error",function(){im.remove();acc.classList.remove("has-pic");document.documentElement.classList.remove("hdr-pic-known");try{localStorage.removeItem("shoppy_hdr_pic_v1")}catch(e){}});
     acc.appendChild(im);
   }
 
@@ -8308,16 +8330,9 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
   var search=$("homeSearchWrap");if(!search)return;
 
   /* location strip (opens the existing location sheet) */
-  var strip=document.createElement("button");
-  strip.type="button";strip.id="locStrip";strip.setAttribute("data-open-location","");
-  strip.innerHTML='<i class="ph-bold ph-map-pin" aria-hidden="true"></i><span>Add delivery location to check extra discount</span><i class="ph-bold ph-caret-right" aria-hidden="true"></i>';
+  var strip=$("locStrip"),rail=$("homeCatRail");
+  if(!strip||!rail)return;
   strip.addEventListener("click",function(){if(typeof openLocationSheet==="function")openLocationSheet()});
-
-  var rail=document.createElement("div");rail.id="homeCatRail";rail.setAttribute("aria-label","Categories");
-
-  /* order: search -> strip -> categories -> (offer banner) -> products */
-  search.after(strip);strip.after(rail);
-  var banner=$("offerWrap");if(banner)rail.after(banner);
 
   var ICONS=[
     [/phone|mobile|smart/,"ph-device-mobile"],[/laptop|computer|pc/,"ph-laptop"],[/tablet/,"ph-device-tablet"],
@@ -8348,16 +8363,20 @@ html body #cartPage #appCartItems .acs-item::after{content:"";flex:0 0 34px;heig
     var cats=[];try{cats=allCategories||[]}catch(e){}
     var list=[{v:"",l:"All"}].concat(cats.map(function(c){return{v:c,l:String(c).replace(/-/g," ")}}));
     var iconMap=Object.assign({"":"ph-squares-four"},(typeof CATEGORY_ICONS!=="undefined"?CATEGORY_ICONS:{}));
-    var html=list.map(function(c){
-      var on=false;try{on=(c.v===currentCategory)}catch(e){}
-      return '<button type="button" class="hc'+(on?" active":"")+'" data-v="'+esc(c.v)+'">'+
-        '<span class="hc-circle"><i class="ph-fill '+(iconMap[c.v]||'ph-tag')+'" aria-hidden="true"></i></span>'+
-        '<span class="hc-name">'+esc(c.l)+'</span></button>';
-    }).join("");
-    if(html===lastHtml)return;
-    lastHtml=html;rail.innerHTML=html;
+    /* the rail is already in the HTML: only append unknown categories and move the active mark - never re-create nodes */
+    if(rail.children.length<list.length){
+      rail.insertAdjacentHTML("beforeend",list.slice(rail.children.length).map(function(c){
+        return '<button type="button" class="hc" data-v="'+esc(c.v)+'">'+
+          '<span class="hc-circle"><i class="ph-fill '+(iconMap[c.v]||'ph-tag')+'" aria-hidden="true"></i></span>'+
+          '<span class="hc-name">'+esc(c.l)+'</span></button>';
+      }).join(""));
+    }
+    var cur="";try{cur=currentCategory||""}catch(e){}
+    Array.prototype.forEach.call(rail.children,function(el){
+      var on=(el.dataset.v||"")===cur;
+      if(el.classList.contains("active")!==on)el.classList.toggle("active",on);
+    });
   }
-  var lastHtml="";
   rail.addEventListener("click",function(e){
     var t=e.target.closest(".hc");if(!t)return;
     currentCategory=t.dataset.v||"";currentSearch="";
