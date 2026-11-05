@@ -4639,6 +4639,132 @@ html body:not(#a1):not(#a2):not(#a3):not(#a4) header.topbar .nav-actions > #noti
 html body:not(#a1):not(#a2):not(#a3):not(#a4) #productGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
 </style>
+
+<style id="desktop-final-overrides">
+/* ================= Desktop-only final overrides ================= */
+.disc-strip,.upcoming-deals{display:none}
+@media (min-width:761px){
+
+/* ---- 1) Brand: always the full name, never a single letter ---- */
+html body header.topbar > .brand,
+html body:not(.zz):not(.yy):not(.nav-never) header.topbar > .brand{
+  flex:0 0 auto !important; width:auto !important; min-width:calc(var(--dw) + 44px) !important;
+  overflow:visible !important; padding:0 18px 0 18px !important; box-sizing:border-box !important}
+html body header.topbar > .brand .b1,
+html body header.topbar > .brand .b2,
+html body.drawer-mini header.topbar > .brand .b1,
+html body.drawer-mini header.topbar > .brand .b2{display:inline !important}
+
+/* ---- 2) Discount ticker under the toolbar ---- */
+html body.has-strip{padding-top:96px !important}
+html body .disc-strip{
+  position:fixed;left:0;right:0;top:68px;height:28px;z-index:10001;overflow:hidden;
+  background:
+    repeating-linear-gradient(115deg,rgba(255,255,255,.10) 0 10px,rgba(255,255,255,0) 10px 22px),
+    linear-gradient(90deg,#B3121F 0%,#E02432 50%,#B3121F 100%);
+  color:#fff;border-bottom:1px solid rgba(0,0,0,.12);box-shadow:0 2px 6px rgba(120,0,10,.18)}
+html body .disc-strip[hidden]{display:none !important}
+html body:not(.has-strip) .disc-strip{display:none !important}
+html body.has-strip .disc-strip{display:block}
+.disc-track{display:flex;width:max-content;height:100%;align-items:center;animation:discMove 30s linear infinite;will-change:transform}
+.disc-track span{flex:0 0 auto;padding:0 56px;font:800 12.5px/28px var(--font-heading,system-ui,sans-serif);letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap}
+.disc-strip:hover .disc-track{animation-play-state:paused}
+@keyframes discMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.disc-track{animation:none}}
+html body.has-strip .app-view{padding-top:18px !important}
+/* everything that was pinned to the toolbar moves below the strip */
+html body.has-strip #desktopDrawer{top:96px !important}
+html body.has-strip #dwHandle{top:96px !important}
+html body.has-strip #searchPage .search-bar-wrap{top:96px !important}
+html body.has-strip #cartPage .app-summary{top:124px !important}
+
+/* ---- 3) Upcoming deals card (same design as the discount band) ---- */
+html body .upcoming-deals{display:block;position:relative;overflow:hidden;box-sizing:border-box;width:100%;margin:0;
+  padding:26px max(24px,calc((100% - 1240px)/2));color:#fff;
+  background:linear-gradient(100deg,#0B2A8A 0%,#1744B5 55%,#2962FF 100%);border-top:1px solid rgba(255,255,255,.14)}
+html body:not(#a1):not(#a2):not(#a3):not(#a4) .upcoming-deals{order:2 !important}
+html body.explore-mode .upcoming-deals{display:none !important}
+.ud-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:30px}
+.ud-copy{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ud-copy b{font-size:15px;letter-spacing:2px}
+.ud-copy strong{font-family:var(--font-heading);font-size:46px;font-weight:800;line-height:1}
+.ud-copy small{font-size:11px;letter-spacing:2px;opacity:.85}
+.ud-list{display:flex;gap:16px;margin-left:auto;position:relative;z-index:1}
+.ud-item{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:132px;padding:12px 22px;border-radius:18px;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.ud-pct{font-family:var(--font-heading);font-size:38px;font-weight:800;line-height:1}
+.ud-pct sup{font-size:20px;margin-left:1px;vertical-align:top;position:relative;top:2px}
+.ud-off{font-size:12px;font-weight:800;letter-spacing:2px;margin-top:2px}
+.ud-item em{font-style:normal;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;opacity:.8;margin-top:6px}
+.ud-art{position:absolute;right:max(24px,calc((100% - 1240px)/2));top:50%;transform:translateY(-50%);font-size:92px;opacity:.12;color:#fff;pointer-events:none}
+.ud-list{margin-right:0}
+
+/* ---- 4) Cart: products on the left, full payment summary on the right ---- */
+html body:not(.nav-never) #cartPage.has-items .app-cart-layout{
+  grid-template-columns:minmax(0,1fr) 380px !important;gap:24px !important;align-items:start !important}
+html body:not(#_c1):not(#_c2) #cartPage.has-items .app-cart-items{
+  padding:8px 22px !important;border:1px solid #e6e9ef !important;border-radius:20px !important;background:#fff !important}
+html body #cartPage .app-summary{
+  box-sizing:border-box;padding:22px 22px 20px !important;border:1px solid #e6e9ef;border-radius:20px;background:#fff;
+  box-shadow:0 8px 24px rgba(16,24,40,.06)}
+html body #cartPage .app-summary > .cs-lines{display:block !important}
+html body #cartPage .app-summary > .cs-lines::before{content:"Order Summary";display:block;margin:0 0 12px;padding-bottom:12px;
+  border-bottom:1px solid var(--divider);font:800 18px var(--font-heading,system-ui,sans-serif);color:var(--text-primary)}
+html body #cartPage .app-summary .cs-row{font-size:14px;margin:9px 0}
+html body #cartPage .app-summary .cs-row.cs-total{font-size:16px;margin-top:14px;padding-top:14px}
+html body #cartPage .app-summary > .app-summary-note{display:block !important;margin:12px 0 0 !important;padding:10px 12px;border-radius:12px;background:#f3f6ff;color:#1744B5;font-size:12.5px !important}
+html body #cartPage .app-summary > .app-summary-note:empty{display:none !important}
+html body #cartPage #cartQuickSummary,
+html body #cartPage #appViewSummaryButton{display:none !important}
+html body #cartPage .cart-checkout-bar{display:block !important;position:static !important;margin-top:16px !important;padding:0 !important;border:0 !important;background:transparent !important}
+html body #cartPage .cart-checkout-actions{margin:0 !important;display:block !important}
+html body:not(#_c1):not(#_c2) #cartPage .cart-checkout-bar #appCheckoutButton,html body:not(#_c1):not(#_c2) #cartPage .cart-checkout-bar button#appCheckoutButton{display:block !important;flex:none !important;width:100% !important;max-width:none !important;height:48px !important;min-height:48px !important;max-height:48px !important;font-size:15px !important}
+
+/* ---- 5) Profile: clean two-column layout, equal gaps left / right ---- */
+html body #accountPage{box-sizing:border-box}
+html body:not(#_p1):not(#_p2) #appProfileLayout{
+  display:grid !important;grid-template-columns:340px minmax(0,1fr) !important;grid-template-rows:auto 1fr !important;
+  gap:24px !important;align-items:start !important;width:100% !important;max-width:1240px;margin:0 auto !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout[hidden]{display:none !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > .app-profile-aside{
+  grid-column:1 !important;grid-row:1 !important;order:0 !important;
+  display:flex !important;flex-direction:column !important;flex-wrap:nowrap !important;align-items:center !important;align-content:center !important;justify-content:flex-start !important;text-align:center;gap:0 !important;
+  box-sizing:border-box !important;width:100% !important;padding:32px 24px 28px !important;
+  border:1px solid #e6e9ef !important;border-radius:22px !important;background:#fff !important;box-shadow:0 8px 24px rgba(16,24,40,.06) !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > .app-profile-aside > .app-avatar{
+  flex:0 0 auto !important;width:104px !important;height:104px !important;margin:0 0 16px !important;font-size:38px !important;
+  box-shadow:0 0 0 5px #fff,0 0 0 7px #e3e9f8 !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > .app-profile-aside > .app-profile-name{
+  flex:0 0 auto !important;max-width:100% !important;margin:0 !important;justify-content:center;font-size:22px !important;gap:6px !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > .app-profile-aside > .app-profile-email{
+  flex:0 0 auto !important;max-width:100% !important;margin:4px 0 0 !important;font-size:14px !important;word-break:break-word}
+html body:not(#_p1):not(#_p2) #appProfileLayout > .app-profile-aside > .app-member-badge{margin:16px 0 0 !important;align-self:center !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > .app-profile-aside > #appMembershipSummary{
+  box-sizing:border-box !important;width:100% !important;flex:0 0 auto !important;margin:16px 0 0 !important;text-align:left}
+html body:not(#_p1):not(#_p2) #appProfileLayout > .app-profile-aside > .app-profile-row{display:none !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > .app-profile-promo{
+  grid-column:1 !important;grid-row:2 !important;order:0 !important;box-sizing:border-box !important;width:100% !important;margin:0 !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > section{
+  grid-column:2 !important;grid-row:1 / span 2 !important;order:0 !important;box-sizing:border-box !important;width:100% !important;
+  display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:16px 24px !important;align-content:start;
+  padding:26px !important;border:1px solid #e6e9ef;border-radius:22px;background:#fff;box-shadow:0 8px 24px rgba(16,24,40,.06)}
+html body:not(#_p1):not(#_p2) #appProfileLayout > section > .app-section-heading{grid-column:1 / -1 !important;margin:0 0 4px !important;font-size:22px}
+html body:not(#_p1):not(#_p2) #appProfileLayout > section > .app-profile-row{
+  box-sizing:border-box !important;width:100% !important;min-height:84px !important;margin:0 !important;padding:16px 18px !important;gap:16px !important;
+  border:1px solid #e9ecf2 !important;border-radius:16px !important;background:#fafbfd !important;transition:background .15s,border-color .15s,transform .15s}
+html body:not(#_p1):not(#_p2) #appProfileLayout > section > .app-profile-row:hover{background:#f1f5ff !important;border-color:#c9d8ff !important;transform:translateY(-1px)}
+html body:not(#_p1):not(#_p2) #appProfileLayout > section > .app-profile-row > i:first-child{
+  flex:0 0 46px;width:46px;height:46px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#e8f0ff;font-size:23px}
+html body:not(#_p1):not(#_p2) #appProfileLayout > section > a.app-profile-row,
+html body:not(#_p1):not(#_p2) #appProfileLayout > section > button.app-profile-row{display:flex !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > .app-profile-aside > *{align-self:center !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > .app-profile-aside > #appMembershipSummary{align-self:stretch !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > section > #appLogoutButton{
+  grid-column:1 / -1 !important;min-height:70px !important;border-color:#f6d5d8 !important;background:#fff6f7 !important}
+html body:not(#_p1):not(#_p2) #appProfileLayout > section > #appLogoutButton > i:first-child{background:#ffe4e7;color:#d92d3a}
+html body:not(#_p1):not(#_p2) #appProfileLayout > section > #appLogoutButton strong{color:#d92d3a}
+}
+</style>
 </head>
 
 <body class="nav-pending app-basic-navigation">
@@ -4702,7 +4828,10 @@ html body:not(#a1):not(#a2):not(#a3):not(#a4) #productGrid{grid-template-columns
     <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu" title="Menu" aria-haspopup="true" aria-expanded="false"><i class="ph-bold ph-list" aria-hidden="true"></i></button>
     <a href="/home.html" class="brand" aria-label="Sequize home"><span class="b1">S</span><span class="b2">equize</span></a>
 
-  </header>
+</header>
+
+  <!-- DISCOUNT TICKER (desktop): thin red strip right under the toolbar, same place on every page -->
+  <div class="disc-strip" id="discStrip" aria-label="Current discount" hidden><div class="disc-track" id="discTrack"></div></div>
 
   <!-- DESKTOP MENU POPUP (opened from the three-line button) -->
   <div class="dt-menu" id="dtMenu" role="menu" aria-label="Menu" hidden>
@@ -4784,6 +4913,18 @@ html body:not(#a1):not(#a2):not(#a3):not(#a4) #productGrid{grid-template-columns
     </div>
     <div id="offerWrap" class="offer-wrap"><div class="offer-wrap-inner"><section class="offer-banner show" id="offerBanner"><div><b>UP TO</b><strong><span id="offerPct">0</span>%<em>OFF</em></strong><small>ENDS SOON</small><button type="button" id="offerShop">Shop Now →</button></div><i class="ph-fill ph-seal-percent" aria-hidden="true"></i></section></div></div>
     <script>(function(){var p=window.__cachedOfferPct||0;if(p>0){document.getElementById("offerPct").textContent=Number(p.toFixed(2)).toString();document.getElementById("offerWrap").classList.add("show");document.body.classList.add("has-offer");}})();</script>
+
+    <section class="upcoming-deals" id="upcomingDeals" aria-label="Upcoming deals">
+      <div class="ud-inner">
+        <div class="ud-copy"><b>UPCOMING</b><strong>Deals</strong><small>COMING SOON</small></div>
+        <div class="ud-list">
+          <div class="ud-item"><span class="ud-pct">70<sup>%</sup></span><span class="ud-off">OFF</span><em>Coming soon</em></div>
+          <div class="ud-item"><span class="ud-pct">80<sup>%</sup></span><span class="ud-off">OFF</span><em>Coming soon</em></div>
+          <div class="ud-item"><span class="ud-pct">90<sup>%</sup></span><span class="ud-off">OFF</span><em>Coming soon</em></div>
+        </div>
+        <i class="ph-fill ph-clock-countdown ud-art" aria-hidden="true"></i>
+      </div>
+    </section>
 
     <section class="brand-strip" id="brandStrip" aria-label="Popular brands">
       <div class="dt-sec-head"><h2>Popular Brands</h2></div>
@@ -8722,6 +8863,41 @@ html body:not(#a1):not(#a2):not(#a3):not(#a4) #productGrid{grid-template-columns
     window.addEventListener("resize",sync,{passive:true});
     sync();setTimeout(sync,600);
   }
+})();
+</script>
+
+<script>
+/* Discount ticker: red strip under the toolbar, repeats the current discount ("70% off") and scrolls forever */
+(function(){
+  var strip=document.getElementById("discStrip"),track=document.getElementById("discTrack");
+  if(!strip||!track)return;
+  var last="";
+  function pct(){
+    var el=document.getElementById("offerPctD")||document.getElementById("offerPct");
+    var t=el?String(el.textContent||"").trim():"";
+    var n=parseFloat(t);
+    if(!(n>0)&&window.__cachedOfferPct>0)n=Number(window.__cachedOfferPct);
+    return n>0?Number(n.toFixed(2)).toString():"";
+  }
+  function build(p){
+    var label=p+"% off",one="";
+    for(var i=0;i<14;i++)one+="<span>"+label+"</span>";
+    track.innerHTML=one+one; /* two identical halves = seamless loop */
+  }
+  function sync(){
+    var p=pct();
+    var b=document.body;
+    if(!p){if(!strip.hidden)strip.hidden=true;if(b.classList.contains("has-strip"))b.classList.remove("has-strip");last="";return;}
+    if(p!==last){build(p);last=p;}
+    if(strip.hidden)strip.hidden=false;
+    if(!b.classList.contains("has-strip"))b.classList.add("has-strip");
+  }
+  ["offerPctD","offerPct"].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)new MutationObserver(sync).observe(el,{childList:true,characterData:true,subtree:true});
+  });
+  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  sync();setTimeout(sync,400);setTimeout(sync,1500);
 })();
 </script>
 </body>
