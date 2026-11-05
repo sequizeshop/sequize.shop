@@ -2,150 +2,515 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>My Addresses — Shoppy</title>
+<title>My Addresses — Sequize Shop</title>
 <link rel="icon" type="image/png" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
-<link rel="apple-touch-icon" href="https://i.ibb.co/93kQCKxT/20261019-120246.png">
+<link rel="stylesheet" href="/global.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <style>
-:root{--primary:#2962FF;--primary-hover:#0059D7;--primary-soft:#EDF2FF;--primary-selected:#F8FAFF;--background:#FFF;--surface:#FFF;--surface-secondary:#F5F5F2;--text-primary:#1E1F1C;--text-secondary:#666960;--text-muted:#969991;--border:#E5E7EB;--divider:#E5E7EB;--success:#15803D;--success-bg:#ECFDF3;--error:#DC2626;--error-bg:#FEF2F2;--disabled-bg:#E5E7EB;--disabled-text:#969991;--font-body:"DM Sans",sans-serif;--font-heading:"Manrope",sans-serif;--radius-sm:5px;--radius-md:9px;--radius-lg:12px;--header-h:64px}
-*{margin:0;padding:0;box-sizing:border-box}body{width:100%;min-height:100vh;font-family:var(--font-body);font-size:14px;font-weight:400;line-height:1.7;color:var(--text-primary);background:var(--background);overflow-x:hidden;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:2px solid var(--primary);outline-offset:3px}[hidden]{display:none!important}
-/* Header + page width: same as My Shopping Cart */
-.topbar{position:sticky;top:0;z-index:100;width:100%;height:var(--header-h);min-height:var(--header-h);padding:0 max(2%,calc((100% - 1440px)/2));display:flex;align-items:center;justify-content:space-between;background:var(--background);border-bottom:1px solid var(--border)}.nav-icon{display:flex;align-items:center;justify-content:center;padding:8px;border:0;border-bottom:0!important;border-radius:var(--radius-md);background:transparent;font-size:24px;line-height:1;color:var(--text-primary);text-decoration:none!important;box-shadow:none!important;outline-offset:2px}.nav-icon::before,.nav-icon::after{content:none!important;display:none!important}.nav-icon i{display:block;border:0;text-decoration:none;box-shadow:none}.nav-icon:hover{background:var(--surface-secondary)}.brand{font-family:var(--font-heading);font-size:22px;font-weight:800;line-height:1.4;letter-spacing:-.7px;color:var(--primary)}
-.container{width:min(1440px,96%);max-width:1440px;margin:34px auto 65px;min-height:420px}.page-top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:28px}.page-heading h1{font-family:var(--font-heading);font-size:clamp(27px,4vw,36px);font-weight:800;letter-spacing:-1.2px;line-height:1.25;margin-bottom:8px}.page-heading p{color:var(--text-secondary);font-size:14px;line-height:1.7}.page-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:12px;flex-shrink:0}
-.btn{min-height:48px;display:inline-flex;align-items:center;justify-content:center;padding:12px 24px;border:1px solid var(--primary);border-radius:var(--radius-lg);font-size:14px;font-weight:700;white-space:nowrap;transition:background .2s,border-color .2s,color .2s}.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover);border-color:var(--primary-hover)}.btn-secondary{background:var(--primary-soft);color:var(--primary);border-color:var(--primary-soft)}.btn-secondary:hover{border-color:var(--primary)}.btn:disabled{background:var(--disabled-bg);border-color:var(--disabled-bg);color:var(--disabled-text);cursor:not-allowed}
-.list-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}.list-summary h2{font-family:var(--font-heading);font-size:22px;font-weight:800;letter-spacing:-.7px}.address-count{color:var(--text-secondary);font-size:13px}.address-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;row-gap:0}
-.address-card{position:relative;min-width:0;padding:20px 12px;margin:0 0 0;border:1px solid var(--divider);border-radius:var(--radius-lg);background:var(--surface);transition:border-color .18s,background .18s;cursor:default}.address-card + .address-card{margin-top:12px}.address-card.selected{border:1.5px solid var(--primary);background:var(--primary-selected)}.address-card.selectable{cursor:pointer}.address-card.selectable:hover{border-color:var(--primary)}.address-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}.address-badges{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.address-label,.default-badge,.selected-badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700}.address-label{background:var(--surface-secondary);color:var(--text-secondary)}.default-badge{background:var(--success-bg);color:var(--success);letter-spacing:.3px}.selected-badge{display:none;background:var(--primary);color:#fff}.address-card.selected .selected-badge{display:inline-flex}.address-person{font-family:var(--font-heading);font-size:16px;font-weight:700;line-height:1.5;overflow-wrap:anywhere}.address-phone{margin-top:2px;color:var(--text-secondary);font-size:14px;line-height:1.7;overflow-wrap:anywhere}.address-text{margin-top:8px;color:var(--text-primary);font-size:14px;line-height:1.65;overflow-wrap:anywhere}.address-landmark,.delivery-instructions{margin-top:6px;color:var(--text-secondary);font-size:13px;line-height:1.6;overflow-wrap:anywhere}.address-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}.address-actions:empty{display:none}.action-btn{min-height:38px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);color:var(--text-primary);font-size:13px;font-weight:600;transition:border-color .2s,color .2s}.action-btn:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}.action-btn.danger{color:var(--error)}.action-btn.danger:hover:not(:disabled){border-color:var(--error);color:var(--error)}.action-btn:disabled{color:var(--disabled-text);background:var(--disabled-bg);border-color:var(--disabled-bg);cursor:not-allowed}
-.checkout-action{display:none;justify-content:flex-end;margin-top:22px;padding-top:0;border-top:0}.checkout-action .btn{min-width:240px}.status-message{display:none;margin-bottom:20px;padding:12px 15px;border-radius:var(--radius-lg);font-size:13px;line-height:1.7;overflow-wrap:anywhere}.status-message.show{display:block}.status-message.error{background:var(--error-bg);color:var(--error)}.status-message.success{background:var(--success-bg);color:var(--success)}.status-message.info{background:var(--surface-secondary);color:var(--text-secondary)}.loading-state{padding:60px 15px;text-align:center;color:var(--text-secondary);font-size:14px}.spinner{width:30px;height:30px;margin:0 auto 16px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.empty-state{display:none;padding:50px 0;text-align:center}.empty-state.show{display:block}.empty-state h2{font-family:var(--font-heading);font-size:22px;font-weight:800;letter-spacing:-.7px}.empty-state p{max-width:400px;margin:8px auto 24px;color:var(--text-secondary);font-size:14px;line-height:1.7}.empty-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
-.dialog-overlay{display:none;position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;padding:20px;background:rgba(30,31,28,.45)}.dialog-overlay.show{display:flex}.dialog{width:100%;max-width:400px;padding:24px;border-radius:var(--radius-lg);background:var(--surface)}.dialog h3{font-family:var(--font-heading);font-size:19px;font-weight:800;letter-spacing:-.5px}.dialog p{margin-top:8px;color:var(--text-secondary);font-size:14px;line-height:1.7}.dialog-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;margin-top:24px}.dialog-actions .action-btn{min-height:44px;padding:10px 18px}.dialog-actions .confirm-delete{border-color:var(--error);background:var(--error);color:#fff}.dialog-actions .confirm-delete:hover:not(:disabled){color:#fff;opacity:.9}.footer{border-top:1px solid var(--divider);padding:24px 5%;display:flex;justify-content:space-between;gap:15px;color:var(--text-muted);font-size:12px;background:var(--background)}
-@media(max-width:760px){.topbar{padding-left:3%;padding-right:3%}.container{width:90%;margin-top:25px}.page-top{flex-direction:column;align-items:stretch;gap:18px;margin-bottom:24px}.page-actions{flex-direction:column;align-items:stretch}.page-actions .btn{width:100%}.deliver-top{display:none!important}.checkout-action{display:flex}.page-heading h1{font-size:29px}.address-list{grid-template-columns:minmax(0,1fr);column-gap:0;row-gap:12px}.address-card + .address-card{margin-top:0}.list-summary h2{font-size:21px}.action-btn{flex:1 1 auto}.checkout-action .btn{width:100%;min-width:0}.footer{flex-direction:column;gap:4px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:root{--primary:#2962FF;--primary-hover:#0059D7;--primary-soft:#EDF2FF;--primary-selected:#F8FAFF;--background:#FFF;--surface-secondary:#F5F5F2;--text-primary:#1E1F1C;--text-secondary:#666960;--text-muted:#969991;--border:#E5E7EB;--divider:#E5E7EB;--card-border:#E6E9EF;--success:#15803D;--success-bg:#ECFDF3;--error:#DC2626;--error-bg:#FEF2F2;--font-body:"DM Sans",sans-serif;--font-heading:"Manrope",sans-serif;--header-h:64px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{margin:0!important;padding:0!important}
+body{margin:0!important;padding:0 0 28px!important;width:100%;min-height:100vh;font-family:var(--font-body);font-size:14px;line-height:1.7;background:var(--background);color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+[hidden]{display:none!important}
+/* HEADER: back button + title inside ONE sticky header, no divider line */
+.topbar{position:sticky;top:0;z-index:100;width:100%;height:var(--header-h);padding:0 19.5px;display:flex;align-items:center;justify-content:flex-start;gap:2px;background:var(--background);border:0;box-shadow:none}
+body>header:not(.topbar){display:none!important}
+.back-button{width:36px;height:36px;margin-left:-8px;display:flex;align-items:center;justify-content:center;border:0;border-radius:50%;background:transparent;color:var(--text-primary);font-size:24px;line-height:1}
+.back-button:active{background:var(--surface-secondary)}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+.top-actions .btn{flex:none;height:34px;padding:0 14px;font-size:13px}
+.top-actions .btn.icon{width:34px;padding:0;font-size:18px}
+.top-actions .btn.icon .lbl{display:none}
+.mode-form .act-list,.mode-list .act-form{display:none!important}
+.topbar h1{font-family:var(--font-heading);font-size:20px;font-weight:800;line-height:1.3;letter-spacing:-.3px}
+/* PAGE */
+.container{width:auto;margin:16px 19.5px 0}
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;align-items:start}
+.mode-form .list-panel,.mode-list .form-panel{display:none}
+.form-panel{min-width:0}
+.list-panel{min-width:0;flex-direction:column}
+.sec+.sec{margin-top:22px}
+.sec h2{font:800 16px/1.4 var(--font-heading);letter-spacing:-.3px}
+.sec>p{margin:1px 0 12px;color:var(--text-secondary);font-size:12.5px;line-height:1.5}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.field{min-width:0}.field.full{grid-column:1/-1}
+.field label{display:block;margin-bottom:6px;font-size:13px;font-weight:600}
+.req{color:var(--error);margin-left:2px}.opt{margin-left:4px;color:var(--text-muted);font-size:11.5px;font-weight:400}
+.field input:not([type=checkbox]):not([type=radio]),.field select,.field textarea{display:block;width:100%;min-width:0;min-height:46px;padding:11px 14px;border:1px solid var(--border);border-radius:12px;outline:0;background:#fff;color:var(--text-primary);font:400 14px var(--font-body);transition:border-color .2s,box-shadow .2s}
+.field textarea{min-height:88px;resize:vertical;line-height:1.6}
+.field input::placeholder,.field textarea::placeholder{color:var(--text-muted)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.help{margin-top:5px;color:var(--text-muted);font-size:12px;line-height:1.5}
+.ferr{display:none;margin-top:5px;color:var(--error);font-size:12px}
+.field.invalid input,.field.invalid select{border-color:var(--error)}.field.invalid .ferr{display:block}
+.pin-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.note{display:none;margin-top:7px;font-size:12.5px;line-height:1.5;color:var(--text-secondary)}
+.note.show{display:block}.note.success{color:var(--success)}.note.error{color:var(--error)}
+.types{display:flex;flex-wrap:wrap;gap:8px}
+.types input{position:absolute;opacity:0;width:1px;height:1px}
+.types label{display:inline-flex;align-items:center;justify-content:center;min-width:84px;height:40px;padding:0 18px;border:1px solid var(--border);border-radius:999px;background:#fff;font-size:13.5px;font-weight:600;cursor:pointer;transition:border-color .2s,background .2s}
+.types input:checked+label{border-color:var(--primary);background:var(--primary-selected);color:var(--primary)}
+.types input:focus-visible+label{outline:2px solid var(--primary);outline-offset:3px}
+.def{display:flex;align-items:flex-start;gap:10px;margin-top:16px;cursor:pointer}
+.def input{width:18px;height:18px;flex-shrink:0;margin-top:3px;accent-color:var(--primary)}
+.def strong{display:block;font-size:13.5px;font-weight:600}.def small{display:block;color:var(--text-secondary);font-size:12.5px;line-height:1.5}
+/* BUTTONS */
+.btn{flex:1 1 0;min-width:0;height:42px;padding:10px 16px;display:flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:var(--primary);color:#fff;font:700 14px/1.2 var(--font-body);white-space:nowrap;transition:background .2s}
+.btn:hover:not(:disabled){background:var(--primary-hover)}
+.btn.sec{background:var(--primary-soft);color:var(--primary)}
+.btn:disabled{background:#E5E7EB;color:var(--text-muted);cursor:not-allowed}
+.btn.small{flex:none;height:42px;padding:0 16px}
+/* PANEL BAR (desktop only; on mobile the buttons live in the header) */
+.bar{display:none}
+/* MESSAGE */
+.msg{display:none;margin-bottom:14px;padding:10px 12px;border-radius:12px;font-size:12.5px;line-height:1.5;overflow-wrap:anywhere}
+.msg.show{display:block}.msg.error{background:var(--error-bg);color:var(--error)}.msg.success{background:var(--success-bg);color:var(--success)}.msg.info{background:#F3F6FF;color:#1744B5}
+/* ADDRESS LIST */
+.list-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.list-head h2{font:800 16px var(--font-heading);letter-spacing:-.3px}.list-head span{color:var(--text-secondary);font-size:12.5px}
+.list{display:flex;flex-direction:column;gap:12px;min-width:0}
+.addr{position:relative;padding:14px 16px;border:1.5px solid transparent;border-radius:20px;background:var(--surface-secondary)}
+.addr.pick{cursor:pointer}.addr.sel{border-color:var(--primary);background:var(--primary-selected)}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.badge{display:inline-flex;padding:1px 10px;border-radius:999px;font-size:11px;font-weight:700;background:#fff;color:var(--text-secondary)}
+.badge.d{background:var(--success-bg);color:var(--success)}.badge.s{display:none;background:var(--primary);color:#fff}.addr.sel .badge.s{display:inline-flex}
+.addr h3{font:700 14.5px/1.4 var(--font-heading);overflow-wrap:anywhere}
+.addr p{margin-top:2px;color:var(--text-secondary);font-size:12.5px;line-height:1.5;overflow-wrap:anywhere}
+.addr p.txt{margin-top:6px;color:var(--text-primary);font-size:13px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.acts:empty{display:none}
+.act{height:34px;padding:0 14px;border:1px solid var(--border);border-radius:999px;background:#fff;font-size:12.5px;font-weight:600}
+.act:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}.act.danger{color:var(--error)}.act:disabled{opacity:.5;cursor:default}
+.empty,.loading{padding:40px 0;text-align:center;color:var(--text-secondary)}
+.empty h2{font:800 20px var(--font-heading);letter-spacing:-.5px;color:var(--text-primary);margin-bottom:6px}
+.spin{width:28px;height:28px;margin:0 auto 12px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* DELETE DIALOG */
+.overlay{display:none;position:fixed;inset:0;z-index:10020;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.42)}
+.overlay.show{display:flex}
+.dialog{width:100%;padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px));border-radius:20px 20px 0 0;background:#fff}
+.dialog h3{font:800 17px var(--font-heading)}.dialog p{margin-top:6px;color:var(--text-secondary);font-size:13px}
+.dialog .row{display:flex;gap:8px;margin-top:18px}
+.btn.danger{background:var(--error)}
+/* DESKTOP: form left, address list right */
+@media(min-width:761px){
+body{padding-bottom:0!important}
+.topbar{height:68px;padding:0 24px}.topbar h1{font-size:22px}
+.container{width:min(1240px,calc(100% - 48px));margin:28px auto 48px}
+.layout{grid-template-columns:minmax(0,1fr) 400px;gap:24px}
+.mode-form .list-panel,.mode-list .list-panel{display:flex}
+.mode-form .form-panel,.mode-list .form-panel{display:block}
+.sec h2{font-size:18px}.sec>p{font-size:13px;margin-bottom:14px}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px}
+.list-panel{position:sticky;top:92px;max-height:calc(100vh - 116px)}
+.top-actions{display:none}
+.list-head{padding-bottom:12px;border-bottom:1px solid var(--divider);margin-bottom:12px}.list-head h2{font-size:18px}
+.list{flex:1 1 auto;overflow:auto;padding:2px}
+.addr{background:#fff;border:1px solid var(--card-border)}.addr.sel{border:1.5px solid var(--primary);background:var(--primary-selected)}
+.addr.pick:hover{border-color:var(--primary)}
+.bar{display:flex;align-items:center;gap:8px;margin-top:16px}
+.form-panel .bar{justify-content:flex-end}.form-panel .bar .btn{flex:0 0 auto;min-width:170px;height:48px;font-size:15px}
+.list-panel .bar .btn{width:100%;height:48px;font-size:15px}
+.overlay{align-items:center}.dialog{max-width:400px;border-radius:20px}
+}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}}
 </style>
 </head>
-<body>
+<body class="mode-list">
+
 <header class="topbar">
-  <a class="nav-icon" href="javascript:history.back()" aria-label="Go back" title="Go back"><i class="ph ph-arrow-left" aria-hidden="true"></i></a>
-  <a href="/home.html" class="brand" aria-label="Shoppy home">Shoppy.</a>
-</header>
-<main class="container">
-  <div class="page-top">
-    <div class="page-heading"><h1 id="pageTitle">My addresses</h1><p id="pageSubtitle">Manage your saved delivery addresses in one place.</p></div>
-    <div class="page-actions">
-      <a href="/address.html" class="btn btn-primary" id="addAddressButton">Add New Address</a>
-      <button type="button" class="btn btn-primary deliver-top" id="deliverButton" disabled hidden>Deliver to this address</button>
-    </div>
+  <button type="button" class="back-button" id="backButton" aria-label="Back"><i class="ph-bold ph-caret-left" aria-hidden="true"></i></button>
+  <h1 id="pageTitle">My Addresses</h1>
+  <div class="top-actions">
+    <button type="submit" form="form" class="btn act-form" id="saveTop">Save</button>
+    <a href="/address.html" class="btn sec act-list" id="addLink" aria-label="Add new address"><i class="ph-bold ph-plus" aria-hidden="true"></i><span class="lbl">Add New</span></a>
+    <button type="button" class="btn act-list" id="deliverTop" disabled hidden>Deliver</button>
   </div>
-  <div class="status-message" id="statusMessage" role="status" aria-live="polite"></div>
-  <section id="loadingState" class="loading-state" aria-live="polite"><div class="spinner"></div>Loading your saved addresses...</section>
-  <section id="addressContent" hidden>
-    <div class="list-summary"><h2 id="listHeading">Saved addresses</h2><span class="address-count" id="addressCount">0 addresses</span></div>
-    <div class="address-list" id="addressList"></div>
-    <div class="checkout-action" id="checkoutAction" hidden><button type="button" class="btn btn-primary" id="deliverButtonMobile" disabled>Deliver to this address</button></div>
-  </section>
-  <section class="empty-state" id="emptyState">
-    <h2 id="emptyTitle">No addresses found</h2>
-    <p id="emptyDescription">You haven't saved a delivery address yet. Add your address to make future deliveries easier.</p>
-    <div class="empty-actions"><a href="/address.html" class="btn btn-primary" id="emptyAddButton">Add Your First Address</a><a href="/cart.html" class="btn btn-secondary" id="backToCartButton" hidden>Back to Cart</a></div>
-  </section>
+</header>
+
+<main class="container">
+  <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  <div class="layout">
+
+    <section class="form-panel">
+      <form id="form" novalidate>
+        <div class="secs">
+          <div class="sec">
+            <h2 id="formHeading">Contact information</h2>
+            <p>Recipient's name and contact number.</p>
+            <div class="grid">
+              <div class="field" id="fullNameField"><label for="fullName">Full name <span class="req">*</span></label><input id="fullName" type="text" placeholder="Recipient's full name" autocomplete="name" maxlength="100"><div class="ferr">Please enter your full name.</div></div>
+              <div class="field" id="phoneField"><label for="phone">Mobile number <span class="req">*</span></label><input id="phone" type="tel" placeholder="10-digit mobile number" inputmode="numeric" autocomplete="tel-national" maxlength="10"><div class="ferr">Enter a valid 10-digit mobile number.</div></div>
+              <div class="field full" id="alternatePhoneField"><label for="alternatePhone">Alternate number <span class="opt">Optional</span></label><input id="alternatePhone" type="tel" placeholder="Alternate mobile number" inputmode="numeric" maxlength="10"><div class="ferr">Enter a valid 10-digit alternate number.</div></div>
+            </div>
+          </div>
+
+          <div class="sec">
+            <h2>Address details</h2>
+            <p>Use your current location or enter the address manually.</p>
+            <div class="grid">
+              <div class="field full"><button type="button" class="btn sec small" id="locBtn">Use My Current Location</button><p class="note" id="locNote"></p></div>
+              <div class="field" id="pincodeField"><label for="pincode">PIN code <span class="req">*</span></label>
+                <div class="pin-row"><input id="pincode" type="text" placeholder="6-digit PIN code" inputmode="numeric" autocomplete="postal-code" maxlength="6"><button type="button" class="btn sec small" id="pinBtn">Check</button></div>
+                <p class="note" id="pinNote" role="status" aria-live="polite"></p><div class="ferr">Enter a valid 6-digit PIN code.</div></div>
+              <div class="field" id="postOfficeField"><label for="postOffice">Post office <span class="req">*</span></label><select id="postOffice"><option value="">Select post office</option></select><div class="help">Appears after PIN code lookup.</div><div class="ferr">Please select a post office.</div></div>
+              <div class="field" id="houseNumberField"><label for="houseNumber">House / Flat number <span class="req">*</span></label><input id="houseNumber" type="text" placeholder="e.g. Flat 101, House 24" autocomplete="address-line1" maxlength="150"><div class="ferr">Please enter your house or flat number.</div></div>
+              <div class="field"><label for="building">Building / Apartment <span class="opt">Optional</span></label><input id="building" type="text" placeholder="e.g. Sunshine Apartments" maxlength="150"></div>
+              <div class="field" id="areaField"><label for="area">Street / Area / Colony <span class="req">*</span></label><input id="area" type="text" placeholder="Street, area or colony" autocomplete="address-line2" maxlength="200"><div class="ferr">Please enter your street, area or colony.</div></div>
+              <div class="field"><label for="landmark">Landmark <span class="opt">Optional</span></label><input id="landmark" type="text" placeholder="e.g. Near City Mall" maxlength="150"></div>
+              <div class="field" id="cityField"><label for="city">City / Town / Village <span class="req">*</span></label><input id="city" type="text" placeholder="City or village" autocomplete="address-level2" maxlength="100"><div class="ferr">Please enter your city or village.</div></div>
+              <div class="field"><label for="district">District <span class="opt">Optional</span></label><input id="district" type="text" placeholder="District" maxlength="100"></div>
+              <div class="field" id="stateField"><label for="state">State / UT <span class="req">*</span></label><input id="state" type="text" placeholder="State" autocomplete="address-level1" maxlength="100"><div class="ferr">Please enter your state.</div></div>
+              <div class="field"><label for="country">Country</label><select id="country"><option value="India" selected>India</option></select></div>
+              <div class="field full"><label for="deliveryInstructions">Delivery instructions <span class="opt">Optional</span></label><textarea id="deliveryInstructions" placeholder="e.g. Call before delivery" maxlength="500"></textarea></div>
+            </div>
+          </div>
+
+          <div class="sec">
+            <h2>Save address as</h2>
+            <p>Choose a name to identify this address later.</p>
+            <div class="types">
+              <span><input type="radio" id="typeHome" name="addressType" value="Home" checked><label for="typeHome">Home</label></span>
+              <span><input type="radio" id="typeWork" name="addressType" value="Work"><label for="typeWork">Work</label></span>
+              <span><input type="radio" id="typeOther" name="addressType" value="Other"><label for="typeOther">Other</label></span>
+            </div>
+            <label class="def" for="isDefault"><input type="checkbox" id="isDefault"><span><strong>Set as default address</strong><small>Used by default when choosing a delivery address.</small></span></label>
+          </div>
+        </div>
+
+        <div class="bar">
+          <a href="/addresses.html" class="btn sec" id="cancelBtn">Cancel</a>
+          <button type="submit" class="btn" id="saveBtn">Save Address</button>
+        </div>
+      </form>
+    </section>
+
+    <aside class="list-panel">
+      <div class="list-head"><h2 id="listHeading">Saved addresses</h2><span id="count">0 addresses</span></div>
+      <div class="loading" id="loading"><div class="spin"></div>Loading your addresses...</div>
+      <div class="list" id="list" hidden></div>
+      <div class="empty" id="empty" hidden><h2 id="emptyTitle">No addresses yet</h2><p>Add your first delivery address.</p></div>
+      <div class="bar">
+        <button type="button" class="btn" id="deliverBtn" disabled hidden>Deliver to this address</button>
+      </div>
+    </aside>
+
+  </div>
 </main>
-<footer class="footer"><span>© <span id="year"></span> Shoppy</span><span>Your shopping, all in one place.</span></footer>
-<div class="dialog-overlay" id="confirmDialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-hidden="true">
-  <div class="dialog"><h3 id="confirmTitle">Delete address?</h3><p id="confirmDescription">Are you sure you want to delete this address? This action cannot be undone.</p><div class="dialog-actions"><button type="button" class="action-btn" id="cancelDeleteBtn">Cancel</button><button type="button" class="action-btn confirm-delete" id="confirmDeleteBtn">Delete Address</button></div></div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="dialog"><h3>Delete address?</h3><p id="delText">This action cannot be undone.</p>
+    <div class="row"><button type="button" class="btn sec" id="delNo">Cancel</button><button type="button" class="btn danger" id="delYes">Delete</button></div></div>
 </div>
+
 <script>
 "use strict";
-const API_URL="/api/addresses", CHECKOUT_ADDRESS_API="/api/checkout/address", LOGIN_URL="/login.html", ADD_ADDRESS_URL="/address.html", PAYMENT_URL="/payment.html";
-const params=new URLSearchParams(window.location.search), checkoutMode=params.get("mode")==="checkout";
-const $=id=>document.getElementById(id);
-const loadingState=$("loadingState"),addressContent=$("addressContent"),addressList=$("addressList"),addressCount=$("addressCount"),emptyState=$("emptyState"),statusMessage=$("statusMessage");
-const confirmDialog=$("confirmDialog"),confirmDescription=$("confirmDescription"),confirmDeleteBtn=$("confirmDeleteBtn"),cancelDeleteBtn=$("cancelDeleteBtn");
-const deliverButtons=[$("deliverButton"),$("deliverButtonMobile")];
-let addresses=[],pendingDeleteId=null,busyAddressIds=new Set(),loading=false,deleting=false,selectingAddress=false,selectedAddressId=null;
-$("year").textContent=new Date().getFullYear();
-if(checkoutMode){document.body.classList.add("checkout-mode");document.title="Select Delivery Address — Shoppy";$("pageTitle").textContent="Select delivery address";$("pageSubtitle").textContent="Choose where you want your order delivered."; $("listHeading").textContent="Choose an address";$("addAddressButton").textContent="Add New Address";$("addAddressButton").className="btn btn-secondary";$("deliverButton").hidden=false;$("emptyTitle").textContent="No delivery address yet";$("emptyDescription").textContent="Add a delivery address first. Once saved, return here to select it for your order.";$("backToCartButton").hidden=false;$("checkoutAction").hidden=false;}
-function showMessage(message,type="info"){statusMessage.textContent=message;statusMessage.className="status-message show "+type}
-function hideMessage(){statusMessage.textContent="";statusMessage.className="status-message"}
-function makeElement(tag,className,text){const e=document.createElement(tag);if(className)e.className=className;if(text!==undefined&&text!==null)e.textContent=String(text);return e}
-function getAddressId(a){const id=a&&(a.id||a.addressId||a.key);return typeof id==="string"?id.trim():id!=null?String(id).trim():""}
-function formatAddress(a){const values=[a.houseNumber,a.building,a.area,a.postOffice,a.city,a.district,a.state,a.pincode,a.country].filter(v=>v&&String(v).trim()).map(v=>String(v).trim());return values.filter((v,i,all)=>all.findIndex(x=>x.toLowerCase()===v.toLowerCase())===i).join(", ")}
-function createActionButton(label,className,onClick){const b=makeElement("button",className,label);b.type="button";b.addEventListener("click",onClick);return b}
-function updateDeliverButtons(){deliverButtons.forEach(b=>{b.disabled=!selectedAddressId||selectingAddress||!addresses.length;b.textContent=selectingAddress?"Saving address...":"Deliver to this address"})}
-function showConfirmDialog(address){pendingDeleteId=getAddressId(address);confirmDescription.textContent="Delete the saved address for "+(address.fullName||"this recipient")+"? This action cannot be undone.";confirmDialog.classList.add("show");confirmDialog.setAttribute("aria-hidden","false");confirmDeleteBtn.disabled=false;confirmDeleteBtn.textContent="Delete Address";cancelDeleteBtn.disabled=false;cancelDeleteBtn.focus()}
-function hideConfirmDialog(){confirmDialog.classList.remove("show");confirmDialog.setAttribute("aria-hidden","true");pendingDeleteId=null;deleting=false;confirmDeleteBtn.disabled=false;cancelDeleteBtn.disabled=false;confirmDeleteBtn.textContent="Delete Address"}
-cancelDeleteBtn.addEventListener("click",()=>{if(!deleting)hideConfirmDialog()});
-confirmDialog.addEventListener("click",e=>{if(e.target===confirmDialog&&!deleting)hideConfirmDialog()});
-window.addEventListener("keydown",e=>{if(e.key==="Escape"&&confirmDialog.classList.contains("show")&&!deleting)hideConfirmDialog()});
-function renderAddress(address){
- const id=getAddressId(address),isDefault=address.isDefault===true,isSelected=checkoutMode&&String(id)===String(selectedAddressId),isBusy=busyAddressIds.has(id);
- const card=makeElement("article","address-card"+(isSelected?" selected":"")+(checkoutMode?" selectable":""));card.dataset.addressId=id;
- if(checkoutMode){card.tabIndex=id?0:-1;card.setAttribute("role","radio");card.setAttribute("aria-checked",String(isSelected));card.addEventListener("click",()=>selectAddress(id));card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectAddress(id)}})}
- const top=makeElement("div","address-card-top"),badges=makeElement("div","address-badges");
- badges.appendChild(makeElement("span","address-label",address.addressType||"Other"));if(isDefault)badges.appendChild(makeElement("span","default-badge","DEFAULT"));badges.appendChild(makeElement("span","selected-badge","SELECTED"));top.appendChild(badges);card.appendChild(top);
- card.appendChild(makeElement("h3","address-person",address.fullName||"Recipient"));
- const phone=address.alternatePhone?"Phone: "+(address.phone||"—")+" · Alternate: "+address.alternatePhone:"Phone: "+(address.phone||"—");card.appendChild(makeElement("p","address-phone",phone));
- card.appendChild(makeElement("p","address-text",formatAddress(address)));
- if(address.landmark)card.appendChild(makeElement("p","address-landmark","Landmark: "+address.landmark));
- if(address.deliveryInstructions)card.appendChild(makeElement("p","delivery-instructions","Delivery instructions: "+address.deliveryInstructions));
- const actions=makeElement("div","address-actions");
- if(!checkoutMode){
-  const edit=createActionButton("Edit","action-btn",()=>{if(!id){showMessage("This address is missing its ID and cannot be edited.","error");return}window.location.href=ADD_ADDRESS_URL+"?edit="+encodeURIComponent(id)});edit.disabled=isBusy;actions.appendChild(edit);
-  if(!isDefault){const def=createActionButton("Set as Default","action-btn",()=>setDefaultAddress(address));def.disabled=isBusy;actions.appendChild(def)}
-  const del=createActionButton("Delete","action-btn danger",()=>{if(!id){showMessage("This address is missing its ID and cannot be deleted.","error");return}showConfirmDialog(address)});del.disabled=isBusy;actions.appendChild(del);
- }
- card.appendChild(actions);return card;
+const MODE = "list";
+const API = "/api/addresses", CHECKOUT_API = "/api/checkout/address";
+const LOGIN = "/login.html", LIST_URL = "/addresses.html", FORM_URL = "/address.html", PAY_URL = "/payment.html";
+const qs = new URLSearchParams(location.search);
+const checkout = qs.get("mode") === "checkout";
+const desktop = matchMedia("(min-width:761px)");
+const $ = id => document.getElementById(id);
+const gv = id => $(id).value.trim();
+
+let editId = (qs.get("edit") || "").trim();
+let addresses = [], selectedId = null, busy = new Set(), pendingDelete = null;
+let saving = false, deliverBusy = false, pinCtl = null, pinTimer = null, pinReq = 0;
+
+const FIELDS = ["fullName","phone","alternatePhone","pincode","houseNumber","building","area","landmark","city","district","state","country","deliveryInstructions"];
+const REQUIRED = ["fullName","phone","pincode","houseNumber","area","city","state"];
+
+/* ---------- shared helpers ---------- */
+function showMsg(t, type) { const m = $("msg"); m.textContent = t; m.className = "msg show " + (type || "info"); }
+function hideMsg() { $("msg").className = "msg"; }
+function setErr(id, on) { const f = $(id); if (f) f.classList.toggle("invalid", !!on); }
+function note(el, t, type) { el.textContent = t; el.className = "note show " + (type || ""); }
+function clearNote(el) { el.textContent = ""; el.className = "note"; }
+function sv(id, v, overwrite = true) {
+  v = String(v == null ? "" : v).trim(); if (!v) return;
+  const e = $(id); if (!overwrite && e.value.trim()) return; e.value = v;
 }
-function selectAddress(id){if(!checkoutMode||!id||selectingAddress)return;selectedAddressId=id;renderAddresses();hideMessage()}
-function renderAddresses(){
- addressList.replaceChildren();addressCount.textContent=addresses.length+(addresses.length===1?" address":" addresses");
- if(!addresses.length){addressContent.hidden=true;emptyState.classList.add("show");updateDeliverButtons();return}
- emptyState.classList.remove("show");addressContent.hidden=false;
- addresses.forEach(a=>addressList.appendChild(renderAddress(a)));
- if(checkoutMode){$("checkoutAction").hidden=false;updateDeliverButtons()}
-}
-async function parseResponse(response){try{return await response.json()}catch(_){return {}}}
-function redirectToLogin(){const dest=checkoutMode?"/addresses.html?mode=checkout":"/addresses.html";window.location.replace(LOGIN_URL+"?redirect="+encodeURIComponent(dest))}
-async function loadAddresses(options={}){
- if(loading)return;loading=true;hideMessage();if(!options.silent){loadingState.style.display="block";addressContent.hidden=true;emptyState.classList.remove("show")}
- try{
-  const response=await fetch(API_URL,{method:"GET",credentials:"same-origin",headers:{"Accept":"application/json"},cache:"no-store"}),result=await parseResponse(response);
-  if(response.status===401){redirectToLogin();return}if(!response.ok||result.success!==true)throw new Error(result.message||"Could not load your saved addresses.");
-  addresses=Array.isArray(result.addresses)?result.addresses.map(a=>({...a,id:getAddressId(a)})):[];
-  addresses.sort((a,b)=>{if(a.isDefault===true&&b.isDefault!==true)return -1;if(b.isDefault===true&&a.isDefault!==true)return 1;return(Number(b.createdAt)||0)-(Number(a.createdAt)||0)});
-  if(!addresses.some(a=>String(getAddressId(a))===String(selectedAddressId)))selectedAddressId=getAddressId(addresses.find(a=>a.isDefault===true)||addresses[0])||null;
-  renderAddresses();
- }catch(error){console.error("Load addresses error:",error);showMessage(error.message||"Could not load your addresses. Please try again.","error");if(!addresses.length){addressContent.hidden=true;emptyState.classList.remove("show")}}
- finally{loading=false;loadingState.style.display="none"}
-}
-async function setDefaultAddress(address){
- const id=getAddressId(address);if(!id||busyAddressIds.has(id))return;busyAddressIds.add(id);hideMessage();renderAddresses();
- try{const response=await fetch(API_URL,{method:"PUT",credentials:"same-origin",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({...address,id,isDefault:true})}),result=await parseResponse(response);
- if(response.status===401){redirectToLogin();return}if(!response.ok||result.success!==true)throw new Error(result.message||"Could not set this address as default.");
- showMessage("Default address updated successfully.","success");await loadAddresses({silent:true})
- }catch(error){console.error("Set default address error:",error);showMessage(error.message||"Could not update the default address.","error")}
- finally{busyAddressIds.delete(id);renderAddresses()}
-}
-async function selectDeliveryAddress(){
- if(!checkoutMode||!selectedAddressId||selectingAddress)return;selectingAddress=true;hideMessage();renderAddresses();showMessage("Saving your delivery address...","info");
- try{const response=await fetch(CHECKOUT_ADDRESS_API,{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({addressId:selectedAddressId})}),result=await parseResponse(response);
- if(response.status===401){redirectToLogin();return}if(!response.ok||result.success!==true)throw new Error(result.message||"Address selection could not be confirmed. Please try again.");
- window.location.href=PAYMENT_URL;
- }catch(error){console.error("Checkout address selection error:",error);showMessage(error.message||"Could not select this address. Please try again.","error")}
- finally{selectingAddress=false;renderAddresses()}
-}
-deliverButtons.forEach(b=>b.addEventListener("click",selectDeliveryAddress));
-confirmDeleteBtn.addEventListener("click",async function(){
- if(!pendingDeleteId||deleting)return;const id=pendingDeleteId;deleting=true;confirmDeleteBtn.disabled=true;cancelDeleteBtn.disabled=true;confirmDeleteBtn.textContent="Deleting...";hideMessage();
- try{const response=await fetch(API_URL,{method:"DELETE",credentials:"same-origin",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({id})}),result=await parseResponse(response);
- if(response.status===401){hideConfirmDialog();redirectToLogin();return}if(!response.ok||result.success!==true)throw new Error(result.message||"Could not delete this address.");
- hideConfirmDialog();showMessage("Address deleted successfully.","success");await loadAddresses({silent:true});
- }catch(error){console.error("Delete address error:",error);showMessage(error.message||"Could not delete this address. Please try again.","error")}
- finally{deleting=false;cancelDeleteBtn.disabled=false;confirmDeleteBtn.disabled=false;confirmDeleteBtn.textContent="Delete Address"}
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function addrId(a) { const i = a && (a.id || a.addressId || a.key); return i == null ? "" : String(i).trim(); }
+async function json(r) { try { return await r.json(); } catch (_) { return {}; } }
+function toLogin() { location.replace(LOGIN + "?redirect=" + encodeURIComponent(location.pathname + location.search)); }
+function modeQuery(extra) { const p = []; if (extra) p.push(extra); if (checkout) p.push("mode=checkout"); return p.length ? "?" + p.join("&") : ""; }
+
+$("backButton").addEventListener("click", () => {
+  if (history.length > 1) history.back(); else location.href = checkout ? "/cart.html" : "/home.html";
 });
-window.addEventListener("pageshow",()=>{if(!confirmDialog.classList.contains("show"))return;hideConfirmDialog()});
+
+/* ---------- titles ---------- */
+function refreshTitles() {
+  const t = MODE === "form" ? (editId ? "Edit Address" : "Add Address") : (checkout ? "Select Address" : "My Addresses");
+  $("pageTitle").textContent = t; document.title = t + " — Sequize Shop";
+  $("saveBtn").textContent = editId ? "Save Changes" : "Save Address";
+  $("formHeading").textContent = editId ? "Edit address" : "Contact information";
+  $("listHeading").textContent = checkout ? "Choose an address" : "Saved addresses";
+  $("deliverBtn").hidden = !checkout; $("deliverTop").hidden = !checkout;
+  $("addLink").classList.toggle("icon", checkout);
+  $("addLink").href = FORM_URL + modeQuery();
+  $("cancelBtn").href = LIST_URL + modeQuery();
+}
+refreshTitles();
+
+/* ---------- FORM ---------- */
+function setPostOffice(v) {
+  v = String(v || "").trim(); const s = $("postOffice");
+  if (v && !Array.from(s.options).some(o => o.value === v)) { const o = el("option", "", v); o.value = v; s.appendChild(o); }
+  s.value = v;
+}
+function fillForm(a) {
+  FIELDS.forEach(id => { if (a[id] != null) $(id).value = String(a[id]); });
+  setPostOffice(a.postOffice);
+  const r = Array.from(document.querySelectorAll('input[name="addressType"]')).find(i => i.value.toLowerCase() === String(a.addressType || "Home").toLowerCase());
+  (r || $("typeHome")).checked = true;
+  $("isDefault").checked = a.isDefault === true;
+  clearNote($("pinNote")); hideMsg();
+  document.querySelectorAll(".field.invalid").forEach(f => f.classList.remove("invalid"));
+}
+function resetForm() {
+  $("form").reset(); $("postOffice").replaceChildren(Object.assign(el("option", "", "Select post office"), { value: "" }));
+  $("typeHome").checked = true; clearNote($("pinNote")); clearNote($("locNote"));
+  document.querySelectorAll(".field.invalid").forEach(f => f.classList.remove("invalid"));
+  editId = ""; refreshTitles(); renderList();
+}
+
+["phone", "alternatePhone"].forEach(id => $(id).addEventListener("input", function () {
+  this.value = this.value.replace(/\D/g, "").slice(0, 10); setErr(id + "Field", false); hideMsg();
+}));
+[...REQUIRED, "postOffice"].forEach(id => $(id).addEventListener("input", function () {
+  if (this.value.trim()) setErr(id + "Field", false); hideMsg();
+}));
+
+async function lookupPin(pin) {
+  const req = ++pinReq; if (pinCtl) { pinCtl.abort(); pinCtl = null; }
+  if (!/^\d{6}$/.test(pin)) { clearNote($("pinNote")); setErr("pincodeField", pin.length > 0); return; }
+  setErr("pincodeField", false); pinCtl = new AbortController();
+  $("pinBtn").disabled = true; $("pinBtn").textContent = "Checking...";
+  note($("pinNote"), "Looking up PIN code details...");
+  try {
+    const r = await fetch("https://api.pincodeapi.in/api/v1/pincode/" + encodeURIComponent(pin), { signal: pinCtl.signal, headers: { Accept: "application/json" } });
+    if (req !== pinReq) return;
+    if (!r.ok) throw new Error(r.status === 429 ? "Too many requests. Please wait and try again." : "PIN code lookup is temporarily unavailable.");
+    const d = await r.json();
+    if (d.success !== true || !d.data || !Array.isArray(d.data.post_offices) || !d.data.post_offices.length) throw new Error("No postal records found for this PIN code.");
+    const offices = d.data.post_offices;
+    const states = [...new Set(offices.map(o => o.state).filter(Boolean))];
+    const dists = [...new Set(offices.map(o => o.district).filter(Boolean))];
+    const prev = $("postOffice").value;
+    if (states.length === 1) sv("state", states[0]);
+    if (dists.length === 1) { sv("district", dists[0]); sv("city", dists[0], false); }
+    const s = $("postOffice"); s.replaceChildren(Object.assign(el("option", "", "Select post office"), { value: "" }));
+    offices.forEach(o => {
+      if (!o.office_name) return;
+      const op = el("option", "", [o.office_name, o.office_type, o.district].filter(Boolean).join(" · "));
+      op.value = o.office_name; op.dataset.district = o.district || ""; op.dataset.state = o.state || ""; s.appendChild(op);
+    });
+    if (Array.from(s.options).some(o => o.value === prev && prev)) s.value = prev;
+    else if (offices.length === 1) s.value = offices[0].office_name;
+    note($("pinNote"), "PIN code found. Select your post office.", "success");
+  } catch (e) {
+    if (e.name === "AbortError" || req !== pinReq) return;
+    note($("pinNote"), e.message || "Could not retrieve PIN details. Enter the address manually.", "error");
+  } finally {
+    if (req === pinReq) { pinCtl = null; $("pinBtn").disabled = false; $("pinBtn").textContent = "Check"; }
+  }
+}
+$("pincode").addEventListener("input", function () {
+  this.value = this.value.replace(/\D/g, "").slice(0, 6); clearTimeout(pinTimer); pinReq++;
+  if (pinCtl) { pinCtl.abort(); pinCtl = null; }
+  $("pinBtn").disabled = false; $("pinBtn").textContent = "Check"; clearNote($("pinNote")); hideMsg();
+  if (this.value.length === 6) { const v = this.value; pinTimer = setTimeout(() => lookupPin(v), 350); } else setErr("pincodeField", false);
+});
+$("pinBtn").addEventListener("click", () => { clearTimeout(pinTimer); lookupPin(gv("pincode")); });
+$("postOffice").addEventListener("change", function () {
+  const o = this.options[this.selectedIndex]; if (!o || !o.value) return;
+  sv("district", o.dataset.district); sv("state", o.dataset.state); sv("city", o.dataset.district, false); setErr("postOfficeField", false);
+});
+
+/* current location */
+function getPos(opt) {
+  return new Promise((res, rej) => navigator.geolocation ? navigator.geolocation.getCurrentPosition(res, rej, opt) : rej(new Error("Your browser does not support location services.")));
+}
+$("locBtn").addEventListener("click", async function () {
+  hideMsg(); this.disabled = true; this.textContent = "Finding your location...";
+  note($("locNote"), "Please allow precise location access.");
+  try {
+    let pos;
+    try { pos = await getPos({ enableHighAccuracy: true, timeout: 25000, maximumAge: 0 }); }
+    catch (e) { if (e.code === 1) throw e; pos = await getPos({ enableHighAccuracy: false, timeout: 20000, maximumAge: 0 }); }
+    const u = new URL("https://nominatim.openstreetmap.org/reverse");
+    Object.entries({ format: "jsonv2", lat: pos.coords.latitude, lon: pos.coords.longitude, addressdetails: 1, zoom: 18, "accept-language": "en" }).forEach(([k, v]) => u.searchParams.set(k, v));
+    const r = await fetch(u, { headers: { Accept: "application/json" } });
+    if (!r.ok) throw new Error("Location found, but the address lookup failed. Please enter it manually.");
+    const d = await r.json(), a = d.address || {};
+    sv("houseNumber", a.house_number || a.house_name);
+    sv("building", a.building || a.apartment || a.house_name || a.commercial || a.retail || d.name);
+    sv("area", a.road || a.residential || a.neighbourhood || a.suburb || a.quarter || a.hamlet || a.pedestrian);
+    sv("landmark", a.amenity || a.shop || a.tourism || a.leisure || a.historic || a.office || d.name);
+    sv("city", a.city || a.town || a.village || a.municipality || a.city_district || a.suburb || a.county);
+    sv("district", a.state_district || a.district || a.county || a.city_district);
+    sv("state", a.state); sv("pincode", String(a.postcode || "").replace(/\D/g, "").slice(0, 6));
+    if (/^\d{6}$/.test(gv("pincode"))) lookupPin(gv("pincode"));
+    note($("locNote"), "Location detected. Please verify the details and add your house/flat number.", "success");
+  } catch (e) {
+    const m = { 1: "Location permission denied. Allow precise location for this site and try again.", 2: "Could not determine your location. Turn on GPS and try again.", 3: "Location request timed out. Try again near a window or outdoors." };
+    note($("locNote"), m[e.code] || e.message || "Could not get your location. Enter the address manually.", "error");
+  } finally { this.disabled = false; this.textContent = "Use My Current Location"; }
+});
+
+function validate() {
+  let ok = true; hideMsg();
+  REQUIRED.forEach(id => { const bad = !gv(id); setErr(id + "Field", bad); if (bad) ok = false; });
+  if (!/^[6-9]\d{9}$/.test(gv("phone"))) { setErr("phoneField", true); ok = false; }
+  const alt = gv("alternatePhone"); const altBad = !!alt && !/^[6-9]\d{9}$/.test(alt); setErr("alternatePhoneField", altBad); if (altBad) ok = false;
+  if (!/^\d{6}$/.test(gv("pincode"))) { setErr("pincodeField", true); ok = false; }
+  const po = !$("postOffice").value; setErr("postOfficeField", po); if (po) ok = false;
+  if (!ok) showMsg("Please correct the highlighted fields. Select a post office after checking your PIN code.", "error");
+  return ok;
+}
+
+$("form").addEventListener("submit", async e => {
+  e.preventDefault(); if (saving) return;
+  if (!validate()) { const f = document.querySelector(".field.invalid input,.field.invalid select"); if (f) { f.focus(); f.scrollIntoView({ behavior: "smooth", block: "center" }); } return; }
+  saving = true; $("saveBtn").disabled = true; $("saveTop").disabled = true; $("saveBtn").textContent = "Saving..."; $("saveTop").textContent = "...";
+  const type = document.querySelector('input[name="addressType"]:checked');
+  const body = { ...Object.fromEntries(FIELDS.map(id => [id, gv(id)])), postOffice: $("postOffice").value.trim(), country: gv("country") || "India", addressType: type ? type.value : "Home", isDefault: $("isDefault").checked };
+  if (editId) body.id = editId;
+  try {
+    const r = await fetch(API, { method: editId ? "PUT" : "POST", credentials: "same-origin", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body) });
+    const d = await json(r);
+    if (r.status === 401) { toLogin(); return; }
+    if (!r.ok || d.success !== true) throw new Error(d.message || "Your address could not be saved. Please try again.");
+    if (desktop.matches) {
+      const wasEdit = !!editId; resetForm(); await loadAddresses(true);
+      showMsg(wasEdit ? "Address updated successfully." : "Address saved successfully.", "success");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else { location.replace(LIST_URL + modeQuery()); return; }
+  } catch (err) { showMsg(err.message || "Could not save your address. Please check your connection.", "error"); }
+  finally { saving = false; $("saveBtn").disabled = false; $("saveTop").disabled = false; $("saveTop").textContent = "Save"; refreshTitles(); }
+});
+
+/* ---------- LIST ---------- */
+function fmt(a) {
+  const v = [a.houseNumber, a.building, a.area, a.postOffice, a.city, a.district, a.state, a.pincode, a.country].filter(x => x && String(x).trim()).map(x => String(x).trim());
+  return v.filter((x, i, all) => all.findIndex(y => y.toLowerCase() === x.toLowerCase()) === i).join(", ");
+}
+function updateDeliver() {
+  const off = !selectedId || deliverBusy || !addresses.length;
+  $("deliverBtn").disabled = off; $("deliverTop").disabled = off;
+  $("deliverBtn").textContent = deliverBusy ? "Saving address..." : "Deliver to this address";
+  $("deliverTop").textContent = deliverBusy ? "..." : "Deliver";
+}
+function btn(label, cls, fn, dis) { const b = el("button", cls, label); b.type = "button"; b.disabled = !!dis; b.addEventListener("click", ev => { ev.stopPropagation(); fn(); }); return b; }
+
+function renderList() {
+  const list = $("list"); list.replaceChildren();
+  $("count").textContent = addresses.length + (addresses.length === 1 ? " address" : " addresses");
+  $("empty").hidden = addresses.length > 0; list.hidden = !addresses.length;
+  addresses.forEach(a => {
+    const id = a.id, sel = checkout && id === selectedId, b = busy.has(id);
+    const c = el("article", "addr" + (sel ? " sel" : "") + (checkout ? " pick" : "")); c.dataset.id = id;
+    if (checkout) {
+      c.tabIndex = 0; c.setAttribute("role", "radio"); c.setAttribute("aria-checked", String(sel));
+      c.addEventListener("click", () => { selectedId = id; hideMsg(); renderList(); });
+      c.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); selectedId = id; renderList(); } });
+    }
+    const bd = el("div", "badges"); bd.appendChild(el("span", "badge", a.addressType || "Other"));
+    if (a.isDefault === true) bd.appendChild(el("span", "badge d", "DEFAULT"));
+    bd.appendChild(el("span", "badge s", "SELECTED")); c.appendChild(bd);
+    c.appendChild(el("h3", "", a.fullName || "Recipient"));
+    c.appendChild(el("p", "", "Phone: " + (a.phone || "—") + (a.alternatePhone ? " · Alt: " + a.alternatePhone : "")));
+    c.appendChild(el("p", "txt", fmt(a)));
+    if (a.landmark) c.appendChild(el("p", "", "Landmark: " + a.landmark));
+    if (a.deliveryInstructions) c.appendChild(el("p", "", "Instructions: " + a.deliveryInstructions));
+    const acts = el("div", "acts");
+    if (!checkout) {
+      acts.appendChild(btn("Edit", "act", () => startEdit(id), b));
+      if (a.isDefault !== true) acts.appendChild(btn("Set as Default", "act", () => setDefault(a), b));
+      acts.appendChild(btn("Delete", "act danger", () => askDelete(a), b));
+    } else acts.appendChild(btn("Edit", "act", () => startEdit(id), b));
+    c.appendChild(acts); list.appendChild(c);
+  });
+  updateDeliver();
+}
+
+function startEdit(id) {
+  const a = addresses.find(x => x.id === id); if (!a) return;
+  if (desktop.matches) { editId = id; fillForm(a); refreshTitles(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  else location.href = FORM_URL + modeQuery("edit=" + encodeURIComponent(id));
+}
+
+async function loadAddresses(silent) {
+  if (!silent) { $("loading").hidden = false; $("list").hidden = true; $("empty").hidden = true; }
+  try {
+    const r = await fetch(API, { credentials: "same-origin", headers: { Accept: "application/json" }, cache: "no-store" });
+    const d = await json(r);
+    if (r.status === 401) { toLogin(); return; }
+    if (!r.ok || d.success !== true) throw new Error(d.message || "Could not load your saved addresses.");
+    addresses = (Array.isArray(d.addresses) ? d.addresses : []).map(a => ({ ...a, id: addrId(a) }));
+    addresses.sort((a, b) => (b.isDefault === true) - (a.isDefault === true) || (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
+    if (!addresses.some(a => a.id === selectedId)) selectedId = (addresses.find(a => a.isDefault === true) || addresses[0] || {}).id || null;
+    renderList();
+    if (editId && !$("fullName").value) {
+      const a = addresses.find(x => x.id === editId);
+      if (a) { fillForm(a); showMsg("Saved address loaded. Make your changes and save.", "success"); }
+      else { showMsg("This address was not found. It may have been deleted.", "error"); $("saveBtn").disabled = true; $("saveTop").disabled = true; }
+    }
+  } catch (e) { showMsg(e.message || "Could not load your addresses.", "error"); }
+  finally { $("loading").hidden = true; }
+}
+
+async function setDefault(a) {
+  if (busy.has(a.id)) return; busy.add(a.id); renderList(); hideMsg();
+  try {
+    const r = await fetch(API, { method: "PUT", credentials: "same-origin", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ ...a, isDefault: true }) });
+    const d = await json(r); if (r.status === 401) { toLogin(); return; }
+    if (!r.ok || d.success !== true) throw new Error(d.message || "Could not set default address.");
+    showMsg("Default address updated.", "success"); await loadAddresses(true);
+  } catch (e) { showMsg(e.message, "error"); } finally { busy.delete(a.id); renderList(); }
+}
+
+function askDelete(a) {
+  pendingDelete = a.id; $("delText").textContent = "Delete the address for " + (a.fullName || "this recipient") + "? This cannot be undone.";
+  $("overlay").classList.add("show"); $("overlay").setAttribute("aria-hidden", "false");
+}
+function closeDelete() { $("overlay").classList.remove("show"); $("overlay").setAttribute("aria-hidden", "true"); pendingDelete = null; $("delYes").disabled = false; $("delYes").textContent = "Delete"; }
+$("delNo").addEventListener("click", closeDelete);
+$("overlay").addEventListener("click", e => { if (e.target === $("overlay")) closeDelete(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDelete(); });
+$("delYes").addEventListener("click", async function () {
+  if (!pendingDelete) return; const id = pendingDelete; this.disabled = true; this.textContent = "Deleting...";
+  try {
+    const r = await fetch(API, { method: "DELETE", credentials: "same-origin", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ id }) });
+    const d = await json(r); if (r.status === 401) { toLogin(); return; }
+    if (!r.ok || d.success !== true) throw new Error(d.message || "Could not delete this address.");
+    if (editId === id) resetForm();
+    closeDelete(); showMsg("Address deleted.", "success"); await loadAddresses(true);
+  } catch (e) { closeDelete(); showMsg(e.message, "error"); }
+});
+
+async function deliver() {
+  if (!checkout || !selectedId || deliverBusy) return; deliverBusy = true; updateDeliver(); hideMsg();
+  try {
+    const r = await fetch(CHECKOUT_API, { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ addressId: selectedId }) });
+    const d = await json(r); if (r.status === 401) { toLogin(); return; }
+    if (!r.ok || d.success !== true) throw new Error(d.message || "Address selection could not be confirmed.");
+    location.href = PAY_URL;
+  } catch (e) { showMsg(e.message || "Could not select this address.", "error"); }
+  finally { deliverBusy = false; updateDeliver(); }
+}
+["deliverBtn", "deliverTop"].forEach(id => $(id).addEventListener("click", deliver));
+
+window.addEventListener("pageshow", () => { closeDelete(); saving = false; });
 loadAddresses();
 </script>
 </body>
